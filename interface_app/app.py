@@ -5,25 +5,28 @@ from pathlib import Path
 
 app = Flask(__name__)
 
-
+# Updated to reflect new port ranges
 apps = [{
     "name": f"App {i}",
-    "backend_port": 5000 + i,
-    "frontend_port": 5173 + i,
+    "backend_port": 5002 + (i * 2 - 2),  # Backend ports: 5001, 5003, ...
+    "frontend_port": 5171 + (i * 2 - 2),  # Frontend ports: 5171, 5173, ...
     "app_num": i,
-    "backend_url": f"http://localhost:{5000 + i}",
-    "frontend_url": f"http://localhost:{5173 + i}"
+    "backend_url": f"http://localhost:{5002 + (i * 2 - 2)}",
+    "frontend_url": f"http://localhost:{5171 + (i * 2 - 2)}"
 } for i in range(1, 21)]
+
 
 @app.route('/open/backend/<int:app_num>')
 def open_backend(app_num):
     app = next((app for app in apps if app["app_num"] == app_num), None)
     return redirect(app["backend_url"]) if app else ("App not found", 404)
 
+
 @app.route('/open/frontend/<int:app_num>')
 def open_frontend(app_num):
     app = next((app for app in apps if app["app_num"] == app_num), None)
     return redirect(app["frontend_url"]) if app else ("App not found", 404)
+
 
 def build_app(app_num: int) -> bool:
     try:
@@ -49,6 +52,7 @@ def build_app(app_num: int) -> bool:
     except subprocess.CalledProcessError:
         return False
 
+
 @app.route('/')
 def index():
     for app_info in apps:
@@ -56,11 +60,13 @@ def index():
         app_info["frontend_status"] = is_service_running(app_info["frontend_port"])
     return render_template('index.html', apps=apps)
 
+
 @app.route('/build/<int:app_num>')
 def build(app_num):
     if build_app(app_num):
         return redirect(url_for('index'))
     return "Build failed", 500
+
 
 @app.route('/start/<int:app_num>')
 def start_app(app_num):
@@ -75,6 +81,7 @@ def start_app(app_num):
         pass
     return redirect(url_for('index'))
 
+
 @app.route('/stop/<int:app_num>')
 def stop_app(app_num):
     app_dir = Path(f"ChatGPT/flask_apps/app{app_num}")
@@ -87,6 +94,7 @@ def stop_app(app_num):
     except subprocess.CalledProcessError:
         pass
     return redirect(url_for('index'))
+
 
 def is_service_running(port):
     try:

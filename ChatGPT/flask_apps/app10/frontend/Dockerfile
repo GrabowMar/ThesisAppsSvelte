@@ -2,5 +2,5 @@
 FROM denoland/deno:1.37.1
 WORKDIR /app
 COPY . .
-EXPOSE 5183
+EXPOSE 5189
 CMD ["deno", "task", "start"]

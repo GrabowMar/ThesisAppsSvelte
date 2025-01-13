@@ -23,5 +23,5 @@ async function handleRequest(req) {
     return new Response("Not found", { status: 404 });
 }
 
-console.log("Server running at http://localhost:5186");
-await serve(handleRequest, { port: 5186 });
+console.log("Server running at http://localhost:5195");
+await serve(handleRequest, { port: 5195 });

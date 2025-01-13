@@ -7,8 +7,8 @@ class ProjectConfig:
     base_dir = "C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps"
     app_prefix = "app"  # Prefix for app folders (e.g., app1, app2, etc.)
     total_apps = 20
-    start_port = 5000
-    frontend_port = 5173
+    start_port = 5001  # Updated to start from 5001 for backend
+    frontend_port = 5171  # Updated to start from 5171 for frontend
     python_base_image = "python:3.10-slim"
     deno_base_image = "denoland/deno:1.37.1"
     log_file = "setup.log"  # Log file for setup events
@@ -241,8 +241,8 @@ if __name__ == "__main__":
 
         for i in range(1, config.total_apps + 1):
             project_dir = os.path.join(config.base_dir, f"{config.app_prefix}{i}")
-            backend_port = config.start_port + (i * 2)
-            frontend_port = config.frontend_port + i
+            backend_port = config.start_port + (i * 2 - 1)  # Start backend ports from 5001
+            frontend_port = config.frontend_port + (i * 2 - 2)  # Start frontend ports from 5171
 
             new_backend_setup(os.path.join(project_dir, "backend"), backend_port, config.python_base_image)
             new_frontend_setup(os.path.join(project_dir, "frontend"), frontend_port, config.deno_base_image)

@@ -1,0 +1,302 @@
+class ProjectConfig {
+    [string]$BaseDir = "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\ChatGPT\flask_apps"
+    [string]$AppPrefix = "app"  # Prefix for app folders (e.g., app1, app2, etc.)
+    [int]$TotalApps = 20
+    [int]$StartPort = 5000
+    [int]$FrontendPort = 5173
+    [string]$PythonBaseImage = "python:3.10-slim"
+    [string]$DenoBaseImage = "denoland/deno:1.37.1"
+    [string]$LogFile = "setup.log"  # Log file for setup events
+}
+
+class ResourceTracker {
+    [System.Collections.ArrayList]$Directories = @()
+    [System.Collections.ArrayList]$Files = @()
+    
+    [void]TrackDirectory([string]$dir) {
+        $this.Directories.Add($dir)
+    }
+    
+    [void]TrackFile([string]$file) {
+        $this.Files.Add($file)
+    }
+    
+    [void]Cleanup() {
+        foreach ($dir in $this.Directories) {
+            if (Test-Path $dir) {
+                Remove-Item -Path $dir -Force -Recurse
+                Write-Verbose "Deleted directory: $dir"
+            }
+        }
+        foreach ($file in $this.Files) {
+            if (Test-Path $file) {
+                Remove-Item -Path $file -Force
+                Write-Verbose "Deleted file: $file"
+            }
+        }
+    }
+}
+
+function Log-Message {
+    param(
+        [string]$Message,
+        [string]$LogFile
+    )
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    Add-Content -Path $LogFile -Value "[$timestamp] $Message"
+}
+
+function New-BackendSetup {
+    param(
+        [string]$backendDir,
+        [int]$port,
+        [string]$pythonBaseImage
+    )
+    
+    New-Item -ItemType Directory -Path $backendDir -Force | Out-Null
+    Log-Message "Created backend directory: $backendDir" $global:Config.LogFile
+
+    # Create app.py
+    $appPyContent = @"
+from flask import Flask, jsonify
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
+
+@app.route('/')
+def home():
+    return jsonify({'message': 'Hello from Flask!'})
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=$port)
+"@
+    Set-Content -Path "$backendDir\app.py" -Value $appPyContent
+
+    # Create requirements.txt
+    Set-Content -Path "$backendDir\requirements.txt" -Value "flask`nflask-cors"
+
+    # Create Dockerfile
+    $dockerfileContent = @"
+FROM $pythonBaseImage
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+EXPOSE $port
+CMD [`"python`", `"app.py`"]
+"@
+    Set-Content -Path "$backendDir\Dockerfile" -Value $dockerfileContent
+
+    Log-Message "Backend setup complete for port $port" $global:Config.LogFile
+}
+
+function New-FrontendSetup {
+    param(
+        [string]$frontendDir,
+        [int]$port,
+        [string]$denoBaseImage
+    )
+    
+    New-Item -ItemType Directory -Path $frontendDir -Force | Out-Null
+    Push-Location $frontendDir
+    
+    # Create project structure
+    New-Item -ItemType Directory -Path "src" -Force | Out-Null
+    New-Item -ItemType Directory -Path "public" -Force | Out-Null
+
+    # Create deno.json
+    $denoConfig = @"
+{
+  "tasks": {
+    "start": "deno run --allow-net --allow-read mod.ts",
+    "dev": "deno run --watch --allow-net --allow-read mod.ts"
+  },
+  "imports": {
+    "svelte": "https://esm.sh/svelte@3.59.2"
+  }
+}
+"@
+    Set-Content -Path "deno.json" -Value $denoConfig
+
+    # Create mod.ts
+    $modTs = @"
+import { serve } from "https://deno.land/std@0.140.0/http/server.ts";
+
+async function handleRequest(req: Request): Promise<Response> {
+  const url = new URL(req.url);
+  
+  if (url.pathname === "/") {
+    return new Response(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Deno App</title>
+        </head>
+        <body>
+          <div id="app"></div>
+          <script type="module">
+            import App from './src/App.js';
+            const app = document.getElementById('app');
+            new App(app);
+          </script>
+        </body>
+      </html>
+    `, {
+      headers: { "content-type": "text/html; charset=utf-8" },
+    });
+  }
+
+  if (url.pathname.startsWith("/src/")) {
+    try {
+      const file = await Deno.readFile(`.${url.pathname}`);
+      const contentType = url.pathname.endsWith(".js") 
+        ? "application/javascript" 
+        : "text/plain";
+      return new Response(file, {
+        headers: { "content-type": contentType },
+      });
+    } catch {
+      return new Response("Not found", { status: 404 });
+    }
+  }
+
+  return new Response("Not found", { status: 404 });
+}
+
+console.log("Server running at http://localhost:5174");
+await serve(handleRequest, { port: 5174 });
+
+"@
+    Set-Content -Path "mod.ts" -Value $modTs
+
+    # Create App.js
+    $appJs = @"
+class App {
+    constructor(target) {
+        this.message = 'Loading...';
+        this.target = target;
+        this.render();
+        this.fetchMessage();
+    }
+
+    async fetchMessage() {
+        try {
+            const response = await fetch('http://localhost:5002/');
+            const data = await response.json();
+            this.message = data.message;
+            this.render();
+        } catch (error) {
+            this.message = 'Error connecting to backend';
+            this.render();
+        }
+    }
+
+    render() {
+        this.target.innerHTML = `
+            <div class="app">
+                <p class="message">${this.message}</p>
+            </div>
+            <style>
+                .app {
+                    text-align: center;
+                    padding: 2em;
+                }
+                .message {
+                    color: #444;
+                    font-size: 1.2em;
+                    margin: 1em;
+                }
+            </style>
+        `;
+    }
+}
+
+export default App;
+
+
+"@
+    Set-Content -Path "src/App.js" -Value $appJs
+
+    # Create Dockerfile
+    $dockerfileContent = @"
+FROM $denoBaseImage
+WORKDIR /app
+COPY . .
+EXPOSE $port
+CMD [`"deno`", `"task`", `"start`"]
+"@
+    Set-Content -Path "Dockerfile" -Value $dockerfileContent
+    
+    Pop-Location
+
+    Log-Message "Frontend setup complete for port $port" $global:Config.LogFile
+}
+
+function New-DockerCompose {
+    param(
+        [string]$projectDir,
+        [int]$backendPort,
+        [int]$frontendPort
+    )
+    
+    $composeContent = @"
+version: `"3.8`"
+services:
+    backend:
+        build: ./backend
+        ports:
+            - `"${backendPort}:${backendPort}`"
+        volumes:
+            - ./backend:/app
+        restart: always
+
+    frontend:
+        build: ./frontend
+        ports:
+            - `"${frontendPort}:${frontendPort}`"
+        volumes:
+            - ./frontend:/app
+        restart: always
+        depends_on:
+            - backend
+"@
+    Set-Content -Path "$projectDir\docker-compose.yml" -Value $composeContent
+    Log-Message "Docker Compose file created for backend port $backendPort and frontend port $frontendPort" $global:Config.LogFile
+}
+
+# Main Execution
+try {
+    $global:Config = [ProjectConfig]::new()
+    $tracker = [ResourceTracker]::new()
+
+    # Ensure base directory exists
+    if (-not (Test-Path $Config.BaseDir)) {
+        New-Item -ItemType Directory -Path $Config.BaseDir -Force
+        Log-Message "Created base directory: $Config.BaseDir" $Config.LogFile
+    }
+
+    for ($i = 1; $i -le $Config.TotalApps; $i++) {
+        $projectDir = Join-Path $Config.BaseDir "$($Config.AppPrefix)$i"
+        $backendPort = $Config.StartPort + ($i * 2)
+        $frontendPort = $Config.FrontendPort + $i
+
+        Write-Progress -Activity "Creating Flask/Svelte Apps" -Status "Processing $($Config.AppPrefix)$i" -PercentComplete (($i / $Config.TotalApps) * 100)
+
+        New-BackendSetup -backendDir "$projectDir\backend" -port $backendPort -pythonBaseImage $Config.PythonBaseImage
+        New-FrontendSetup -frontendDir "$projectDir\frontend" -port $frontendPort -denoBaseImage $Config.DenoBaseImage
+        New-DockerCompose -projectDir $projectDir -backendPort $backendPort -frontendPort $frontendPort
+
+        $tracker.TrackDirectory($projectDir)
+        Log-Message "Application $($Config.AppPrefix)$i created successfully." $Config.LogFile
+    }
+
+    Write-Host "All applications created successfully!" -ForegroundColor Green
+} catch {
+    Write-Host "Error: $_" -ForegroundColor Red
+    Log-Message "Error occurred: $_" $Config.LogFile
+    $tracker.Cleanup()
+} finally {
+    Write-Progress -Activity "Creating Flask/Svelte Apps" -Completed
+    Log-Message "Script execution completed." $Config.LogFile
+}

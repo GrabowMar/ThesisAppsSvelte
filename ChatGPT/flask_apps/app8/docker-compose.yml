@@ -1,17 +1,20 @@
+
 version: '3.8'
 services:
     backend:
-        image: app8-backend
+        build: ./backend
         ports:
-            - "5008:5000"
+            - "5016:5016"
+        volumes:
+            - ./backend:/app
         restart: always
 
     frontend:
-        image: app8-frontend
+        build: ./frontend
         ports:
-            - "5181:5173"
+            - "5185:5185"
         volumes:
             - ./frontend:/app
+        restart: always
         depends_on:
             - backend
-        restart: always

@@ -1,0 +1,204 @@
+[2025-01-13 03:51:43] Created base directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app1\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5002
+[2025-01-13 03:51:43] Frontend setup complete for port 5171
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5002 and frontend port 5171
+[2025-01-13 03:51:43] Application app1 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app2\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5004
+[2025-01-13 03:51:43] Frontend setup complete for port 5173
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5004 and frontend port 5173
+[2025-01-13 03:51:43] Application app2 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app3\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5006
+[2025-01-13 03:51:43] Frontend setup complete for port 5175
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5006 and frontend port 5175
+[2025-01-13 03:51:43] Application app3 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app4\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5008
+[2025-01-13 03:51:43] Frontend setup complete for port 5177
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5008 and frontend port 5177
+[2025-01-13 03:51:43] Application app4 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app5\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5010
+[2025-01-13 03:51:43] Frontend setup complete for port 5179
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5010 and frontend port 5179
+[2025-01-13 03:51:43] Application app5 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app6\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5012
+[2025-01-13 03:51:43] Frontend setup complete for port 5181
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5012 and frontend port 5181
+[2025-01-13 03:51:43] Application app6 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app7\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5014
+[2025-01-13 03:51:43] Frontend setup complete for port 5183
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5014 and frontend port 5183
+[2025-01-13 03:51:43] Application app7 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app8\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5016
+[2025-01-13 03:51:43] Frontend setup complete for port 5185
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5016 and frontend port 5185
+[2025-01-13 03:51:43] Application app8 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app9\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5018
+[2025-01-13 03:51:43] Frontend setup complete for port 5187
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5018 and frontend port 5187
+[2025-01-13 03:51:43] Application app9 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app10\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5020
+[2025-01-13 03:51:43] Frontend setup complete for port 5189
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5020 and frontend port 5189
+[2025-01-13 03:51:43] Application app10 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app11\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5022
+[2025-01-13 03:51:43] Frontend setup complete for port 5191
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5022 and frontend port 5191
+[2025-01-13 03:51:43] Application app11 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app12\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5024
+[2025-01-13 03:51:43] Frontend setup complete for port 5193
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5024 and frontend port 5193
+[2025-01-13 03:51:43] Application app12 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app13\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5026
+[2025-01-13 03:51:43] Frontend setup complete for port 5195
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5026 and frontend port 5195
+[2025-01-13 03:51:43] Application app13 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app14\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5028
+[2025-01-13 03:51:43] Frontend setup complete for port 5197
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5028 and frontend port 5197
+[2025-01-13 03:51:43] Application app14 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app15\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5030
+[2025-01-13 03:51:43] Frontend setup complete for port 5199
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5030 and frontend port 5199
+[2025-01-13 03:51:43] Application app15 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app16\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5032
+[2025-01-13 03:51:43] Frontend setup complete for port 5201
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5032 and frontend port 5201
+[2025-01-13 03:51:43] Application app16 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app17\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5034
+[2025-01-13 03:51:43] Frontend setup complete for port 5203
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5034 and frontend port 5203
+[2025-01-13 03:51:43] Application app17 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app18\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5036
+[2025-01-13 03:51:43] Frontend setup complete for port 5205
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5036 and frontend port 5205
+[2025-01-13 03:51:43] Application app18 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app19\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5038
+[2025-01-13 03:51:43] Frontend setup complete for port 5207
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5038 and frontend port 5207
+[2025-01-13 03:51:43] Application app19 created successfully.
+[2025-01-13 03:51:43] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app20\backend
+[2025-01-13 03:51:43] Backend setup complete for port 5040
+[2025-01-13 03:51:43] Frontend setup complete for port 5209
+[2025-01-13 03:51:43] Docker Compose file created for backend port 5040 and frontend port 5209
+[2025-01-13 03:51:43] Application app20 created successfully.
+[2025-01-13 03:51:43] Script execution completed.
+[2025-01-13 03:54:09] Created base directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app1\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5002
+[2025-01-13 03:54:09] Frontend setup complete for port 5171
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5002 and frontend port 5171
+[2025-01-13 03:54:09] Application app1 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app2\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5004
+[2025-01-13 03:54:09] Frontend setup complete for port 5173
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5004 and frontend port 5173
+[2025-01-13 03:54:09] Application app2 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app3\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5006
+[2025-01-13 03:54:09] Frontend setup complete for port 5175
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5006 and frontend port 5175
+[2025-01-13 03:54:09] Application app3 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app4\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5008
+[2025-01-13 03:54:09] Frontend setup complete for port 5177
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5008 and frontend port 5177
+[2025-01-13 03:54:09] Application app4 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app5\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5010
+[2025-01-13 03:54:09] Frontend setup complete for port 5179
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5010 and frontend port 5179
+[2025-01-13 03:54:09] Application app5 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app6\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5012
+[2025-01-13 03:54:09] Frontend setup complete for port 5181
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5012 and frontend port 5181
+[2025-01-13 03:54:09] Application app6 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app7\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5014
+[2025-01-13 03:54:09] Frontend setup complete for port 5183
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5014 and frontend port 5183
+[2025-01-13 03:54:09] Application app7 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app8\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5016
+[2025-01-13 03:54:09] Frontend setup complete for port 5185
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5016 and frontend port 5185
+[2025-01-13 03:54:09] Application app8 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app9\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5018
+[2025-01-13 03:54:09] Frontend setup complete for port 5187
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5018 and frontend port 5187
+[2025-01-13 03:54:09] Application app9 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app10\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5020
+[2025-01-13 03:54:09] Frontend setup complete for port 5189
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5020 and frontend port 5189
+[2025-01-13 03:54:09] Application app10 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app11\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5022
+[2025-01-13 03:54:09] Frontend setup complete for port 5191
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5022 and frontend port 5191
+[2025-01-13 03:54:09] Application app11 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app12\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5024
+[2025-01-13 03:54:09] Frontend setup complete for port 5193
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5024 and frontend port 5193
+[2025-01-13 03:54:09] Application app12 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app13\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5026
+[2025-01-13 03:54:09] Frontend setup complete for port 5195
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5026 and frontend port 5195
+[2025-01-13 03:54:09] Application app13 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app14\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5028
+[2025-01-13 03:54:09] Frontend setup complete for port 5197
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5028 and frontend port 5197
+[2025-01-13 03:54:09] Application app14 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app15\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5030
+[2025-01-13 03:54:09] Frontend setup complete for port 5199
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5030 and frontend port 5199
+[2025-01-13 03:54:09] Application app15 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app16\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5032
+[2025-01-13 03:54:09] Frontend setup complete for port 5201
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5032 and frontend port 5201
+[2025-01-13 03:54:09] Application app16 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app17\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5034
+[2025-01-13 03:54:09] Frontend setup complete for port 5203
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5034 and frontend port 5203
+[2025-01-13 03:54:09] Application app17 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app18\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5036
+[2025-01-13 03:54:09] Frontend setup complete for port 5205
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5036 and frontend port 5205
+[2025-01-13 03:54:09] Application app18 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app19\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5038
+[2025-01-13 03:54:09] Frontend setup complete for port 5207
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5038 and frontend port 5207
+[2025-01-13 03:54:09] Application app19 created successfully.
+[2025-01-13 03:54:09] Created backend directory: C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps\app20\backend
+[2025-01-13 03:54:09] Backend setup complete for port 5040
+[2025-01-13 03:54:09] Frontend setup complete for port 5209
+[2025-01-13 03:54:09] Docker Compose file created for backend port 5040 and frontend port 5209
+[2025-01-13 03:54:09] Application app20 created successfully.
+[2025-01-13 03:54:09] Script execution completed.
