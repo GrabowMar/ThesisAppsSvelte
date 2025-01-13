@@ -5,30 +5,55 @@ from pathlib import Path
 
 app = Flask(__name__)
 
-# Updated to reflect new port ranges
+# Define range and increment for port allocation
+BACKEND_BASE_PORT = 5002
+FRONTEND_BASE_PORT = 5171
+PORT_INCREMENT = 2
+
+# Generate app metadata for 20 apps with dynamic port assignments
 apps = [{
     "name": f"App {i}",
-    "backend_port": 5002 + (i * 2 - 2),  # Backend ports: 5001, 5003, ...
-    "frontend_port": 5171 + (i * 2 - 2),  # Frontend ports: 5171, 5173, ...
+    "backend_port": BACKEND_BASE_PORT + (i - 1) * PORT_INCREMENT,
+    "frontend_port": FRONTEND_BASE_PORT + (i - 1) * PORT_INCREMENT,
     "app_num": i,
-    "backend_url": f"http://localhost:{5002 + (i * 2 - 2)}",
-    "frontend_url": f"http://localhost:{5171 + (i * 2 - 2)}"
+    "backend_url": f"http://localhost:{BACKEND_BASE_PORT + (i - 1) * PORT_INCREMENT}",
+    "frontend_url": f"http://localhost:{FRONTEND_BASE_PORT + (i - 1) * PORT_INCREMENT}"
 } for i in range(1, 21)]
+
+
+@app.route('/')
+def index():
+    """
+    Home page showing all apps and their statuses.
+    """
+    for app_info in apps:
+        app_info["backend_status"] = is_service_running(app_info["backend_port"])
+        app_info["frontend_status"] = is_service_running(app_info["frontend_port"])
+    return render_template('index.html', apps=apps)
 
 
 @app.route('/open/backend/<int:app_num>')
 def open_backend(app_num):
+    """
+    Redirects to the backend URL of the specified app.
+    """
     app = next((app for app in apps if app["app_num"] == app_num), None)
     return redirect(app["backend_url"]) if app else ("App not found", 404)
 
 
 @app.route('/open/frontend/<int:app_num>')
 def open_frontend(app_num):
+    """
+    Redirects to the frontend URL of the specified app.
+    """
     app = next((app for app in apps if app["app_num"] == app_num), None)
     return redirect(app["frontend_url"]) if app else ("App not found", 404)
 
 
 def build_app(app_num: int) -> bool:
+    """
+    Builds Docker images for the backend and frontend of a specific app.
+    """
     try:
         app_dir = Path(f"ChatGPT/flask_apps/app{app_num}")
         if not app_dir.exists():
@@ -53,16 +78,11 @@ def build_app(app_num: int) -> bool:
         return False
 
 
-@app.route('/')
-def index():
-    for app_info in apps:
-        app_info["backend_status"] = is_service_running(app_info["backend_port"])
-        app_info["frontend_status"] = is_service_running(app_info["frontend_port"])
-    return render_template('index.html', apps=apps)
-
-
 @app.route('/build/<int:app_num>')
 def build(app_num):
+    """
+    Triggers the build process for a specific app.
+    """
     if build_app(app_num):
         return redirect(url_for('index'))
     return "Build failed", 500
@@ -70,6 +90,9 @@ def build(app_num):
 
 @app.route('/start/<int:app_num>')
 def start_app(app_num):
+    """
+    Starts the specified app using Docker Compose.
+    """
     app_dir = Path(f"ChatGPT/flask_apps/app{app_num}")
     try:
         subprocess.run(
@@ -78,12 +101,15 @@ def start_app(app_num):
             check=True
         )
     except subprocess.CalledProcessError:
-        pass
+        return "Failed to start the app", 500
     return redirect(url_for('index'))
 
 
 @app.route('/stop/<int:app_num>')
 def stop_app(app_num):
+    """
+    Stops the specified app using Docker Compose.
+    """
     app_dir = Path(f"ChatGPT/flask_apps/app{app_num}")
     try:
         subprocess.run(
@@ -92,11 +118,14 @@ def stop_app(app_num):
             check=True
         )
     except subprocess.CalledProcessError:
-        pass
+        return "Failed to stop the app", 500
     return redirect(url_for('index'))
 
 
-def is_service_running(port):
+def is_service_running(port: int) -> bool:
+    """
+    Checks if a service is running on the specified Docker port.
+    """
     try:
         result = subprocess.run(
             ["docker", "ps", "--filter", f"publish={port}", "--format", "{{.Ports}}"],

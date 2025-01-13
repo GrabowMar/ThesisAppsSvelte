@@ -4,8 +4,8 @@
     <title>Flask Apps Manager</title>
     <style>
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 8px; border: 1px solid #ddd; }
-        .status { width: 100px; text-align: center; }
+        th, td { padding: 8px; border: 1px solid #ddd; text-align: center; }
+        .status { font-weight: bold; }
         .running { color: green; }
         .stopped { color: red; }
     </style>
@@ -21,32 +21,19 @@
         </tr>
         {% for app in apps %}
         <tr>
-            <td>
-                {{ app.name }}
-                <small>
-                    (Backend: {{ app.backend_port }}, Frontend: {{ app.frontend_port }})
-                </small>
-            </td>
+            <td>{{ app.name }} (Ports: {{ app.backend_port }}/{{ app.frontend_port }})</td>
             <td class="status {{ 'running' if app.backend_status else 'stopped' }}">
                 {{ 'Running' if app.backend_status else 'Stopped' }}
-                <br>
-                <small>Port: {{ app.backend_port }}</small>
             </td>
             <td class="status {{ 'running' if app.frontend_status else 'stopped' }}">
                 {{ 'Running' if app.frontend_status else 'Stopped' }}
-                <br>
-                <small>Port: {{ app.frontend_port }}</small>
             </td>
             <td>
-                <a href="{{ url_for('build', app_num=app.app_num) }}" title="Build App">Build</a>
-                <a href="{{ url_for('start_app', app_num=app.app_num) }}" title="Start App">Start</a>
-                <a href="{{ url_for('stop_app', app_num=app.app_num) }}" title="Stop App">Stop</a>
-                {% if app.backend_status %}
-                <a href="{{ url_for('open_backend', app_num=app.app_num) }}" target="_blank" title="Open Backend (Port: {{ app.backend_port }})">Backend</a>
-                {% endif %}
-                {% if app.frontend_status %}
-                <a href="{{ url_for('open_frontend', app_num=app.app_num) }}" target="_blank" title="Open Frontend (Port: {{ app.frontend_port }})">Frontend</a>
-                {% endif %}
+                <a href="{{ url_for('build', app_num=app.app_num) }}">Build</a> |
+                <a href="{{ url_for('start_app', app_num=app.app_num) }}">Start</a> |
+                <a href="{{ url_for('stop_app', app_num=app.app_num) }}">Stop</a> |
+                {% if app.backend_status %}<a href="{{ url_for('open_backend', app_num=app.app_num) }}" target="_blank">Backend</a>{% endif %}
+                {% if app.frontend_status %}<a href="{{ url_for('open_frontend', app_num=app.app_num) }}" target="_blank">Frontend</a>{% endif %}
             </td>
         </tr>
         {% endfor %}
