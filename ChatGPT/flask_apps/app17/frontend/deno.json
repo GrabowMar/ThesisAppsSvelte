@@ -1,0 +1,9 @@
+{
+  "tasks": {
+    "start": "deno run --allow-net --allow-read mod.ts",
+    "dev": "deno run --watch --allow-net --allow-read mod.ts"
+  },
+  "imports": {
+    "svelte": "https://esm.sh/svelte@3.59.2"
+  }
+}

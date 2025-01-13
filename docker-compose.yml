@@ -1,0 +1,62 @@
+version: '3.8'
+services:  app$i:
+    build: ./app1
+    ports:
+      - "500"  app$i:
+    build: ./app2
+    ports:
+      - "500"  app$i:
+    build: ./app3
+    ports:
+      - "500"  app$i:
+    build: ./app4
+    ports:
+      - "500"  app$i:
+    build: ./app5
+    ports:
+      - "500"  app$i:
+    build: ./app6
+    ports:
+      - "500"  app$i:
+    build: ./app7
+    ports:
+      - "500"  app$i:
+    build: ./app8
+    ports:
+      - "500"  app$i:
+    build: ./app9
+    ports:
+      - "500"  app$i:
+    build: ./app10
+    ports:
+      - "500"  app$i:
+    build: ./app11
+    ports:
+      - "500"  app$i:
+    build: ./app12
+    ports:
+      - "500"  app$i:
+    build: ./app13
+    ports:
+      - "500"  app$i:
+    build: ./app14
+    ports:
+      - "500"  app$i:
+    build: ./app15
+    ports:
+      - "500"  app$i:
+    build: ./app16
+    ports:
+      - "500"  app$i:
+    build: ./app17
+    ports:
+      - "500"  app$i:
+    build: ./app18
+    ports:
+      - "500"  app$i:
+    build: ./app19
+    ports:
+      - "500"  app$i:
+    build: ./app20
+    ports:
+      - "500"

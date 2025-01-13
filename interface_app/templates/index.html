@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask Apps Manager</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px; border: 1px solid #ddd; }
+        .status { width: 100px; text-align: center; }
+        .running { color: green; }
+        .stopped { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Flask Apps Manager</h1>
+    <table>
+        <tr>
+            <th>App Name</th>
+            <th>Backend Status</th>
+            <th>Frontend Status</th>
+            <th>Actions</th>
+        </tr>
+        {% for app in apps %}
+        <tr>
+            <td>
+                {{ app.name }}
+                <small>
+                    (Backend: {{ app.backend_port }}, Frontend: {{ app.frontend_port }})
+                </small>
+            </td>
+            <td class="status {{ 'running' if app.backend_status else 'stopped' }}">
+                {{ 'Running' if app.backend_status else 'Stopped' }}
+                <br>
+                <small>Port: {{ app.backend_port }}</small>
+            </td>
+            <td class="status {{ 'running' if app.frontend_status else 'stopped' }}">
+                {{ 'Running' if app.frontend_status else 'Stopped' }}
+                <br>
+                <small>Port: {{ app.frontend_port }}</small>
+            </td>
+            <td>
+                <a href="{{ url_for('build', app_num=app.app_num) }}" title="Build App">Build</a>
+                <a href="{{ url_for('start_app', app_num=app.app_num) }}" title="Start App">Start</a>
+                <a href="{{ url_for('stop_app', app_num=app.app_num) }}" title="Stop App">Stop</a>
+                {% if app.backend_status %}
+                <a href="{{ url_for('open_backend', app_num=app.app_num) }}" target="_blank" title="Open Backend (Port: {{ app.backend_port }})">Backend</a>
+                {% endif %}
+                {% if app.frontend_status %}
+                <a href="{{ url_for('open_frontend', app_num=app.app_num) }}" target="_blank" title="Open Frontend (Port: {{ app.frontend_port }})">Frontend</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
