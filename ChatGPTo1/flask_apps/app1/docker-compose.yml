@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: chatgpto1_backend_5046
+        ports:
+            - "5046:5046"
+        volumes:
+            - ./backend:/app
+        restart: always
+
+    frontend:
+        build: ./frontend
+        container_name: chatgpto1_frontend_5546
+        ports:
+            - "5546:5546"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=5546
+        restart: always
+        depends_on:
+            - backend

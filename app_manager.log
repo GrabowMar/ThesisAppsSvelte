@@ -1,0 +1,26 @@
+2025-01-14 00:19:56,285 - __main__ - INFO - Starting AI Models Flask Apps Manager on port 5050
+2025-01-14 00:20:14,524 - __main__ - INFO - Starting AI Models Flask Apps Manager on port 5050
+2025-01-14 00:20:14,536 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5050
+ * Running on http://192.168.1.100:5050
+2025-01-14 00:20:14,536 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-01-14 00:20:22,080 - app - ERROR - Exception on / [GET]
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\.venv\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\.venv\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\.venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\.venv\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 163, in index
+    model_apps = get_apps_for_model(model['name'])
+                 ^^^^^^^^^^^^^^^^^^
+NameError: name 'get_apps_for_model' is not defined
+2025-01-14 00:20:22,085 - werkzeug - INFO - 127.0.0.1 - - [14/Jan/2025 00:20:22] "[35m[1mGET / HTTP/1.1[0m" 500 -

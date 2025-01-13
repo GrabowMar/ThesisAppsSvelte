@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: mixtral_backend_5301
+        ports:
+            - "5301:5301"
+        volumes:
+            - ./backend:/app
+        restart: always
+
+    frontend:
+        build: ./frontend
+        container_name: mixtral_frontend_5801
+        ports:
+            - "5801:5801"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=5801
+        restart: always
+        depends_on:
+            - backend

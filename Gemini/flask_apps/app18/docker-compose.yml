@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: gemini_backend_5215
+        ports:
+            - "5215:5215"
+        volumes:
+            - ./backend:/app
+        restart: always
+
+    frontend:
+        build: ./frontend
+        container_name: gemini_frontend_5715
+        ports:
+            - "5715:5715"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=5715
+        restart: always
+        depends_on:
+            - backend

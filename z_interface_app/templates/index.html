@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Models Flask Apps Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .model-section {
+            margin-bottom: 30px;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .model-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: white;
+        }
+        
+        th, td {
+            padding: 12px 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+        
+        .status {
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .running {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .stopped {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .action-group {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .action-link {
+            padding: 6px 12px;
+            text-decoration: none;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+        
+        .action-link:hover {
+            background-color: #f5f5f5;
+            border-color: #aaa;
+        }
+        
+        .reload-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        
+        .reload-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .model-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            margin-right: 8px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>AI Models Flask Apps Manager</h1>
+    
+    {% for model in models %}
+    {% set model_apps = apps|selectattr('model', 'equalto', model.name)|list %}
+    {% if model_apps %}
+    <div class="model-section">
+        <div class="model-header">
+            <h2>
+                <span class="model-badge" style="background-color: {{ model.color }}">
+                    {{ model.name }}
+                </span>
+                Applications
+            </h2>
+        </div>
+        <table>
+            <tr>
+                <th>App Name</th>
+                <th>Ports (Backend/Frontend)</th>
+                <th>Backend Status</th>
+                <th>Frontend Status</th>
+                <th>Actions</th>
+            </tr>
+            {% for app in model_apps %}
+            <tr>
+                <td>{{ app.name }}</td>
+                <td>{{ app.backend_port }}/{{ app.frontend_port }}</td>
+                <td class="status {{ 'running' if app.backend_status else 'stopped' }}">
+                    {{ 'Running' if app.backend_status else 'Stopped' }}
+                </td>
+                <td class="status {{ 'running' if app.frontend_status else 'stopped' }}">
+                    {{ 'Running' if app.frontend_status else 'Stopped' }}
+                </td>
+                <td class="action-group">
+                    <a href="{{ url_for('build', model=app.model, app_num=app.app_num) }}" 
+                       class="action-link">Build</a>
+                    <a href="{{ url_for('start_app', model=app.model, app_num=app.app_num) }}" 
+                       class="action-link">Start</a>
+                    <a href="{{ url_for('stop_app', model=app.model, app_num=app.app_num) }}" 
+                       class="action-link">Stop</a>
+                    {% if app.backend_status or app.frontend_status %}
+                        <a href="{{ url_for('reload_app', model=app.model, app_num=app.app_num) }}" 
+                           class="reload-btn">↻ Reload</a>
+                    {% endif %}
+                    {% if app.backend_status %}
+                        <a href="{{ url_for('open_backend', model=app.model, app_num=app.app_num) }}" 
+                           target="_blank" class="action-link">Backend</a>
+                    {% endif %}
+                    {% if app.frontend_status %}
+                        <a href="{{ url_for('open_frontend', model=app.model, app_num=app.app_num) }}" 
+                           target="_blank" class="action-link">Frontend</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    <script>
+        // Auto-refresh the page every 30 seconds
+        setTimeout(() => {
+            window.location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>

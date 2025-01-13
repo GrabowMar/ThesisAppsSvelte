@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: grok_backend_5252
+        ports:
+            - "5252:5252"
+        volumes:
+            - ./backend:/app
+        restart: always
+
+    frontend:
+        build: ./frontend
+        container_name: grok_frontend_5752
+        ports:
+            - "5752:5752"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=5752
+        restart: always
+        depends_on:
+            - backend

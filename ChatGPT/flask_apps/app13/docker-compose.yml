@@ -2,21 +2,23 @@ version: '3.8'
 services:
     backend:
         build: ./backend
+        container_name: chatgpt_backend_5025
         ports:
-            - "5026:5026"
+            - "5025:5025"
         volumes:
             - ./backend:/app
         restart: always
 
     frontend:
         build: ./frontend
+        container_name: chatgpt_frontend_5525
         ports:
-            - "5196:5196"
+            - "5525:5525"
         volumes:
             - ./frontend:/app
             - /app/node_modules
         environment:
-            - PORT=5196
+            - PORT=5525
         restart: always
         depends_on:
             - backend

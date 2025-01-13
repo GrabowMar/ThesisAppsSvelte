@@ -15,14 +15,17 @@ COPY vite.config.js .
 COPY index.html .
 
 # Install dependencies with detailed logging
-RUN set -x &&     npm install --verbose &&     npm ls &&     du -h node_modules/ &&     find node_modules/ -type f | wc -l
-
+RUN set -x && \
+    npm install --verbose && \
+    npm ls && \
+    du -h node_modules/ && \
+    find node_modules/ -type f | wc -l
 
 # Copy source files
 COPY src src/
 
-EXPOSE 5186
-ENV PORT=5186
+EXPOSE 5515
+ENV PORT=5515
 
 # Start the development server
 CMD ["npm", "run", "dev"]

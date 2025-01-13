@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Container Logs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .logs-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .log-section {
+            margin-bottom: 20px;
+        }
+
+        .log-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .log-content {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        .refresh-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Container Logs - {{ model }} App {{ app_num }}</h1>
+        <div>
+            <a href="{{ url_for('index') }}" class="back-link">← Back to Dashboard</a>
+            <a href="{{ url_for('view_logs', model=model, app_num=app_num) }}" class="refresh-btn">↻ Refresh Logs</a>
+        </div>
+    </div>
+
+    <div class="logs-container">
+        <div class="log-section">
+            <div class="log-header">Backend Logs</div>
+            <div class="log-content">{{ logs.backend }}</div>
+        </div>
+
+        <div class="log-section">
+            <div class="log-header">Frontend Logs</div>
+            <div class="log-content">{{ logs.frontend }}</div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh the page every 30 seconds
+        setTimeout(() => {
+            window.location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>

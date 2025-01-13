@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: codellama_backend_5144
+        ports:
+            - "5144:5144"
+        volumes:
+            - ./backend:/app
+        restart: always
+
+    frontend:
+        build: ./frontend
+        container_name: codellama_frontend_5644
+        ports:
+            - "5644:5644"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=5644
+        restart: always
+        depends_on:
+            - backend

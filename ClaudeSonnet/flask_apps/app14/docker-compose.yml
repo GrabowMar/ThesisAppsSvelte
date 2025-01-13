@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: claudesonnet_backend_5117
+        ports:
+            - "5117:5117"
+        volumes:
+            - ./backend:/app
+        restart: always
+
+    frontend:
+        build: ./frontend
+        container_name: claudesonnet_frontend_5617
+        ports:
+            - "5617:5617"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=5617
+        restart: always
+        depends_on:
+            - backend

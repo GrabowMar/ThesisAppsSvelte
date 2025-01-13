@@ -7,7 +7,7 @@ CORS(app)
 
 @app.route('/')
 def home():
-    return jsonify({'message': 'Hello from Flask!'})
+    return jsonify({'message': 'Hello from ChatGPT Flask Backend!'})
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5024)
+    app.run(host='0.0.0.0', port=5023)

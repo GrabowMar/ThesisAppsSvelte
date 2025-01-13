@@ -2,16 +2,76 @@ import os
 import shutil
 import json
 import datetime
+from typing import List, Dict, Tuple
+from pathlib import Path
+
+class PortManager:
+    """Manages port allocation across all models"""
+    BASE_BACKEND_PORT = 5001
+    BASE_FRONTEND_PORT = 5501  # Moved frontend ports to 5500+ range
+    PORTS_PER_APP = 2  # Each app needs 2 ports (backend + frontend)
+    BUFFER_PORTS = 5  # Buffer between models to allow for future expansion
+    APPS_PER_MODEL = 20
+
+    MODEL_COLORS = {
+        "ChatGPT": "#10a37f",
+        "ChatGPTo1": "#0ea47f",
+        "ClaudeSonnet": "#7b2bf9",
+        "CodeLlama": "#f97316",
+        "Gemini": "#1a73e8",
+        "Grok": "#ff4d4f",
+        "Mixtral": "#9333ea"
+    }
+
+    @classmethod
+    def calculate_port_range(cls, model_index: int) -> Tuple[int, int]:
+        """Calculate port ranges for a specific model index"""
+        ports_needed = cls.APPS_PER_MODEL * cls.PORTS_PER_APP + cls.BUFFER_PORTS
+        backend_start = cls.BASE_BACKEND_PORT + (model_index * ports_needed)
+        frontend_start = cls.BASE_FRONTEND_PORT + (model_index * ports_needed)
+        return backend_start, frontend_start
+
+    @classmethod
+    def get_port_info(cls, model_index: int, app_number: int) -> Dict[str, int]:
+        """Get specific ports for an app within a model"""
+        backend_base, frontend_base = cls.calculate_port_range(model_index)
+        return {
+            'backend': backend_base + (app_number - 1) * 2,
+            'frontend': frontend_base + (app_number - 1) * 2
+        }
 
 class ProjectConfig:
-    base_dir = "C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps"
-    app_prefix = "app"
-    total_apps = 20
-    start_port = 5001  # Backend ports
-    frontend_port = 5171  # Frontend ports
-    python_base_image = "python:3.10-slim"
-    deno_base_image = "denoland/deno:1.37.1"
-    log_file = "setup.log"
+    def __init__(self, model_name: str, model_index: int):
+        self.model_name = model_name
+        self.base_dir = f"C:/Users/grabowmar/Desktop/ThesisAppsSvelte/{model_name}/flask_apps"
+        self.app_prefix = "app"
+        self.total_apps = 20
+        # Get port ranges from PortManager
+        self.backend_base, self.frontend_base = PortManager.calculate_port_range(model_index)
+        self.python_base_image = "python:3.10-slim"
+        self.deno_base_image = "denoland/deno:1.37.1"
+        self.log_file = f"setup_{model_name.lower()}.log"
+        self.color = PortManager.MODEL_COLORS.get(model_name, "#666666")
+
+    def get_ports_for_app(self, app_num: int) -> Dict[str, int]:
+        """Get the specific ports for an app number"""
+        return {
+            'backend': self.backend_base + (app_num - 1) * 2,
+            'frontend': self.frontend_base + (app_num - 1) * 2
+        }
+
+    def get_port_ranges(self) -> Dict[str, Dict[str, int]]:
+        """Get the full port range information for this model"""
+        return {
+            'backend': {
+                'start': self.backend_base,
+                'end': self.backend_base + (self.total_apps * 2)
+            },
+            'frontend': {
+                'start': self.frontend_base,
+                'end': self.frontend_base + (self.total_apps * 2)
+            }
+        }
 
 class ResourceTracker:
     def __init__(self):
@@ -34,14 +94,83 @@ class ResourceTracker:
                 os.remove(file)
                 print(f"Deleted file: {file}")
 
-def log_message(message, log_file):
+class MultiModelManager:
+    def __init__(self):
+        self.models = list(PortManager.MODEL_COLORS.keys())
+        self.configs: Dict[str, ProjectConfig] = {}
+        self.setup_configs()
+
+    def setup_configs(self):
+        for idx, model in enumerate(self.models):
+            self.configs[model] = ProjectConfig(model, idx)
+            # Log port ranges for verification
+            ranges = self.configs[model].get_port_ranges()
+            print(f"\nPort ranges for {model}:")
+            print(f"Backend: {ranges['backend']['start']}-{ranges['backend']['end']}")
+            print(f"Frontend: {ranges['frontend']['start']}-{ranges['frontend']['end']}")
+
+    def create_all(self):
+        for model in self.models:
+            print(f"\nCreating apps for {model}...")
+            config = self.configs[model]
+            tracker = ResourceTracker()
+            
+            try:
+                if not os.path.exists(config.base_dir):
+                    os.makedirs(config.base_dir)
+                    log_message(f"Created base directory: {config.base_dir}", config.log_file)
+
+                for i in range(1, config.total_apps + 1):
+                    project_dir = os.path.join(config.base_dir, f"{config.app_prefix}{i}")
+                    ports = config.get_ports_for_app(i)
+                    
+                    os.makedirs(project_dir, exist_ok=True)
+                    new_backend_setup(
+                        os.path.join(project_dir, "backend"),
+                        ports['backend'],
+                        config.python_base_image,
+                        model
+                    )
+                    new_frontend_setup(
+                        os.path.join(project_dir, "frontend"),
+                        ports['frontend'],
+                        config.deno_base_image,
+                        ports['backend'],
+                        model
+                    )
+                    new_docker_compose(
+                        project_dir, 
+                        ports['backend'],
+                        ports['frontend'],
+                        model.lower()
+                    )
+
+                    tracker.track_directory(project_dir)
+                    log_message(
+                        f"Application {config.app_prefix}{i} created successfully for {model} "
+                        f"(Backend: {ports['backend']}, Frontend: {ports['frontend']})",
+                        config.log_file
+                    )
+
+                print(f"All applications created successfully for {model}!")
+                ranges = config.get_port_ranges()
+                print(f"Ports used - Backend: {ranges['backend']['start']}-{ranges['backend']['end']}")
+                print(f"Ports used - Frontend: {ranges['frontend']['start']}-{ranges['frontend']['end']}")
+                
+            except Exception as e:
+                print(f"Error in {model}: {e}")
+                log_message(f"Error occurred in {model}: {e}", config.log_file)
+                tracker.cleanup()
+
+def log_message(message: str, log_file: str):
+    """Log a message with timestamp"""
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with open(log_file, "a") as f:
         f.write(f"[{timestamp}] {message}\n")
 
-def new_backend_setup(backend_dir, port, python_base_image):
+def new_backend_setup(backend_dir: str, port: int, python_base_image: str, model_name: str):
+    """Set up backend application"""
     os.makedirs(backend_dir, exist_ok=True)
-    log_message(f"Created backend directory: {backend_dir}", config.log_file)
 
     app_py_content = f"""
 from flask import Flask, jsonify
@@ -52,7 +181,7 @@ CORS(app)
 
 @app.route('/')
 def home():
-    return jsonify({{'message': 'Hello from Flask!'}})
+    return jsonify({{'message': 'Hello from {model_name} Flask Backend!'}})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port={port})
@@ -77,13 +206,12 @@ CMD ["python", "app.py"]
     with open(os.path.join(backend_dir, "Dockerfile"), "w") as f:
         f.write(dockerfile_content)
 
-def new_frontend_setup(frontend_dir, port, deno_base_image, backend_port):
-    # Create necessary directories
+def new_frontend_setup(frontend_dir: str, port: int, deno_base_image: str, backend_port: int, model_name: str):
+    """Set up frontend application"""
     os.makedirs(os.path.join(frontend_dir, "src"), exist_ok=True)
 
-    # Create package.json
     package_json = {
-        "name": "svelte-app",
+        "name": f"svelte-{model_name.lower()}-app",
         "private": True,
         "version": "0.0.0",
         "type": "module",
@@ -102,7 +230,6 @@ def new_frontend_setup(frontend_dir, port, deno_base_image, backend_port):
     with open(os.path.join(frontend_dir, "package.json"), "w") as f:
         json.dump(package_json, f, indent=2)
 
-    # Create deno.json
     deno_config = {
         "tasks": {
             "dev": "npm run dev"
@@ -117,23 +244,21 @@ def new_frontend_setup(frontend_dir, port, deno_base_image, backend_port):
     with open(os.path.join(frontend_dir, "deno.json"), "w") as f:
         json.dump(deno_config, f, indent=2)
 
-    # Create vite.config.js
-    vite_config = """import { defineConfig } from 'vite'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
+    vite_config = f"""import {{ defineConfig }} from 'vite'
+import {{ svelte }} from '@sveltejs/vite-plugin-svelte'
 
-export default defineConfig({
+export default defineConfig({{
   plugins: [svelte()],
-  server: {
+  server: {{
     host: true,
-    port: process.env.PORT || 5173,
+    port: {port},
     strictPort: true
-  }
-})
+  }}
+}})
 """
     with open(os.path.join(frontend_dir, "vite.config.js"), "w") as f:
         f.write(vite_config)
 
-    # Create src/App.svelte
     app_svelte = f"""
 <script>
   let message = 'Loading...';
@@ -144,7 +269,7 @@ export default defineConfig({
       const data = await response.json();
       message = data.message;
     }} catch (error) {{
-      message = 'Error connecting to backend';
+      message = 'Error connecting to {model_name} backend';
     }}
   }}
 
@@ -152,6 +277,7 @@ export default defineConfig({
 </script>
 
 <main>
+  <h1>{model_name} App</h1>
   <p class="message">{{message}}</p>
 </main>
 
@@ -159,6 +285,11 @@ export default defineConfig({
   main {{
     text-align: center;
     padding: 2em;
+  }}
+  h1 {{
+    color: #333;
+    font-size: 2em;
+    margin-bottom: 0.5em;
   }}
   .message {{
     color: #444;
@@ -170,7 +301,6 @@ export default defineConfig({
     with open(os.path.join(frontend_dir, "src", "App.svelte"), "w") as f:
         f.write(app_svelte)
 
-    # Create src/main.js
     main_js = """import App from './App.svelte'
 
 const app = new App({
@@ -182,13 +312,12 @@ export default app
     with open(os.path.join(frontend_dir, "src", "main.js"), "w") as f:
         f.write(main_js)
 
-    # Create index.html
-    index_html = """<!DOCTYPE html>
+    index_html = f"""<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Svelte + Vite App</title>
+    <title>{model_name} Svelte App</title>
   </head>
   <body>
     <div id="app"></div>
@@ -199,7 +328,6 @@ export default app
     with open(os.path.join(frontend_dir, "index.html"), "w") as f:
         f.write(index_html)
 
-    # Create Dockerfile for frontend
     dockerfile_content = f"""
 FROM {deno_base_image}
 
@@ -217,12 +345,11 @@ COPY vite.config.js .
 COPY index.html .
 
 # Install dependencies with detailed logging
-RUN set -x && \
-    npm install --verbose && \
-    npm ls && \
-    du -h node_modules/ && \
+RUN set -x && \\
+    npm install --verbose && \\
+    npm ls && \\
+    du -h node_modules/ && \\
     find node_modules/ -type f | wc -l
-
 
 # Copy source files
 COPY src src/
@@ -236,11 +363,13 @@ CMD ["npm", "run", "dev"]
     with open(os.path.join(frontend_dir, "Dockerfile"), "w") as f:
         f.write(dockerfile_content)
 
-def new_docker_compose(project_dir, backend_port, frontend_port):
+def new_docker_compose(project_dir: str, backend_port: int, frontend_port: int, model_prefix: str):
+    """Create docker-compose.yml file"""
     compose_content = f"""version: '3.8'
 services:
     backend:
         build: ./backend
+        container_name: {model_prefix}_backend_{backend_port}
         ports:
             - "{backend_port}:{backend_port}"
         volumes:
@@ -249,6 +378,7 @@ services:
 
     frontend:
         build: ./frontend
+        container_name: {model_prefix}_frontend_{frontend_port}
         ports:
             - "{frontend_port}:{frontend_port}"
         volumes:
@@ -264,36 +394,5 @@ services:
         f.write(compose_content)
 
 if __name__ == "__main__":
-    config = ProjectConfig()
-    tracker = ResourceTracker()
-
-    try:
-        if not os.path.exists(config.base_dir):
-            os.makedirs(config.base_dir)
-            log_message(f"Created base directory: {config.base_dir}", config.log_file)
-
-        for i in range(1, config.total_apps + 1):
-            project_dir = os.path.join(config.base_dir, f"{config.app_prefix}{i}")
-            backend_port = config.start_port + (i * 2 - 1)
-            frontend_port = config.frontend_port + (i * 2 - 1)
-
-            os.makedirs(project_dir, exist_ok=True)
-            new_backend_setup(os.path.join(project_dir, "backend"), backend_port, config.python_base_image)
-            new_frontend_setup(
-                os.path.join(project_dir, "frontend"),
-                frontend_port,
-                config.deno_base_image,
-                backend_port
-            )
-            new_docker_compose(project_dir, backend_port, frontend_port)
-
-            tracker.track_directory(project_dir)
-            log_message(f"Application {config.app_prefix}{i} created successfully.", config.log_file)
-
-        print("All applications created successfully!")
-    except Exception as e:
-        print(f"Error: {e}")
-        log_message(f"Error occurred: {e}", config.log_file)
-        tracker.cleanup()
-    finally:
-        log_message("Script execution completed.", config.log_file)
+    manager = MultiModelManager()
+    manager.create_all()
