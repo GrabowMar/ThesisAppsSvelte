@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 # Define range and increment for port allocation
 BACKEND_BASE_PORT = 5002
-FRONTEND_BASE_PORT = 5171
+FRONTEND_BASE_PORT = 5172
 PORT_INCREMENT = 2
 
 # Generate app metadata for 20 apps with dynamic port assignments
@@ -19,6 +19,24 @@ apps = [{
     "backend_url": f"http://localhost:{BACKEND_BASE_PORT + (i - 1) * PORT_INCREMENT}",
     "frontend_url": f"http://localhost:{FRONTEND_BASE_PORT + (i - 1) * PORT_INCREMENT}"
 } for i in range(1, 21)]
+
+
+@app.route('/reload/<int:app_num>')
+def reload_app(app_num):
+    """
+    Reloads the specified app by restarting containers and preserving volumes.
+    """
+    app_dir = Path(f"ChatGPT/flask_apps/app{app_num}")
+    try:
+        # Restart containers while preserving volumes
+        subprocess.run(
+            ["docker-compose", "restart"],
+            cwd=app_dir,
+            check=True
+        )
+        return redirect(url_for('index'))
+    except subprocess.CalledProcessError:
+        return "Failed to reload the app", 500
 
 
 @app.route('/')

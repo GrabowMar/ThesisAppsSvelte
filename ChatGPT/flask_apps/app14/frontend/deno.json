@@ -1,9 +1,10 @@
 {
   "tasks": {
-    "start": "deno run --allow-net --allow-read mod.ts",
-    "dev": "deno run --watch --allow-net --allow-read mod.ts"
+    "dev": "npm run dev"
   },
   "imports": {
-    "svelte": "https://esm.sh/svelte@3.59.2"
+    "@sveltejs/vite-plugin-svelte": "npm:@sveltejs/vite-plugin-svelte@^3.0.1",
+    "svelte": "npm:svelte@^4.2.8",
+    "vite": "npm:vite@^5.0.8"
   }
 }

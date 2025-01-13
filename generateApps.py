@@ -5,13 +5,13 @@ import datetime
 
 class ProjectConfig:
     base_dir = "C:/Users/grabowmar/Desktop/ThesisAppsSvelte/ChatGPT/flask_apps"
-    app_prefix = "app"  # Prefix for app folders (e.g., app1, app2, etc.)
+    app_prefix = "app"
     total_apps = 20
-    start_port = 5001  # Updated to start from 5001 for backend
-    frontend_port = 5171  # Updated to start from 5171 for frontend
+    start_port = 5001  # Backend ports
+    frontend_port = 5171  # Frontend ports
     python_base_image = "python:3.10-slim"
     deno_base_image = "denoland/deno:1.37.1"
-    log_file = "setup.log"  # Log file for setup events
+    log_file = "setup.log"
 
 class ResourceTracker:
     def __init__(self):
@@ -77,134 +77,167 @@ CMD ["python", "app.py"]
     with open(os.path.join(backend_dir, "Dockerfile"), "w") as f:
         f.write(dockerfile_content)
 
-    log_message(f"Backend setup complete for port {port}", config.log_file)
-
-def new_frontend_setup(frontend_dir, port, deno_base_image):
+def new_frontend_setup(frontend_dir, port, deno_base_image, backend_port):
+    # Create necessary directories
     os.makedirs(os.path.join(frontend_dir, "src"), exist_ok=True)
-    os.makedirs(os.path.join(frontend_dir, "public"), exist_ok=True)
 
+    # Create package.json
+    package_json = {
+        "name": "svelte-app",
+        "private": True,
+        "version": "0.0.0",
+        "type": "module",
+        "scripts": {
+            "dev": "vite",
+            "build": "vite build",
+            "preview": "vite preview"
+        },
+        "devDependencies": {
+            "@sveltejs/vite-plugin-svelte": "^3.0.1",
+            "svelte": "^4.2.8",
+            "vite": "^5.0.8"
+        }
+    }
+    
+    with open(os.path.join(frontend_dir, "package.json"), "w") as f:
+        json.dump(package_json, f, indent=2)
+
+    # Create deno.json
     deno_config = {
         "tasks": {
-            "start": "deno run --allow-net --allow-read mod.ts",
-            "dev": "deno run --watch --allow-net --allow-read mod.ts"
+            "dev": "npm run dev"
         },
         "imports": {
-            "svelte": "https://esm.sh/svelte@3.59.2"
+            "@sveltejs/vite-plugin-svelte": "npm:@sveltejs/vite-plugin-svelte@^3.0.1",
+            "svelte": "npm:svelte@^4.2.8",
+            "vite": "npm:vite@^5.0.8"
         }
     }
     
     with open(os.path.join(frontend_dir, "deno.json"), "w") as f:
         json.dump(deno_config, f, indent=2)
 
-    mod_ts = f"""
-import {{ serve }} from "https://deno.land/std@0.140.0/http/server.ts";
+    # Create vite.config.js
+    vite_config = """import { defineConfig } from 'vite'
+import { svelte } from '@sveltejs/vite-plugin-svelte'
 
-async function handleRequest(req) {{
-    const url = new URL(req.url);
-
-    if (url.pathname === "/") {{
-        return new Response(`\
-<!DOCTYPE html>\
-<html>\
-  <head>\
-    <title>Deno App</title>\
-  </head>\
-  <body>\
-    <div id=\"app\"></div>\
-    <script type=\"module\">\
-      import App from './src/App.js';\
-      const app = document.getElementById('app');\
-      new App(app);\
-    </script>\
-  </body>\
-</html>`, {{
-            headers: {{ "content-type": "text/html; charset=utf-8" }}
-        }});
-    }}
-
-    if (url.pathname.startsWith("/src/")) {{
-        try {{
-            const file = await Deno.readFile(`.${{url.pathname}}`);
-            const contentType = url.pathname.endsWith(".js") ? "application/javascript" : "text/plain";
-            return new Response(file, {{ headers: {{ "content-type": contentType }} }});
-        }} catch {{
-            return new Response("Not found", {{ status: 404 }});
-        }}
-    }}
-
-    return new Response("Not found", {{ status: 404 }});
-}}
-
-console.log("Server running at http://localhost:{port}");
-await serve(handleRequest, {{ port: {port} }});
+export default defineConfig({
+  plugins: [svelte()],
+  server: {
+    host: true,
+    port: process.env.PORT || 5173,
+    strictPort: true
+  }
+})
 """
-    
-    with open(os.path.join(frontend_dir, "mod.ts"), "w") as f:
-        f.write(mod_ts)
+    with open(os.path.join(frontend_dir, "vite.config.js"), "w") as f:
+        f.write(vite_config)
 
-    app_js = """
-class App {
-    constructor(target) {
-        this.message = 'Loading...';
-        this.target = target;
-        this.render();
-        this.fetchMessage();
-    }
+    # Create src/App.svelte
+    app_svelte = f"""
+<script>
+  let message = 'Loading...';
 
-    async fetchMessage() {
-        try {
-            const response = await fetch('http://localhost:5002/');
-            const data = await response.json();
-            this.message = data.message;
-            this.render();
-        } catch (error) {
-            this.message = 'Error connecting to backend';
-            this.render();
-        }
-    }
+  async function fetchMessage() {{
+    try {{
+      const response = await fetch('http://localhost:{backend_port}/');
+      const data = await response.json();
+      message = data.message;
+    }} catch (error) {{
+      message = 'Error connecting to backend';
+    }}
+  }}
 
-    render() {
-        this.target.innerHTML = `
-            <div class="app">
-                <p class="message">${this.message}</p>
-            </div>
-            <style>
-                .app {{
-                    text-align: center;
-                    padding: 2em;
-                }}
-                .message {{
-                    color: #444;
-                    font-size: 1.2em;
-                    margin: 1em;
-                }}
-            </style>
-        `;
-    }
-}
+  fetchMessage();
+</script>
 
-export default App;
+<main>
+  <p class="message">{{message}}</p>
+</main>
+
+<style>
+  main {{
+    text-align: center;
+    padding: 2em;
+  }}
+  .message {{
+    color: #444;
+    font-size: 1.2em;
+    margin: 1em;
+  }}
+</style>
 """
-    
-    with open(os.path.join(frontend_dir, "src", "App.js"), "w") as f:
-        f.write(app_js)
+    with open(os.path.join(frontend_dir, "src", "App.svelte"), "w") as f:
+        f.write(app_svelte)
 
+    # Create src/main.js
+    main_js = """import App from './App.svelte'
+
+const app = new App({
+  target: document.getElementById('app')
+})
+
+export default app
+"""
+    with open(os.path.join(frontend_dir, "src", "main.js"), "w") as f:
+        f.write(main_js)
+
+    # Create index.html
+    index_html = """<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Svelte + Vite App</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+"""
+    with open(os.path.join(frontend_dir, "index.html"), "w") as f:
+        f.write(index_html)
+
+    # Create Dockerfile for frontend
     dockerfile_content = f"""
 FROM {deno_base_image}
+
 WORKDIR /app
-COPY . .
+
+# Install Node.js and npm
+ENV NODE_VERSION=18.x
+RUN apt-get update && apt-get install -y curl
+RUN curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION | bash -
+RUN apt-get install -y nodejs
+
+# Copy package files
+COPY package.json .
+COPY vite.config.js .
+COPY index.html .
+
+# Install dependencies with detailed logging
+RUN set -x && \
+    npm install --verbose && \
+    npm ls && \
+    du -h node_modules/ && \
+    find node_modules/ -type f | wc -l
+
+
+# Copy source files
+COPY src src/
+
 EXPOSE {port}
-CMD ["deno", "task", "start"]
+ENV PORT={port}
+
+# Start the development server
+CMD ["npm", "run", "dev"]
 """
-    
     with open(os.path.join(frontend_dir, "Dockerfile"), "w") as f:
         f.write(dockerfile_content)
 
-    log_message(f"Frontend setup complete for port {port}", config.log_file)
-
 def new_docker_compose(project_dir, backend_port, frontend_port):
-    compose_content = f"""
-version: '3.8'
+    compose_content = f"""version: '3.8'
 services:
     backend:
         build: ./backend
@@ -220,15 +253,15 @@ services:
             - "{frontend_port}:{frontend_port}"
         volumes:
             - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT={frontend_port}
         restart: always
         depends_on:
             - backend
 """
-    
     with open(os.path.join(project_dir, "docker-compose.yml"), "w") as f:
         f.write(compose_content)
-
-    log_message(f"Docker Compose file created for backend port {backend_port} and frontend port {frontend_port}", config.log_file)
 
 if __name__ == "__main__":
     config = ProjectConfig()
@@ -241,11 +274,17 @@ if __name__ == "__main__":
 
         for i in range(1, config.total_apps + 1):
             project_dir = os.path.join(config.base_dir, f"{config.app_prefix}{i}")
-            backend_port = config.start_port + (i * 2 - 1)  # Start backend ports from 5001
-            frontend_port = config.frontend_port + (i * 2 - 2)  # Start frontend ports from 5171
+            backend_port = config.start_port + (i * 2 - 1)
+            frontend_port = config.frontend_port + (i * 2 - 1)
 
+            os.makedirs(project_dir, exist_ok=True)
             new_backend_setup(os.path.join(project_dir, "backend"), backend_port, config.python_base_image)
-            new_frontend_setup(os.path.join(project_dir, "frontend"), frontend_port, config.deno_base_image)
+            new_frontend_setup(
+                os.path.join(project_dir, "frontend"),
+                frontend_port,
+                config.deno_base_image,
+                backend_port
+            )
             new_docker_compose(project_dir, backend_port, frontend_port)
 
             tracker.track_directory(project_dir)

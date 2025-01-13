@@ -1,4 +1,3 @@
-
 version: '3.8'
 services:
     backend:
@@ -12,9 +11,12 @@ services:
     frontend:
         build: ./frontend
         ports:
-            - "5185:5185"
+            - "5186:5186"
         volumes:
             - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=5186
         restart: always
         depends_on:
             - backend
