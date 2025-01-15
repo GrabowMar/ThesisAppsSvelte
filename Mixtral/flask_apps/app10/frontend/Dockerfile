@@ -1,29 +1,32 @@
-
-FROM denoland/deno:1.37.1
-
+FROM denoland/deno
+# Set working directory
 WORKDIR /app
 
 # Install Node.js and npm
+# Combine commands to reduce layers and leverage caching
 ENV NODE_VERSION=18.x
-RUN apt-get update && apt-get install -y curl
-RUN curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION | bash -
-RUN apt-get install -y nodejs
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copy package files
-COPY package.json .
-COPY vite.config.js .
-COPY index.html .
+# Copy package.json and lock file (if available) first for caching dependencies
+COPY package.json package-lock.json* ./
 
 # Install dependencies with detailed logging
-RUN set -x && \
-    npm install --verbose && \
+RUN npm install --verbose && \
     npm ls && \
     du -h node_modules/ && \
     find node_modules/ -type f | wc -l
 
-# Copy source files
+# Copy remaining application files
+COPY vite.config.js .
+COPY index.html .
 COPY src src/
 
+# Expose the application port
 EXPOSE 5789
 ENV PORT=5789
 

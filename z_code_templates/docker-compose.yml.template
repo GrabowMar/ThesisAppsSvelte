@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: {model_prefix}_backend_{backend_port}
+        ports:
+            - "{backend_port}:{backend_port}"
+        volumes:
+            - ./backend:/app
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: {model_prefix}_frontend_{frontend_port}
+        ports:
+            - "{frontend_port}:{frontend_port}"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT={frontend_port}
+        restart: always
+        depends_on:
+            - backend
+

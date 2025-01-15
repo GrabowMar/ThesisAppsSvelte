@@ -48,8 +48,8 @@ class ProjectConfig:
         self.total_apps = 20
         # Get port ranges from PortManager
         self.backend_base, self.frontend_base = PortManager.calculate_port_range(model_index)
-        self.python_base_image = "python:3.10-slim"
-        self.deno_base_image = "denoland/deno:1.37.1"
+        self.python_base_image = "python:3.14-slim"
+        self.deno_base_image = "denoland/deno"
         self.log_file = f"setup_{model_name.lower()}.log"
         self.color = PortManager.MODEL_COLORS.get(model_name, "#666666")
 
@@ -172,37 +172,25 @@ def new_backend_setup(backend_dir: str, port: int, python_base_image: str, model
     """Set up backend application"""
     os.makedirs(backend_dir, exist_ok=True)
 
-    app_py_content = f"""
-from flask import Flask, jsonify
-from flask_cors import CORS
-
-app = Flask(__name__)
-CORS(app)
-
-@app.route('/')
-def home():
-    return jsonify({{'message': 'Hello from {model_name} Flask Backend!'}})
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port={port})
-"""
-    
+    # Read and process app.py template
+    with open("z_code_templates/backend/app.py.template", "r") as t:
+        app_py_content = t.read()
+    app_py_content = app_py_content.replace("{model_name}", model_name)
+    app_py_content = app_py_content.replace("{port}", str(port))
     with open(os.path.join(backend_dir, "app.py"), "w") as f:
         f.write(app_py_content)
 
+    # Copy requirements.txt
+    with open("z_code_templates/backend/requirements.txt", "r") as t:
+        reqs_content = t.read()
     with open(os.path.join(backend_dir, "requirements.txt"), "w") as f:
-        f.write("flask\nflask-cors")
+        f.write(reqs_content)
 
-    dockerfile_content = f"""
-FROM {python_base_image}
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-EXPOSE {port}
-CMD ["python", "app.py"]
-"""
-    
+    # Read and process Dockerfile template
+    with open("z_code_templates/backend/Dockerfile.template", "r") as t:
+        dockerfile_content = t.read()
+    dockerfile_content = dockerfile_content.replace("{python_base_image}", python_base_image)
+    dockerfile_content = dockerfile_content.replace("{port}", str(port))
     with open(os.path.join(backend_dir, "Dockerfile"), "w") as f:
         f.write(dockerfile_content)
 
@@ -210,189 +198,64 @@ def new_frontend_setup(frontend_dir: str, port: int, deno_base_image: str, backe
     """Set up frontend application"""
     os.makedirs(os.path.join(frontend_dir, "src"), exist_ok=True)
 
-    package_json = {
-        "name": f"svelte-{model_name.lower()}-app",
-        "private": True,
-        "version": "0.0.0",
-        "type": "module",
-        "scripts": {
-            "dev": "vite",
-            "build": "vite build",
-            "preview": "vite preview"
-        },
-        "devDependencies": {
-            "@sveltejs/vite-plugin-svelte": "^3.0.1",
-            "svelte": "^4.2.8",
-            "vite": "^5.0.8"
-        }
-    }
-    
+    # package.json
+    with open("z_code_templates/frontend/package.json.template", "r") as t:
+        package_json = t.read()
+    package_json = package_json.replace("{model_name_lower}", model_name.lower())
     with open(os.path.join(frontend_dir, "package.json"), "w") as f:
-        json.dump(package_json, f, indent=2)
+        f.write(package_json)
 
-    deno_config = {
-        "tasks": {
-            "dev": "npm run dev"
-        },
-        "imports": {
-            "@sveltejs/vite-plugin-svelte": "npm:@sveltejs/vite-plugin-svelte@^3.0.1",
-            "svelte": "npm:svelte@^4.2.8",
-            "vite": "npm:vite@^5.0.8"
-        }
-    }
-    
+    # deno.json
+    with open("z_code_templates/frontend/deno.json.template", "r") as t:
+        deno_json = t.read()
     with open(os.path.join(frontend_dir, "deno.json"), "w") as f:
-        json.dump(deno_config, f, indent=2)
+        f.write(deno_json)
 
-    vite_config = f"""import {{ defineConfig }} from 'vite'
-import {{ svelte }} from '@sveltejs/vite-plugin-svelte'
-
-export default defineConfig({{
-  plugins: [svelte()],
-  server: {{
-    host: true,
-    port: {port},
-    strictPort: true
-  }}
-}})
-"""
+    # vite.config.js
+    with open("z_code_templates/frontend/vite.config.js.template", "r") as t:
+        vite_config = t.read()
+    vite_config = vite_config.replace("{port}", str(port))
     with open(os.path.join(frontend_dir, "vite.config.js"), "w") as f:
         f.write(vite_config)
 
-    app_svelte = f"""
-<script>
-  let message = 'Loading...';
-
-  async function fetchMessage() {{
-    try {{
-      const response = await fetch('http://localhost:{backend_port}/');
-      const data = await response.json();
-      message = data.message;
-    }} catch (error) {{
-      message = 'Error connecting to {model_name} backend';
-    }}
-  }}
-
-  fetchMessage();
-</script>
-
-<main>
-  <h1>{model_name} App</h1>
-  <p class="message">{{message}}</p>
-</main>
-
-<style>
-  main {{
-    text-align: center;
-    padding: 2em;
-  }}
-  h1 {{
-    color: #333;
-    font-size: 2em;
-    margin-bottom: 0.5em;
-  }}
-  .message {{
-    color: #444;
-    font-size: 1.2em;
-    margin: 1em;
-  }}
-</style>
-"""
+    # App.svelte
+    with open("z_code_templates/frontend/src/App.svelte.template", "r") as t:
+        app_svelte = t.read()
+    app_svelte = app_svelte.replace("{model_name}", model_name)
+    app_svelte = app_svelte.replace("{backend_port}", str(backend_port))
     with open(os.path.join(frontend_dir, "src", "App.svelte"), "w") as f:
         f.write(app_svelte)
 
-    main_js = """import App from './App.svelte'
+    # main.js
+    shutil.copy(
+        "z_code_templates/frontend/src/main.js",
+        os.path.join(frontend_dir, "src", "main.js")
+    )
 
-const app = new App({
-  target: document.getElementById('app')
-})
-
-export default app
-"""
-    with open(os.path.join(frontend_dir, "src", "main.js"), "w") as f:
-        f.write(main_js)
-
-    index_html = f"""<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{model_name} Svelte App</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
-</html>
-"""
+    # index.html
+    with open("z_code_templates/frontend/index.html.template", "r") as t:
+        index_html = t.read()
+    index_html = index_html.replace("{model_name}", model_name)
     with open(os.path.join(frontend_dir, "index.html"), "w") as f:
         f.write(index_html)
 
-    dockerfile_content = f"""
-FROM {deno_base_image}
-
-WORKDIR /app
-
-# Install Node.js and npm
-ENV NODE_VERSION=18.x
-RUN apt-get update && apt-get install -y curl
-RUN curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION | bash -
-RUN apt-get install -y nodejs
-
-# Copy package files
-COPY package.json .
-COPY vite.config.js .
-COPY index.html .
-
-# Install dependencies with detailed logging
-RUN set -x && \\
-    npm install --verbose && \\
-    npm ls && \\
-    du -h node_modules/ && \\
-    find node_modules/ -type f | wc -l
-
-# Copy source files
-COPY src src/
-
-EXPOSE {port}
-ENV PORT={port}
-
-# Start the development server
-CMD ["npm", "run", "dev"]
-"""
+    # Dockerfile
+    with open("z_code_templates/frontend/Dockerfile.template", "r") as t:
+        dockerfile_content = t.read()
+    dockerfile_content = dockerfile_content.replace("{deno_base_image}", deno_base_image)
+    dockerfile_content = dockerfile_content.replace("{port}", str(port))
     with open(os.path.join(frontend_dir, "Dockerfile"), "w") as f:
         f.write(dockerfile_content)
 
 def new_docker_compose(project_dir: str, backend_port: int, frontend_port: int, model_prefix: str):
     """Create docker-compose.yml file"""
-    compose_content = f"""version: '3.8'
-services:
-    backend:
-        build: ./backend
-        container_name: {model_prefix}_backend_{backend_port}
-        ports:
-            - "{backend_port}:{backend_port}"
-        volumes:
-            - ./backend:/app
-        restart: always
-
-    frontend:
-        build: ./frontend
-        container_name: {model_prefix}_frontend_{frontend_port}
-        ports:
-            - "{frontend_port}:{frontend_port}"
-        volumes:
-            - ./frontend:/app
-            - /app/node_modules
-        environment:
-            - PORT={frontend_port}
-        restart: always
-        depends_on:
-            - backend
-"""
+    with open("z_code_templates/docker-compose.yml.template", "r") as t:
+        compose_content = t.read()
+    compose_content = compose_content.replace("{model_prefix}", model_prefix)
+    compose_content = compose_content.replace("{backend_port}", str(backend_port))
+    compose_content = compose_content.replace("{frontend_port}", str(frontend_port))
     with open(os.path.join(project_dir, "docker-compose.yml"), "w") as f:
         f.write(compose_content)
-
 if __name__ == "__main__":
     manager = MultiModelManager()
     manager.create_all()

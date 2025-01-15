@@ -8,6 +8,8 @@ services:
         volumes:
             - ./backend:/app
         restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
 
     frontend:
         build: ./frontend
@@ -22,3 +24,4 @@ services:
         restart: always
         depends_on:
             - backend
+

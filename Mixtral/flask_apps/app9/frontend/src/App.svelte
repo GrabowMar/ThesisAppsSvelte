@@ -1,4 +1,3 @@
-
 <script>
   let message = 'Loading...';
 
