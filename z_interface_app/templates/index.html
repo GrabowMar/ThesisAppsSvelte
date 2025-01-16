@@ -85,23 +85,41 @@
                 <div class="space-y-3 mb-4">
                     <div class="flex justify-between items-center text-sm">
                         <span class="text-gray-500">Backend Status:</span>
-                        <span class="font-medium {{ 'text-green-600' if app.backend_status else 'text-red-600' }}">
+                        <span class="font-medium {{ 'text-green-600' if app.backend_status else 'text-red-600' }}"
+                              data-status="backend">
                             {{ "Running" if app.backend_status else "Stopped" }}
                         </span>
                     </div>
                     <div class="flex justify-between items-center text-sm">
                         <span class="text-gray-500">Frontend Status:</span>
-                        <span class="font-medium {{ 'text-green-600' if app.frontend_status else 'text-red-600' }}">
+                        <span class="font-medium {{ 'text-green-600' if app.frontend_status else 'text-red-600' }}"
+                              data-status="frontend">
                             {{ "Running" if app.frontend_status else "Stopped" }}
                         </span>
                     </div>
                     <div class="flex justify-between items-center text-sm">
                         <span class="text-gray-500">Backend Port:</span>
-                        <span class="font-mono">{{ app.backend_port }}</span>
+                        <div class="flex items-center space-x-2">
+                            <span class="font-mono">{{ app.backend_port }}</span>
+                            <a href="{{ app.backend_url }}" target="_blank" class="text-blue-500 hover:text-blue-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
+                        </div>
                     </div>
                     <div class="flex justify-between items-center text-sm">
                         <span class="text-gray-500">Frontend Port:</span>
-                        <span class="font-mono">{{ app.frontend_port }}</span>
+                        <div class="flex items-center space-x-2">
+                            <span class="font-mono">{{ app.frontend_port }}</span>
+                            <a href="{{ app.frontend_url }}" target="_blank" class="text-blue-500 hover:text-blue-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -121,9 +139,9 @@
                        class="col-span-1 bg-blue-500 text-white px-3 py-2 rounded text-center hover:bg-blue-600 transition-colors">
                         View Logs
                     </a>
-                    <button onclick="openUrls('{{ app.backend_url }}', '{{ app.frontend_url }}')"
-                            class="col-span-1 bg-purple-500 text-white px-3 py-2 rounded text-center hover:bg-purple-600 transition-colors">
-                        Open URLs
+                    <button onclick="checkAppStatus('{{ app.model }}', {{ app.app_num }})"
+                            class="col-span-1 bg-indigo-500 text-white px-3 py-2 rounded text-center hover:bg-indigo-600 transition-colors">
+                        Check Status
                     </button>
                 </div>
             </div>
@@ -147,115 +165,109 @@
         });
     }
 
+    async function checkAppStatus(model, appNum) {
+        try {
+            const response = await fetch(`/api/container/${model}/${appNum}/status`);
+            const data = await response.json();
+            
+            console.log('Status Check Results:', {
+                app: `${model} App ${appNum}`,
+                backend: data.backend,
+                frontend: data.frontend,
+                timestamp: new Date().toISOString()
+            });
+            
+            const appElement = document.querySelector(`[data-app-id="${appNum}"][data-model="${model}"]`);
+            if (appElement) {
+                updateStatusUI(appElement, data);
+            }
+        } catch (error) {
+            console.error('Status check failed:', error);
+        }
+    }
+
     function updateStatusUI(appElement, statusData) {
-    const backendStatus = statusData.backend;
-    const frontendStatus = statusData.frontend;
-    
-    // Update status badge
-    const badge = appElement.querySelector('[class*="bg-"][class*="text-"]');
-    if (badge) {
-        const newClasses = getStatusClass(backendStatus, frontendStatus);
-        // Remove old status classes
-        badge.className = badge.className.replace(/bg-\w+-\d+\s*text-\w+-\d+/, newClasses);
-        badge.textContent = getStatusText(backendStatus, frontendStatus);
+        const backendStatus = statusData.backend;
+        const frontendStatus = statusData.frontend;
+        
+        // Update status badge
+        const badge = appElement.querySelector('[class*="bg-"][class*="text-"]');
+        if (badge) {
+            const newClasses = getStatusClass(backendStatus, frontendStatus);
+            badge.className = badge.className.replace(/bg-\w+-\d+\s*text-\w+-\d+/, newClasses);
+            badge.textContent = getStatusText(backendStatus, frontendStatus);
+        }
+        
+        // Update individual status indicators
+        updateServiceStatus(appElement, 'backend', backendStatus);
+        updateServiceStatus(appElement, 'frontend', frontendStatus);
     }
-    
-    // Update individual status indicators
-    updateServiceStatus(appElement, 'backend', backendStatus);
-    updateServiceStatus(appElement, 'frontend', frontendStatus);
-}
 
-function updateServiceStatus(appElement, service, status) {
-    const statusElement = appElement.querySelector(`[data-status="${service}"]`);
-    if (statusElement) {
-        const displayStatus = getDisplayStatus(status);
-        statusElement.className = `font-medium ${displayStatus.colorClass}`;
-        statusElement.textContent = displayStatus.text;
+    function updateServiceStatus(appElement, service, status) {
+        const statusElement = appElement.querySelector(`[data-status="${service}"]`);
+        if (statusElement) {
+            const displayStatus = getDisplayStatus(status);
+            statusElement.className = `font-medium ${displayStatus.colorClass}`;
+            statusElement.textContent = displayStatus.text;
+        }
     }
-}
 
-function getDisplayStatus(status) {
-    if (!status.exists) {
-        return {
-            text: 'Not Built',
-            colorClass: 'text-gray-600'
-        };
-    }
-    
-    switch (status.status) {
-        case 'running':
+    function getDisplayStatus(status) {
+        if (!status.exists) {
             return {
-                text: 'Running',
-                colorClass: 'text-green-600'
-            };
-        case 'created':
-            return {
-                text: 'Created',
-                colorClass: 'text-yellow-600'
-            };
-        case 'stopped':
-            return {
-                text: 'Stopped',
-                colorClass: 'text-red-600'
-            };
-        default:
-            return {
-                text: status.status || 'Unknown',
+                text: 'Not Built',
                 colorClass: 'text-gray-600'
             };
-    }
-}
-
-function getStatusClass(backend, frontend) {
-    if (!backend.exists && !frontend.exists) {
-        return 'bg-gray-100 text-gray-800';
-    }
-    if (backend.running && frontend.running) {
-        return 'bg-green-100 text-green-800';
-    }
-    if (backend.running || frontend.running) {
-        return 'bg-yellow-100 text-yellow-800';
-    }
-    return 'bg-red-100 text-red-800';
-}
-
-function getStatusText(backend, frontend) {
-    if (!backend.exists && !frontend.exists) {
-        return 'Not Built';
-    }
-    if (backend.running && frontend.running) {
-        return 'Running';
-    }
-    if (backend.running || frontend.running) {
-        return 'Partial';
-    }
-    return 'Stopped';
-}
-
-    function getHealthClass(health) {
-        switch (health.toLowerCase()) {
-            case 'healthy':
-                return 'text-green-600';
-            case 'unhealthy':
-                return 'text-red-600';
-            case 'starting':
-                return 'text-yellow-600';
+        }
+        
+        switch (status.status) {
+            case 'running':
+                return {
+                    text: 'Running',
+                    colorClass: 'text-green-600'
+                };
+            case 'created':
+                return {
+                    text: 'Created',
+                    colorClass: 'text-yellow-600'
+                };
+            case 'stopped':
+                return {
+                    text: 'Stopped',
+                    colorClass: 'text-red-600'
+                };
             default:
-                return 'text-gray-600';
+                return {
+                    text: status.status || 'Unknown',
+                    colorClass: 'text-gray-600'
+                };
         }
     }
 
-    function updateServiceStatus(appElement, service, isRunning) {
-        const statusElement = appElement.querySelector(`[data-${service}-status]`);
-        if (statusElement) {
-            statusElement.className = `font-medium ${isRunning ? 'text-green-600' : 'text-red-600'}`;
-            statusElement.textContent = isRunning ? 'Running' : 'Stopped';
+    function getStatusClass(backend, frontend) {
+        if (!backend.exists && !frontend.exists) {
+            return 'bg-gray-100 text-gray-800';
         }
+        if (backend.running && frontend.running) {
+            return 'bg-green-100 text-green-800';
+        }
+        if (backend.running || frontend.running) {
+            return 'bg-yellow-100 text-yellow-800';
+        }
+        return 'bg-red-100 text-red-800';
     }
 
-    function openUrls(backendUrl, frontendUrl) {
-        window.open(backendUrl, '_blank');
-        window.open(frontendUrl, '_blank');
+    function getStatusText(backend, frontend) {
+        if (!backend.exists && !frontend.exists) {
+            return 'Not Built';
+        }
+        if (backend.running && frontend.running) {
+            return 'Running';
+        }
+        if (backend.running || frontend.running) {
+            return 'Partial';
+        }
+        return 'Stopped';
     }
 
     // Event Listeners
