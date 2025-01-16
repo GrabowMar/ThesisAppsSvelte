@@ -1,182 +1,222 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Models Flask Apps Manager</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.5/cdn.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
-</head>
-<body class="bg-gray-50 min-h-screen">
-    <div x-data="{ 
-        activeTab: 'all',
-        refreshInterval: 30000,
-        lastRefresh: null,
-        async refreshStatus() {
-            try {
-                const response = await axios.get('/api/model-info');
-                this.lastRefresh = new Date().toLocaleTimeString();
-            } catch (error) {
-                console.error('Failed to refresh status:', error);
-            }
-        },
-        startRefreshTimer() {
-            setInterval(() => this.refreshStatus(), this.refreshInterval);
-        }
-    }" 
-    x-init="startRefreshTimer(); lastRefresh = new Date().toLocaleTimeString()">
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Header Section -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-900">AI Model Dashboard</h1>
+            <div class="flex space-x-4">
+                <button id="refreshAll" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Refresh All
+                </button>
+            </div>
+        </div>
         
-        <!-- Header -->
-        <header class="bg-white shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <div class="flex justify-between items-center">
-                    <h1 class="text-2xl font-bold text-gray-900">AI Models Flask Apps Manager</h1>
-                    <div class="text-sm text-gray-500">
-                        Last updated: <span x-text="lastRefresh"></span>
-                    </div>
+        <!-- System Status Overview -->
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-sm font-medium text-gray-500">Total Apps</h3>
+                <p class="mt-1 text-2xl font-semibold text-gray-900">{{ apps|length }}</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-sm font-medium text-gray-500">Running Apps</h3>
+                <p class="mt-1 text-2xl font-semibold text-green-600">
+                    {{ apps|selectattr('backend_status', 'true')|selectattr('frontend_status', 'true')|list|length }}
+                </p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-sm font-medium text-gray-500">Partial Status</h3>
+                <p class="mt-1 text-2xl font-semibold text-yellow-600">
+                    {{ apps|selectattr('backend_status', 'true')|rejectattr('frontend_status', 'true')|list|length +
+                       apps|rejectattr('backend_status', 'true')|selectattr('frontend_status', 'true')|list|length }}
+                </p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <h3 class="text-sm font-medium text-gray-500">Stopped Apps</h3>
+                <p class="mt-1 text-2xl font-semibold text-red-600">
+                    {{ apps|rejectattr('backend_status', 'true')|rejectattr('frontend_status', 'true')|list|length }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Sections -->
+    {% for model in models %}
+    <div class="bg-white shadow rounded-lg p-6" data-model-section="{{ model.name }}">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold" style="color: {{ model.color }}">{{ model.name }}</h2>
+            <div class="flex items-center space-x-4">
+                <button class="start-all-btn px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
+                        data-model="{{ model.name }}">
+                    Start All
+                </button>
+                <button class="stop-all-btn px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                        data-model="{{ model.name }}">
+                    Stop All
+                </button>
+            </div>
+        </div>
+
+        <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {% for app in apps if app.model == model.name %}
+            <div class="border rounded-lg p-4 relative" data-app-id="{{ app.app_num }}" data-model="{{ app.model }}">
+                <!-- Status Badge -->
+                <div class="absolute top-4 right-4">
+                    <span class="px-2 py-1 text-sm rounded-full
+                        {% if app.backend_status and app.frontend_status %}
+                            bg-green-100 text-green-800
+                        {% elif app.backend_status or app.frontend_status %}
+                            bg-yellow-100 text-yellow-800
+                        {% else %}
+                            bg-red-100 text-red-800
+                        {% endif %}">
+                        {{ "Running" if app.backend_status and app.frontend_status else "Partial" if app.backend_status or app.frontend_status else "Stopped" }}
+                    </span>
                 </div>
-            </div>
-        </header>
 
-        <!-- Main Content -->
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Model Tabs -->
-            <div class="mb-6 border-b border-gray-200">
-                <nav class="flex space-x-4" aria-label="Models">
-                    <button 
-                        @click="activeTab = 'all'" 
-                        :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === 'all',
-                                'text-gray-500 hover:text-gray-700': activeTab !== 'all'}"
-                        class="px-3 py-2 text-sm font-medium">
-                        All Models
-                    </button>
-                    {% for model in models %}
-                    <button 
-                        @click="activeTab = '{{ model.name }}'" 
-                        :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === '{{ model.name }}',
-                                'text-gray-500 hover:text-gray-700': activeTab !== '{{ model.name }}'}"
-                        class="px-3 py-2 text-sm font-medium">
-                        {{ model.name }}
-                    </button>
-                    {% endfor %}
-                </nav>
-            </div>
+                <!-- App Title -->
+                <h3 class="text-lg font-medium text-gray-900 mb-4">{{ app.name }}</h3>
 
-            {% for model in models %}
-            {% set model_apps = apps|selectattr('model', 'equalto', model.name)|list %}
-            {% if model_apps %}
-            <div 
-                x-show="activeTab === 'all' || activeTab === '{{ model.name }}'"
-                x-transition:enter="transition ease-out duration-300"
-                x-transition:enter-start="opacity-0 transform scale-95"
-                x-transition:enter-end="opacity-100 transform scale-100"
-                class="bg-white rounded-lg shadow mb-6">
-                
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <div class="flex items-center">
-                        <span class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium" 
-                              style="background-color: {{ model.color }}; color: white">
-                            {{ model.name }}
+                <!-- App Details -->
+                <div class="space-y-3 mb-4">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Backend Status:</span>
+                        <span class="font-medium {{ 'text-green-600' if app.backend_status else 'text-red-600' }}">
+                            {{ "Running" if app.backend_status else "Stopped" }}
                         </span>
                     </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Frontend Status:</span>
+                        <span class="font-medium {{ 'text-green-600' if app.frontend_status else 'text-red-600' }}">
+                            {{ "Running" if app.frontend_status else "Stopped" }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Backend Port:</span>
+                        <span class="font-mono">{{ app.backend_port }}</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Frontend Port:</span>
+                        <span class="font-mono">{{ app.frontend_port }}</span>
+                    </div>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    App Name
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Ports (Backend/Frontend)
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
-                                </th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            {% for app in model_apps %}
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {{ app.name }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ app.backend_port }}/{{ app.frontend_port }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex space-x-2">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                            {% if app.backend_status %}
-                                            bg-green-100 text-green-800
-                                            {% else %}
-                                            bg-red-100 text-red-800
-                                            {% endif %}">
-                                            Backend: {{ 'Running' if app.backend_status else 'Stopped' }}
-                                        </span>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                            {% if app.frontend_status %}
-                                            bg-green-100 text-green-800
-                                            {% else %}
-                                            bg-red-100 text-red-800
-                                            {% endif %}">
-                                            Frontend: {{ 'Running' if app.frontend_status else 'Stopped' }}
-                                        </span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <div class="flex justify-end space-x-2">
-                                        <a href="{{ url_for('build', model=app.model, app_num=app.app_num) }}" 
-                                           class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                                            Build
-                                        </a>
-                                        <a href="{{ url_for('start_app', model=app.model, app_num=app.app_num) }}" 
-                                           class="inline-flex items-center px-3 py-1 border border-transparent rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700">
-                                            Start
-                                        </a>
-                                        <a href="{{ url_for('stop_app', model=app.model, app_num=app.app_num) }}" 
-                                           class="inline-flex items-center px-3 py-1 border border-transparent rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700">
-                                            Stop
-                                        </a>
-                                        {% if app.backend_status or app.frontend_status %}
-                                        <a href="{{ url_for('reload_app', model=app.model, app_num=app.app_num) }}" 
-                                           class="inline-flex items-center px-3 py-1 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
-                                            <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                            </svg>
-                                            Reload
-                                        </a>
-                                        {% endif %}
-                                        {% if app.backend_status %}
-                                        <a href="{{ url_for('open_backend', model=app.model, app_num=app.app_num) }}" 
-                                           target="_blank"
-                                           class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                                            Backend
-                                        </a>
-                                        {% endif %}
-                                        {% if app.frontend_status %}
-                                        <a href="{{ url_for('open_frontend', model=app.model, app_num=app.app_num) }}" 
-                                           target="_blank"
-                                           class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                                            Frontend
-                                        </a>
-                                        {% endif %}
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="col-span-2 grid grid-cols-2 gap-2">
+                        <a href="{{ url_for('start_app', model=app.model, app_num=app.app_num) }}"
+                           class="bg-green-500 text-white px-3 py-2 rounded text-center hover:bg-green-600 transition-colors">
+                            Start
+                        </a>
+                        <a href="{{ url_for('stop_app', model=app.model, app_num=app.app_num) }}"
+                           class="bg-red-500 text-white px-3 py-2 rounded text-center hover:bg-red-600 transition-colors">
+                            Stop
+                        </a>
+                    </div>
+                    <a href="{{ url_for('view_logs', model=app.model, app_num=app.app_num) }}"
+                       class="col-span-1 bg-blue-500 text-white px-3 py-2 rounded text-center hover:bg-blue-600 transition-colors">
+                        View Logs
+                    </a>
+                    <button onclick="openUrls('{{ app.backend_url }}', '{{ app.frontend_url }}')"
+                            class="col-span-1 bg-purple-500 text-white px-3 py-2 rounded text-center hover:bg-purple-600 transition-colors">
+                        Open URLs
+                    </button>
                 </div>
             </div>
-            {% endif %}
             {% endfor %}
-        </main>
+        </div>
     </div>
-</body>
-</html>
+    {% endfor %}
+</div>
+
+<script>
+    // Refresh status functionality
+    function refreshStatus() {
+        const apps = document.querySelectorAll('[data-app-id]');
+        apps.forEach(app => {
+            const model = app.dataset.model;
+            const appNum = app.dataset.appId;
+            fetch(`/api/container/${model}/${appNum}/status`)
+                .then(response => response.json())
+                .then(data => updateStatusUI(app, data))
+                .catch(error => console.error('Error:', error));
+        });
+    }
+
+    function updateStatusUI(appElement, statusData) {
+        const backendRunning = statusData.backend.running;
+        const frontendRunning = statusData.frontend.running;
+        
+        // Update status badge
+        const badge = appElement.querySelector('.status-badge');
+        badge.className = `status-badge px-2 py-1 text-sm rounded-full ${getStatusClass(backendRunning, frontendRunning)}`;
+        badge.textContent = getStatusText(backendRunning, frontendRunning);
+        
+        // Update status indicators
+        updateServiceStatus(appElement, 'backend', backendRunning);
+        updateServiceStatus(appElement, 'frontend', frontendRunning);
+    }
+
+    function getStatusClass(backend, frontend) {
+        if (backend && frontend) return 'bg-green-100 text-green-800';
+        if (backend || frontend) return 'bg-yellow-100 text-yellow-800';
+        return 'bg-red-100 text-red-800';
+    }
+
+    function getStatusText(backend, frontend) {
+        if (backend && frontend) return 'Running';
+        if (backend || frontend) return 'Partial';
+        return 'Stopped';
+    }
+
+    function updateServiceStatus(appElement, service, isRunning) {
+        const statusElement = appElement.querySelector(`[data-${service}-status]`);
+        if (statusElement) {
+            statusElement.className = `font-medium ${isRunning ? 'text-green-600' : 'text-red-600'}`;
+            statusElement.textContent = isRunning ? 'Running' : 'Stopped';
+        }
+    }
+
+    function openUrls(backendUrl, frontendUrl) {
+        window.open(backendUrl, '_blank');
+        window.open(frontendUrl, '_blank');
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize refresh interval
+        setInterval(refreshStatus, 30000);
+
+        // Refresh button
+        document.getElementById('refreshAll').addEventListener('click', refreshStatus);
+
+        // Start All buttons
+        document.querySelectorAll('.start-all-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const model = this.dataset.model;
+                const apps = document.querySelectorAll(`[data-model="${model}"] [data-app-id]`);
+                apps.forEach(app => {
+                    const startUrl = app.querySelector('a[href*="/start/"]').href;
+                    fetch(startUrl).then(() => refreshStatus());
+                });
+            });
+        });
+
+        // Stop All buttons
+        document.querySelectorAll('.stop-all-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const model = this.dataset.model;
+                const apps = document.querySelectorAll(`[data-model="${model}"] [data-app-id]`);
+                apps.forEach(app => {
+                    const stopUrl = app.querySelector('a[href*="/stop/"]').href;
+                    fetch(stopUrl).then(() => refreshStatus());
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

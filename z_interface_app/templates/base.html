@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI Model Management System - Monitor and control AI model applications">
+    <meta name="theme-color" content="#ffffff">
+    
+    <title>{% block title %}AI Model Management System{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <style>
+        /* Custom scrollbar styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
+
+        /* Log pre formatting */
+        .log-container pre {
+            font-family: 'Roboto Mono', monospace;
+            line-height: 1.5;
+        }
+
+        /* Custom transitions */
+        .transition-all {
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 150ms;
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid #3498db;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-gray-50 flex flex-col">
+    <!-- Header Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="{{ url_for('index') }}" class="flex items-center space-x-2">
+                            <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                            </svg>
+                            <span class="font-semibold text-gray-900 text-lg">AI Model Manager</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div id="statusIndicator" class="flex items-center">
+                        <span class="h-2 w-2 rounded-full bg-green-400 mr-2"></span>
+                        <span class="text-sm text-gray-600">System Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 rounded-md p-4 {% if category == 'error' %}bg-red-50 text-red-700{% else %}bg-green-50 text-green-700{% endif %}"
+                         role="alert">
+                        <p class="text-sm">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white shadow-sm mt-auto">
+        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <p class="text-sm text-gray-500">
+                    AI Model Management System
+                </p>
+                <div class="flex space-x-4">
+                    <button id="showSystemInfo" class="text-sm text-blue-600 hover:text-blue-800">
+                        System Information
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Template -->
+    <div id="modal" class="fixed inset-0 bg-gray-500 bg-opacity-75 hidden" style="z-index: 50;">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-lg w-full">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900" id="modalTitle"></h3>
+                </div>
+                <div class="px-6 py-4" id="modalContent"></div>
+                <div class="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end">
+                    <button type="button" class="modal-close px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Base JavaScript -->
+    <script>
+        // Modal functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalContent = document.getElementById('modalContent');
+            const closeButtons = document.querySelectorAll('.modal-close');
+            
+            function showModal(title, content) {
+                modalTitle.textContent = title;
+                modalContent.innerHTML = content;
+                modal.classList.remove('hidden');
+            }
+            
+            function hideModal() {
+                modal.classList.add('hidden');
+            }
+            
+            closeButtons.forEach(button => {
+                button.addEventListener('click', hideModal);
+            });
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    hideModal();
+                }
+            });
+
+            // System Information Modal
+            document.getElementById('showSystemInfo').addEventListener('click', function() {
+                showModal('System Information', `
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-medium text-gray-700">Version</h4>
+                            <p class="text-sm text-gray-600">1.0.0</p>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-700">Environment</h4>
+                            <p class="text-sm text-gray-600">Production</p>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-700">Last Updated</h4>
+                            <p class="text-sm text-gray-600">${new Date().toLocaleString()}</p>
+                        </div>
+                    </div>
+                `);
+            });
+        });
+
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+            const statusIndicator = document.getElementById('statusIndicator');
+            if (statusIndicator) {
+                statusIndicator.innerHTML = `
+                    <span class="h-2 w-2 rounded-full bg-red-400 mr-2"></span>
+                    <span class="text-sm text-gray-600">Error Detected</span>
+                `;
+            }
+        });
+
+        // System status check
+        function checkSystemStatus() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    const indicator = document.getElementById('statusIndicator');
+                    if (data.status === 'healthy') {
+                        indicator.innerHTML = `
+                            <span class="h-2 w-2 rounded-full bg-green-400 mr-2"></span>
+                            <span class="text-sm text-gray-600">System Active</span>
+                        `;
+                    } else {
+                        indicator.innerHTML = `
+                            <span class="h-2 w-2 rounded-full bg-yellow-400 mr-2"></span>
+                            <span class="text-sm text-gray-600">System Warning</span>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Status check failed:', error);
+                    const indicator = document.getElementById('statusIndicator');
+                    indicator.innerHTML = `
+                        <span class="h-2 w-2 rounded-full bg-red-400 mr-2"></span>
+                        <span class="text-sm text-gray-600">Connection Error</span>
+                    `;
+                });
+        }
+
+        // Check status periodically
+        setInterval(checkSystemStatus, 30000);
+        
+        {% block extra_scripts %}{% endblock %}
+    </script>
+</body>
+</html>
