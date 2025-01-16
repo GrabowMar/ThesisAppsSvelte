@@ -48,7 +48,7 @@
     {% for model in models %}
     <div class="bg-white shadow rounded-lg p-6" data-model-section="{{ model.name }}">
         <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold" style="color: {{ model.color }}">{{ model.name }}</h2>
+            <h2 class="text-xl font-bold" style="color: '{{ model.color }}'">{{ model.name }}</h2>
             <div class="flex items-center space-x-4">
                 <button class="start-all-btn px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
                         data-model="{{ model.name }}">
@@ -148,29 +148,101 @@
     }
 
     function updateStatusUI(appElement, statusData) {
-        const backendRunning = statusData.backend.running;
-        const frontendRunning = statusData.frontend.running;
-        
-        // Update status badge
-        const badge = appElement.querySelector('.status-badge');
-        badge.className = `status-badge px-2 py-1 text-sm rounded-full ${getStatusClass(backendRunning, frontendRunning)}`;
-        badge.textContent = getStatusText(backendRunning, frontendRunning);
-        
-        // Update status indicators
-        updateServiceStatus(appElement, 'backend', backendRunning);
-        updateServiceStatus(appElement, 'frontend', frontendRunning);
+    const backendStatus = statusData.backend;
+    const frontendStatus = statusData.frontend;
+    
+    // Update status badge
+    const badge = appElement.querySelector('[class*="bg-"][class*="text-"]');
+    if (badge) {
+        const newClasses = getStatusClass(backendStatus, frontendStatus);
+        // Remove old status classes
+        badge.className = badge.className.replace(/bg-\w+-\d+\s*text-\w+-\d+/, newClasses);
+        badge.textContent = getStatusText(backendStatus, frontendStatus);
     }
+    
+    // Update individual status indicators
+    updateServiceStatus(appElement, 'backend', backendStatus);
+    updateServiceStatus(appElement, 'frontend', frontendStatus);
+}
 
-    function getStatusClass(backend, frontend) {
-        if (backend && frontend) return 'bg-green-100 text-green-800';
-        if (backend || frontend) return 'bg-yellow-100 text-yellow-800';
-        return 'bg-red-100 text-red-800';
+function updateServiceStatus(appElement, service, status) {
+    const statusElement = appElement.querySelector(`[data-status="${service}"]`);
+    if (statusElement) {
+        const displayStatus = getDisplayStatus(status);
+        statusElement.className = `font-medium ${displayStatus.colorClass}`;
+        statusElement.textContent = displayStatus.text;
     }
+}
 
-    function getStatusText(backend, frontend) {
-        if (backend && frontend) return 'Running';
-        if (backend || frontend) return 'Partial';
-        return 'Stopped';
+function getDisplayStatus(status) {
+    if (!status.exists) {
+        return {
+            text: 'Not Built',
+            colorClass: 'text-gray-600'
+        };
+    }
+    
+    switch (status.status) {
+        case 'running':
+            return {
+                text: 'Running',
+                colorClass: 'text-green-600'
+            };
+        case 'created':
+            return {
+                text: 'Created',
+                colorClass: 'text-yellow-600'
+            };
+        case 'stopped':
+            return {
+                text: 'Stopped',
+                colorClass: 'text-red-600'
+            };
+        default:
+            return {
+                text: status.status || 'Unknown',
+                colorClass: 'text-gray-600'
+            };
+    }
+}
+
+function getStatusClass(backend, frontend) {
+    if (!backend.exists && !frontend.exists) {
+        return 'bg-gray-100 text-gray-800';
+    }
+    if (backend.running && frontend.running) {
+        return 'bg-green-100 text-green-800';
+    }
+    if (backend.running || frontend.running) {
+        return 'bg-yellow-100 text-yellow-800';
+    }
+    return 'bg-red-100 text-red-800';
+}
+
+function getStatusText(backend, frontend) {
+    if (!backend.exists && !frontend.exists) {
+        return 'Not Built';
+    }
+    if (backend.running && frontend.running) {
+        return 'Running';
+    }
+    if (backend.running || frontend.running) {
+        return 'Partial';
+    }
+    return 'Stopped';
+}
+
+    function getHealthClass(health) {
+        switch (health.toLowerCase()) {
+            case 'healthy':
+                return 'text-green-600';
+            case 'unhealthy':
+                return 'text-red-600';
+            case 'starting':
+                return 'text-yellow-600';
+            default:
+                return 'text-gray-600';
+        }
     }
 
     function updateServiceStatus(appElement, service, isRunning) {
