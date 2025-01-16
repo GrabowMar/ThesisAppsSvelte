@@ -1,176 +1,182 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Models Flask Apps Manager</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f5f5f5;
-        }
-        
-        .model-section {
-            margin-bottom: 30px;
-            border-radius: 8px;
-            padding: 20px;
-            background-color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .model-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #eee;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            background-color: white;
-        }
-        
-        th, td {
-            padding: 12px 8px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-        
-        th {
-            background-color: #f8f9fa;
-            color: #495057;
-        }
-        
-        .status {
-            font-weight: bold;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-        
-        .running {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        
-        .stopped {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        
-        .action-group {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .action-link {
-            padding: 6px 12px;
-            text-decoration: none;
-            color: #333;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            background-color: white;
-        }
-        
-        .action-link:hover {
-            background-color: #f5f5f5;
-            border-color: #aaa;
-        }
-        
-        .reload-btn {
-            background-color: #3498db;
-            color: white;
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-        }
-        
-        .reload-btn:hover {
-            background-color: #2980b9;
-        }
-        
-        .model-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.9em;
-            margin-right: 8px;
-            color: white;
-        }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.5/cdn.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
 </head>
-<body>
-    <h1>AI Models Flask Apps Manager</h1>
-    
-    {% for model in models %}
-    {% set model_apps = apps|selectattr('model', 'equalto', model.name)|list %}
-    {% if model_apps %}
-    <div class="model-section">
-        <div class="model-header">
-            <h2>
-                <span class="model-badge" style="background-color: {{ model.color }}">
-                    {{ model.name }}
-                </span>
-                Applications
-            </h2>
-        </div>
-        <table>
-            <tr>
-                <th>App Name</th>
-                <th>Ports (Backend/Frontend)</th>
-                <th>Backend Status</th>
-                <th>Frontend Status</th>
-                <th>Actions</th>
-            </tr>
-            {% for app in model_apps %}
-            <tr>
-                <td>{{ app.name }}</td>
-                <td>{{ app.backend_port }}/{{ app.frontend_port }}</td>
-                <td class="status {{ 'running' if app.backend_status else 'stopped' }}">
-                    {{ 'Running' if app.backend_status else 'Stopped' }}
-                </td>
-                <td class="status {{ 'running' if app.frontend_status else 'stopped' }}">
-                    {{ 'Running' if app.frontend_status else 'Stopped' }}
-                </td>
-                <td class="action-group">
-                    <a href="{{ url_for('build', model=app.model, app_num=app.app_num) }}" 
-                       class="action-link">Build</a>
-                    <a href="{{ url_for('start_app', model=app.model, app_num=app.app_num) }}" 
-                       class="action-link">Start</a>
-                    <a href="{{ url_for('stop_app', model=app.model, app_num=app.app_num) }}" 
-                       class="action-link">Stop</a>
-                    {% if app.backend_status or app.frontend_status %}
-                        <a href="{{ url_for('reload_app', model=app.model, app_num=app.app_num) }}" 
-                           class="reload-btn">↻ Reload</a>
-                    {% endif %}
-                    {% if app.backend_status %}
-                        <a href="{{ url_for('open_backend', model=app.model, app_num=app.app_num) }}" 
-                           target="_blank" class="action-link">Backend</a>
-                    {% endif %}
-                    {% if app.frontend_status %}
-                        <a href="{{ url_for('open_frontend', model=app.model, app_num=app.app_num) }}" 
-                           target="_blank" class="action-link">Frontend</a>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-    {% endif %}
-    {% endfor %}
+<body class="bg-gray-50 min-h-screen">
+    <div x-data="{ 
+        activeTab: 'all',
+        refreshInterval: 30000,
+        lastRefresh: null,
+        async refreshStatus() {
+            try {
+                const response = await axios.get('/api/model-info');
+                this.lastRefresh = new Date().toLocaleTimeString();
+            } catch (error) {
+                console.error('Failed to refresh status:', error);
+            }
+        },
+        startRefreshTimer() {
+            setInterval(() => this.refreshStatus(), this.refreshInterval);
+        }
+    }" 
+    x-init="startRefreshTimer(); lastRefresh = new Date().toLocaleTimeString()">
+        
+        <!-- Header -->
+        <header class="bg-white shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-2xl font-bold text-gray-900">AI Models Flask Apps Manager</h1>
+                    <div class="text-sm text-gray-500">
+                        Last updated: <span x-text="lastRefresh"></span>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-    <script>
-        // Auto-refresh the page every 30 seconds
-        setTimeout(() => {
-            window.location.reload();
-        }, 30000);
-    </script>
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Model Tabs -->
+            <div class="mb-6 border-b border-gray-200">
+                <nav class="flex space-x-4" aria-label="Models">
+                    <button 
+                        @click="activeTab = 'all'" 
+                        :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === 'all',
+                                'text-gray-500 hover:text-gray-700': activeTab !== 'all'}"
+                        class="px-3 py-2 text-sm font-medium">
+                        All Models
+                    </button>
+                    {% for model in models %}
+                    <button 
+                        @click="activeTab = '{{ model.name }}'" 
+                        :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === '{{ model.name }}',
+                                'text-gray-500 hover:text-gray-700': activeTab !== '{{ model.name }}'}"
+                        class="px-3 py-2 text-sm font-medium">
+                        {{ model.name }}
+                    </button>
+                    {% endfor %}
+                </nav>
+            </div>
+
+            {% for model in models %}
+            {% set model_apps = apps|selectattr('model', 'equalto', model.name)|list %}
+            {% if model_apps %}
+            <div 
+                x-show="activeTab === 'all' || activeTab === '{{ model.name }}'"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform scale-95"
+                x-transition:enter-end="opacity-100 transform scale-100"
+                class="bg-white rounded-lg shadow mb-6">
+                
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <span class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium" 
+                              style="background-color: {{ model.color }}; color: white">
+                            {{ model.name }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    App Name
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Ports (Backend/Frontend)
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status
+                                </th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for app in model_apps %}
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {{ app.name }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ app.backend_port }}/{{ app.frontend_port }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex space-x-2">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                            {% if app.backend_status %}
+                                            bg-green-100 text-green-800
+                                            {% else %}
+                                            bg-red-100 text-red-800
+                                            {% endif %}">
+                                            Backend: {{ 'Running' if app.backend_status else 'Stopped' }}
+                                        </span>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                            {% if app.frontend_status %}
+                                            bg-green-100 text-green-800
+                                            {% else %}
+                                            bg-red-100 text-red-800
+                                            {% endif %}">
+                                            Frontend: {{ 'Running' if app.frontend_status else 'Stopped' }}
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex justify-end space-x-2">
+                                        <a href="{{ url_for('build', model=app.model, app_num=app.app_num) }}" 
+                                           class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                            Build
+                                        </a>
+                                        <a href="{{ url_for('start_app', model=app.model, app_num=app.app_num) }}" 
+                                           class="inline-flex items-center px-3 py-1 border border-transparent rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700">
+                                            Start
+                                        </a>
+                                        <a href="{{ url_for('stop_app', model=app.model, app_num=app.app_num) }}" 
+                                           class="inline-flex items-center px-3 py-1 border border-transparent rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700">
+                                            Stop
+                                        </a>
+                                        {% if app.backend_status or app.frontend_status %}
+                                        <a href="{{ url_for('reload_app', model=app.model, app_num=app.app_num) }}" 
+                                           class="inline-flex items-center px-3 py-1 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                                            <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            Reload
+                                        </a>
+                                        {% endif %}
+                                        {% if app.backend_status %}
+                                        <a href="{{ url_for('open_backend', model=app.model, app_num=app.app_num) }}" 
+                                           target="_blank"
+                                           class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                            Backend
+                                        </a>
+                                        {% endif %}
+                                        {% if app.frontend_status %}
+                                        <a href="{{ url_for('open_frontend', model=app.model, app_num=app.app_num) }}" 
+                                           target="_blank"
+                                           class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                            Frontend
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </main>
+    </div>
 </body>
 </html>
