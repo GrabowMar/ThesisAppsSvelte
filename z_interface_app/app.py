@@ -316,12 +316,11 @@ def batch_container_status(container_names: List[str]) -> Dict[str, Dict]:
             }
 
         except NotFound:
-            # Container does not exist
             status_map[name] = {
-                "status": "not_built",
+                "status": "no_container",     # instead of "not_built"
                 "running": False,
                 "health": "not_found",
-                "details": "Container not yet built",
+                "details": "No container exists yet",
                 "exists": False
             }
         except DockerException as e:
@@ -486,16 +485,25 @@ def container_status(model: str, app_num: int):
     """
     Get status of both containers for an app using batch processing.
     """
-    container_prefix = f"{model.lower()}_app{app_num}"
+    container_prefix = f"{model.lower()}"
+    # container_prefix = f"{model.lower()}_app{app_num}"
+    model_idx = next((i for i, m in enumerate(AI_MODELS) if m.name == model), 0)
+    ports = PortManager.get_app_ports(model_idx, app_num)
+    backend_port_postfix = ports['backend']
+    frontend_port_postfix = ports['frontend']
     container_names = [
-        f"{container_prefix}_backend",
-        f"{container_prefix}_frontend"
+        f"{container_prefix}_backend_{backend_port_postfix}",
+        f"{container_prefix}_frontend_{frontend_port_postfix}"
     ]
+    
     status = batch_container_status(container_names)
-    return jsonify({
-        "backend": status[f"{container_prefix}_backend"],
-        "frontend": status[f"{container_prefix}_frontend"]
+    print(status)
+    aa = jsonify({
+        "backend": status[f"{container_prefix}_backend_{backend_port_postfix}"],
+        "frontend": status[f"{container_prefix}_frontend_{frontend_port_postfix}"]
     })
+    return aa
+
 
 
 # -----------------------------------------------------------

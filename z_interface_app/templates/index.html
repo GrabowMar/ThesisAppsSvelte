@@ -266,12 +266,12 @@
     }
 
     function getDisplayStatus(status) {
-        if (!status.exists) {
-            return {
-                text: 'Not Built',
-                colorClass: 'text-gray-600'
-            };
-        }
+  if (!status.exists) {
+    return {
+      text: 'No Container',
+      colorClass: 'text-gray-600'
+    };
+  }
         
         switch (status.status) {
             case 'running':
@@ -312,7 +312,7 @@
 
     function getStatusText(backend, frontend) {
         if (!backend.exists && !frontend.exists) {
-            return 'Not Built';
+            return 'No Container'; // instead of 'Not Built'
         }
         if (backend.running && frontend.running) {
             return 'Running';
@@ -321,7 +321,7 @@
             return 'Partial';
         }
         return 'Stopped';
-    }
+        }
 
     function openUrls(backendUrl, frontendUrl) {
         window.open(backendUrl, '_blank');
