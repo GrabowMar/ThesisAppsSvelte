@@ -7,6 +7,17 @@
         <div class="flex justify-between items-center">
             <h1 class="text-2xl font-bold text-gray-900">AI Model Dashboard</h1>
             <div class="flex space-x-4">
+                <button id="toggleAutorefresh" 
+                        class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center"
+                        data-enabled="{{ 'true' if autorefresh_enabled else 'false' }}">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span id="autorefreshText">
+                        Auto Refresh: {{ "On" if autorefresh_enabled else "Off" }}
+                    </span>
+                </button>
                 <button id="refreshAll" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -152,7 +163,49 @@
 </div>
 
 <script>
-    // Refresh status functionality
+    let refreshInterval;
+    
+    function startAutoRefresh() {
+        if (refreshInterval) {
+            clearInterval(refreshInterval);
+        }
+        refreshInterval = setInterval(refreshStatus, 30000);
+    }
+    
+    function stopAutoRefresh() {
+        if (refreshInterval) {
+            clearInterval(refreshInterval);
+            refreshInterval = null;
+        }
+    }
+    
+    async function toggleAutorefresh() {
+        const button = document.getElementById('toggleAutorefresh');
+        const textSpan = document.getElementById('autorefreshText');
+        const currentState = button.dataset.enabled === 'true';
+        const newState = !currentState;
+        
+        try {
+            const response = await fetch(`/api/settings/autorefresh/${newState}`);
+            const data = await response.json();
+            
+            button.dataset.enabled = String(newState);
+            textSpan.textContent = `Auto Refresh: ${newState ? 'On' : 'Off'}`;
+            
+            if (newState) {
+                button.classList.remove('bg-gray-500', 'hover:bg-gray-600');
+                button.classList.add('bg-green-500', 'hover:bg-green-600');
+                startAutoRefresh();
+            } else {
+                button.classList.remove('bg-green-500', 'hover:bg-green-600');
+                button.classList.add('bg-gray-500', 'hover:bg-gray-600');
+                stopAutoRefresh();
+            }
+        } catch (error) {
+            console.error('Failed to toggle autorefresh:', error);
+        }
+    }
+
     function refreshStatus() {
         const apps = document.querySelectorAll('[data-app-id]');
         apps.forEach(app => {
@@ -270,10 +323,30 @@
         return 'Stopped';
     }
 
+    function openUrls(backendUrl, frontendUrl) {
+        window.open(backendUrl, '_blank');
+        window.open(frontendUrl, '_blank');
+    }
+
     // Event Listeners
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize refresh interval
-        setInterval(refreshStatus, 30000);
+        const autorefreshEnabled = document.getElementById('toggleAutorefresh').dataset.enabled === 'true';
+        const button = document.getElementById('toggleAutorefresh');
+        
+        // Set initial button state
+        if (autorefreshEnabled) {
+            button.classList.remove('bg-gray-500', 'hover:bg-gray-600');
+            button.classList.add('bg-green-500', 'hover:bg-green-600');
+            startAutoRefresh();
+        } else {
+            button.classList.add('bg-gray-500', 'hover:bg-gray-600');
+            button.classList.remove('bg-green-500', 'hover:bg-green-600');
+            stopAutoRefresh(); // Ensure no interval is running
+        }
+
+
+        // Add toggle button event listener
+        document.getElementById('toggleAutorefresh').addEventListener('click', toggleAutorefresh);
 
         // Refresh button
         document.getElementById('refreshAll').addEventListener('click', refreshStatus);

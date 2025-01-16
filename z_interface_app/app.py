@@ -1,35 +1,13 @@
-from flask import Flask, render_template, redirect, url_for, jsonify, abort
+from flask import Flask, render_template, redirect, url_for, jsonify, abort, session
 import os
 import subprocess
-import json
-from pathlib import Path
-from typing import Dict, List, Optional
-import datetime
 import logging
+from pathlib import Path
+from typing import Dict, List
 from dataclasses import dataclass
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
 import time
 from functools import wraps
-import logging
-from logging.config import dictConfig
-from werkzeug.middleware.proxy_fix import ProxyFix
-
-from flask import Flask, render_template, redirect, url_for, jsonify, abort
-import os
-import subprocess
-import json
-from pathlib import Path
-from typing import Dict, List, Optional
-import datetime
-import logging
-from dataclasses import dataclass
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
-import time
-from functools import wraps
-import logging
-from logging.config import dictConfig
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Configure logging
@@ -375,6 +353,18 @@ def get_all_apps() -> List[Dict]:
 system_status = SystemStatus()
 
 # Routes
+
+# Add this route to app.py
+@app.route('/api/settings/autorefresh/<string:state>')
+@error_handler
+def toggle_autorefresh(state):
+    """Toggle the auto-refresh setting."""
+    enabled = state.lower() == 'true'
+    session['autorefresh_enabled'] = enabled
+    return jsonify({"status": "success", "autorefresh": enabled})
+
+
+# Modify the index route to include the autorefresh setting
 @app.route('/')
 @error_handler
 def index():
@@ -388,7 +378,14 @@ def index():
         ])
         app_info["backend_status"] = status[f"{container_prefix}_backend"]["running"]
         app_info["frontend_status"] = status[f"{container_prefix}_frontend"]["running"]
-    return render_template('index.html', apps=apps, models=AI_MODELS)
+    
+    # Get autorefresh setting from session, default to True
+    autorefresh_enabled = session.get('autorefresh_enabled', False)
+    
+    return render_template('index.html', 
+                         apps=apps, 
+                         models=AI_MODELS, 
+                         autorefresh_enabled=autorefresh_enabled)
 
 @app.route('/api/status')
 @error_handler
