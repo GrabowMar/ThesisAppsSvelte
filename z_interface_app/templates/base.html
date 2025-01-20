@@ -1,3 +1,4 @@
+<!-- base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,12 +12,35 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
     
-    <!-- Tailwind CSS -->
+    <!-- External CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
     
-    <!-- Custom Styles -->
+    <!-- Core Styles -->
     <style>
-        /* Custom scrollbar styles */
+        :root {
+            --primary-color: #4299e1;
+            --secondary-color: #2d3748;
+            --success-color: #48bb78;
+            --danger-color: #f56565;
+            --warning-color: #ed8936;
+        }
+
+        /* Typography */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Layout */
+        .main-content {
+            min-height: calc(100vh - 4rem - 4rem); /* Subtract header and footer height */
+        }
+
+        /* Scrollbars */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -36,24 +60,15 @@
             background: #666;
         }
 
-        /* Log pre formatting */
-        .log-container pre {
-            font-family: 'Roboto Mono', monospace;
-            line-height: 1.5;
+        /* Utility Classes */
+        .transition-base {
+            transition: all 0.2s ease-in-out;
         }
 
-        /* Custom transitions */
-        .transition-all {
-            transition-property: all;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            transition-duration: 150ms;
-        }
-        
-        /* Loading spinner */
         .loading-spinner {
             border: 3px solid rgba(0, 0, 0, 0.1);
             border-radius: 50%;
-            border-top: 3px solid #3498db;
+            border-top: 3px solid var(--primary-color);
             width: 24px;
             height: 24px;
             animation: spin 1s linear infinite;
@@ -65,26 +80,21 @@
         }
     </style>
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
-    
     {% block extra_head %}{% endblock %}
 </head>
-<body class="min-h-screen bg-gray-50 flex flex-col">
-    <!-- Header Navigation -->
-    <nav class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
-                <div class="flex">
-                    <div class="flex-shrink-0 flex items-center">
-                        <a href="{{ url_for('index') }}" class="flex items-center space-x-2">
-                            <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                            </svg>
-                            <span class="font-semibold text-gray-900 text-lg">AI Model Manager</span>
-                        </a>
-                    </div>
+                <div class="flex items-center">
+                    <a href="{{ url_for('index') }}" class="flex items-center space-x-2">
+                        <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+                        </svg>
+                        <span class="font-semibold text-gray-900 text-lg">AI Model Manager</span>
+                    </a>
                 </div>
                 
                 <div class="flex items-center space-x-4">
@@ -94,22 +104,11 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
     <!-- Main Content -->
-    <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="mb-4 rounded-md p-4 {% if category == 'error' %}bg-red-50 text-red-700{% else %}bg-green-50 text-green-700{% endif %}"
-                         role="alert">
-                        <p class="text-sm">{{ message }}</p>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
+    <main class="main-content container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {% block content %}{% endblock %}
     </main>
 
@@ -117,19 +116,15 @@
     <footer class="bg-white shadow-sm mt-auto">
         <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center">
-                <p class="text-sm text-gray-500">
-                    AI Model Management System
-                </p>
-                <div class="flex space-x-4">
-                    <button id="showSystemInfo" class="text-sm text-blue-600 hover:text-blue-800">
-                        System Information
-                    </button>
-                </div>
+                <p class="text-sm text-gray-500">AI Model Management System</p>
+                <button id="showSystemInfo" class="text-sm text-blue-600 hover:text-blue-800">
+                    System Information
+                </button>
             </div>
         </div>
     </footer>
 
-    <!-- Modal Template -->
+    <!-- Modal Component -->
     <div id="modal" class="fixed inset-0 bg-gray-500 bg-opacity-75 hidden" style="z-index: 50;">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-lg shadow-xl max-w-lg w-full">
@@ -146,38 +141,87 @@
         </div>
     </div>
 
-    <!-- Base JavaScript -->
+    <!-- Core JavaScript -->
     <script>
-        // Modal functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const modal = document.getElementById('modal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalContent = document.getElementById('modalContent');
-            const closeButtons = document.querySelectorAll('.modal-close');
-            
-            function showModal(title, content) {
-                modalTitle.textContent = title;
-                modalContent.innerHTML = content;
-                modal.classList.remove('hidden');
+        // Modal Management
+        class ModalManager {
+            constructor() {
+                this.modal = document.getElementById('modal');
+                this.modalTitle = document.getElementById('modalTitle');
+                this.modalContent = document.getElementById('modalContent');
+                this.closeButtons = document.querySelectorAll('.modal-close');
+                
+                this.initializeEventListeners();
             }
             
-            function hideModal() {
-                modal.classList.add('hidden');
+            initializeEventListeners() {
+                this.closeButtons.forEach(button => {
+                    button.addEventListener('click', () => this.hide());
+                });
+                
+                this.modal.addEventListener('click', (e) => {
+                    if (e.target === this.modal) this.hide();
+                });
             }
             
-            closeButtons.forEach(button => {
-                button.addEventListener('click', hideModal);
-            });
+            show(title, content) {
+                this.modalTitle.textContent = title;
+                this.modalContent.innerHTML = content;
+                this.modal.classList.remove('hidden');
+            }
             
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    hideModal();
-                }
-            });
+            hide() {
+                this.modal.classList.add('hidden');
+            }
+        }
 
+        // System Status Management
+        class SystemStatusManager {
+            constructor() {
+                this.indicator = document.getElementById('statusIndicator');
+                this.checkInterval = 30000; // 30 seconds
+                this.initialize();
+            }
+            
+            initialize() {
+                this.checkStatus();
+                setInterval(() => this.checkStatus(), this.checkInterval);
+            }
+            
+            async checkStatus() {
+                try {
+                    const response = await fetch('/api/status');
+                    const data = await response.json();
+                    this.updateIndicator(data.status);
+                } catch (error) {
+                    console.error('Status check failed:', error);
+                    this.updateIndicator('error');
+                }
+            }
+            
+            updateIndicator(status) {
+                const statusConfig = {
+                    healthy: { color: 'bg-green-400', text: 'System Active' },
+                    warning: { color: 'bg-yellow-400', text: 'System Warning' },
+                    error: { color: 'bg-red-400', text: 'Connection Error' }
+                };
+                
+                const config = statusConfig[status] || statusConfig.error;
+                this.indicator.innerHTML = `
+                    <span class="h-2 w-2 rounded-full ${config.color} mr-2"></span>
+                    <span class="text-sm text-gray-600">${config.text}</span>
+                `;
+            }
+        }
+
+        // Initialize Components
+        document.addEventListener('DOMContentLoaded', () => {
+            window.modalManager = new ModalManager();
+            window.systemStatus = new SystemStatusManager();
+            
             // System Information Modal
-            document.getElementById('showSystemInfo').addEventListener('click', function() {
-                showModal('System Information', `
+            document.getElementById('showSystemInfo').addEventListener('click', () => {
+                modalManager.show('System Information', `
                     <div class="space-y-4">
                         <div>
                             <h4 class="font-medium text-gray-700">Version</h4>
@@ -196,50 +240,13 @@
             });
         });
 
-        // Global error handler
-        window.addEventListener('error', function(e) {
+        // Global Error Handler
+        window.addEventListener('error', (e) => {
             console.error('Global error:', e.error);
-            const statusIndicator = document.getElementById('statusIndicator');
-            if (statusIndicator) {
-                statusIndicator.innerHTML = `
-                    <span class="h-2 w-2 rounded-full bg-red-400 mr-2"></span>
-                    <span class="text-sm text-gray-600">Error Detected</span>
-                `;
-            }
+            window.systemStatus?.updateIndicator('error');
         });
-
-        // System status check
-        function checkSystemStatus() {
-            fetch('/api/status')
-                .then(response => response.json())
-                .then(data => {
-                    const indicator = document.getElementById('statusIndicator');
-                    if (data.status === 'healthy') {
-                        indicator.innerHTML = `
-                            <span class="h-2 w-2 rounded-full bg-green-400 mr-2"></span>
-                            <span class="text-sm text-gray-600">System Active</span>
-                        `;
-                    } else {
-                        indicator.innerHTML = `
-                            <span class="h-2 w-2 rounded-full bg-yellow-400 mr-2"></span>
-                            <span class="text-sm text-gray-600">System Warning</span>
-                        `;
-                    }
-                })
-                .catch(error => {
-                    console.error('Status check failed:', error);
-                    const indicator = document.getElementById('statusIndicator');
-                    indicator.innerHTML = `
-                        <span class="h-2 w-2 rounded-full bg-red-400 mr-2"></span>
-                        <span class="text-sm text-gray-600">Connection Error</span>
-                    `;
-                });
-        }
-
-        // Check status periodically
-        setInterval(checkSystemStatus, 30000);
-        
-        {% block extra_scripts %}{% endblock %}
     </script>
+
+    {% block extra_scripts %}{% endblock %}
 </body>
 </html>
