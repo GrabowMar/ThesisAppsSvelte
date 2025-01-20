@@ -1,48 +1,85 @@
-
 <script>
-  let email = '';
+  import { onMount } from 'svelte';
+  let username = '';
   let password = '';
   let message = '';
+  let isRegister = false;
 
-  async function register() {
-    const response = await fetch('http://localhost:5001/register', {
+  const apiBase = 'http://localhost:5001';
+
+  async function handleSubmit() {
+    const endpoint = isRegister ? '/register' : '/login';
+    const response = await fetch(`${apiBase}${endpoint}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      credentials: 'include',
+      body: JSON.stringify({ username, password })
     });
-    const data = await response.json();
-    message = data.message;
+
+    const result = await response.json();
+    message = result.message;
+    if (response.ok) {
+      if (!isRegister) {
+        alert('Logged in successfully!');
+      } else {
+        username = '';
+        password = '';
+      }
+    }
   }
 
-  async function login() {
-    const response = await fetch('http://localhost:5001/login', {
+  async function logout() {
+    const response = await fetch(`${apiBase}/logout`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      credentials: 'include',
     });
-    const data = await response.json();
-    message = data.token ? 'Login successful' : data.message;
+    const result = await response.json();
+    message = result.message;
   }
 </script>
 
 <main>
-  <h1>Login App</h1>
-  <input type="email" bind:value={email} placeholder="Email" />
-  <input type="password" bind:value={password} placeholder="Password" />
-  <button on:click={register}>Register</button>
-  <button on:click={login}>Login</button>
+  <h1>{isRegister ? 'Register' : 'Login'}</h1>
+  <form on:submit|preventDefault={handleSubmit}>
+    <input
+      type="text"
+      placeholder="Username"
+      bind:value={username}
+      required
+    />
+    <input
+      type="password"
+      placeholder="Password"
+      bind:value={password}
+      required
+    />
+    <button type="submit">{isRegister ? 'Register' : 'Login'}</button>
+  </form>
+  <button on:click={() => (isRegister = !isRegister)}>
+    Switch to {isRegister ? 'Login' : 'Register'}
+  </button>
+  <button on:click={logout}>Logout</button>
   <p>{message}</p>
 </main>
 
 <style>
   main {
-    text-align: center;
     max-width: 400px;
-    margin: auto;
+    margin: 50px auto;
+    font-family: Arial, sans-serif;
+    text-align: center;
   }
-  input, button {
+  input {
     display: block;
     margin: 10px auto;
     padding: 10px;
+    width: 80%;
+  }
+  button {
+    margin: 10px;
+    padding: 10px 20px;
+  }
+  p {
+    color: red;
   }
 </style>

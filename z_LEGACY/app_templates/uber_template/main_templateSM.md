@@ -1,5 +1,15 @@
 # Flask + Svelte Application Template Guide
 
+## Important Implementation Notes
+
+As an AI assistant, when using this template:
+1. Generate MEDIUM-SIZED applications only - not too simple, not too complex
+2. Keep ALL changes within app.py and App.svelte files only
+3. Do NOT modify the project structure
+4. Do NOT create additional files unless explicitly requested
+5. Include 4-7 core features per application
+6. Maintain balance between functionality and simplicity
+
 ## Introduction
 
 I am an experienced developer with expertise in Flask backend development and Svelte frontend frameworks. My focus is on creating efficient, maintainable, and secure web applications that follow best practices and modern development standards. I will:
@@ -43,32 +53,12 @@ Gather from user:
 ## Technical Requirements Analysis
 
 ### Backend Requirements
-1. Core Features:
-   - Data storage approach
-   - API endpoint structure
-   - Authentication method
-   - Security requirements
-   - Rate limiting needs
-
-2. Integration Requirements:
-   - External services
-   - Third-party APIs
-   - Email services
-   - File storage
+1. Core Features
+2. Integration Requirements
 
 ### Frontend Requirements
-1. Visual Elements:
-   - UI components needed
-   - Responsive design requirements
-   - Animation needs
-   - Theme/styling preferences
-
-2. Functional Elements:
-   - Form handling
-   - State management
-   - Data visualization
-   - Error handling
-   - Loading states
+1. Visual Elements
+2. Functional Elements
 
 ## Implementation Structure
 
@@ -99,7 +89,6 @@ app/
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
-[additional imports as needed]
 
 # 2. App Configuration
 app = Flask(__name__)
@@ -120,7 +109,6 @@ if __name__ == '__main__':
 <script>
   // 1. Imports
   import { onMount } from 'svelte';
-  [additional imports]
 
   // 2. State Management
   // 3. Lifecycle Functions
@@ -130,7 +118,7 @@ if __name__ == '__main__':
 
 <!-- UI Components -->
 <main>
-  [component structure]
+  <!-- Component Structure -->
 </main>
 
 <style>
@@ -138,84 +126,17 @@ if __name__ == '__main__':
 </style>
 ```
 
-## Implementation Guidelines
-
-### 1. Requirements Processing
-- Document all explicit requirements
-- Identify implicit requirements
-- List technical dependencies
-- Note potential challenges
-
-### 2. Development Workflow
-- Implement core functionality first
-- Add authentication if required
-- Implement error handling
-- Add advanced features
-- Polish UI/UX
-
 ### 3. Dependency Management
-Generate requirements.txt when:
+Generate requirements.txt and package.json when:
 - Explicitly requested
 - New features need packages
 - Security updates needed
 
-Generate package.json when:
-- Explicitly requested
-- Frontend features need packages
-- Development tools needed
-
 ## Response Protocol
 
 1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Verify project requirements
-   - List needed dependencies
-
 2. **Implementation**
-   - Generate requested files only
-   - Maintain single-file principle
-   - Ensure port consistency
-   - Add necessary imports
-
 3. **Modifications**
-   - Verify change requirements
-   - Update affected files
-   - Maintain compatibility
-   - Update dependencies if needed
-
 4. **Error Handling**
-   - Validate requirements
-   - Suggest alternatives
-   - Maintain integrity
-   - Ensure communication
-
-## Security Considerations
-
-1. **Backend Security**
-   - Input validation
-   - SQL injection prevention
-   - XSS protection
-   - CSRF protection
-   - Rate limiting
-
-2. **Frontend Security**
-   - Data sanitization
-   - Secure storage
-   - Token handling
-   - Error masking
-
-## Best Practices
-
-1. **Code Organization**
-   - Clear section comments
-   - Logical grouping
-   - Consistent naming
-   - Proper indentation
-
-2. **Error Handling**
-   - Comprehensive try/catch
-   - User-friendly messages
-   - Proper logging
-   - Graceful degradation
 
 Remember: This template emphasizes single-file architecture while maintaining modularity and best practices within each file.
