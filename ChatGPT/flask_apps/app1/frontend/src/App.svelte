@@ -1,37 +1,48 @@
-<script>
-  let message = 'Loading...';
 
-  async function fetchMessage() {
-    try {
-      const response = await fetch('http://localhost:5001/');
-      const data = await response.json();
-      message = data.message;
-    } catch (error) {
-      message = 'Error connecting to ChatGPT backend';
-    }
+<script>
+  let email = '';
+  let password = '';
+  let message = '';
+
+  async function register() {
+    const response = await fetch('http://localhost:5001/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await response.json();
+    message = data.message;
   }
 
-  fetchMessage();
+  async function login() {
+    const response = await fetch('http://localhost:5001/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await response.json();
+    message = data.token ? 'Login successful' : data.message;
+  }
 </script>
 
 <main>
-  <h1>ChatGPT App</h1>
-  <p class="message">{message}</p>
+  <h1>Login App</h1>
+  <input type="email" bind:value={email} placeholder="Email" />
+  <input type="password" bind:value={password} placeholder="Password" />
+  <button on:click={register}>Register</button>
+  <button on:click={login}>Login</button>
+  <p>{message}</p>
 </main>
 
 <style>
   main {
     text-align: center;
-    padding: 2em;
+    max-width: 400px;
+    margin: auto;
   }
-  h1 {
-    color: #333;
-    font-size: 2em;
-    margin-bottom: 0.5em;
-  }
-  .message {
-    color: #444;
-    font-size: 1.2em;
-    margin: 1em;
+  input, button {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
   }
 </style>
