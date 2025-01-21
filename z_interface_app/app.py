@@ -7,31 +7,37 @@ A Flask-based AI Model Management System that:
 - Handles both sync and async operations
 """
 
-import os
-import random
-import logging
-import time
+# Standard library imports
 import asyncio
+import logging
+import os
+import queue
+import random
 import subprocess
+import threading
+import time
+from dataclasses import dataclass
 from functools import wraps
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union, Any
-from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Tuple, Union
 
+# Third party imports
 from flask import (
-    Flask, 
-    render_template, 
-    redirect, 
-    url_for, 
-    jsonify, 
-    abort, 
-    request, 
-    Response
+    Flask,
+    Response,
+    abort,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
 )
-from werkzeug.middleware.proxy_fix import ProxyFix
 import docker
-from docker.errors import NotFound, DockerException
+from docker.errors import DockerException, NotFound
 from docker.models.containers import Container
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 
 # -------------------------
 # Configuration Management
@@ -52,7 +58,8 @@ class AppConfig:
     def from_env(cls) -> 'AppConfig':
         """Create configuration from environment variables with defaults."""
         return cls(
-            DEBUG=os.getenv('FLASK_DEBUG', 'False').lower() == 'true',
+            # DEBUG=os.getenv('FLASK_DEBUG', 'False').lower() == 'true',
+            DEBUG= True,
             SECRET_KEY=os.getenv('FLASK_SECRET_KEY', 'your-secret-key-here'),
             BASE_DIR=Path(__file__).parent,
             LOG_LEVEL=os.getenv('LOG_LEVEL', 'ERROR'),
@@ -415,21 +422,141 @@ def get_all_apps() -> List[Dict[str, Any]]:
         for app in get_apps_for_model(model.name)
     ]
 
-def run_docker_compose(
+def run_docker_compose_with_timeout(
     command: List[str],
     model: str,
     app_num: int,
+    timeout: int = 60,
     check: bool = True
-) -> bool:
-    """Execute docker-compose command with error handling."""
-    app_dir = Path(f"{model}/flask_apps/app{app_num}")
+) -> Tuple[bool, str]:
+    """
+    Execute docker-compose command with timeout and output capture.
     
+    Args:
+        command: Docker compose command list
+        model: Model name
+        app_num: Application number
+        timeout: Timeout in seconds
+        check: Whether to check return code
+    
+    Returns:
+        Tuple of (success, output/error message)
+    """
+    app_dir = Path(f"{model}/flask_apps/app{app_num}")
+    if not app_dir.exists():
+        return False, f"Directory not found: {app_dir}"
+
+    # Queue for storing command output
+    output_queue = queue.Queue()
+    
+    def target_func():
+        try:
+            result = subprocess.run(
+                ["docker-compose"] + command,
+                cwd=app_dir,
+                check=check,
+                capture_output=True,
+                text=True
+            )
+            output_queue.put((True, result.stdout if result.returncode == 0 else result.stderr))
+        except subprocess.CalledProcessError as e:
+            output_queue.put((False, f"Command failed: {e.stderr}"))
+        except Exception as e:
+            output_queue.put((False, f"Error: {str(e)}"))
+
+    # Start command in separate thread
+    thread = threading.Thread(target=target_func)
+    thread.daemon = True  # Daemon thread will be killed if main thread exits
+    thread.start()
+    
+    # Wait for completion or timeout
+    thread.join(timeout)
+    if thread.is_alive():
+        return False, f"Command timed out after {timeout} seconds"
+    
+    # Get result from queue
     try:
-        subprocess.run(["docker-compose"] + command, cwd=app_dir, check=check)
-        return True
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Docker-compose {' '.join(command)} failed: {e}")
-        return False
+        success, message = output_queue.get_nowait()
+        return success, message
+    except queue.Empty:
+        return False, "No output received from command"
+
+def handle_docker_action(action: str, model: str, app_num: int) -> Tuple[bool, str]:
+    """
+    Handle docker-compose actions with improved error handling and timeouts.
+    
+    Args:
+        action: Action to perform (start/stop/reload/rebuild/build)
+        model: Model name
+        app_num: Application number
+    
+    Returns:
+        Tuple of (success, message)
+    """
+    commands = {
+        'start': [('up', '-d', 120)],  # 120s timeout for start
+        'stop': [('stop', None, 30)],  # 30s timeout for stop
+        'reload': [('restart', None, 90)],  # 90s timeout for restart
+        'rebuild': [
+            ('down', None, 30),
+            ('build', None, 300),  # 5 min timeout for build
+            ('up', '-d', 120)
+        ],
+        'build': [('build', None, 300)]
+    }
+    
+    if action not in commands:
+        return False, f"Invalid action: {action}"
+    
+    for cmd_tuple in commands[action]:
+        base_cmd, extra_arg, timeout = cmd_tuple
+        cmd = [base_cmd]
+        if extra_arg:
+            cmd.append(extra_arg)
+            
+        success, message = run_docker_compose_with_timeout(
+            cmd, model, app_num, timeout=timeout
+        )
+        
+        if not success:
+            logging.error(f"Docker action '{action}' failed on {cmd}: {message}")
+            return False, message
+    
+    return True, f"Successfully completed {action} action"
+
+def verify_container_health(
+    docker_manager: 'DockerManager',
+    model: str,
+    app_num: int,
+    max_retries: int = 10,
+    retry_delay: int = 3
+) -> Tuple[bool, str]:
+    """
+    Verify container health after operations with retries.
+    
+    Args:
+        docker_manager: Docker manager instance
+        model: Model name
+        app_num: Application number
+        max_retries: Maximum number of health check retries
+        retry_delay: Delay between retries in seconds
+    
+    Returns:
+        Tuple of (healthy, message)
+    """
+    backend_name, frontend_name = get_container_names(model, app_num)
+    
+    for attempt in range(max_retries):
+        backend_status = docker_manager.get_container_status(backend_name)
+        frontend_status = docker_manager.get_container_status(frontend_name)
+        
+        if backend_status.health == "healthy" and frontend_status.health == "healthy":
+            return True, "All containers healthy"
+            
+        if attempt < max_retries - 1:
+            time.sleep(retry_delay)
+    
+    return False, "Containers failed to reach healthy state"
 
 # -------------------------
 # Flask Application Factory
@@ -550,31 +677,39 @@ def register_routes(app: Flask, docker_manager: DockerManager) -> None:
 
     @app.route('/<action>/<string:model>/<int:app_num>')
     @error_handler
-    def handle_docker_action(action: str, model: str, app_num: int) -> Union[Response, str]:
-        """Handle various docker-compose actions."""
-        commands = {
-            'start': ['up', '-d'],
-            'stop': ['stop'],
-            'reload': ['restart'],
-            'rebuild': ['down', 'build', 'up', '-d'],
-            'build': ['build']
-        }
+    def handle_docker_action_route(action: str, model: str, app_num: int) -> Union[Response, str]:
+        """Handle various docker-compose actions with improved error handling."""
+        # Execute docker action
+        success, message = handle_docker_action(action, model, app_num)
         
-        if action not in commands:
-            return jsonify({"error": "Invalid action"}), 400
-            
-        success = True
-        for cmd in commands[action]:
-            if not run_docker_compose([cmd], model, app_num):
-                success = False
-                break
-                
+        # For AJAX requests
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            if success:
-                return jsonify({"status": "success"})
-            return jsonify({"status": "error"}), 500
-                
+            response = {
+                "status": "success" if success else "error",
+                "message": message
+            }
+            return jsonify(response), 200 if success else 500
+        
+        # For regular requests
+        if success:
+            flash(f"Successfully completed {action} action", "success")
+        else:
+            flash(f"Action failed: {message}", "error")
+        
         return redirect(url_for('index'))
+
+# Additional helper route to check container health
+    @app.route('/api/health/<string:model>/<int:app_num>')
+    @error_handler
+    def check_container_health(model: str, app_num: int) -> Response:
+        """Check health status of containers for an app."""
+        docker_manager = DockerManager()
+        healthy, message = verify_container_health(docker_manager, model, app_num)
+        
+        return jsonify({
+            "healthy": healthy,
+            "message": message
+        })
 
 def register_error_handlers(app: Flask) -> None:
     """Register application error handlers."""
@@ -640,7 +775,7 @@ if __name__ == '__main__':
         app.run(
             host=app.config['HOST'],
             port=app.config['PORT'],
-            debug=app.config['DEBUG']
+            debug=app.config['DEBUG'] 
         )
     except Exception as e:
         logger.critical(f"Failed to start application: {e}")

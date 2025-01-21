@@ -1,278 +1,218 @@
 {% extends "base.html" %}
 
-{% block extra_head %}
-<!-- Chart.js for statistics -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
-<style>
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="space-y-8">
-  <!-- Search and Filter Bar -->
-  <section class="bg-white shadow rounded-lg p-6 mb-6">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div>
-        <label for="searchApps" class="block text-sm font-medium text-gray-700">
-          Search Apps
-        </label>
-        <input type="text" id="searchApps"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          placeholder="Search by name, port, status...">
-      </div>
-      <div>
-        <label for="filterModel" class="block text-sm font-medium text-gray-700">
-          Filter by Model
-        </label>
-        <select id="filterModel"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-          <option value="">All Models</option>
-          {% for model in models %}
-          <option value="{{ model.name }}">{{ model.name }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div>
-        <label for="filterStatus" class="block text-sm font-medium text-gray-700">
-          Filter by Status
-        </label>
-        <select id="filterStatus"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-          <option value="">All Statuses</option>
-          <option value="running">Running</option>
-          <option value="partial">Partial</option>
-          <option value="stopped">Stopped</option>
-        </select>
-      </div>
-    </div>
-  </section>
-
-  <!-- Dashboard Header -->
-  <section aria-labelledby="dashboard-title" class="bg-white shadow rounded-lg p-6">
-    <div class="flex justify-between items-center">
-      <h1 id="dashboard-title" class="text-2xl font-bold text-gray-900">
-        AI Model Dashboard
-      </h1>
-      <div class="flex space-x-4">
-        <!-- Auto-refresh Toggle -->
-        <button id="toggleAutorefresh"
-          class="inline-flex items-center px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-                        {% if autorefresh_enabled %}bg-green-500 hover:bg-green-600{% else %}bg-gray-500 hover:bg-gray-600{% endif %}"
-          data-enabled="{{ 'true' if autorefresh_enabled else 'false' }}"
-          aria-pressed="{{ 'true' if autorefresh_enabled else 'false' }}">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span id="autorefreshText">
-            Auto Refresh: {{ "On" if autorefresh_enabled else "Off" }}
-          </span>
-        </button>
-
-        <!-- Manual Refresh -->
-        <button id="refreshAll"
-          class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          <span>Refresh All</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- System Status Overview -->
-    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {% with %}
-      {% set running_apps = apps | selectattr('backend_status.running', 'true') | selectattr('frontend_status.running',
-      'true') | list %}
-      {% set partial_apps =
-      (apps | selectattr('backend_status.running', 'true') | rejectattr('frontend_status.running', 'true') | list)
-      + (apps | rejectattr('backend_status.running', 'true') | selectattr('frontend_status.running', 'true') | list)
-      %}
-      {% set stopped_apps = apps | rejectattr('backend_status.running', 'true') | rejectattr('frontend_status.running',
-      'true') | list %}
-
-      <!-- Status Cards -->
-      {% for status in [
-      ('Total Apps', apps|length, 'text-gray-900'),
-      ('Running Apps', running_apps|length, 'text-green-600'),
-      ('Partial Status', partial_apps|length, 'text-yellow-600'),
-      ('Stopped Apps', stopped_apps|length, 'text-red-600')
-      ] %}
-      <div class="bg-gray-50 p-4 rounded-lg" role="status">
-        <h3 class="text-sm font-medium text-gray-500">{{ status[0] }}</h3>
-        <p class="mt-1 text-2xl font-semibold {{ status[2] }}">
-          {{ status[1] }}
-        </p>
-      </div>
-      {% endfor %}
-      {% endwith %}
-    </div>
-  </section>
-
-  <!-- Model Sections -->
-  {% for model in models %}
-  <div class="bg-white shadow rounded-lg p-6" data-model-section="{{ model.name }}">
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="text-xl font-bold" style="color: {{ model.color }};">
-        {{ model.name }}
-      </h2>
-      <div class="flex items-center space-x-4">
-        <!-- Batch Operations -->
-        <button class="batch-action px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
-          data-action="start" data-model="{{ model.name }}">
-          Start Selected
-        </button>
-        <button class="batch-action px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm" data-action="stop"
-          data-model="{{ model.name }}">
-          Stop Selected
-        </button>
-        <button class="select-all-btn px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
-          data-model="{{ model.name }}">
-          Select All
-        </button>
-      </div>
-    </div>
-
-    <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-      {% for app in apps if app.model == model.name %}
-      <div class="border rounded-lg p-4 relative" data-app-id="{{ app.app_num }}" data-model="{{ app.model }}">
-        <!-- Checkbox for batch operations -->
-        <div class="absolute top-4 left-4">
-          <input type="checkbox" class="app-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-            data-app-id="{{ app.app_num }}" data-model="{{ app.model }}">
-        </div>
-
-        <!-- Status Badge -->
-        <div class="absolute top-4 right-4">
-          <span class="px-2 py-1 text-sm rounded-full
-                                    {% if app.backend_status.running and app.frontend_status.running %}
-                                        bg-green-100 text-green-800
-                                    {% elif app.backend_status.running or app.frontend_status.running %}
-                                        bg-yellow-100 text-yellow-800
-                                    {% else %}
-                                        bg-red-100 text-red-800
-                                    {% endif %}">
-            {{
-            "Running" if app.backend_status.running and app.frontend_status.running
-            else "Partial" if app.backend_status.running or app.frontend_status.running
-            else "Stopped"
-            }}
-          </span>
-        </div>
-
-        <!-- App Title -->
-        <h3 class="text-lg font-medium text-gray-900 mb-4 ml-8">
-          {{ app.name }}
-        </h3>
-
-        <!-- App Details -->
-        <div class="space-y-3 mb-4">
-          <div class="flex justify-between items-center text-sm">
-            <span class="text-gray-500">Backend Status:</span>
-            <span class="font-medium
-                                        {{ 'text-green-600' if app.backend_status.running else 'text-red-600' }}"
-              data-status="backend">
-              {{ "Running" if app.backend_status.running else "Stopped" }}
-            </span>
-          </div>
-          <div class="flex justify-between items-center text-sm">
-            <span class="text-gray-500">Frontend Status:</span>
-            <span class="font-medium
-                                        {{ 'text-green-600' if app.frontend_status.running else 'text-red-600' }}"
-              data-status="frontend">
-              {{ "Running" if app.frontend_status.running else "Stopped" }}
-            </span>
-          </div>
-          <div class="flex justify-between items-center text-sm">
-            <span class="text-gray-500">Backend Port:</span>
-            <div class="flex items-center space-x-2">
-              <span class="font-mono">{{ app.backend_port }}</span>
-              <a href="{{ app.backend_url }}" target="_blank" class="text-blue-500 hover:text-blue-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
+<div class="space-y-6">
+    <!-- Search and Filters -->
+    <div class="bg-white shadow rounded-lg p-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label for="searchApps" class="block text-sm font-medium text-gray-700">Search Apps</label>
+                <input type="text" id="searchApps" 
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="Search by name, port, status...">
             </div>
-          </div>
-          <div class="flex justify-between items-center text-sm">
-            <span class="text-gray-500">Frontend Port:</span>
-            <div class="flex items-center space-x-2">
-              <span class="font-mono">{{ app.frontend_port }}</span>
-              <a href="{{ app.frontend_url }}" target="_blank" class="text-blue-500 hover:text-blue-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
+            <div>
+                <label for="filterModel" class="block text-sm font-medium text-gray-700">Filter by Model</label>
+                <select id="filterModel" 
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <option value="">All Models</option>
+                    {% for model in models %}
+                    <option value="{{ model.name }}">{{ model.name }}</option>
+                    {% endfor %}
+                </select>
             </div>
-          </div>
+            <div>
+                <label for="filterStatus" class="block text-sm font-medium text-gray-700">Filter by Status</label>
+                <select id="filterStatus" 
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <option value="">All Statuses</option>
+                    <option value="running">Running</option>
+                    <option value="partial">Partial</option>
+                    <option value="stopped">Stopped</option>
+                </select>
+            </div>
         </div>
-
-        <!-- Action Buttons -->
-        <div class="grid grid-cols-3 gap-2">
-          <button
-            class="action-btn bg-green-500 text-white px-3 py-2 rounded text-center hover:bg-green-600 transition-colors"
-            data-action="start" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
-            <span class="button-text">Start</span>
-            
-          </button>
-
-          <button
-            class="action-btn bg-red-500 text-white px-3 py-2 rounded text-center hover:bg-red-600 transition-colors"
-            data-action="stop" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
-            <span class="button-text">Stop</span>
-            
-          </button>
-
-          <button
-            class="action-btn bg-yellow-500 text-white px-3 py-2 rounded text-center hover:bg-yellow-600 transition-colors"
-            data-action="rebuild" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
-            <span class="button-text">Rebuild</span>
-            
-          </button>
-
-          <button
-            class="action-btn bg-blue-500 text-white px-3 py-2 rounded text-center hover:bg-blue-600 transition-colors"
-            data-action="reload" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
-            <span class="button-text">Reload</span>
-            
-          </button>
-
-          <a href="{{ url_for('view_logs', model=app.model, app_num=app.app_num) }}"
-            class="bg-indigo-500 text-white px-3 py-2 rounded text-center hover:bg-indigo-600 transition-colors">
-            Logs
-          </a>
-
-          <button
-            class="action-btn bg-purple-500 text-white px-3 py-2 rounded text-center hover:bg-purple-600 transition-colors"
-            data-action="status" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
-            <span class="button-text">Status</span>
-            
-          </button>
-        </div>
-      </div>
-      {% endfor %}
     </div>
-  </div>
-  {% endfor %}
 
-  <!-- No Results Message -->
-  <div id="noResultsMessage" class="hidden bg-white shadow rounded-lg p-6 text-center">
-    <p class="text-gray-500">
-      No apps match your search criteria
-    </p>
-  </div>
+    <!-- Dashboard Overview -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">AI Model Dashboard</h1>
+            <div class="flex space-x-4">
+                <!-- Auto-refresh Toggle -->
+                <button id="toggleAutorefresh" 
+                    class="inline-flex items-center px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                    {% if autorefresh_enabled %}bg-green-500 hover:bg-green-600{% else %}bg-gray-500 hover:bg-gray-600{% endif %} text-white"
+                    data-enabled="{{ 'true' if autorefresh_enabled else 'false' }}">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span id="autorefreshText">Auto Refresh: {{ "On" if autorefresh_enabled else "Off" }}</span>
+                </button>
+
+                <!-- Manual Refresh -->
+                <button id="refreshAll" 
+                    class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span>Refresh All</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Status Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {% with %}
+            {% set running_apps = apps|selectattr('backend_status.running', 'true')|selectattr('frontend_status.running', 'true')|list %}
+            {% set partial_apps = (apps|selectattr('backend_status.running', 'true')|rejectattr('frontend_status.running', 'true')|list) +
+                                (apps|rejectattr('backend_status.running', 'true')|selectattr('frontend_status.running', 'true')|list) %}
+            {% set stopped_apps = apps|rejectattr('backend_status.running', 'true')|rejectattr('frontend_status.running', 'true')|list %}
+
+            <div class="bg-white p-4 rounded-lg border" role="status">
+                <h3 class="text-sm font-medium text-gray-500">Total Apps</h3>
+                <p class="mt-1 text-2xl font-semibold text-gray-900">{{ apps|length }}</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg border" role="status">
+                <h3 class="text-sm font-medium text-gray-500">Running Apps</h3>
+                <p class="mt-1 text-2xl font-semibold text-green-600">{{ running_apps|length }}</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg border" role="status">
+                <h3 class="text-sm font-medium text-gray-500">Partial Status</h3>
+                <p class="mt-1 text-2xl font-semibold text-yellow-600">{{ partial_apps|length }}</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg border" role="status">
+                <h3 class="text-sm font-medium text-gray-500">Stopped Apps</h3>
+                <p class="mt-1 text-2xl font-semibold text-red-600">{{ stopped_apps|length }}</p>
+            </div>
+            {% endwith %}
+        </div>
+    </div>
+
+    <!-- Model Sections -->
+    {% for model in models %}
+    <div class="bg-white shadow rounded-lg p-6" data-model-section="{{ model.name }}">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold" style="color: '{{ model.color }}';">{{ model.name }}</h2>
+            <div class="flex items-center space-x-4">
+                <button class="batch-action px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
+                    data-action="start" data-model="{{ model.name }}">Start Selected</button>
+                <button class="batch-action px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                    data-action="stop" data-model="{{ model.name }}">Stop Selected</button>
+                <button class="select-all-btn px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
+                    data-model="{{ model.name }}">Select All</button>
+            </div>
+        </div>
+
+        <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {% for app in apps if app.model == model.name %}
+            <div class="border rounded-lg p-4 relative" data-app-id="{{ app.app_num }}" data-model="{{ app.model }}">
+                <!-- App Content -->
+                <div class="absolute top-4 left-4">
+                    <input type="checkbox" class="app-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                        data-app-id="{{ app.app_num }}" data-model="{{ app.model }}">
+                </div>
+
+                <!-- Status Badge -->
+                <div class="absolute top-4 right-4">
+                    <span class="px-2 py-1 text-sm rounded-full
+                        {% if app.backend_status.running and app.frontend_status.running %}
+                            bg-green-100 text-green-800
+                        {% elif app.backend_status.running or app.frontend_status.running %}
+                            bg-yellow-100 text-yellow-800
+                        {% else %}
+                            bg-red-100 text-red-800
+                        {% endif %}">
+                        {{ "Running" if app.backend_status.running and app.frontend_status.running
+                           else "Partial" if app.backend_status.running or app.frontend_status.running
+                           else "Stopped" }}
+                    </span>
+                </div>
+
+                <!-- App Details -->
+                <h3 class="text-lg font-medium text-gray-900 mb-4 ml-8">{{ app.name }}</h3>
+                <div class="space-y-3 mb-4">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Backend Status:</span>
+                        <span class="font-medium {{ 'text-green-600' if app.backend_status.running else 'text-red-600' }}"
+                            data-status="backend">
+                            {{ "Running" if app.backend_status.running else "Stopped" }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Frontend Status:</span>
+                        <span class="font-medium {{ 'text-green-600' if app.frontend_status.running else 'text-red-600' }}"
+                            data-status="frontend">
+                            {{ "Running" if app.frontend_status.running else "Stopped" }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Backend Port:</span>
+                        <a href="{{ app.backend_url }}" target="_blank" class="text-blue-500 hover:text-blue-600">
+                            {{ app.backend_port }}
+                        </a>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-500">Frontend Port:</span>
+                        <a href="{{ app.frontend_url }}" target="_blank" class="text-blue-500 hover:text-blue-600">
+                            {{ app.frontend_port }}
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-3 gap-2">
+                    <button class="action-btn bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 transition-colors"
+                        data-action="start" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
+                        <span class="button-text">Start</span>
+                    </button>
+
+                    <button class="action-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition-colors"
+                        data-action="stop" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
+                        <span class="button-text">Stop</span>
+                    </button>
+
+                    <button class="action-btn bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600 transition-colors"
+                        data-action="reload" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
+                        <span class="button-text">Reload</span>
+                    </button>
+
+                    <button class="action-btn bg-purple-500 text-white px-3 py-2 rounded hover:bg-purple-600 transition-colors"
+                        data-action="rebuild" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
+                        <span class="button-text">Rebuild</span>
+                    </button>
+
+                    <a href="{{ url_for('view_logs', model=app.model, app_num=app.app_num) }}"
+                        class="bg-indigo-500 text-white px-3 py-2 rounded text-center hover:bg-indigo-600 transition-colors">
+                        Logs
+                    </a>
+
+                    <button class="action-btn bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition-colors"
+                        data-action="status" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
+                        <span class="button-text">Status</span>
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- No Results Message -->
+    <div id="noResultsMessage" class="hidden bg-white shadow rounded-lg p-6 text-center">
+        <p class="text-gray-500">No apps match your search criteria</p>
+    </div>
 </div>
-
 {% block extra_scripts %}
 <!-- Base JavaScript -->
 <script>
   /**
    * Manages the modal: open, close, trap focus, etc.
    */
+
+   
   class ModalManager {
     constructor() {
       this.modal = null;
