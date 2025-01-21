@@ -554,7 +554,7 @@ def register_routes(app: Flask, docker_manager: DockerManager) -> None:
         """Handle various docker-compose actions."""
         commands = {
             'start': ['up', '-d'],
-            'stop': ['down'],
+            'stop': ['stop'],
             'reload': ['restart'],
             'rebuild': ['down', 'build', 'up', '-d'],
             'build': ['build']
