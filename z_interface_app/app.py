@@ -516,6 +516,26 @@ def register_routes(app: Flask, docker_manager: DockerManager) -> None:
         }
         
         return render_template('logs.html', logs=logs, model=model, app_num=app_num)
+    
+    @app.route('/api/status')
+    @error_handler
+    def system_status() -> Response:
+        """Get system status and health."""
+        disk_ok = SystemHealthMonitor.check_disk_space()
+        docker_ok = SystemHealthMonitor.check_health(docker_manager.client)
+        
+        status = "healthy" if disk_ok and docker_ok else "warning"
+        
+        return jsonify({
+            "status": status,
+            "details": {
+                "disk_space": disk_ok,
+                "docker_health": docker_ok
+            }
+        })
+    
+
+
 
     @app.route('/api/model-info')
     @error_handler
@@ -624,4 +644,6 @@ if __name__ == '__main__':
         )
     except Exception as e:
         logger.critical(f"Failed to start application: {e}")
-        raise
+        raise e
+    
+# -------------------------
