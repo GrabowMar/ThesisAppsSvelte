@@ -1,133 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AI Model Management System - Monitor and control AI model applications">
-    <meta name="theme-color" content="#ffffff">
-    <meta name="robots" content="noindex, nofollow">
-    <meta name="application-name" content="AI Model Manager">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI Model Management System - Monitor and control AI model applications" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="application-name" content="AI Model Manager" />
 
-    <!-- Primary Meta Tags -->
-    <title>{% block title %}AI Model Management System{% endblock %}</title>
+  <title>{% block title %}AI Model Management System{% endblock %}</title>
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
 
-    <!-- Preload critical assets -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" as="style">
+  <!-- Preconnect & Preload -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" as="style" />
 
-    <!-- Stylesheets -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono&display=swap"
-        rel="stylesheet">
+  <!-- CSS & Fonts -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <!-- Add to base.html -->
-    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  <!-- Main Dashboard Script -->
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 
-    <!-- Core Styles -->
-
-    {% block extra_head %}{% endblock %}
+  {% block extra_head %}{% endblock %}
 </head>
 
 <body class="min-h-screen bg-gray-50 flex flex-col antialiased">
-    <!-- Skip to main content link for accessibility -->
-    <a href="#main-content"
-        class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded">
-        Skip to main content
-    </a>
+  <!-- Skip to main content link (accessibility) -->
+  <a
+    href="#main-content"
+    class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded"
+  >
+    Skip to main content
+  </a>
 
-    <!-- Header Navigation -->
-    <header class="bg-white shadow-sm">
-        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
-            <div class="flex justify-between h-16">
-                <div class="flex">
-                    <div class="flex-shrink-0 flex items-center">
-                        <a href="{{ url_for('index') }}"
-                            class="flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-1"
-                            aria-label="Home">
-                            <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                            </svg>
-                            <span class="font-semibold text-gray-900 text-lg">AI Model Manager</span>
-                        </a>
-                    </div>
-                </div>
+  <!-- Header Navigation -->
+  <header class="bg-white shadow-sm">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <a
+            href="{{ url_for('index') }}"
+            class="flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-1"
+            aria-label="Home"
+          >
+            <svg
+              class="h-8 w-8 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
+              />
+            </svg>
+            <span class="font-semibold text-gray-900 text-lg">AI Model Manager</span>
+          </a>
+        </div>
+        <div id="statusIndicator" class="flex items-center" role="status" aria-live="polite">
+          <span class="h-2 w-2 rounded-full bg-green-400 mr-2"></span>
+          <span class="text-sm text-gray-600">System Active</span>
+        </div>
+      </div>
+    </nav>
+  </header>
 
-                <div class="flex items-center space-x-4">
-                    <div id="statusIndicator" class="flex items-center" role="status" aria-live="polite">
-                        <span class="h-2 w-2 rounded-full bg-green-400 mr-2"></span>
-                        <span class="text-sm text-gray-600">System Active</span>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <!-- Main Content -->
-    <main id="main-content" class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
+  <!-- Main Content -->
+  <main id="main-content" class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
         <div class="space-y-2" aria-live="polite">
-            {% for category, message in messages %}
-            <div class="rounded-md p-4 {% if category == 'error' %}bg-red-50 text-red-700{% else %}bg-green-50 text-green-700{% endif %}"
-                role="alert">
-                <p class="text-sm font-medium">{{ message }}</p>
+          {% for category, message in messages %}
+            <div
+              class="rounded-md p-4 {% if category == 'error' %}bg-red-50 text-red-700{% else %}bg-green-50 text-green-700{% endif %}"
+              role="alert"
+            >
+              <p class="text-sm font-medium">{{ message }}</p>
             </div>
-            {% endfor %}
+          {% endfor %}
         </div>
-        {% endif %}
-        {% endwith %}
+      {% endif %}
+    {% endwith %}
 
-        {% block content %}{% endblock %}
-    </main>
+    {% block content %}{% endblock %}
+  </main>
 
-    <!-- Footer -->
-    <footer class="bg-white shadow-sm mt-auto">
-        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center">
-                <p class="text-sm text-gray-500">
-                    &copy; <span id="currentYear"></span> AI Model Management System
-                </p>
-                <div class="flex space-x-4">
-                    <button id="showSystemInfo"
-                        class="text-sm text-blue-600 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg px-2 py-1"
-                        aria-haspopup="dialog">
-                        System Information
-                    </button>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Modal Template -->
-    <div id="modal" class="fixed inset-0 bg-gray-500 bg-opacity-75 hidden" style="z-index: 50;" role="dialog"
-        aria-labelledby="modalTitle" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-lg shadow-xl max-w-lg w-full">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900" id="modalTitle"></h3>
-                </div>
-                <div class="px-6 py-4" id="modalContent"></div>
-                <div class="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end">
-                    <button type="button"
-                        class="modal-close px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                        Close
-                    </button>
-                </div>
-            </div>
-        </div>
+  <!-- Footer -->
+  <footer class="bg-white shadow-sm mt-auto">
+    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+      <p class="text-sm text-gray-500">
+        &copy; <span id="currentYear"></span> AI Model Management System
+      </p>
+      <button
+        id="showSystemInfo"
+        class="text-sm text-blue-600 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg px-2 py-1"
+        aria-haspopup="dialog"
+      >
+        System Information
+      </button>
     </div>
+  </footer>
 
-    <!-- Base JavaScript -->
-        {% block extra_scripts %} {% endblock %}
+  <!-- Modal (System Info / Misc) -->
+  <div
+    id="modal"
+    class="fixed inset-0 bg-gray-500 bg-opacity-75 hidden z-50"
+    role="dialog"
+    aria-labelledby="modalTitle"
+    aria-modal="true"
+  >
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-white rounded-lg shadow-xl max-w-lg w-full">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900" id="modalTitle"></h3>
+        </div>
+        <div class="px-6 py-4" id="modalContent"></div>
+        <div class="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end">
+          <button
+            type="button"
+            class="modal-close px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% block extra_scripts %}{% endblock %}
 </body>
-
 </html>
