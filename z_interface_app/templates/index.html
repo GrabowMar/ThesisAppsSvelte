@@ -12,7 +12,7 @@
           id="searchApps"
           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           placeholder="Search by name, port, status..."
-        >
+        />
       </div>
       <div>
         <label for="filterModel" class="block text-sm font-medium text-gray-700">Filter by Model</label>
@@ -122,33 +122,11 @@
     </div>
   </div>
 
-  <!-- Model Sections -->
+  <!-- Model Sections (No Batch Operations) -->
   {% for model in models %}
   <div class="bg-white shadow rounded-lg p-6" data-model-section="{{ model.name }}">
     <div class="flex items-center justify-between mb-6">
       <h2 class="text-xl font-bold" style="color: '{{ model.color }}';">{{ model.name }}</h2>
-      <div class="flex items-center space-x-4">
-        <button
-          class="batch-action px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
-          data-action="start"
-          data-model="{{ model.name }}"
-        >
-          Start Selected
-        </button>
-        <button
-          class="batch-action px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
-          data-action="stop"
-          data-model="{{ model.name }}"
-        >
-          Stop Selected
-        </button>
-        <button
-          class="select-all-btn px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
-          data-model="{{ model.name }}"
-        >
-          Select All
-        </button>
-      </div>
     </div>
 
     <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
@@ -158,16 +136,6 @@
         data-app-id="{{ app.app_num }}"
         data-model="{{ app.model }}"
       >
-        <!-- Selection Checkbox -->
-        <div class="absolute top-4 left-4">
-          <input
-            type="checkbox"
-            class="app-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-            data-app-id="{{ app.app_num }}"
-            data-model="{{ app.model }}"
-          >
-        </div>
-
         <!-- Status Badge -->
         <div class="absolute top-4 right-4">
           <span
@@ -180,18 +148,18 @@
               bg-red-100 text-red-800
             {% endif %}"
           >
-            {{ 
+            {{
               "Running"
               if app.backend_status.running and app.frontend_status.running
               else "Partial"
               if app.backend_status.running or app.frontend_status.running
-              else "Stopped" 
+              else "Stopped"
             }}
           </span>
         </div>
 
         <!-- App Details -->
-        <h3 class="text-lg font-medium text-gray-900 mb-4 ml-8">{{ app.name }}</h3>
+        <h3 class="text-lg font-medium text-gray-900 mb-4">{{ app.name }}</h3>
         <div class="space-y-3 mb-4">
           <div class="flex justify-between items-center text-sm">
             <span class="text-gray-500">Backend Status:</span>
@@ -233,7 +201,7 @@
           </div>
         </div>
 
-        <!-- Action Buttons -->
+        <!-- Individual Action Buttons -->
         <div class="grid grid-cols-3 gap-2">
           <button
             class="action-btn bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 transition-colors"
@@ -369,24 +337,24 @@
       this.checkInterval = 30000;
       this.intervalId = null;
     }
-    updateStatus(status, message) {
+    updateStatus(state, msg) {
       if (!this.indicator) return;
-      const colorMap = { healthy: 'bg-green-400', warning: 'bg-yellow-400', error: 'bg-red-400' };
+      const map = { healthy: 'bg-green-400', warning: 'bg-yellow-400', error: 'bg-red-400' };
       const dot = this.indicator.querySelector('.rounded-full');
       if (dot) {
-        Object.values(colorMap).forEach(c => dot.classList.remove(c));
-        dot.classList.add(colorMap[status] || colorMap.error);
+        Object.values(map).forEach(c => dot.classList.remove(c));
+        dot.classList.add(map[state] || map.error);
       }
-      this.indicator.querySelector('.text-sm').textContent = message;
+      this.indicator.querySelector('.text-sm').textContent = msg;
     }
     async checkStatus() {
       try {
         const res = await fetch('/api/status');
         const data = await res.json();
-        if (data.status === 'healthy') this.updateStatus('healthy', 'System Active');
-        else this.updateStatus('warning', 'System Warning');
-      } catch (error) {
-        console.error('Status check failed:', error);
+        data.status === 'healthy'
+          ? this.updateStatus('healthy', 'System Active')
+          : this.updateStatus('warning', 'System Warning');
+      } catch {
         this.updateStatus('error', 'Connection Error');
       }
     }
@@ -409,14 +377,13 @@
       performance.mark?.(`${name}-start`);
     }
     endMeasure(name) {
-      if (performance.mark) {
-        performance.mark(`${name}-end`);
-        performance.measure(name, `${name}-start`, `${name}-end`);
-        const entry = performance.getEntriesByName(name)[0];
-        if (entry) {
-          this.metrics[name] = entry.duration;
-          console.debug(`[${name}] ${entry.duration.toFixed(2)}ms`);
-        }
+      if (!performance.mark) return;
+      performance.mark(`${name}-end`);
+      performance.measure(name, `${name}-start`, `${name}-end`);
+      const entry = performance.getEntriesByName(name)[0];
+      if (entry) {
+        this.metrics[name] = entry.duration;
+        console.debug(`[${name}] ${entry.duration.toFixed(2)}ms`);
       }
     }
     clearMetrics() {
@@ -470,13 +437,9 @@
         }
       };
     },
-    formatDate(date) {
-      return new Intl.DateTimeFormat('en-US', {
-        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
-      }).format(date);
-    },
     capitalize(str) {
-      return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+      if (!str || typeof str !== 'string') return '';
+      return str.charAt(0).toUpperCase() + str.slice(1);
     }
   };
 
@@ -526,15 +489,21 @@
       }
 
       document.addEventListener('visibilitychange', () => {
-        document.hidden ? this.statusMonitor.stopMonitoring() : this.statusMonitor.startMonitoring();
+        document.hidden
+          ? this.statusMonitor.stopMonitoring()
+          : this.statusMonitor.startMonitoring();
       });
 
       document.querySelectorAll('.action-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
           const { action, model, appNum } = btn.dataset;
-          if (action === 'status') this.checkAppStatus(model, appNum);
-          else this.controlApp(model, appNum, action, btn);
+          console.log(`Button clicked: action=${action}, model=${model}, appNum=${appNum}`);
+          if (action === 'status') {
+            this.checkAppStatus(model, appNum);
+          } else {
+            this.controlApp(model, appNum, action, btn);
+          }
         });
       });
 
@@ -563,22 +532,7 @@
         refreshAllBtn.addEventListener('click', () => this.refreshAllStatuses());
       }
 
-      document.querySelectorAll('.batch-action').forEach(btn => {
-        btn.addEventListener('click', () => {
-          this.handleBatchOperation(btn.dataset.action, btn.dataset.model);
-        });
-      });
-
-      document.querySelectorAll('.select-all-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const model = btn.dataset.model;
-          const checkboxes = document.querySelectorAll(`[data-model="${model}"] .app-checkbox`);
-          const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-          checkboxes.forEach(cb => cb.checked = !allChecked);
-          btn.textContent = allChecked ? 'Select All' : 'Deselect All';
-        });
-      });
-
+      // Expose some utilities globally
       window.AppUtils = {
         modalManager: this.modalManager,
         statusMonitor: this.statusMonitor,
@@ -589,14 +543,18 @@
 
     async controlApp(model, appNum, action, button) {
       const buttonText = button.querySelector('.button-text');
-      const originalText = buttonText?.textContent.trim() || '';
+      const originalText = buttonText ? buttonText.textContent.trim() : button.textContent.trim();
       let workingText = 'Working...';
       if (action === 'start') workingText = 'Starting...';
       else if (action === 'stop') workingText = 'Stopping...';
       else if (action === 'remove') workingText = 'Removing...';
 
       button.disabled = true;
-      if (buttonText) buttonText.textContent = workingText;
+      if (buttonText) {
+        buttonText.textContent = workingText;
+      } else {
+        button.textContent = workingText;
+      }
 
       try {
         const res = await fetch(`/${action}/${model}/${appNum}`, {
@@ -610,7 +568,11 @@
         this.showToast(`Error: ${err.message}`, 'error');
       } finally {
         button.disabled = false;
-        if (buttonText) buttonText.textContent = originalText;
+        if (buttonText) {
+          buttonText.textContent = originalText;
+        } else {
+          button.textContent = originalText;
+        }
       }
     },
 
@@ -639,11 +601,11 @@
       this.updateServiceStatus(appEl, 'frontend', frontend);
     },
 
-    updateServiceStatus(appEl, service, status) {
+    updateServiceStatus(appEl, service, statusObj) {
       const el = appEl.querySelector(`[data-status="${service}"]`);
       if (!el) return;
-      el.className = el.className.replace(/text-\w+-\d+/g, '').trim(); // remove old color class
-      const { text, colorClass } = this.getDisplayStatus(status);
+      el.className = el.className.replace(/text-\w+-\d+/g, '').trim(); 
+      const { text, colorClass } = this.getDisplayStatus(statusObj);
       el.classList.add('font-medium', colorClass);
       el.textContent = text;
     },
@@ -679,23 +641,25 @@
       document.querySelectorAll('[data-app-id]').forEach(app => {
         const section = app.closest('[data-model-section]');
         const nameEl = app.querySelector('h3');
-        const statusBadge = app.querySelector('[class*="bg-"][class*="text-"]');
-        if (!nameEl || !statusBadge) return;
+        const badge = app.querySelector('[class*="bg-"][class*="text-"]');
+        if (!nameEl || !badge) return;
 
-        const name = nameEl.textContent.toLowerCase();
-        const model = app.dataset.model;
-        const status = statusBadge.textContent.toLowerCase();
-        const show =
-          (name.includes(searchTerm) || app.textContent.toLowerCase().includes(searchTerm)) &&
-          (!modelFilter || model === modelFilter) &&
-          (!statusFilter || status.includes(statusFilter.toLowerCase()));
+        const nameTxt = nameEl.textContent.toLowerCase();
+        const modelName = app.dataset.model;
+        const statusTxt = badge.textContent.toLowerCase();
 
-        app.style.display = show ? '' : 'none';
-        if (show) count++;
+        const visible =
+          (nameTxt.includes(searchTerm) || app.textContent.toLowerCase().includes(searchTerm)) &&
+          (!modelFilter || modelName === modelFilter) &&
+          (!statusFilter || statusTxt.includes(statusFilter.toLowerCase()));
+
+        app.style.display = visible ? '' : 'none';
+        if (visible) count++;
 
         if (section) {
-          const visibleApp = Array.from(section.querySelectorAll('[data-app-id]')).some(a => a.style.display !== 'none');
-          section.style.display = visibleApp ? '' : 'none';
+          const hasVisibleApps = Array.from(section.querySelectorAll('[data-app-id]'))
+            .some(a => a.style.display !== 'none');
+          section.style.display = hasVisibleApps ? '' : 'none';
         }
       });
 
@@ -718,26 +682,15 @@
     },
 
     async refreshAllStatuses() {
-      const refreshBtn = document.getElementById('refreshAll');
-      const originalHTML = refreshBtn?.innerHTML;
+      const btn = document.getElementById('refreshAll');
+      const originalHTML = btn?.innerHTML;
       try {
-        if (refreshBtn) {
-          refreshBtn.disabled = true;
-          refreshBtn.innerHTML = `
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML = `
             <svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle
-                class="opacity-25"
-                cx="12" cy="12" r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2
-                  5.291A7.962 7.962 0 014 12H0c0 3.042 1.135
-                  5.824 3 7.938l3-2.647z"
-              ></path>
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
             Refreshing...
           `;
@@ -749,9 +702,9 @@
         console.error('Refresh failed:', err);
         this.showToast('Failed to refresh statuses', 'error');
       } finally {
-        if (refreshBtn) {
-          refreshBtn.disabled = false;
-          if (originalHTML) refreshBtn.innerHTML = originalHTML;
+        if (btn) {
+          btn.disabled = false;
+          if (originalHTML) btn.innerHTML = originalHTML;
         }
       }
     },
@@ -767,40 +720,27 @@
       btn.classList.toggle('bg-green-500', enabled);
       btn.classList.toggle('hover:bg-green-600', enabled);
 
-      const txt = document.getElementById('autorefreshText');
-      if (txt) txt.textContent = `Auto Refresh: ${enabled ? 'On' : 'Off'}`;
+      const textSpan = document.getElementById('autorefreshText');
+      if (textSpan) textSpan.textContent = `Auto Refresh: ${enabled ? 'On' : 'Off'}`;
     },
 
-    handleBatchOperation(action, model) {
-      const checked = document.querySelectorAll(`[data-model="${model}"] .app-checkbox:checked`);
-      if (checked.length === 0) {
-        this.showToast('Please select at least one app', 'warning');
-        return;
-      }
-      Promise.all([...checked].map(ch => {
-        const app = ch.closest('[data-app-id]');
-        const actionBtn = app.querySelector(`[data-action="${action}"]`);
-        return this.controlApp(model, app.dataset.appId, action, actionBtn);
-      }))
-      .then(() => {
-        this.showToast(`Batch ${Utils.capitalize(action)} completed`, 'success');
-      })
-      .catch(err => {
-        console.error('Batch error:', err);
-        this.showToast('Error during batch operation', 'error');
-      });
-    },
-
-    showToast(message, type='info') {
-      const colors = { error: 'bg-red-500', success: 'bg-green-500', warning: 'bg-yellow-500', info: 'bg-blue-500' };
+    showToast(msg, type = 'info') {
+      const colors = {
+        error: 'bg-red-500',
+        success: 'bg-green-500',
+        warning: 'bg-yellow-500',
+        info: 'bg-blue-500'
+      };
       const toast = document.createElement('div');
       toast.className = `
         fixed bottom-4 right-4
         ${colors[type] || colors.info} text-white px-6 py-3
         rounded-lg shadow-lg transform translate-y-full transition duration-300 z-50
       `.trim();
-      toast.textContent = message;
+      toast.textContent = msg;
       document.body.appendChild(toast);
+
+      // Animate in
       requestAnimationFrame(() => {
         toast.style.transform = 'translateY(0)';
         setTimeout(() => {
@@ -813,5 +753,6 @@
 
   document.addEventListener('DOMContentLoaded', () => PageController.init());
 </script>
+
 {% endblock %}
 {% endblock %}

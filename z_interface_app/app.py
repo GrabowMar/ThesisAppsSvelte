@@ -443,7 +443,7 @@ def handle_docker_action(action: str, model: str, app_num: int) -> Tuple[bool, s
     """High-level docker-compose action handler."""
     commands = {
         "start": [("up", "-d", 120)],
-        "stop": [("stop", None, 30)],
+        "stop": [("down", None, 30)],
         "reload": [("restart", None, 90)],
         "rebuild": [
             ("down", None, 30),
