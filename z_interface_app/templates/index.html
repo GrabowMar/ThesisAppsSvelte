@@ -59,7 +59,7 @@
     {% for model in models %}
     <div class="bg-white shadow rounded-lg p-6" data-model-section="{{ model.name }}">
         <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold" style="color: '{{ model.color }}'">{{ model.name }}</h2>
+            <h2 class="text-xl font-bold" style="color: {{ model.color }}">{{ model.name }}</h2>
             <div class="flex items-center space-x-4">
                 <button class="start-all-btn px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
                         data-model="{{ model.name }}">
@@ -136,28 +136,38 @@
 
                 <!-- Action Buttons -->
                 <div class="grid grid-cols-3 gap-2">
-                    <button onclick="controlApp('{{ app.model }}', {{ app.app_num }}, 'start')"
-                            class="bg-green-500 text-white px-3 py-2 rounded text-center hover:bg-green-600 transition-colors">
+                    <button class="action-btn bg-green-500 text-white px-3 py-2 rounded text-center hover:bg-green-600 transition-colors"
+                            data-action="start"
+                            data-model="{{ app.model }}"
+                            data-app-num="{{ app.app_num }}">
                         Start
                     </button>
-                    <button onclick="controlApp('{{ app.model }}', {{ app.app_num }}, 'stop')"
-                            class="bg-red-500 text-white px-3 py-2 rounded text-center hover:bg-red-600 transition-colors">
+                    <button class="action-btn bg-red-500 text-white px-3 py-2 rounded text-center hover:bg-red-600 transition-colors"
+                            data-action="stop"
+                            data-model="{{ app.model }}"
+                            data-app-num="{{ app.app_num }}">
                         Stop
                     </button>
-                    <button onclick="controlApp('{{ app.model }}', {{ app.app_num }}, 'rebuild')"
-                            class="bg-yellow-500 text-white px-3 py-2 rounded text-center hover:bg-yellow-600 transition-colors">
+                    <button class="action-btn bg-yellow-500 text-white px-3 py-2 rounded text-center hover:bg-yellow-600 transition-colors"
+                            data-action="rebuild"
+                            data-model="{{ app.model }}"
+                            data-app-num="{{ app.app_num }}">
                         Rebuild
                     </button>
-                    <button onclick="controlApp('{{ app.model }}', {{ app.app_num }}, 'reload')"
-                            class="col-span-1 bg-blue-500 text-white px-3 py-2 rounded text-center hover:bg-blue-600 transition-colors">
+                    <button class="action-btn bg-blue-500 text-white px-3 py-2 rounded text-center hover:bg-blue-600 transition-colors"
+                            data-action="reload"
+                            data-model="{{ app.model }}"
+                            data-app-num="{{ app.app_num }}">
                         Reload
                     </button>
                     <a href="{{ url_for('view_logs', model=app.model, app_num=app.app_num) }}"
-                       class="col-span-1 bg-indigo-500 text-white px-3 py-2 rounded text-center hover:bg-indigo-600 transition-colors">
+                       class="bg-indigo-500 text-white px-3 py-2 rounded text-center hover:bg-indigo-600 transition-colors">
                         Logs
                     </a>
-                    <button onclick="checkAppStatus('{{ app.model }}', {{ app.app_num }})"
-                            class="col-span-1 bg-purple-500 text-white px-3 py-2 rounded text-center hover:bg-purple-600 transition-colors">
+                    <button class="action-btn bg-purple-500 text-white px-3 py-2 rounded text-center hover:bg-purple-600 transition-colors"
+                            data-action="status"
+                            data-model="{{ app.model }}"
+                            data-app-num="{{ app.app_num }}">
                         Status
                     </button>
                 </div>
@@ -168,7 +178,22 @@
     {% endfor %}
 </div>
 
+{% block extra_scripts %}
 <script>
+    // Constants
+    const AUTO_REFRESH_INTERVAL = 30000; // 30 seconds
+    const STATUS_CLASSES = {
+        noContainer: 'bg-gray-100 text-gray-800',
+        running: 'bg-green-100 text-green-800',
+        partial: 'bg-yellow-100 text-yellow-800',
+        stopped: 'bg-red-100 text-red-800'
+    };
+
+    // State
+    let refreshTimer = null;
+    let isAutoRefreshEnabled = document.getElementById('toggleAutorefresh')?.dataset.enabled === 'true';
+
+    // Core functionality
     async function controlApp(model, appNum, action) {
         const button = event.target;
         const originalText = button.textContent;
@@ -189,7 +214,7 @@
             
         } catch (error) {
             console.error(`Error during ${action}:`, error);
-            // Show error toast/notification here if desired
+            showToast(`Error: ${error.message}`, 'error');
         } finally {
             button.disabled = false;
             button.textContent = originalText;
@@ -207,8 +232,10 @@
             }
         } catch (error) {
             console.error('Status check failed:', error);
+            showToast('Failed to check status', 'error');
         }
     }
+
     function updateStatusUI(appElement, statusData) {
         const backendStatus = statusData.backend;
         const frontendStatus = statusData.frontend;
@@ -235,39 +262,13 @@
         }
     }
 
-    // Refresh button
-    document.getElementById('refreshAll').addEventListener('click', async function() {
-            const button = this;
-            const originalContent = button.innerHTML;
-            
-            // Disable button and show loading state
-            button.disabled = true;
-            button.innerHTML = `
-                <svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Refreshing...
-            `;
-            
-            try {
-                await refreshAllStatuses(); // Reuse existing function to refresh all statuses
-            } catch (error) {
-                console.error('Error refreshing statuses:', error);
-            } finally {
-                // Restore button state
-                button.disabled = false;
-                button.innerHTML = originalContent;
-            }
-        });
-
     function getDisplayStatus(status) {
-  if (!status.exists) {
-    return {
-      text: 'No Container',
-      colorClass: 'text-gray-600'
-    };
-  }
+        if (!status.exists) {
+            return {
+                text: 'No Container',
+                colorClass: 'text-gray-600'
+            };
+        }
         
         switch (status.status) {
             case 'running':
@@ -295,20 +296,20 @@
 
     function getStatusClass(backend, frontend) {
         if (!backend.exists && !frontend.exists) {
-            return 'bg-gray-100 text-gray-800';
+            return STATUS_CLASSES.noContainer;
         }
         if (backend.running && frontend.running) {
-            return 'bg-green-100 text-green-800';
+            return STATUS_CLASSES.running;
         }
         if (backend.running || frontend.running) {
-            return 'bg-yellow-100 text-yellow-800';
+            return STATUS_CLASSES.partial;
         }
-        return 'bg-red-100 text-red-800';
+        return STATUS_CLASSES.stopped;
     }
 
     function getStatusText(backend, frontend) {
         if (!backend.exists && !frontend.exists) {
-            return 'No Container'; // instead of 'Not Built'
+            return 'No Container';
         }
         if (backend.running && frontend.running) {
             return 'Running';
@@ -317,90 +318,159 @@
             return 'Partial';
         }
         return 'Stopped';
+    }
+
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        const bgColor = type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+        toast.className = `fixed bottom-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-300 z-50`;
+        toast.textContent = message;
+        
+        document.body.appendChild(toast);
+        
+        // Animate in
+        requestAnimationFrame(() => {
+            toast.style.transform = 'translateY(0)';
+            setTimeout(() => {
+                toast.style.transform = 'translateY(100%)';
+                toast.addEventListener('transitionend', () => {
+                    document.body.removeChild(toast);
+                });
+            }, 3000);
+        });
+    }
+
+    // Auto-refresh functionality
+    function startAutoRefresh() {
+        if (refreshTimer) clearInterval(refreshTimer);
+        refreshTimer = setInterval(refreshAllStatuses, AUTO_REFRESH_INTERVAL);
+        showToast('Auto-refresh enabled');
+    }
+
+    function stopAutoRefresh() {
+        if (refreshTimer) {
+            clearInterval(refreshTimer);
+            refreshTimer = null;
+            showToast('Auto-refresh disabled');
+        }
+    }
+
+    async function refreshAllStatuses() {
+        const button = document.getElementById('refreshAll');
+        const originalContent = button?.innerHTML;
+        
+        try {
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = `
+                    <svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Refreshing...
+                `;
+            }
+            
+            const apps = document.querySelectorAll('[data-app-id]');
+            const promises = Array.from(apps).map(app => {
+                return checkAppStatus(app.dataset.model, app.dataset.appId);
+            });
+            
+            await Promise.all(promises);
+            
+        } catch (error) {
+            console.error('Error refreshing statuses:', error);
+            showToast('Failed to refresh all statuses', 'error');
+        } finally {
+            if (button && originalContent) {
+                button.disabled = false;
+                button.innerHTML = originalContent;
+            }
+        }
+    }
+
+    function updateAutoRefreshUI() {
+        const button = document.getElementById('toggleAutorefresh');
+        if (!button) return;
+
+        // Update button appearance
+        if (isAutoRefreshEnabled) {
+            button.classList.remove('bg-gray-500', 'hover:bg-gray-600');
+            button.classList.add('bg-green-500', 'hover:bg-green-600');
+        } else {
+            button.classList.add('bg-gray-500', 'hover:bg-gray-600');
+            button.classList.remove('bg-green-500', 'hover:bg-green-600');
         }
 
-    function openUrls(backendUrl, frontendUrl) {
-        window.open(backendUrl, '_blank');
-        window.open(frontendUrl, '_blank');
+        // Update text
+        const textSpan = document.getElementById('autorefreshText');
+        if (textSpan) {
+            textSpan.textContent = `Auto Refresh: ${isAutoRefreshEnabled ? 'On' : 'Off'}`;
+        }
+
+        // Update ARIA
+        button.setAttribute('aria-pressed', isAutoRefreshEnabled.toString());
     }
 
     // Event Listeners
     document.addEventListener('DOMContentLoaded', function() {
-        const autorefreshEnabled = document.getElementById('toggleAutorefresh').dataset.enabled === 'true';
-        const button = document.getElementById('toggleAutorefresh');
-        
-        // Set initial button state
-        if (autorefreshEnabled) {
-            button.classList.remove('bg-gray-500', 'hover:bg-gray-600');
-            button.classList.add('bg-green-500', 'hover:bg-green-600');
+        // Initialize auto-refresh
+        if (isAutoRefreshEnabled) {
             startAutoRefresh();
-        } else {
-            button.classList.add('bg-gray-500', 'hover:bg-gray-600');
-            button.classList.remove('bg-green-500', 'hover:bg-green-600');
-            stopAutoRefresh(); // Ensure no interval is running
         }
+        updateAutoRefreshUI();
 
-
-        // Add toggle button event listener
-        document.getElementById('toggleAutorefresh').addEventListener('click', toggleAutorefresh);
-
-        // Refresh button
-        document.getElementById('refreshAll').addEventListener('click', refreshStatus);
-
-        // Start All buttons
-        document.querySelectorAll('.start-all-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const model = this.dataset.model;
-                const apps = document.querySelectorAll(`[data-model="${model}"] [data-app-id]`);
-                apps.forEach(app => {
-                    const startUrl = app.querySelector('a[href*="/start/"]').href;
-                    fetch(startUrl).then(() => refreshStatus());
-                });
+        // Action buttons
+        document.querySelectorAll('.action-btn').forEach(button => {
+            button.addEventListener('click', async function() {
+                const { action, model, appNum } = this.dataset;
+                if (action === 'status') {
+                    await checkAppStatus(model, appNum);
+                } else {
+                    await controlApp(model, appNum, action);
+                }
             });
         });
 
-        // Stop All buttons
-        document.querySelectorAll('.stop-all-btn').forEach(button => {
-            button.addEventListener('click', function() {
+        // Auto-refresh toggle
+        document.getElementById('toggleAutorefresh')?.addEventListener('click', function() {
+            isAutoRefreshEnabled = !isAutoRefreshEnabled;
+            if (isAutoRefreshEnabled) {
+                startAutoRefresh();
+            } else {
+                stopAutoRefresh();
+            }
+            updateAutoRefreshUI();
+        });
+
+        // Refresh all button
+        document.getElementById('refreshAll')?.addEventListener('click', refreshAllStatuses);
+
+        // Batch control buttons
+        document.querySelectorAll('.start-all-btn, .stop-all-btn').forEach(button => {
+            button.addEventListener('click', async function() {
                 const model = this.dataset.model;
+                const action = this.classList.contains('start-all-btn') ? 'start' : 'stop';
                 const apps = document.querySelectorAll(`[data-model="${model}"] [data-app-id]`);
-                apps.forEach(app => {
-                    const stopUrl = app.querySelector('a[href*="/stop/"]').href;
-                    fetch(stopUrl).then(() => refreshStatus());
-                });
+                
+                for (const app of apps) {
+                    await controlApp(model, app.dataset.appId, action);
+                }
+                
+                // Final status refresh
+                await refreshAllStatuses();
             });
+        });
+
+        // Page visibility handling
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                stopAutoRefresh();
+            } else if (isAutoRefreshEnabled) {
+                startAutoRefresh();
+            }
         });
     });
-// Improved auto-refresh logic
-const AUTO_REFRESH_INTERVAL = 30000; // 30 seconds
-let refreshTimer;
-
-function startAutoRefresh() {
-    if (refreshTimer) clearInterval(refreshTimer);
-    refreshTimer = setInterval(refreshAllStatuses, AUTO_REFRESH_INTERVAL);
-}
-
-function stopAutoRefresh() {
-    if (refreshTimer) {
-        clearInterval(refreshTimer);
-        refreshTimer = null;
-    }
-}
-
-async function refreshAllStatuses() {
-    const apps = document.querySelectorAll('[data-app-id]');
-    for (const app of apps) {
-        const model = app.dataset.model;
-        const appNum = app.dataset.appId;
-        await checkAppStatus(model, appNum);
-    }
-}
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('toggleAutorefresh').dataset.enabled === 'true') {
-        startAutoRefresh();
-    }
-});
 </script>
+{% endblock %}
 {% endblock %}

@@ -5,81 +5,116 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="AI Model Management System - Monitor and control AI model applications">
     <meta name="theme-color" content="#ffffff">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="application-name" content="AI Model Manager">
     
+    <!-- Primary Meta Tags -->
     <title>{% block title %}AI Model Management System{% endblock %}</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
     
-    <!-- Tailwind CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Preload critical assets -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" as="style">
     
-    <!-- Custom Styles -->
+    <!-- Stylesheets -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono&display=swap" 
+          rel="stylesheet">
+    
+    <!-- Core Styles -->
     <style>
-        /* Custom scrollbar styles */
+        /* Custom Properties */
+        :root {
+            --scrollbar-width: 8px;
+            --scrollbar-track-color: #f1f1f1;
+            --scrollbar-thumb-color: #888;
+            --scrollbar-thumb-hover-color: #666;
+            --spinner-size: 24px;
+            --spinner-border-width: 3px;
+            --spinner-color: #3498db;
+        }
+
+        /* Scrollbar Styling */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: var(--scrollbar-width);
+            height: var(--scrollbar-width);
         }
         
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
+            background: var(--scrollbar-track-color);
+            border-radius: calc(var(--scrollbar-width) / 2);
         }
         
         ::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 4px;
+            background: var(--scrollbar-thumb-color);
+            border-radius: calc(var(--scrollbar-width) / 2);
+            transition: background 0.2s ease;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: #666;
+            background: var(--scrollbar-thumb-hover-color);
         }
 
-        /* Log pre formatting */
+        /* Log Container */
         .log-container pre {
-            font-family: 'Roboto Mono', monospace;
+            font-family: 'Roboto Mono', ui-monospace, monospace;
             line-height: 1.5;
+            tab-size: 4;
         }
 
-        /* Custom transitions */
+        /* Animation Utilities */
         .transition-all {
-            transition-property: all;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            transition-duration: 150ms;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        /* Loading spinner */
+        /* Loading Spinner */
         .loading-spinner {
-            border: 3px solid rgba(0, 0, 0, 0.1);
+            border: var(--spinner-border-width) solid rgba(0, 0, 0, 0.1);
             border-radius: 50%;
-            border-top: 3px solid #3498db;
-            width: 24px;
-            height: 24px;
+            border-top: var(--spinner-border-width) solid var(--spinner-color);
+            width: var(--spinner-size);
+            height: var(--spinner-size);
             animation: spin 1s linear infinite;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Print Styles */
+        @media print {
+            .no-print { display: none !important; }
+            .page-break { page-break-before: always; }
         }
     </style>
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
-    
     {% block extra_head %}{% endblock %}
 </head>
-<body class="min-h-screen bg-gray-50 flex flex-col">
+
+<body class="min-h-screen bg-gray-50 flex flex-col antialiased">
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" 
+       class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded">
+        Skip to main content
+    </a>
+
     <!-- Header Navigation -->
-    <nav class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header class="bg-white shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
             <div class="flex justify-between h-16">
                 <div class="flex">
                     <div class="flex-shrink-0 flex items-center">
-                        <a href="{{ url_for('index') }}" class="flex items-center space-x-2">
-                            <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        <a href="{{ url_for('index') }}" 
+                           class="flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-1"
+                           aria-label="Home">
+                            <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <path stroke-linecap="round" 
+                                      stroke-linejoin="round" 
+                                      stroke-width="2"
                                       d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
                             </svg>
                             <span class="font-semibold text-gray-900 text-lg">AI Model Manager</span>
@@ -88,25 +123,31 @@
                 </div>
                 
                 <div class="flex items-center space-x-4">
-                    <div id="statusIndicator" class="flex items-center">
+                    <div id="statusIndicator" 
+                         class="flex items-center" 
+                         role="status" 
+                         aria-live="polite">
                         <span class="h-2 w-2 rounded-full bg-green-400 mr-2"></span>
                         <span class="text-sm text-gray-600">System Active</span>
                     </div>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
     <!-- Main Content -->
-    <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main id="main-content" class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for category, message in messages %}
-                    <div class="mb-4 rounded-md p-4 {% if category == 'error' %}bg-red-50 text-red-700{% else %}bg-green-50 text-green-700{% endif %}"
-                         role="alert">
-                        <p class="text-sm">{{ message }}</p>
-                    </div>
-                {% endfor %}
+                <div class="space-y-2" aria-live="polite">
+                    {% for category, message in messages %}
+                        <div class="rounded-md p-4 {% if category == 'error' %}bg-red-50 text-red-700{% else %}bg-green-50 text-green-700{% endif %}"
+                             role="alert">
+                            <p class="text-sm font-medium">{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
             {% endif %}
         {% endwith %}
         
@@ -118,10 +159,12 @@
         <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center">
                 <p class="text-sm text-gray-500">
-                    AI Model Management System
+                    &copy; <span id="currentYear"></span> AI Model Management System
                 </p>
                 <div class="flex space-x-4">
-                    <button id="showSystemInfo" class="text-sm text-blue-600 hover:text-blue-800">
+                    <button id="showSystemInfo" 
+                            class="text-sm text-blue-600 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg px-2 py-1"
+                            aria-haspopup="dialog">
                         System Information
                     </button>
                 </div>
@@ -130,7 +173,12 @@
     </footer>
 
     <!-- Modal Template -->
-    <div id="modal" class="fixed inset-0 bg-gray-500 bg-opacity-75 hidden" style="z-index: 50;">
+    <div id="modal" 
+         class="fixed inset-0 bg-gray-500 bg-opacity-75 hidden" 
+         style="z-index: 50;"
+         role="dialog"
+         aria-labelledby="modalTitle"
+         aria-modal="true">
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-lg shadow-xl max-w-lg w-full">
                 <div class="px-6 py-4 border-b border-gray-200">
@@ -138,7 +186,8 @@
                 </div>
                 <div class="px-6 py-4" id="modalContent"></div>
                 <div class="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end">
-                    <button type="button" class="modal-close px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+                    <button type="button" 
+                            class="modal-close px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500">
                         Close
                     </button>
                 </div>
@@ -150,19 +199,60 @@
     <script>
         // Modal functionality
         document.addEventListener('DOMContentLoaded', function() {
+            // Set current year in footer
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
             const modal = document.getElementById('modal');
             const modalTitle = document.getElementById('modalTitle');
             const modalContent = document.getElementById('modalContent');
             const closeButtons = document.querySelectorAll('.modal-close');
             
+            let focusedElementBeforeModal;
+            
             function showModal(title, content) {
+                focusedElementBeforeModal = document.activeElement;
                 modalTitle.textContent = title;
                 modalContent.innerHTML = content;
                 modal.classList.remove('hidden');
+                
+                // Focus handling
+                const closeButton = modal.querySelector('.modal-close');
+                closeButton?.focus();
+                
+                // Trap focus in modal
+                modal.addEventListener('keydown', trapFocus);
             }
             
             function hideModal() {
                 modal.classList.add('hidden');
+                modal.removeEventListener('keydown', trapFocus);
+                focusedElementBeforeModal?.focus();
+            }
+            
+            function trapFocus(e) {
+                if (e.key === 'Escape') {
+                    hideModal();
+                    return;
+                }
+                
+                if (e.key !== 'Tab') return;
+                
+                const focusableElements = modal.querySelectorAll(
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                );
+                const firstFocusable = focusableElements[0];
+                const lastFocusable = focusableElements[focusableElements.length - 1];
+                
+                if (e.shiftKey) {
+                    if (document.activeElement === firstFocusable) {
+                        lastFocusable.focus();
+                        e.preventDefault();
+                    }
+                } else {
+                    if (document.activeElement === lastFocusable) {
+                        firstFocusable.focus();
+                        e.preventDefault();
+                    }
+                }
             }
             
             closeButtons.forEach(button => {
@@ -196,49 +286,223 @@
             });
         });
 
-        // Global error handler
-        window.addEventListener('error', function(e) {
-            console.error('Global error:', e.error);
-            const statusIndicator = document.getElementById('statusIndicator');
-            if (statusIndicator) {
-                statusIndicator.innerHTML = `
-                    <span class="h-2 w-2 rounded-full bg-red-400 mr-2"></span>
-                    <span class="text-sm text-gray-600">Error Detected</span>
+        // Error handling and status monitoring
+        class StatusMonitor {
+            constructor() {
+                this.indicator = document.getElementById('statusIndicator');
+                this.checkInterval = 30000; // 30 seconds
+                this.intervalId = null;
+            }
+            
+            updateStatus(status, message) {
+                if (!this.indicator) return;
+                
+                const statusColors = {
+                    healthy: 'bg-green-400',
+                    warning: 'bg-yellow-400',
+                    error: 'bg-red-400'
+                };
+                
+                const currentColor = Object.values(statusColors).find(color => 
+                    this.indicator.querySelector('.rounded-full').classList.contains(color)
+                );
+                
+                if (currentColor) {
+                    this.indicator.querySelector('.rounded-full').classList.remove(currentColor);
+                }
+                
+                this.indicator.innerHTML = `
+                    <span class="h-2 w-2 rounded-full ${statusColors[status]} mr-2"></span>
+                    <span class="text-sm text-gray-600">${message}</span>
                 `;
+            }
+            
+            async checkStatus() {
+                try {
+                    const response = await fetch('/api/status');
+                    const data = await response.json();
+                    
+                    this.updateStatus(
+                        data.status === 'healthy' ? 'healthy' : 'warning',
+                        data.status === 'healthy' ? 'System Active' : 'System Warning'
+                    );
+                } catch (error) {
+                    console.error('Status check failed:', error);
+                    this.updateStatus('error', 'Connection Error');
+                }
+            }
+            
+            startMonitoring() {
+                this.checkStatus();
+                this.intervalId = setInterval(() => this.checkStatus(), this.checkInterval);
+            }
+            
+            stopMonitoring() {
+                if (this.intervalId) {
+                    clearInterval(this.intervalId);
+                    this.intervalId = null;
+                }
+            }
+        }
+
+        // Initialize status monitoring
+        const statusMonitor = new StatusMonitor();
+        statusMonitor.startMonitoring();
+
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                statusMonitor.stopMonitoring();
+            } else {
+                statusMonitor.startMonitoring();
             }
         });
 
-        // System status check
-        function checkSystemStatus() {
-            fetch('/api/status')
-                .then(response => response.json())
-                .then(data => {
-                    const indicator = document.getElementById('statusIndicator');
-                    if (data.status === 'healthy') {
-                        indicator.innerHTML = `
-                            <span class="h-2 w-2 rounded-full bg-green-400 mr-2"></span>
-                            <span class="text-sm text-gray-600">System Active</span>
-                        `;
-                    } else {
-                        indicator.innerHTML = `
-                            <span class="h-2 w-2 rounded-full bg-yellow-400 mr-2"></span>
-                            <span class="text-sm text-gray-600">System Warning</span>
-                        `;
+        // Performance monitoring
+        class PerformanceMonitor {
+            constructor() {
+                this.metrics = {};
+            }
+            
+            startMeasure(name) {
+                if (window.performance && performance.mark) {
+                    performance.mark(`${name}-start`);
+                }
+            }
+            
+            endMeasure(name) {
+                if (window.performance && performance.mark) {
+                    performance.mark(`${name}-end`);
+                    performance.measure(name, `${name}-start`, `${name}-end`);
+                    
+                    const measures = performance.getEntriesByName(name);
+                    if (measures.length > 0) {
+                        this.metrics[name] = measures[0].duration;
+                        console.debug(`Performance [${name}]: ${this.metrics[name].toFixed(2)}ms`);
                     }
-                })
-                .catch(error => {
-                    console.error('Status check failed:', error);
-                    const indicator = document.getElementById('statusIndicator');
-                    indicator.innerHTML = `
-                        <span class="h-2 w-2 rounded-full bg-red-400 mr-2"></span>
-                        <span class="text-sm text-gray-600">Connection Error</span>
-                    `;
-                });
+                }
+            }
+            
+            clearMetrics() {
+                if (window.performance && performance.clearMarks) {
+                    performance.clearMarks();
+                    performance.clearMeasures();
+                }
+                this.metrics = {};
+            }
         }
 
-        // Check status periodically
-        setInterval(checkSystemStatus, 30000);
-        
+        // Error handling utilities
+        const ErrorHandler = {
+            init() {
+                window.addEventListener('error', this.handleError.bind(this));
+                window.addEventListener('unhandledrejection', this.handlePromiseError.bind(this));
+            },
+            
+            handleError(event) {
+                console.error('Global error:', event.error);
+                this.updateUI(event.error?.message || 'An error occurred');
+                return false;
+            },
+            
+            handlePromiseError(event) {
+                console.error('Unhandled promise rejection:', event.reason);
+                this.updateUI(event.reason?.message || 'An async operation failed');
+                return false;
+            },
+            
+            updateUI(errorMessage) {
+                const statusIndicator = document.getElementById('statusIndicator');
+                if (statusIndicator) {
+                    statusMonitor.updateStatus('error', 'Error Detected');
+                }
+                
+                // Show error toast
+                this.showErrorToast(errorMessage);
+            },
+            
+            showErrorToast(message) {
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-300 translate-y-full';
+                toast.textContent = message;
+                
+                document.body.appendChild(toast);
+                
+                // Animate in
+                requestAnimationFrame(() => {
+                    toast.style.transform = 'translateY(0)';
+                });
+                
+                // Remove after 5 seconds
+                setTimeout(() => {
+                    toast.style.transform = 'translateY(full)';
+                    toast.addEventListener('transitionend', () => {
+                        document.body.removeChild(toast);
+                    });
+                }, 5000);
+            }
+        };
+
+        // Utility functions
+        const Utils = {
+            debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            },
+            
+            throttle(func, limit) {
+                let inThrottle;
+                return function executedFunction(...args) {
+                    if (!inThrottle) {
+                        func(...args);
+                        inThrottle = true;
+                        setTimeout(() => inThrottle = false, limit);
+                    }
+                };
+            },
+            
+            formatDate(date) {
+                return new Intl.DateTimeFormat('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }).format(date);
+            },
+            
+            getQueryParam(param) {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(param);
+            },
+            
+            setQueryParam(param, value) {
+                const urlParams = new URLSearchParams(window.location.search);
+                urlParams.set(param, value);
+                window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
+            }
+        };
+
+        // Initialize error handling
+        ErrorHandler.init();
+
+        // Initialize performance monitoring
+        const performanceMonitor = new PerformanceMonitor();
+
+        // Export utilities for use in child templates
+        window.AppUtils = {
+            performanceMonitor,
+            statusMonitor,
+            utils: Utils
+        };
+
         {% block extra_scripts %}{% endblock %}
     </script>
 </body>

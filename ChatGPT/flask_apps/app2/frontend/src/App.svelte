@@ -1,37 +1,100 @@
 <script>
-  let message = 'Loading...';
+  import { onMount } from "svelte";
 
-  async function fetchMessage() {
-    try {
-      const response = await fetch('http://localhost:5003/');
-      const data = await response.json();
-      message = data.message;
-    } catch (error) {
-      message = 'Error connecting to ChatGPT backend';
-    }
-  }
+  let socket;
+  let username = "";
+  let room = "";
+  let message = "";
+  let messages = [];
+  let isConnected = false;
 
-  fetchMessage();
+  const connect = () => {
+      socket = io("http://localhost:5003");
+
+      socket.on("message", (data) => {
+          if (typeof data === "string") {
+              messages = [...messages, { system: true, text: data }];
+          } else {
+              messages = [...messages, { username: data.username, text: data.message }];
+          }
+      });
+  };
+
+  const joinRoom = () => {
+      if (username && room) {
+          connect();
+          socket.emit("join", { username, room });
+          isConnected = true;
+      }
+  };
+
+  const sendMessage = () => {
+      if (message) {
+          socket.emit("message", { message });
+          message = "";
+      }
+  };
+
+  const leaveRoom = () => {
+      socket.emit("leave", {});
+      socket.disconnect();
+      isConnected = false;
+      messages = [];
+  };
 </script>
 
 <main>
-  <h1>ChatGPT App</h1>
-  <p class="message">{message}</p>
+  {#if !isConnected}
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+      <div>
+          <input type="text" bind:value={username} placeholder="Enter your username" />
+          <input type="text" bind:value={room} placeholder="Enter room name" />
+          <button on:click={joinRoom}>Join Room</button>
+      </div>
+  {:else}
+      <div>
+          <div>
+              <h2>Room: {room}</h2>
+              <button on:click={leaveRoom}>Leave Room</button>
+          </div>
+          <div>
+              <ul>
+                  {#each messages as msg}
+                      <li>{msg.system ? msg.text : `${msg.username}: ${msg.text}`}</li>
+                  {/each}
+              </ul>
+          </div>
+          <div>
+              <input type="text" bind:value={message} placeholder="Type a message" />
+              <button on:click={sendMessage}>Send</button>
+          </div>
+      </div>
+  {/if}
 </main>
 
 <style>
   main {
-    text-align: center;
-    padding: 2em;
+      font-family: Arial, sans-serif;
+      margin: 20px;
   }
-  h1 {
-    color: #333;
-    font-size: 2em;
-    margin-bottom: 0.5em;
+
+  input {
+      margin: 5px;
+      padding: 5px;
   }
-  .message {
-    color: #444;
-    font-size: 1.2em;
-    margin: 1em;
+
+  button {
+      margin: 5px;
+      padding: 5px;
+  }
+
+  ul {
+      list-style: none;
+      padding: 0;
+  }
+
+  li {
+      margin: 5px 0;
   }
 </style>
