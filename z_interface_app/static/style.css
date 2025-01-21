@@ -1,322 +1,289 @@
-/* Base styles */
-* {
+/***********************************************************************
+  Compact & Spicy Dashboard Overrides
+  - Edgier colors (a bit darker & more saturated)
+  - Tighter spacing
+  - Subtle gradients & hover animations
+  - Crisp edges but with "pop" highlights
+***********************************************************************/
+
+/* OPTIONAL: If you only want these styles in certain areas,
+   wrap your template in .dashboard-spice and prepend these rules:
+   .dashboard-spice html, .dashboard-spice .p-6, etc.
+*/
+
+/* Overall page: subtle gradient background & slightly darker text */
+html, body {
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
+      "Segoe UI Emoji", "Segoe UI Symbol";
+    /* Subtle 2-tone background for flavor */
+    background: linear-gradient(160deg, #f3f4f6 0%, #e9ebef 100%);
+    color: #222; 
+    font-size: 14px;
+    line-height: 1.4;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu, sans-serif;
-    line-height: 1.4;
-    color: #333;
-    background-color: #f5f5f5;
-    padding: 20px;
-}
-
-/* Header styles */
-.header {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-}
-
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.refresh-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 120px;
-    justify-content: center;
-}
-
-.refresh-icon {
-    font-size: 18px;
-    transition: transform 0.3s ease;
-}
-
-.refresh-btn.refreshing .refresh-icon {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.btn.loading {
-    opacity: 0.7;
-    cursor: wait;
-    pointer-events: none;
-}
-
-.header h1 {
-    color: #2d3748;
-    margin-bottom: 10px;
-    font-size: 24px;
-}
-
-.header p {
-    color: #666;
-    font-size: 16px;
-}
-
-/* Model section styles */
-.model-section {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-    overflow: hidden;
-}
-
-.model-header {
-    padding: 20px;
-    border-bottom: 1px solid #edf2f7;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.model-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.model-color {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    display: inline-block;
-}
-
-.model-name {
-    font-size: 18px;
+  }
+  
+  /* Headings: slightly darker & bigger punch */
+  h1 {
+    font-size: 1.45rem;
     font-weight: 600;
-    color: #2d3748;
-}
-
-.model-version {
-    font-size: 14px;
-    color: #666;
-    padding: 2px 6px;
-    background: #f7fafc;
-    border-radius: 4px;
-}
-
-.model-description {
-    color: #666;
-    font-size: 14px;
-}
-
-/* Apps grid */
-.apps-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 20px;
-}
-
-/* App card styles */
-.app-card {
+    color: #1e1e1e;
+    margin-bottom: 0.75rem;
+  }
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #232323;
+    margin-bottom: 0.5rem;
+  }
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: #2c2c2c;
+    margin-bottom: 0.4rem;
+  }
+  
+  /* Spacing: keep it tight */
+  .p-6 {
+    padding: 1rem !important; /* from 1.5rem -> 1rem */
+  }
+  .mb-6,
+  .mt-6 {
+    margin: 1rem 0 !important; 
+  }
+  .space-y-8 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 1rem !important;
+  }
+  
+  /* Cards: Crisp edges with a very subtle shadow and an accent border on hover */
+  .bg-white.shadow.rounded-lg {
     background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 15px;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.app-card:hover {
+    border-radius: 4px !important;  /* small corner rounding */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid #e2e4e8;
+    position: relative;
+    transition: border 0.2s, box-shadow 0.2s;
+  }
+  .bg-white.shadow.rounded-lg:hover {
+    border-color: #b1b6bd; /* subtle darkening on hover */
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* Section headers a bit bolder, with a subtle left border accent */
+  section.bg-white.shadow.rounded-lg.p-6 {
+    border-left: 4px solid #6366f1; /* purple/blue accent stripe */
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+    border-radius: 4px !important;
+  }
+  
+  /* Inputs: smaller, sharper, and tinted hover/focus states */
+  input[type="text"], select {
+    padding: 0.35rem 0.5rem !important;
+    border-radius: 3px !important;
+    border: 1px solid #cfd4da !important;
+    background: #fbfbfd;
+    font-size: 0.85rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  input[type="text"]:hover, select:hover {
+    border-color: #959ba5 !important;
+  }
+  input[type="text"]:focus, select:focus {
+    border-color: #727ce0 !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(114, 124, 224, 0.2) !important;
+  }
+  
+  /* Buttons: 
+     - Darker, saturated backgrounds 
+     - Subtle gradient 
+     - Slight scale on hover for "spice" 
+  */
+  button, .batch-action, .action-btn {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.75rem !important;
+    border-radius: 3px !important;
+    border: none; 
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    background-image: linear-gradient(to bottom right, rgba(255,255,255,0.15), rgba(0,0,0,0.05));
+  }
+  button:hover, .batch-action:hover, .action-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  /* Specific color classes turned up a notch */
+  .action-btn.bg-green-500 {
+    background-color: #369e72 !important; 
+  }
+  .action-btn.bg-green-500:hover {
+    background-color: #2f8b63 !important;
+  }
+  
+  .action-btn.bg-red-500 {
+    background-color: #d35c50 !important; 
+  }
+  .action-btn.bg-red-500:hover {
+    background-color: #bf4d40 !important;
+  }
+  
+  .action-btn.bg-yellow-500 {
+    background-color: #cf8b2c !important; 
+  }
+  .action-btn.bg-yellow-500:hover {
+    background-color: #b77a26 !important;
+  }
+  
+  .action-btn.bg-blue-500 {
+    background-color: #2979ff !important; 
+  }
+  .action-btn.bg-blue-500:hover {
+    background-color: #1f64e3 !important;
+  }
+  
+  .batch-action.bg-green-500 {
+    background-color: #369e72 !important;
+  }
+  .batch-action.bg-red-500 {
+    background-color: #d35c50 !important;
+  }
+  .batch-action.bg-gray-500 {
+    background-color: #646f87 !important;
+  }
+  
+  /* Indigo & purple also spicier */
+  .bg-indigo-500 {
+    background-color: #4f46e5 !important; 
+  }
+  .bg-indigo-500:hover {
+    background-color: #4338ca !important;
+  }
+  .bg-purple-500 {
+    background-color: #8b5cf6 !important;
+  }
+  .bg-purple-500:hover {
+    background-color: #7c49f3 !important;
+  }
+  
+  /* Toggle auto-refresh "off" state is a medium-dark gray */
+  .bg-gray-500 {
+    background-color: #646f87 !important;
+  }
+  .bg-gray-500:hover {
+    background-color: #535d72 !important;
+  }
+  
+  /* Icons smaller and aligned next to text with minimal margin */
+  button svg.w-4.h-4, .batch-action svg.w-4.h-4, .action-btn svg.w-4.h-4 {
+    width: 0.85rem !important;
+    height: 0.85rem !important;
+    margin-right: 0.3rem !important;
+  }
+  
+  /* Individual app cards: slightly raised on hover, subtle border highlight */
+  [data-app-id] {
+    border: 1px solid #dadcdf;
+    border-radius: 3px;
+    padding: 0.75rem !important;
+    background-color: #fff;
+    position: relative;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+  [data-app-id]:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.app-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.app-title {
-    font-weight: 600;
-    color: #2d3748;
-}
-
-/* Status styles */
-.app-status {
-    font-size: 12px;
-    padding: 4px 8px;
-    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.07);
+    border-color: #c1c4c9;
+  }
+  
+  /* Smaller checkboxes */
+  .app-checkbox.h-4.w-4 {
+    width: 0.9rem !important;
+    height: 0.9rem !important;
+  }
+  
+  /* Status badges: smaller text, strong color blocks with a slight gradient */
+  [data-app-id] .absolute.top-4.right-4 span {
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.45rem !important;
+    border-radius: 2px !important;
     font-weight: 500;
-}
-
-.status-running { background: #c6f6d5; color: #22543d; }
-.status-stopped { background: #fed7d7; color: #822727; }
-.status-unhealthy { background: #feebc8; color: #744210; }
-.status-starting { background: #e9d8fd; color: #44337a; }
-.status-error { background: #fed7d7; color: #822727; }
-.status-not_built { background: #e2e8f0; color: #2d3748; }
-
-/* Health status styles */
-.health-info {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #edf2f7;
-}
-
-.health-status {
-    font-size: 12px;
-    padding: 4px 8px;
-    border-radius: 4px;
-}
-
-.health-healthy { background: #c6f6d5; color: #22543d; }
-.health-unhealthy { background: #fed7d7; color: #822727; }
-.health-starting { background: #e9d8fd; color: #44337a; }
-
-/* Port info styles */
-.app-info {
-    margin: 15px 0;
-}
-
-.port-info {
-    display: flex;
-    align-items: center;
-    margin: 8px 0;
-    font-size: 14px;
-    gap: 8px;
-}
-
-.port-info label {
-    color: #666;
-    min-width: 70px;
-}
-
-.port-info span {
-    color: #2d3748;
-    font-weight: 500;
-}
-
-/* Button styles */
-.btn {
+    background-image: linear-gradient(to bottom left, rgba(255,255,255,0.15), rgba(0,0,0,0.05));
+  }
+  
+  /* Distinct color for each state */
+  .bg-green-100.text-green-800 {
+    background-color: #ddf7e3 !important; /* slightly darker than default */
+    color: #1c7d4f !important; 
+  }
+  .bg-yellow-100.text-yellow-800 {
+    background-color: #fff2cf !important; 
+    color: #925c05 !important;
+  }
+  .bg-red-100.text-red-800 {
+    background-color: #fde1df !important; 
+    color: #a81f20 !important;
+  }
+  
+  /* Backend/Frontend text statuses with bolder dark colors */
+  .font-medium.text-green-600 {
+    color: #1c7d4f !important;
+  }
+  .font-medium.text-red-600 {
+    color: #c2403f !important;
+  }
+  .font-medium.text-yellow-600 {
+    color: #925c05 !important;
+  }
+  
+  /* Logs link consistent with other buttons, slight gradient, small radius */
+  a.bg-indigo-500.text-white {
+    text-decoration: none;
+    padding: 0.4rem 0.75rem;
     display: inline-flex;
     align-items: center;
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 500;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    border: none;
-}
-
-.btn-primary {
-    background-color: #4299e1;
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: #3182ce;
-}
-
-.btn-secondary {
-    background-color: #edf2f7;
-    color: #2d3748;
-}
-
-.btn-secondary:hover {
-    background-color: #e2e8f0;
-}
-
-.btn-danger {
-    background-color: #f56565;
-    color: white;
-}
-
-.btn-danger:hover {
-    background-color: #e53e3e;
-}
-
-.btn-link {
-    color: #4299e1;
-    text-decoration: none;
-    padding: 2px 6px;
-}
-
-.btn-link:hover {
-    text-decoration: underline;
-}
-
-.btn-group {
-    display: flex;
-    gap: 8px;
-    margin-top: 15px;
-    flex-wrap: wrap;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .model-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .apps-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .btn-group {
-        flex-direction: column;
-    }
-    
-    .btn {
-        width: 100%;
-        justify-content: center;
-    }
-}
-
-.build-logs {
-    margin-top: 15px;
-    padding: 10px;
-    background: #1a1a1a;
-    color: #e6e6e6;
-    font-family: monospace;
-    font-size: 12px;
-    line-height: 1.4;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    border-radius: 4px;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.build-logs::-webkit-scrollbar {
-    width: 8px;
-}
-
-.build-logs::-webkit-scrollbar-track {
-    background: #333;
-}
-
-.build-logs::-webkit-scrollbar-thumb {
-    background: #666;
-    border-radius: 4px;
-}
-
-.build-logs::-webkit-scrollbar-thumb:hover {
-    background: #888;
-}
+    border-radius: 3px;
+    font-size: 0.85rem;
+    background-image: linear-gradient(to bottom right, rgba(255,255,255,0.12), rgba(0,0,0,0.04));
+  }
+  
+  /* "Select All" / "Deselect All": smaller, spiced up on hover */
+  .select-all-btn {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem !important;
+    transition: background-color 0.15s;
+  }
+  .select-all-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Toast notifications: sharper, more vibrant background colors,
+     with a subtle scale-in/out transition for "pop" */
+  .fixed.bottom-4.right-4 {
+    font-size: 0.85rem !important;
+    border-radius: 3px !important;
+    min-width: 200px;
+    transform: translateY(100%) scale(0.95);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  .fixed.bottom-4.right-4.show {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  
+  .bg-red-500.text-white {
+    background-color: #d35c50 !important;
+  }
+  .bg-green-500.text-white {
+    background-color: #369e72 !important;
+  }
+  .bg-blue-500.text-white {
+    background-color: #2979ff !important;
+  }
+  .bg-yellow-500.text-white {
+    background-color: #cf8b2c !important;
+  }
+  

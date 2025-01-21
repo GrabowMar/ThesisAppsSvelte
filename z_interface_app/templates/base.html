@@ -23,73 +23,10 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono&display=swap" 
           rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
-    <!-- Core Styles -->
-    <style>
-        /* Custom Properties */
-        :root {
-            --scrollbar-width: 8px;
-            --scrollbar-track-color: #f1f1f1;
-            --scrollbar-thumb-color: #888;
-            --scrollbar-thumb-hover-color: #666;
-            --spinner-size: 24px;
-            --spinner-border-width: 3px;
-            --spinner-color: #3498db;
-        }
-
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar {
-            width: var(--scrollbar-width);
-            height: var(--scrollbar-width);
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: var(--scrollbar-track-color);
-            border-radius: calc(var(--scrollbar-width) / 2);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--scrollbar-thumb-color);
-            border-radius: calc(var(--scrollbar-width) / 2);
-            transition: background 0.2s ease;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--scrollbar-thumb-hover-color);
-        }
-
-        /* Log Container */
-        .log-container pre {
-            font-family: 'Roboto Mono', ui-monospace, monospace;
-            line-height: 1.5;
-            tab-size: 4;
-        }
-
-        /* Animation Utilities */
-        .transition-all {
-            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        /* Loading Spinner */
-        .loading-spinner {
-            border: var(--spinner-border-width) solid rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            border-top: var(--spinner-border-width) solid var(--spinner-color);
-            width: var(--spinner-size);
-            height: var(--spinner-size);
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Print Styles */
-        @media print {
-            .no-print { display: none !important; }
-            .page-break { page-break-before: always; }
-        }
-    </style>
+    <!-- Core Styles -->   
 
     {% block extra_head %}{% endblock %}
 </head>

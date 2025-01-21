@@ -1,1170 +1,1235 @@
 {% extends "base.html" %}
 
 {% block extra_head %}
-<!-- Chart.js for statistics -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
-<!-- Additional dark mode styles -->
-<style>
-    /* Dark mode styles */
-    .dark body {
-        background-color: #1a1a1a;
-    }
-
-    .dark .bg-white {
-        background-color: #2d2d2d;
-    }
-
-    .dark .text-gray-900 {
-        color: #e5e5e5;
-    }
-
-    .dark .text-gray-600 {
-        color: #a0a0a0;
-    }
-
-    .dark .border-gray-300 {
-        border-color: #404040;
-    }
-
-    .dark .bg-gray-50 {
-        background-color: #363636;
-    }
-
-    .dark .shadow {
-        box-shadow: 0 1px 3px 0 rgba(255, 255, 255, 0.1);
-    }
-
-    /* Loading animation styles */
-    @keyframes spin {
-        to {
-            transform: rotate(360deg);
+    <!-- Chart.js for statistics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <style>
+        /* Loading animation styles */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
-    }
-
-    .loading-indicator {
-        animation: spin 1s linear infinite;
-    }
-</style>
+        .loading-indicator {
+            animation: spin 1s linear infinite;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
-<div class="space-y-8">
-    <!-- Search and Filter Bar -->
-    <section class="bg-white shadow rounded-lg p-6 mb-6 dark:bg-gray-800">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-                <label for="searchApps" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search
-                    Apps</label>
-                <input type="text" id="searchApps"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    placeholder="Search by name, port, status...">
+    <div class="space-y-8">
+        <!-- Search and Filter Bar -->
+        <section class="bg-white shadow rounded-lg p-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="searchApps" class="block text-sm font-medium text-gray-700">
+                        Search Apps
+                    </label>
+                    <input
+                        type="text"
+                        id="searchApps"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        placeholder="Search by name, port, status..."
+                    >
+                </div>
+                <div>
+                    <label for="filterModel" class="block text-sm font-medium text-gray-700">
+                        Filter by Model
+                    </label>
+                    <select
+                        id="filterModel"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    >
+                        <option value="">All Models</option>
+                        {% for model in models %}
+                            <option value="{{ model.name }}">{{ model.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="filterStatus" class="block text-sm font-medium text-gray-700">
+                        Filter by Status
+                    </label>
+                    <select
+                        id="filterStatus"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    >
+                        <option value="">All Statuses</option>
+                        <option value="running">Running</option>
+                        <option value="partial">Partial</option>
+                        <option value="stopped">Stopped</option>
+                    </select>
+                </div>
             </div>
-            <div>
-                <label for="filterModel" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filter by
-                    Model</label>
-                <select id="filterModel"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="">All Models</option>
-                    {% for model in models %}
-                    <option value="{{ model.name }}">{{ model.name }}</option>
+        </section>
+
+        <!-- Dashboard Header -->
+        <section aria-labelledby="dashboard-title" class="bg-white shadow rounded-lg p-6">
+            <div class="flex justify-between items-center">
+                <h1 id="dashboard-title" class="text-2xl font-bold text-gray-900">
+                    AI Model Dashboard
+                </h1>
+                <div class="flex space-x-4">
+                    <!-- Auto-refresh Toggle -->
+                    <button
+                        id="toggleAutorefresh"
+                        class="inline-flex items-center px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                        {% if autorefresh_enabled %}bg-green-500 hover:bg-green-600{% else %}bg-gray-500 hover:bg-gray-600{% endif %}"
+                        data-enabled="{{ 'true' if autorefresh_enabled else 'false' }}"
+                        aria-pressed="{{ 'true' if autorefresh_enabled else 'false' }}"
+                    >
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                        </svg>
+                        <span id="autorefreshText">
+                            Auto Refresh: {{ "On" if autorefresh_enabled else "Off" }}
+                        </span>
+                    </button>
+
+                    <!-- Manual Refresh -->
+                    <button
+                        id="refreshAll"
+                        class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                            />
+                        </svg>
+                        <span>Refresh All</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- System Status Overview -->
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {% with %}
+                    {% set running_apps = apps | selectattr('backend_status.running', 'true') | selectattr('frontend_status.running', 'true') | list %}
+                    {% set partial_apps =
+                        (apps | selectattr('backend_status.running', 'true') | rejectattr('frontend_status.running', 'true') | list)
+                        + (apps | rejectattr('backend_status.running', 'true') | selectattr('frontend_status.running', 'true') | list)
+                    %}
+                    {% set stopped_apps = apps | rejectattr('backend_status.running', 'true') | rejectattr('frontend_status.running', 'true') | list %}
+
+                    <!-- Status Cards -->
+                    {% for status in [
+                        ('Total Apps', apps|length, 'text-gray-900'),
+                        ('Running Apps', running_apps|length, 'text-green-600'),
+                        ('Partial Status', partial_apps|length, 'text-yellow-600'),
+                        ('Stopped Apps', stopped_apps|length, 'text-red-600')
+                    ] %}
+                        <div class="bg-gray-50 p-4 rounded-lg" role="status">
+                            <h3 class="text-sm font-medium text-gray-500">{{ status[0] }}</h3>
+                            <p class="mt-1 text-2xl font-semibold {{ status[2] }}">
+                                {{ status[1] }}
+                            </p>
+                        </div>
                     {% endfor %}
-                </select>
+                {% endwith %}
             </div>
-            <div>
-                <label for="filterStatus" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filter by
-                    Status</label>
-                <select id="filterStatus"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="">All Statuses</option>
-                    <option value="running">Running</option>
-                    <option value="partial">Partial</option>
-                    <option value="stopped">Stopped</option>
-                </select>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Dashboard Header -->
-    <section aria-labelledby="dashboard-title" class="bg-white shadow rounded-lg p-6 dark:bg-gray-800">
-        <div class="flex justify-between items-center">
-            <h1 id="dashboard-title" class="text-2xl font-bold text-gray-900 dark:text-white">AI Model Dashboard</h1>
-            <div class="flex space-x-4">
-                <!-- Dark Mode Toggle will be inserted here by JS -->
-
-                <!-- Auto-refresh Toggle -->
-                <button id="toggleAutorefresh"
-                    class="inline-flex items-center px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:ring-offset-gray-800"
-                    data-enabled="{{ 'true' if autorefresh_enabled else 'false' }}"
-                    aria-pressed="{{ 'true' if autorefresh_enabled else 'false' }}">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span id="autorefreshText">Auto Refresh: {{ "On" if autorefresh_enabled else "Off" }}</span>
-                </button>
-
-                <!-- Manual Refresh -->
-                <button id="refreshAll"
-                    class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:ring-offset-gray-800">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    <span>Refresh All</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- System Status Overview -->
-        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {% with %}
-            {% set running_apps = apps|selectattr('backend_status.running',
-            'true')|selectattr('frontend_status.running', 'true')|list %}
-            {% set partial_apps = (apps|selectattr('backend_status.running',
-            'true')|rejectattr('frontend_status.running', 'true')|list) +
-            (apps|rejectattr('backend_status.running', 'true')|selectattr('frontend_status.running', 'true')|list) %}
-            {% set stopped_apps = apps|rejectattr('backend_status.running',
-            'true')|rejectattr('frontend_status.running', 'true')|list %}
-
-            <!-- Status Cards -->
-            {% for status in [
-            ('Total Apps', apps|length, 'text-gray-900 dark:text-white'),
-            ('Running Apps', running_apps|length, 'text-green-600 dark:text-green-400'),
-            ('Partial Status', partial_apps|length, 'text-yellow-600 dark:text-yellow-400'),
-            ('Stopped Apps', stopped_apps|length, 'text-red-600 dark:text-red-400')
-            ] %}
-            <div class="bg-gray-50 p-4 rounded-lg dark:bg-gray-700" role="status">
-                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ status[0] }}</h3>
-                <p class="mt-1 text-2xl font-semibold {{ status[2] }}">{{ status[1] }}</p>
-            </div>
-            {% endfor %}
-            {% endwith %}
-        </div>
-    </section>
-
-    <!-- Model Sections -->
-    {% for model in models %}
-    <div class="bg-white shadow rounded-lg p-6 dark:bg-gray-800" data-model-section="{{ model.name }}">
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-bold" style="color: {{ model.color }};">{{ model.name }}</h2>
-            <div class="flex items-center space-x-4">
-                <!-- Batch Operations -->
-                <button class="batch-action px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
-                    data-action="start" data-model="{{ model.name }}">
-                    Start Selected
-                </button>
-                <button class="batch-action px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
-                    data-action="stop" data-model="{{ model.name }}">
-                    Stop Selected
-                </button>
-                <button class="select-all-btn px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
-                    data-model="{{ model.name }}">
-                    Select All
-                </button>
-            </div>
-        </div>
-
-        <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {% for app in apps if app.model == model.name %}
-            <div class="border rounded-lg p-4 relative dark:border-gray-700" data-app-id="{{ app.app_num }}"
-                data-model="{{ app.model }}">
-                <!-- Checkbox for batch operations -->
-                <div class="absolute top-4 left-4">
-                    <input type="checkbox"
-                        class="app-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 dark:border-gray-600"
-                        data-app-id="{{ app.app_num }}" data-model="{{ app.model }}">
+        <!-- Model Sections -->
+        {% for model in models %}
+            <div class="bg-white shadow rounded-lg p-6" data-model-section="{{ model.name }}">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold" style="color: {{ model.color }};">
+                        {{ model.name }}
+                    </h2>
+                    <div class="flex items-center space-x-4">
+                        <!-- Batch Operations -->
+                        <button
+                            class="batch-action px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
+                            data-action="start"
+                            data-model="{{ model.name }}"
+                        >
+                            Start Selected
+                        </button>
+                        <button
+                            class="batch-action px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                            data-action="stop"
+                            data-model="{{ model.name }}"
+                        >
+                            Stop Selected
+                        </button>
+                        <button
+                            class="select-all-btn px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
+                            data-model="{{ model.name }}"
+                        >
+                            Select All
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Status Badge -->
-                <div class="absolute top-4 right-4">
-                    <span class="px-2 py-1 text-sm rounded-full
-                        {% if app.backend_status.running and app.frontend_status.running %}
-                            bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
-                        {% elif app.backend_status.running or app.frontend_status.running %}
-                            bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
-                        {% else %}
-                            bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
-                        {% endif %}">
-                        {{ "Running" if app.backend_status.running and app.frontend_status.running else "Partial" if
-                        app.backend_status.running or app.frontend_status.running else "Stopped" }}
-                    </span>
-                </div>
+                <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                    {% for app in apps if app.model == model.name %}
+                        <div
+                            class="border rounded-lg p-4 relative"
+                            data-app-id="{{ app.app_num }}"
+                            data-model="{{ app.model }}"
+                        >
+                            <!-- Checkbox for batch operations -->
+                            <div class="absolute top-4 left-4">
+                                <input
+                                    type="checkbox"
+                                    class="app-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                    data-app-id="{{ app.app_num }}"
+                                    data-model="{{ app.model }}"
+                                >
+                            </div>
 
-                <!-- App Title -->
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 ml-8">{{ app.name }}</h3>
+                            <!-- Status Badge -->
+                            <div class="absolute top-4 right-4">
+                                <span
+                                    class="px-2 py-1 text-sm rounded-full
+                                    {% if app.backend_status.running and app.frontend_status.running %}
+                                        bg-green-100 text-green-800
+                                    {% elif app.backend_status.running or app.frontend_status.running %}
+                                        bg-yellow-100 text-yellow-800
+                                    {% else %}
+                                        bg-red-100 text-red-800
+                                    {% endif %}"
+                                >
+                                    {{
+                                        "Running" if app.backend_status.running and app.frontend_status.running
+                                        else "Partial" if app.backend_status.running or app.frontend_status.running
+                                        else "Stopped"
+                                    }}
+                                </span>
+                            </div>
 
-                <!-- App Details -->
-                <div class="space-y-3 mb-4">
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-gray-500 dark:text-gray-400">Backend Status:</span>
-                        <span
-                            class="font-medium {{ 'text-green-600 dark:text-green-400' if app.backend_status.running else 'text-red-600 dark:text-red-400' }}"
-                            data-status="backend">
-                            {{ "Running" if app.backend_status.running else "Stopped" }}
-                        </span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-gray-500 dark:text-gray-400">Frontend Status:</span>
-                        <span
-                            class="font-medium {{ 'text-green-600 dark:text-green-400' if app.frontend_status.running else 'text-red-600 dark:text-red-400' }}"
-                            data-status="frontend">
-                            {{ "Running" if app.frontend_status.running else "Stopped" }}
-                        </span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-gray-500 dark:text-gray-400">Backend Port:</span>
-                        <div class="flex items-center space-x-2">
-                            <span class="font-mono dark:text-white">{{ app.backend_port }}</span>
-                            <a href="{{ app.backend_url }}" target="_blank"
-                                class="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                            </a>
+                            <!-- App Title -->
+                            <h3 class="text-lg font-medium text-gray-900 mb-4 ml-8">
+                                {{ app.name }}
+                            </h3>
+
+                            <!-- App Details -->
+                            <div class="space-y-3 mb-4">
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-gray-500">Backend Status:</span>
+                                    <span
+                                        class="font-medium
+                                        {{ 'text-green-600' if app.backend_status.running else 'text-red-600' }}"
+                                        data-status="backend"
+                                    >
+                                        {{ "Running" if app.backend_status.running else "Stopped" }}
+                                    </span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-gray-500">Frontend Status:</span>
+                                    <span
+                                        class="font-medium
+                                        {{ 'text-green-600' if app.frontend_status.running else 'text-red-600' }}"
+                                        data-status="frontend"
+                                    >
+                                        {{ "Running" if app.frontend_status.running else "Stopped" }}
+                                    </span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-gray-500">Backend Port:</span>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="font-mono">{{ app.backend_port }}</span>
+                                        <a
+                                            href="{{ app.backend_url }}"
+                                            target="_blank"
+                                            class="text-blue-500 hover:text-blue-600"
+                                        >
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                                />
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-gray-500">Frontend Port:</span>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="font-mono">{{ app.frontend_port }}</span>
+                                        <a
+                                            href="{{ app.frontend_url }}"
+                                            target="_blank"
+                                            class="text-blue-500 hover:text-blue-600"
+                                        >
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                                />
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="grid grid-cols-3 gap-2">
+                                <button
+                                    class="action-btn bg-green-500 text-white px-3 py-2 rounded text-center hover:bg-green-600 transition-colors"
+                                    data-action="start"
+                                    data-model="{{ app.model }}"
+                                    data-app-num="{{ app.app_num }}"
+                                >
+                                    <span class="button-text">Start</span>
+                                    <span class="loading-indicator hidden">
+                                        <svg
+                                            class="animate-spin h-4 w-4 mx-auto"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle
+                                                class="opacity-25"
+                                                cx="12" cy="12" r="10"
+                                                stroke="currentColor"
+                                                stroke-width="4"
+                                            ></circle>
+                                            <path
+                                                class="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2
+                                                   5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
+                                        </svg>
+                                    </span>
+                                </button>
+
+                                <button
+                                    class="action-btn bg-red-500 text-white px-3 py-2 rounded text-center hover:bg-red-600 transition-colors"
+                                    data-action="stop"
+                                    data-model="{{ app.model }}"
+                                    data-app-num="{{ app.app_num }}"
+                                >
+                                    <span class="button-text">Stop</span>
+                                    <span class="loading-indicator hidden">
+                                        <svg
+                                            class="animate-spin h-4 w-4 mx-auto"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle
+                                                class="opacity-25"
+                                                cx="12" cy="12" r="10"
+                                                stroke="currentColor"
+                                                stroke-width="4"
+                                            ></circle>
+                                            <path
+                                                class="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2
+                                                   5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
+                                        </svg>
+                                    </span>
+                                </button>
+
+                                <button
+                                    class="action-btn bg-yellow-500 text-white px-3 py-2 rounded text-center hover:bg-yellow-600 transition-colors"
+                                    data-action="rebuild"
+                                    data-model="{{ app.model }}"
+                                    data-app-num="{{ app.app_num }}"
+                                >
+                                    <span class="button-text">Rebuild</span>
+                                    <span class="loading-indicator hidden">
+                                        <svg
+                                            class="animate-spin h-4 w-4 mx-auto"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle
+                                                class="opacity-25"
+                                                cx="12" cy="12" r="10"
+                                                stroke="currentColor"
+                                                stroke-width="4"
+                                            ></circle>
+                                            <path
+                                                class="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2
+                                                   5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
+                                        </svg>
+                                    </span>
+                                </button>
+
+                                <button
+                                    class="action-btn bg-blue-500 text-white px-3 py-2 rounded text-center hover:bg-blue-600 transition-colors"
+                                    data-action="reload"
+                                    data-model="{{ app.model }}"
+                                    data-app-num="{{ app.app_num }}"
+                                >
+                                    <span class="button-text">Reload</span>
+                                    <span class="loading-indicator hidden">
+                                        <svg
+                                            class="animate-spin h-4 w-4 mx-auto"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle
+                                                class="opacity-25"
+                                                cx="12" cy="12" r="10"
+                                                stroke="currentColor"
+                                                stroke-width="4"
+                                            ></circle>
+                                            <path
+                                                class="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2
+                                                   5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
+                                        </svg>
+                                    </span>
+                                </button>
+
+                                <a
+                                    href="{{ url_for('view_logs', model=app.model, app_num=app.app_num) }}"
+                                    class="bg-indigo-500 text-white px-3 py-2 rounded text-center hover:bg-indigo-600 transition-colors"
+                                >
+                                    Logs
+                                </a>
+
+                                <button
+                                    class="action-btn bg-purple-500 text-white px-3 py-2 rounded text-center hover:bg-purple-600 transition-colors"
+                                    data-action="status"
+                                    data-model="{{ app.model }}"
+                                    data-app-num="{{ app.app_num }}"
+                                >
+                                    <span class="button-text">Status</span>
+                                    <span class="loading-indicator hidden">
+                                        <svg
+                                            class="animate-spin h-4 w-4 mx-auto"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle
+                                                class="opacity-25"
+                                                cx="12" cy="12" r="10"
+                                                stroke="currentColor"
+                                                stroke-width="4"
+                                            ></circle>
+                                            <path
+                                                class="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2
+                                                   5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
+                                        </svg>
+                                    </span>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-gray-500 dark:text-gray-400">Frontend Port:</span>
-                        <div class="flex items-center space-x-2">
-                            <span class="font-mono dark:text-white">{{ app.frontend_port }}</span>
-                            <a href="{{ app.frontend_url }}" target="_blank"
-                                class="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="grid grid-cols-3 gap-2">
-                    <button
-                        class="action-btn bg-green-500 text-white px-3 py-2 rounded text-center hover:bg-green-600 transition-colors dark:hover:bg-green-700"
-                        data-action="start" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
-                        <span class="button-text">Start</span>
-                        <span class="loading-indicator hidden">
-                            <svg class="animate-spin h-4 w-4 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                        </span>
-                    </button>
-                    <button
-                        class="action-btn bg-red-500 text-white px-3 py-2 rounded text-center hover:bg-red-600 transition-colors dark:hover:bg-red-700"
-                        data-action="stop" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
-                        <span class="button-text">Stop</span>
-                        <span class="loading-indicator hidden">
-                            <svg class="animate-spin h-4 w-4 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                        </span>
-                    </button>
-                    <button
-                        class="action-btn bg-yellow-500 text-white px-3 py-2 rounded text-center hover:bg-yellow-600 transition-colors dark:hover:bg-yellow-700"
-                        data-action="rebuild" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
-                        <span class="button-text">Rebuild</span>
-                        <span class="loading-indicator hidden">
-                            <svg class="animate-spin h-4 w-4 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                        </span>
-                    </button>
-                    <button
-                        class="action-btn bg-blue-500 text-white px-3 py-2 rounded text-center hover:bg-blue-600 transition-colors dark:hover:bg-blue-700"
-                        data-action="reload" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
-                        <span class="button-text">Reload</span>
-                        <span class="loading-indicator hidden">
-                            <svg class="animate-spin h-4 w-4 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                        </span>
-                    </button>
-                    <a href="{{ url_for('view_logs', model=app.model, app_num=app.app_num) }}"
-                        class="bg-indigo-500 text-white px-3 py-2 rounded text-center hover:bg-indigo-600 transition-colors dark:hover:bg-indigo-700">
-                        Logs
-                    </a>
-                    <button
-                        class="action-btn bg-purple-500 text-white px-3 py-2 rounded text-center hover:bg-purple-600 transition-colors dark:hover:bg-purple-700"
-                        data-action="status" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
-                        <span class="button-text">Status</span>
-                        <span class="loading-indicator hidden">
-                            <svg class="animate-spin h-4 w-4 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                        </span>
-                    </button>
+                    {% endfor %}
                 </div>
             </div>
-            {% endfor %}
+        {% endfor %}
+
+        <!-- No Results Message -->
+        <div id="noResultsMessage" class="hidden bg-white shadow rounded-lg p-6 text-center">
+            <p class="text-gray-500">
+                No apps match your search criteria
+            </p>
         </div>
     </div>
-    {% endfor %}
 
-    <!-- No Results Message -->
-    <div id="noResultsMessage" class="hidden bg-white shadow rounded-lg p-6 text-center dark:bg-gray-800">
-        <p class="text-gray-500 dark:text-gray-400">No apps match your search criteria</p>
-    </div>
-</div>
+    {% block extra_scripts %}
+        <!-- Base JavaScript -->
+        <script>
+            /**
+             * Manages the modal: open, close, trap focus, etc.
+             */
+            class ModalManager {
+                constructor() {
+                    this.modal        = null;
+                    this.modalTitle   = null;
+                    this.modalContent = null;
+                    this.closeButtons = [];
+                    this.focusedElementBeforeModal = null;
+                }
 
-{% block extra_scripts %}
-<!-- Base JavaScript -->
-<script>
-    /**
-     * Manages the modal: open, close, trap focus, etc.
-     */
-    class ModalManager {
-      constructor() {
-        this.modal       = null;
-        this.modalTitle  = null;
-        this.modalContent = null;
-        this.closeButtons = [];
-        this.focusedElementBeforeModal = null;
-      }
-    
-      init() {
-        this.modal        = document.getElementById('modal');
-        this.modalTitle   = document.getElementById('modalTitle');
-        this.modalContent = document.getElementById('modalContent');
-        this.closeButtons = document.querySelectorAll('.modal-close');
-    
-        // Wire up close buttons
-        this.closeButtons.forEach(button => {
-          button.addEventListener('click', () => this.hideModal());
-        });
-    
-        // Close modal if background is clicked
-        this.modal?.addEventListener('click', (e) => {
-          if (e.target === this.modal) {
-            this.hideModal();
-          }
-        });
-      }
-    
-      showModal(title, content) {
-        if (!this.modal || !this.modalTitle || !this.modalContent) return;
-    
-        this.focusedElementBeforeModal = document.activeElement;
-        this.modalTitle.textContent    = title;
-        this.modalContent.innerHTML    = content;
-    
-        this.modal.classList.remove('hidden');
-    
-        // Focus handling
-        const closeButton = this.modal.querySelector('.modal-close');
-        if (closeButton) {
-          closeButton.focus();
-        }
-    
-        // Trap focus in modal
-        this.modal.addEventListener('keydown', this.trapFocus.bind(this));
-      }
-    
-      hideModal() {
-        this.modal?.classList.add('hidden');
-        this.modal?.removeEventListener('keydown', this.trapFocus.bind(this));
-        this.focusedElementBeforeModal?.focus();
-      }
-    
-      trapFocus(e) {
-        if (e.key === 'Escape') {
-          this.hideModal();
-          return;
-        }
-        if (e.key !== 'Tab') return;
-    
-        const focusableElements = this.modal.querySelectorAll(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        const firstFocusable = focusableElements[0];
-        const lastFocusable  = focusableElements[focusableElements.length - 1];
-    
-        if (e.shiftKey) {
-          // Backward tab
-          if (document.activeElement === firstFocusable) {
-            lastFocusable.focus();
-            e.preventDefault();
-          }
-        } else {
-          // Forward tab
-          if (document.activeElement === lastFocusable) {
-            firstFocusable.focus();
-            e.preventDefault();
-          }
-        }
-      }
-    }
-    
-    /**
-     * Monitors system health and updates a status indicator
-     */
-    class StatusMonitor {
-      constructor() {
-        this.indicator     = document.getElementById('statusIndicator');
-        this.checkInterval = 30000; // 30 seconds
-        this.intervalId    = null;
-      }
-    
-      updateStatus(status, message) {
-        if (!this.indicator) return;
-        const statusColors = {
-          healthy: 'bg-green-400',
-          warning: 'bg-yellow-400',
-          error:   'bg-red-400'
-        };
-    
-        // Remove current color
-        const currentColor = Object.values(statusColors).find(color =>
-          this.indicator.querySelector('.rounded-full')?.classList.contains(color)
-        );
-        if (currentColor) {
-          this.indicator.querySelector('.rounded-full').classList.remove(currentColor);
-        }
-    
-        this.indicator.innerHTML = `
-          <span class="h-2 w-2 rounded-full ${statusColors[status]} mr-2"></span>
-          <span class="text-sm text-gray-600">${message}</span>
-        `;
-      }
-    
-      async checkStatus() {
-        try {
-          const response = await fetch('/api/status');
-          const data = await response.json();
-          if (data.status === 'healthy') {
-            this.updateStatus('healthy', 'System Active');
-          } else {
-            this.updateStatus('warning', 'System Warning');
-          }
-        } catch (error) {
-          console.error('Status check failed:', error);
-          this.updateStatus('error', 'Connection Error');
-        }
-      }
-    
-      startMonitoring() {
-        this.checkStatus();
-        this.intervalId = setInterval(() => this.checkStatus(), this.checkInterval);
-      }
-    
-      stopMonitoring() {
-        if (this.intervalId) {
-          clearInterval(this.intervalId);
-          this.intervalId = null;
-        }
-      }
-    }
-    
-    /**
-     * Measures performance and logs results to the console
-     */
-    class PerformanceMonitor {
-      constructor() {
-        this.metrics = {};
-      }
-    
-      startMeasure(name) {
-        if (window.performance && performance.mark) {
-          performance.mark(`${name}-start`);
-        }
-      }
-    
-      endMeasure(name) {
-        if (window.performance && performance.mark) {
-          performance.mark(`${name}-end`);
-          performance.measure(name, `${name}-start`, `${name}-end`);
-          const measures = performance.getEntriesByName(name);
-          if (measures.length > 0) {
-            this.metrics[name] = measures[0].duration;
-            console.debug(`Performance [${name}]: ${this.metrics[name].toFixed(2)}ms`);
-          }
-        }
-      }
-    
-      clearMetrics() {
-        if (window.performance && performance.clearMarks) {
-          performance.clearMarks();
-          performance.clearMeasures();
-        }
-        this.metrics = {};
-      }
-    }
-    
-    /**
-     * Handles global errors & unhandled promise rejections
-     */
-    const ErrorHandler = {
-      init() {
-        window.addEventListener('error', this.handleError.bind(this));
-        window.addEventListener('unhandledrejection', this.handlePromiseError.bind(this));
-      },
-    
-      handleError(event) {
-        console.error('Global error:', event.error);
-        this.updateUI(event.error?.message || 'An error occurred');
-        return false;
-      },
-    
-      handlePromiseError(event) {
-        console.error('Unhandled promise rejection:', event.reason);
-        this.updateUI(event.reason?.message || 'An async operation failed');
-        return false;
-      },
-    
-      updateUI(errorMessage) {
-        // Update status indicator
-        const statusIndicator = document.getElementById('statusIndicator');
-        if (statusIndicator) {
-          window.AppUtils.statusMonitor.updateStatus('error', 'Error Detected');
-        }
-        // Show error toast
-        this.showErrorToast(errorMessage);
-      },
-    
-      showErrorToast(message) {
-        const toast = document.createElement('div');
-        toast.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-300 translate-y-full';
-        toast.textContent = message;
-        document.body.appendChild(toast);
-    
-        // Animate in
-        requestAnimationFrame(() => {
-          toast.style.transform = 'translateY(0)';
-        });
-    
-        // Remove after 5 seconds
-        setTimeout(() => {
-          toast.style.transform = 'translateY(100%)';
-          toast.addEventListener('transitionend', () => {
-            document.body.removeChild(toast);
-          });
-        }, 5000);
-      }
-    };
-    
-    /**
-     * Common utility methods
-     */
-    const Utils = {
-      debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-          const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-          };
-          clearTimeout(timeout);
-          timeout = setTimeout(later, wait);
-        };
-      },
-    
-      throttle(func, limit) {
-        let inThrottle;
-        return function executedFunction(...args) {
-          if (!inThrottle) {
-            func(...args);
-            inThrottle = true;
-            setTimeout(() => (inThrottle = false), limit);
-          }
-        };
-      },
-    
-      formatDate(date) {
-        return new Intl.DateTimeFormat('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        }).format(date);
-      },
-    
-      getQueryParam(param) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(param);
-      },
-    
-      setQueryParam(param, value) {
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set(param, value);
-        window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
-      }
-    };
-    
-    /**
-     * Central controller for the page's interactive features
-     */
-    const PageController = {
-      modalManager: new ModalManager(),
-      statusMonitor: new StatusMonitor(),
-      performanceMonitor: new PerformanceMonitor(),
-      isAutoRefreshEnabled: false,
-      refreshTimer: null,
-      STATUS_CLASSES: {
-        running: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        partial: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-        stopped: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-      },
-      AUTO_REFRESH_INTERVAL: 30000, // 30 seconds
-    
-      init() {
-        // 1. Initialize global error handling
-        ErrorHandler.init();
-    
-        // 2. Initialize modal
-        this.modalManager.init();
-    
-        // 3. Start status monitoring
-        this.statusMonitor.startMonitoring();
-    
-        // 4. Initialize performance monitor
-        // (Performance monitoring usage is optional as needed)
-        
-        // 5. Set current year in footer
-        const yearEl = document.getElementById('currentYear');
-        if (yearEl) {
-          yearEl.textContent = new Date().getFullYear();
-        }
-    
-        // 6. Show system info on button click (binds to the modal)
-        const showSysInfoBtn = document.getElementById('showSystemInfo');
-        if (showSysInfoBtn) {
-          showSysInfoBtn.addEventListener('click', () => {
-            const content = `
-              <div class="space-y-4">
-                <div>
-                  <h4 class="font-medium text-gray-700">Version</h4>
-                  <p class="text-sm text-gray-600">1.0.0</p>
-                </div>
-                <div>
-                  <h4 class="font-medium text-gray-700">Environment</h4>
-                  <p class="text-sm text-gray-600">Production</p>
-                </div>
-                <div>
-                  <h4 class="font-medium text-gray-700">Last Updated</h4>
-                  <p class="text-sm text-gray-600">${new Date().toLocaleString()}</p>
-                </div>
-              </div>
-            `;
-            this.modalManager.showModal('System Information', content);
-          });
-        }
-    
-        // 7. Manage visibility changes for status monitor
-        document.addEventListener('visibilitychange', () => {
-          if (document.hidden) {
-            this.statusMonitor.stopMonitoring();
-          } else {
-            this.statusMonitor.startMonitoring();
-          }
-        });
-    
-        // 8. Setup action buttons (start/stop/status) for each app
-        document.querySelectorAll('.action-btn').forEach(button => {
-          button.addEventListener('click', async (event) => {
-            event.preventDefault();
-            const { action, model, appNum } = button.dataset;
-            if (action === 'status') {
-              await this.checkAppStatus(model, appNum);
-            } else {
-              await this.controlApp(model, appNum, action, button);
+                init() {
+                    this.modal        = document.getElementById('modal');
+                    this.modalTitle   = document.getElementById('modalTitle');
+                    this.modalContent = document.getElementById('modalContent');
+                    this.closeButtons = document.querySelectorAll('.modal-close');
+
+                    // Wire up close buttons
+                    this.closeButtons.forEach(button => {
+                        button.addEventListener('click', () => this.hideModal());
+                    });
+
+                    // Close modal if background is clicked
+                    this.modal?.addEventListener('click', (e) => {
+                        if (e.target === this.modal) {
+                            this.hideModal();
+                        }
+                    });
+                }
+
+                showModal(title, content) {
+                    if (!this.modal || !this.modalTitle || !this.modalContent) return;
+
+                    this.focusedElementBeforeModal = document.activeElement;
+                    this.modalTitle.textContent    = title;
+                    this.modalContent.innerHTML    = content;
+
+                    this.modal.classList.remove('hidden');
+
+                    // Focus handling
+                    const closeButton = this.modal.querySelector('.modal-close');
+                    if (closeButton) {
+                        closeButton.focus();
+                    }
+
+                    // Trap focus in modal
+                    this.modal.addEventListener('keydown', this.trapFocus.bind(this));
+                }
+
+                hideModal() {
+                    this.modal?.classList.add('hidden');
+                    this.modal?.removeEventListener('keydown', this.trapFocus.bind(this));
+                    this.focusedElementBeforeModal?.focus();
+                }
+
+                trapFocus(e) {
+                    if (e.key === 'Escape') {
+                        this.hideModal();
+                        return;
+                    }
+                    if (e.key !== 'Tab') return;
+
+                    const focusableElements = this.modal.querySelectorAll(
+                        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                    );
+                    const firstFocusable = focusableElements[0];
+                    const lastFocusable  = focusableElements[focusableElements.length - 1];
+
+                    if (e.shiftKey) {
+                        // Backward tab
+                        if (document.activeElement === firstFocusable) {
+                            lastFocusable.focus();
+                            e.preventDefault();
+                        }
+                    } else {
+                        // Forward tab
+                        if (document.activeElement === lastFocusable) {
+                            firstFocusable.focus();
+                            e.preventDefault();
+                        }
+                    }
+                }
             }
-          });
-        });
-    
-        // 9. Setup search & filter
-        const searchInput   = document.getElementById('searchApps');
-        const modelFilterEl = document.getElementById('filterModel');
-        const statusFilterEl= document.getElementById('filterStatus');
-        if (searchInput) {
-          searchInput.addEventListener('input', Utils.debounce(this.filterApps.bind(this), 300));
-        }
-        if (modelFilterEl) {
-          modelFilterEl.addEventListener('change', this.filterApps.bind(this));
-        }
-        if (statusFilterEl) {
-          statusFilterEl.addEventListener('change', this.filterApps.bind(this));
-        }
-    
-        // 10. Dark mode toggle
-        this.initDarkMode();
-    
-        // 11. Auto-refresh toggle
-        const autoRefreshBtn = document.getElementById('toggleAutorefresh');
-        if (autoRefreshBtn) {
-          this.isAutoRefreshEnabled = autoRefreshBtn.dataset.enabled === 'true';
-          autoRefreshBtn.addEventListener('click', () => {
-            this.isAutoRefreshEnabled = !this.isAutoRefreshEnabled;
-            if (this.isAutoRefreshEnabled) {
-              this.startAutoRefresh();
-            } else {
-              this.stopAutoRefresh();
+
+            /**
+             * Monitors system health and updates a status indicator
+             */
+            class StatusMonitor {
+                constructor() {
+                    this.indicator     = document.getElementById('statusIndicator');
+                    this.checkInterval = 30000; // 30 seconds
+                    this.intervalId    = null;
+                }
+
+                updateStatus(status, message) {
+                    if (!this.indicator) return;
+                    const statusColors = {
+                        healthy: 'bg-green-400',
+                        warning: 'bg-yellow-400',
+                        error:   'bg-red-400'
+                    };
+
+                    // Remove current color
+                    const currentColor = Object.values(statusColors).find(color =>
+                        this.indicator.querySelector('.rounded-full')?.classList.contains(color)
+                    );
+                    if (currentColor) {
+                        this.indicator.querySelector('.rounded-full').classList.remove(currentColor);
+                    }
+
+                    this.indicator.innerHTML = `
+                        <span class="h-2 w-2 rounded-full ${statusColors[status]} mr-2"></span>
+                        <span class="text-sm text-gray-600">${message}</span>
+                    `;
+                }
+
+                async checkStatus() {
+                    try {
+                        const response = await fetch('/api/status');
+                        const data = await response.json();
+                        if (data.status === 'healthy') {
+                            this.updateStatus('healthy', 'System Active');
+                        } else {
+                            this.updateStatus('warning', 'System Warning');
+                        }
+                    } catch (error) {
+                        console.error('Status check failed:', error);
+                        this.updateStatus('error', 'Connection Error');
+                    }
+                }
+
+                startMonitoring() {
+                    this.checkStatus();
+                    this.intervalId = setInterval(() => this.checkStatus(), this.checkInterval);
+                }
+
+                stopMonitoring() {
+                    if (this.intervalId) {
+                        clearInterval(this.intervalId);
+                        this.intervalId = null;
+                    }
+                }
             }
-          });
-          // If pre-enabled (e.g., from saved setting)
-          if (this.isAutoRefreshEnabled) {
-            this.startAutoRefresh();
-          }
-          this.updateAutoRefreshUI(this.isAutoRefreshEnabled);
-        }
-    
-        // 12. Refresh all
-        const refreshAllBtn = document.getElementById('refreshAll');
-        if (refreshAllBtn) {
-          refreshAllBtn.addEventListener('click', () => this.refreshAllStatuses());
-        }
-    
-        // 13. Batch operations
-        document.querySelectorAll('.batch-action').forEach(button => {
-          button.addEventListener('click', () => {
-            const action = button.dataset.action;
-            const model  = button.dataset.model;
-            this.handleBatchOperation(action, model);
-          });
-        });
-    
-        // 14. Select all toggles
-        document.querySelectorAll('.select-all-btn').forEach(button => {
-          button.addEventListener('click', () => {
-            const model      = button.dataset.model;
-            const checkboxes = document.querySelectorAll(`[data-model="${model}"] .app-checkbox`);
-            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-    
-            checkboxes.forEach(checkbox => {
-              checkbox.checked = !allChecked;
+
+            /**
+             * Measures performance and logs results to the console
+             */
+            class PerformanceMonitor {
+                constructor() {
+                    this.metrics = {};
+                }
+
+                startMeasure(name) {
+                    if (window.performance && performance.mark) {
+                        performance.mark(`${name}-start`);
+                    }
+                }
+
+                endMeasure(name) {
+                    if (window.performance && performance.mark) {
+                        performance.mark(`${name}-end`);
+                        performance.measure(name, `${name}-start`, `${name}-end`);
+                        const measures = performance.getEntriesByName(name);
+                        if (measures.length > 0) {
+                            this.metrics[name] = measures[0].duration;
+                            console.debug(`Performance [${name}]: ${this.metrics[name].toFixed(2)}ms`);
+                        }
+                    }
+                }
+
+                clearMetrics() {
+                    if (window.performance && performance.clearMarks) {
+                        performance.clearMarks();
+                        performance.clearMeasures();
+                    }
+                    this.metrics = {};
+                }
+            }
+
+            /**
+             * Handles global errors & unhandled promise rejections
+             */
+            const ErrorHandler = {
+                init() {
+                    window.addEventListener('error', this.handleError.bind(this));
+                    window.addEventListener('unhandledrejection', this.handlePromiseError.bind(this));
+                },
+
+                handleError(event) {
+                    console.error('Global error:', event.error);
+                    this.updateUI(event.error?.message || 'An error occurred');
+                    return false;
+                },
+
+                handlePromiseError(event) {
+                    console.error('Unhandled promise rejection:', event.reason);
+                    this.updateUI(event.reason?.message || 'An async operation failed');
+                    return false;
+                },
+
+                updateUI(errorMessage) {
+                    // Update status indicator
+                    const statusIndicator = document.getElementById('statusIndicator');
+                    if (statusIndicator) {
+                        window.AppUtils.statusMonitor.updateStatus('error', 'Error Detected');
+                    }
+                    // Show error toast
+                    this.showErrorToast(errorMessage);
+                },
+
+                showErrorToast(message) {
+                    const toast = document.createElement('div');
+                    toast.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-300 translate-y-full';
+                    toast.textContent = message;
+                    document.body.appendChild(toast);
+
+                    // Animate in
+                    requestAnimationFrame(() => {
+                        toast.style.transform = 'translateY(0)';
+                    });
+
+                    // Remove after 5 seconds
+                    setTimeout(() => {
+                        toast.style.transform = 'translateY(100%)';
+                        toast.addEventListener('transitionend', () => {
+                            document.body.removeChild(toast);
+                        });
+                    }, 5000);
+                }
+            };
+
+            /**
+             * Common utility methods
+             */
+            const Utils = {
+                debounce(func, wait) {
+                    let timeout;
+                    return function executedFunction(...args) {
+                        const later = () => {
+                            clearTimeout(timeout);
+                            func(...args);
+                        };
+                        clearTimeout(timeout);
+                        timeout = setTimeout(later, wait);
+                    };
+                },
+
+                throttle(func, limit) {
+                    let inThrottle;
+                    return function executedFunction(...args) {
+                        if (!inThrottle) {
+                            func(...args);
+                            inThrottle = true;
+                            setTimeout(() => (inThrottle = false), limit);
+                        }
+                    };
+                },
+
+                formatDate(date) {
+                    return new Intl.DateTimeFormat('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }).format(date);
+                },
+
+                getQueryParam(param) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    return urlParams.get(param);
+                },
+
+                setQueryParam(param, value) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    urlParams.set(param, value);
+                    window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
+                }
+            };
+
+            /**
+             * Central controller for the page's interactive features
+             */
+            const PageController = {
+                modalManager: new ModalManager(),
+                statusMonitor: new StatusMonitor(),
+                performanceMonitor: new PerformanceMonitor(),
+                isAutoRefreshEnabled: false,
+                refreshTimer: null,
+                STATUS_CLASSES: {
+                    running: 'bg-green-100 text-green-800',
+                    partial: 'bg-yellow-100 text-yellow-800',
+                    stopped: 'bg-red-100 text-red-800'
+                },
+                AUTO_REFRESH_INTERVAL: 30000, // 30 seconds
+
+                init() {
+                    // 1. Initialize global error handling
+                    ErrorHandler.init();
+
+                    // 2. Initialize modal
+                    this.modalManager.init();
+
+                    // 3. Start status monitoring
+                    this.statusMonitor.startMonitoring();
+
+                    // 4. Initialize performance monitor (optional usage)
+
+                    // 5. Set current year in footer
+                    const yearEl = document.getElementById('currentYear');
+                    if (yearEl) {
+                        yearEl.textContent = new Date().getFullYear();
+                    }
+
+                    // 6. Show system info on button click (binds to the modal)
+                    const showSysInfoBtn = document.getElementById('showSystemInfo');
+                    if (showSysInfoBtn) {
+                        showSysInfoBtn.addEventListener('click', () => {
+                            const content = `
+                                <div class="space-y-4">
+                                    <div>
+                                        <h4 class="font-medium text-gray-700">Version</h4>
+                                        <p class="text-sm text-gray-600">1.0.0</p>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-700">Environment</h4>
+                                        <p class="text-sm text-gray-600">Production</p>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-700">Last Updated</h4>
+                                        <p class="text-sm text-gray-600">
+                                            ${new Date().toLocaleString()}
+                                        </p>
+                                    </div>
+                                </div>
+                            `;
+                            this.modalManager.showModal('System Information', content);
+                        });
+                    }
+
+                    // 7. Manage visibility changes for status monitor
+                    document.addEventListener('visibilitychange', () => {
+                        if (document.hidden) {
+                            this.statusMonitor.stopMonitoring();
+                        } else {
+                            this.statusMonitor.startMonitoring();
+                        }
+                    });
+
+                    // 8. Setup action buttons (start/stop/status) for each app
+                    document.querySelectorAll('.action-btn').forEach(button => {
+                        button.addEventListener('click', async (event) => {
+                            event.preventDefault();
+                            const { action, model, appNum } = button.dataset;
+                            if (action === 'status') {
+                                await this.checkAppStatus(model, appNum);
+                            } else {
+                                await this.controlApp(model, appNum, action, button);
+                            }
+                        });
+                    });
+
+                    // 9. Setup search & filter
+                    const searchInput = document.getElementById('searchApps');
+                    const modelFilterEl = document.getElementById('filterModel');
+                    const statusFilterEl = document.getElementById('filterStatus');
+                    if (searchInput) {
+                        searchInput.addEventListener('input', Utils.debounce(this.filterApps.bind(this), 300));
+                    }
+                    if (modelFilterEl) {
+                        modelFilterEl.addEventListener('change', this.filterApps.bind(this));
+                    }
+                    if (statusFilterEl) {
+                        statusFilterEl.addEventListener('change', this.filterApps.bind(this));
+                    }
+
+                    // 10. Auto-refresh toggle
+                    const autoRefreshBtn = document.getElementById('toggleAutorefresh');
+                    if (autoRefreshBtn) {
+                        this.isAutoRefreshEnabled = autoRefreshBtn.dataset.enabled === 'true';
+                        autoRefreshBtn.addEventListener('click', () => {
+                            this.isAutoRefreshEnabled = !this.isAutoRefreshEnabled;
+                            if (this.isAutoRefreshEnabled) {
+                                this.startAutoRefresh();
+                            } else {
+                                this.stopAutoRefresh();
+                            }
+                        });
+                        // If pre-enabled (e.g., from saved setting):
+                        if (this.isAutoRefreshEnabled) {
+                            this.startAutoRefresh();
+                        }
+                        this.updateAutoRefreshUI(this.isAutoRefreshEnabled);
+                    }
+
+                    // 11. Refresh all
+                    const refreshAllBtn = document.getElementById('refreshAll');
+                    if (refreshAllBtn) {
+                        refreshAllBtn.addEventListener('click', () => this.refreshAllStatuses());
+                    }
+
+                    // 12. Batch operations
+                    document.querySelectorAll('.batch-action').forEach(button => {
+                        button.addEventListener('click', () => {
+                            const action = button.dataset.action;
+                            const model = button.dataset.model;
+                            this.handleBatchOperation(action, model);
+                        });
+                    });
+
+                    // 13. Select all toggles
+                    document.querySelectorAll('.select-all-btn').forEach(button => {
+                        button.addEventListener('click', () => {
+                            const model = button.dataset.model;
+                            const checkboxes = document.querySelectorAll(`[data-model="${model}"] .app-checkbox`);
+                            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+
+                            checkboxes.forEach(checkbox => {
+                                checkbox.checked = !allChecked;
+                            });
+                            button.textContent = allChecked ? 'Select All' : 'Deselect All';
+                        });
+                    });
+
+                    // Expose some utilities globally if needed
+                    window.AppUtils = {
+                        modalManager:       this.modalManager,
+                        statusMonitor:      this.statusMonitor,
+                        performanceMonitor: this.performanceMonitor,
+                        utils:              Utils
+                    };
+                },
+
+                /**
+                 * Control a given app (start/stop/etc.)
+                 */
+                async controlApp(model, appNum, action, button) {
+                    if (!button) return;
+                    const buttonText = button.querySelector('.button-text');
+                    const loadingIndicator = button.querySelector('.loading-indicator');
+                    const originalText = buttonText?.textContent || '';
+
+                    // Disable button and show loading
+                    button.disabled = true;
+                    if (buttonText) buttonText.classList.add('hidden');
+                    if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+
+                    try {
+                        const response = await fetch(`/${action}/${model}/${appNum}`, {
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        });
+                        if (!response.ok) {
+                            throw new Error(`HTTP error: ${response.status}`);
+                        }
+
+                        // Refresh the status immediately
+                        await this.checkAppStatus(model, appNum);
+                        this.showToast(`${this.capitalize(action)} operation successful`, 'success');
+                    } catch (error) {
+                        console.error(`Error during ${action}:`, error);
+                        this.showToast(`Error: ${error.message}`, 'error');
+                    } finally {
+                        // Restore button
+                        button.disabled = false;
+                        if (buttonText) {
+                            buttonText.classList.remove('hidden');
+                            buttonText.textContent = originalText;
+                        }
+                        if (loadingIndicator) loadingIndicator.classList.add('hidden');
+                    }
+                },
+
+                /**
+                 * Check status of a single container/app
+                 */
+                async checkAppStatus(model, appNum) {
+                    try {
+                        const response = await fetch(`/api/container/${model}/${appNum}/status`);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error: ${response.status}`);
+                        }
+                        const data = await response.json();
+                        const appElement = document.querySelector(`[data-app-id="${appNum}"][data-model="${model}"]`);
+                        if (appElement) {
+                            this.updateStatusUI(appElement, data);
+                        }
+                    } catch (error) {
+                        console.error('Status check failed:', error);
+                        this.showToast('Failed to check status', 'error');
+                    }
+                },
+
+                /**
+                 * Update the UI (labels, badges, etc.) based on status info
+                 */
+                updateStatusUI(appElement, statusData) {
+                    const backendStatus  = statusData.backend;
+                    const frontendStatus = statusData.frontend;
+
+                    // Update overall status badge
+                    const badge = appElement.querySelector('[class*="bg-"][class*="text-"]');
+                    if (badge) {
+                        // Remove old classes
+                        Object.values(this.STATUS_CLASSES).forEach(cls => {
+                            cls.split(' ').forEach(c => badge.classList.remove(c));
+                        });
+                        // Add new status class
+                        const newClasses = this.getStatusClass(backendStatus, frontendStatus);
+                        newClasses.split(' ').forEach(c => badge.classList.add(c));
+                        badge.textContent = this.getStatusText(backendStatus, frontendStatus);
+                    }
+
+                    // Update individual backend/frontend statuses
+                    this.updateServiceStatus(appElement, 'backend', backendStatus);
+                    this.updateServiceStatus(appElement, 'frontend', frontendStatus);
+                },
+
+                updateServiceStatus(appElement, service, status) {
+                    const statusElement = appElement.querySelector(`[data-status="${service}"]`);
+                    if (!statusElement) return;
+
+                    const displayStatus = this.getDisplayStatus(status);
+
+                    // Remove existing color classes (loose pattern match on "text-*")
+                    statusElement.className = statusElement.className.replace(/text-\w+-\d+/g, '');
+                    statusElement.className = `font-medium ${displayStatus.colorClass}`.trim();
+                    statusElement.textContent = displayStatus.text;
+                },
+
+                getDisplayStatus(status) {
+                    if (!status.exists) {
+                        return { text: 'No Container', colorClass: 'text-gray-600' };
+                    }
+                    switch (status.status) {
+                        case 'running':
+                            return { text: 'Running', colorClass: 'text-green-600' };
+                        case 'created':
+                            return { text: 'Created', colorClass: 'text-yellow-600' };
+                        case 'stopped':
+                            return { text: 'Stopped', colorClass: 'text-red-600' };
+                        default:
+                            return { text: status.status || 'Unknown', colorClass: 'text-gray-600' };
+                    }
+                },
+
+                getStatusClass(backend, frontend) {
+                    if (backend.running && frontend.running) {
+                        return this.STATUS_CLASSES.running;
+                    }
+                    if (backend.running || frontend.running) {
+                        return this.STATUS_CLASSES.partial;
+                    }
+                    return this.STATUS_CLASSES.stopped;
+                },
+
+                getStatusText(backend, frontend) {
+                    if (backend.running && frontend.running) {
+                        return 'Running';
+                    }
+                    if (backend.running || frontend.running) {
+                        return 'Partial';
+                    }
+                    return 'Stopped';
+                },
+
+                /**
+                 * Debounced filter for apps by search text, model, status
+                 */
+                filterApps() {
+                    const searchTerm   = (document.getElementById('searchApps')?.value || '').toLowerCase();
+                    const modelFilter  = document.getElementById('filterModel')?.value || '';
+                    const statusFilter = document.getElementById('filterStatus')?.value || '';
+                    let visibleCount   = 0;
+
+                    document.querySelectorAll('[data-app-id]').forEach(app => {
+                        try {
+                            const modelSection   = app.closest('[data-model-section]');
+                            const appNameElement = app.querySelector('h3');
+                            const statusBadge    = app.querySelector('[class*="bg-"][class*="text-"]');
+                            if (!appNameElement || !statusBadge) return;
+
+                            const appName = appNameElement.textContent.toLowerCase();
+                            const status  = statusBadge.textContent.toLowerCase();
+                            const model   = app.dataset.model;
+
+                            const matchesSearch = (
+                                appName.includes(searchTerm) ||
+                                app.textContent.toLowerCase().includes(searchTerm)
+                            );
+                            const matchesModel  = !modelFilter || model === modelFilter;
+                            const matchesStatus = !statusFilter || status.includes(statusFilter.toLowerCase());
+
+                            const isVisible = matchesSearch && matchesModel && matchesStatus;
+                            app.style.display = isVisible ? '' : 'none';
+                            if (isVisible) {
+                                visibleCount++;
+                            }
+
+                            // Show/hide model section based on visible apps
+                            if (modelSection) {
+                                const hasVisibleApps = Array
+                                    .from(modelSection.querySelectorAll('[data-app-id]'))
+                                    .some(app => app.style.display !== 'none');
+                                modelSection.style.display = hasVisibleApps ? '' : 'none';
+                            }
+                        } catch (error) {
+                            console.error('Error filtering app:', error);
+                        }
+                    });
+
+                    const noResultsMessage = document.getElementById('noResultsMessage');
+                    if (noResultsMessage) {
+                        noResultsMessage.classList.toggle('hidden', visibleCount > 0);
+                    }
+                },
+
+                /**
+                 * Auto-refresh handling
+                 */
+                startAutoRefresh() {
+                    this.refreshAllStatuses();
+                    this.refreshTimer = setInterval(() => this.refreshAllStatuses(), this.AUTO_REFRESH_INTERVAL);
+                    this.updateAutoRefreshUI(true);
+                    this.showToast('Auto-refresh enabled', 'success');
+                },
+
+                stopAutoRefresh() {
+                    if (this.refreshTimer) {
+                        clearInterval(this.refreshTimer);
+                        this.refreshTimer = null;
+                    }
+                    this.updateAutoRefreshUI(false);
+                    this.showToast('Auto-refresh disabled', 'info');
+                },
+
+                async refreshAllStatuses() {
+                    const button = document.getElementById('refreshAll');
+                    const originalContent = button?.innerHTML;
+
+                    try {
+                        if (button) {
+                            button.disabled = true;
+                            button.innerHTML = `
+                                <svg
+                                    class="animate-spin h-4 w-4 mr-2"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <circle
+                                        class="opacity-25"
+                                        cx="12" cy="12" r="10"
+                                        stroke="currentColor"
+                                        stroke-width="4"
+                                    ></circle>
+                                    <path
+                                        class="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2
+                                           5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    ></path>
+                                </svg>
+                                Refreshing...
+                            `;
+                        }
+                        const apps = document.querySelectorAll('[data-app-id]');
+                        const promises = Array.from(apps).map(app => {
+                            return this.checkAppStatus(app.dataset.model, app.dataset.appId);
+                        });
+                        await Promise.all(promises);
+                        this.showToast('All statuses refreshed', 'success');
+                    } catch (error) {
+                        console.error('Error refreshing statuses:', error);
+                        this.showToast('Failed to refresh all statuses', 'error');
+                    } finally {
+                        if (button && originalContent) {
+                            button.disabled = false;
+                            button.innerHTML = originalContent;
+                        }
+                    }
+                },
+
+                updateAutoRefreshUI(enabled) {
+                    const button = document.getElementById('toggleAutorefresh');
+                    if (!button) return;
+
+                    button.dataset.enabled = enabled.toString();
+                    button.setAttribute('aria-pressed', enabled.toString());
+
+                    if (enabled) {
+                        button.classList.remove('bg-gray-500', 'hover:bg-gray-600');
+                        button.classList.add('bg-green-500', 'hover:bg-green-600');
+                    } else {
+                        button.classList.add('bg-gray-500', 'hover:bg-gray-600');
+                        button.classList.remove('bg-green-500', 'hover:bg-green-600');
+                    }
+                    const textSpan = document.getElementById('autorefreshText');
+                    if (textSpan) {
+                        textSpan.textContent = `Auto Refresh: ${enabled ? 'On' : 'Off'}`;
+                    }
+                },
+
+                /**
+                 * Batch operations
+                 */
+                handleBatchOperation(action, model) {
+                    const checkedApps = document.querySelectorAll(
+                        `[data-model="${model}"] .app-checkbox:checked`
+                    );
+                    if (checkedApps.length === 0) {
+                        this.showToast('Please select at least one app', 'warning');
+                        return;
+                    }
+
+                    const promises = Array.from(checkedApps).map(checkbox => {
+                        const app = checkbox.closest('[data-app-id]');
+                        const actionButton = app.querySelector(`[data-action="${action}"]`);
+                        return this.controlApp(model, app.dataset.appId, action, actionButton);
+                    });
+
+                    Promise.all(promises)
+                        .then(() => {
+                            this.showToast(`Batch ${this.capitalize(action)} operation completed`, 'success');
+                        })
+                        .catch(error => {
+                            console.error('Batch operation error:', error);
+                            this.showToast('Error during batch operation', 'error');
+                        });
+                },
+
+                /**
+                 * Helper to show toast messages
+                 */
+                showToast(message, type = 'info') {
+                    const toast = document.createElement('div');
+                    const bgColorMap = {
+                        error:   'bg-red-500',
+                        success: 'bg-green-500',
+                        warning: 'bg-yellow-500',
+                        info:    'bg-blue-500'
+                    };
+                    const bgColor = bgColorMap[type] || bgColorMap.info;
+
+                    toast.className = `
+                        fixed bottom-4 right-4
+                        ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg
+                        transform transition-transform duration-300 translate-y-full z-50
+                    `.trim();
+                    toast.textContent = message;
+                    document.body.appendChild(toast);
+
+                    // Animate in
+                    requestAnimationFrame(() => {
+                        toast.style.transform = 'translateY(0)';
+                        setTimeout(() => {
+                            toast.style.transform = 'translateY(100%)';
+                            toast.addEventListener('transitionend', () => {
+                                document.body.removeChild(toast);
+                            });
+                        }, 3000);
+                    });
+                },
+
+                /**
+                 * Helper to capitalize strings (for action names, etc.)
+                 */
+                capitalize(str) {
+                    if (!str || typeof str !== 'string') return '';
+                    return str.charAt(0).toUpperCase() + str.slice(1);
+                }
+            };
+
+            /**
+             * DOM Loaded: Initialize everything
+             */
+            document.addEventListener('DOMContentLoaded', () => {
+                PageController.init();
             });
-            button.textContent = allChecked ? 'Select All' : 'Deselect All';
-          });
-        });
-    
-        // Expose some utilities globally if needed
-        window.AppUtils = {
-          modalManager:       this.modalManager,
-          statusMonitor:      this.statusMonitor,
-          performanceMonitor: this.performanceMonitor,
-          utils:              Utils
-        };
-      },
-    
-      /**
-       * Control a given app (start/stop/etc.)
-       */
-      async controlApp(model, appNum, action, button) {
-        if (!button) return;
-        const buttonText       = button.querySelector('.button-text');
-        const loadingIndicator = button.querySelector('.loading-indicator');
-        const originalText     = buttonText?.textContent || '';
-    
-        // Disable button and show loading
-        button.disabled = true;
-        if (buttonText) buttonText.classList.add('hidden');
-        if (loadingIndicator) loadingIndicator.classList.remove('hidden');
-    
-        try {
-          const response = await fetch(`/${action}/${model}/${appNum}`, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-          });
-          if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-    
-          // Refresh the status immediately
-          await this.checkAppStatus(model, appNum);
-          this.showToast(`${this.capitalize(action)} operation successful`, 'success');
-        } catch (error) {
-          console.error(`Error during ${action}:`, error);
-          this.showToast(`Error: ${error.message}`, 'error');
-        } finally {
-          // Restore button
-          button.disabled = false;
-          if (buttonText) {
-            buttonText.classList.remove('hidden');
-            buttonText.textContent = originalText;
-          }
-          if (loadingIndicator) loadingIndicator.classList.add('hidden');
-        }
-      },
-    
-      /**
-       * Check status of a single container/app
-       */
-      async checkAppStatus(model, appNum) {
-        try {
-          const response = await fetch(`/api/container/${model}/${appNum}/status`);
-          if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-    
-          const data = await response.json();
-          const appElement = document.querySelector(`[data-app-id="${appNum}"][data-model="${model}"]`);
-          if (appElement) {
-            this.updateStatusUI(appElement, data);
-          }
-        } catch (error) {
-          console.error('Status check failed:', error);
-          this.showToast('Failed to check status', 'error');
-        }
-      },
-    
-      /**
-       * Update the UI (labels, badges, etc.) based on status info
-       */
-      updateStatusUI(appElement, statusData) {
-        const backendStatus  = statusData.backend;
-        const frontendStatus = statusData.frontend;
-    
-        // Update overall status badge
-        const badge = appElement.querySelector('[class*="bg-"][class*="text-"]');
-        if (badge) {
-          // Remove old classes
-          Object.values(this.STATUS_CLASSES).forEach(cls => {
-            cls.split(' ').forEach(c => badge.classList.remove(c));
-          });
-          // Add new status class
-          const newClasses = this.getStatusClass(backendStatus, frontendStatus);
-          newClasses.split(' ').forEach(c => badge.classList.add(c));
-          badge.textContent = this.getStatusText(backendStatus, frontendStatus);
-        }
-    
-        // Update individual backend/frontend statuses
-        this.updateServiceStatus(appElement, 'backend', backendStatus);
-        this.updateServiceStatus(appElement, 'frontend', frontendStatus);
-      },
-    
-      updateServiceStatus(appElement, service, status) {
-        const statusElement = appElement.querySelector(`[data-status="${service}"]`);
-        if (!statusElement) return;
-    
-        const displayStatus = this.getDisplayStatus(status);
-    
-        // Remove existing color classes (loose pattern match on "text-*")
-        statusElement.className = statusElement.className.replace(/text-\w+-\d+/g, '');
-        statusElement.className = `font-medium ${displayStatus.colorClass}`.trim();
-        statusElement.textContent = displayStatus.text;
-      },
-    
-      getDisplayStatus(status) {
-        if (!status.exists) {
-          return { text: 'No Container', colorClass: 'text-gray-600 dark:text-gray-400' };
-        }
-        switch (status.status) {
-          case 'running': return { text: 'Running', colorClass: 'text-green-600 dark:text-green-400' };
-          case 'created': return { text: 'Created', colorClass: 'text-yellow-600 dark:text-yellow-400' };
-          case 'stopped': return { text: 'Stopped', colorClass: 'text-red-600 dark:text-red-400' };
-          default:
-            return { text: status.status || 'Unknown', colorClass: 'text-gray-600 dark:text-gray-400' };
-        }
-      },
-    
-      getStatusClass(backend, frontend) {
-        if (backend.running && frontend.running) {
-          return this.STATUS_CLASSES.running;
-        }
-        if (backend.running || frontend.running) {
-          return this.STATUS_CLASSES.partial;
-        }
-        return this.STATUS_CLASSES.stopped;
-      },
-    
-      getStatusText(backend, frontend) {
-        if (backend.running && frontend.running) {
-          return 'Running';
-        }
-        if (backend.running || frontend.running) {
-          return 'Partial';
-        }
-        return 'Stopped';
-      },
-    
-      /**
-       * Debounced filter for apps by search text, model, status
-       */
-      filterApps() {
-        const searchTerm  = (document.getElementById('searchApps')?.value || '').toLowerCase();
-        const modelFilter = document.getElementById('filterModel')?.value || '';
-        const statusFilter= document.getElementById('filterStatus')?.value || '';
-        let visibleCount  = 0;
-    
-        document.querySelectorAll('[data-app-id]').forEach(app => {
-          try {
-            const modelSection     = app.closest('[data-model-section]');
-            const appNameElement   = app.querySelector('h3');
-            const statusBadge      = app.querySelector('[class*="bg-"][class*="text-"]');
-            if (!appNameElement || !statusBadge) return;
-    
-            const appName = appNameElement.textContent.toLowerCase();
-            const status  = statusBadge.textContent.toLowerCase();
-            const model   = app.dataset.model;
-    
-            const matchesSearch = (
-              appName.includes(searchTerm) || 
-              app.textContent.toLowerCase().includes(searchTerm)
-            );
-            const matchesModel  = !modelFilter || model === modelFilter;
-            const matchesStatus = !statusFilter || status.includes(statusFilter.toLowerCase());
-    
-            const isVisible = matchesSearch && matchesModel && matchesStatus;
-            app.style.display = isVisible ? '' : 'none';
-            if (isVisible) visibleCount++;
-    
-            // Show/hide model section based on visible apps
-            if (modelSection) {
-              const hasVisibleApps = Array.from(modelSection.querySelectorAll('[data-app-id]'))
-                .some(app => app.style.display !== 'none');
-              modelSection.style.display = hasVisibleApps ? '' : 'none';
-            }
-          } catch (error) {
-            console.error('Error filtering app:', error);
-          }
-        });
-    
-        const noResultsMessage = document.getElementById('noResultsMessage');
-        if (noResultsMessage) {
-          noResultsMessage.classList.toggle('hidden', visibleCount > 0);
-        }
-      },
-    
-      /**
-       * Auto-refresh handling
-       */
-      startAutoRefresh() {
-        this.refreshAllStatuses();
-        this.refreshTimer = setInterval(() => this.refreshAllStatuses(), this.AUTO_REFRESH_INTERVAL);
-        this.updateAutoRefreshUI(true);
-        this.showToast('Auto-refresh enabled', 'success');
-      },
-    
-      stopAutoRefresh() {
-        if (this.refreshTimer) {
-          clearInterval(this.refreshTimer);
-          this.refreshTimer = null;
-        }
-        this.updateAutoRefreshUI(false);
-        this.showToast('Auto-refresh disabled', 'info');
-      },
-    
-      async refreshAllStatuses() {
-        const button = document.getElementById('refreshAll');
-        const originalContent = button?.innerHTML;
-    
-        try {
-          if (button) {
-            button.disabled = true;
-            button.innerHTML = `
-              <svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" 
-                        stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0
-                         c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Refreshing...
-            `;
-          }
-          const apps = document.querySelectorAll('[data-app-id]');
-          const promises = Array.from(apps).map(app => {
-            return this.checkAppStatus(app.dataset.model, app.dataset.appId);
-          });
-          await Promise.all(promises);
-          this.showToast('All statuses refreshed', 'success');
-        } catch (error) {
-          console.error('Error refreshing statuses:', error);
-          this.showToast('Failed to refresh all statuses', 'error');
-        } finally {
-          if (button && originalContent) {
-            button.disabled = false;
-            button.innerHTML = originalContent;
-          }
-        }
-      },
-    
-      updateAutoRefreshUI(enabled) {
-        const button = document.getElementById('toggleAutorefresh');
-        if (!button) return;
-    
-        button.dataset.enabled = enabled.toString();
-        button.setAttribute('aria-pressed', enabled.toString());
-    
-        if (enabled) {
-          button.classList.remove('bg-gray-500', 'hover:bg-gray-600');
-          button.classList.add('bg-green-500', 'hover:bg-green-600');
-        } else {
-          button.classList.add('bg-gray-500', 'hover:bg-gray-600');
-          button.classList.remove('bg-green-500', 'hover:bg-green-600');
-        }
-        const textSpan = document.getElementById('autorefreshText');
-        if (textSpan) {
-          textSpan.textContent = `Auto Refresh: ${enabled ? 'On' : 'Off'}`;
-        }
-      },
-    
-      /**
-       * Dark mode toggle
-       */
-      initDarkMode() {
-        // Create dark mode button if it doesn't exist
-        let darkModeBtn = document.getElementById('darkModeToggle');
-        if (!darkModeBtn) {
-          darkModeBtn = document.createElement('button');
-          darkModeBtn.id = 'darkModeToggle';
-          darkModeBtn.className =
-            'inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 ' +
-            'dark:bg-gray-700 dark:text-gray-200 transition-colors duration-200';
-          darkModeBtn.innerHTML = `
-            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M17.293 13.293A8 8 0 016.707 2.707
-                a8.001 8.001 0 1010.586 10.586z"/>
-            </svg>
-            Dark Mode
-          `;
-          // Insert into top bar (example: .flex.space-x-4)
-          const topBar = document.querySelector('.flex.space-x-4');
-          if (topBar) {
-            topBar.prepend(darkModeBtn);
-          }
-        }
-    
-        // If localStorage says "darkMode" was on, preserve it
-        if (localStorage.getItem('darkMode') === 'true') {
-          document.documentElement.classList.add('dark');
-          darkModeBtn.innerHTML = this.getDarkModeButtonContent(true);
-        }
-    
-        // Listen for toggle
-        darkModeBtn.addEventListener('click', () => {
-          document.documentElement.classList.toggle('dark');
-          const isDark = document.documentElement.classList.contains('dark');
-          localStorage.setItem('darkMode', isDark);
-          darkModeBtn.innerHTML = this.getDarkModeButtonContent(isDark);
-        });
-      },
-    
-      getDarkModeButtonContent(isDark) {
-        return isDark
-          ? `<svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-               <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 
-                        8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707
-                        a1 1 0 001.414-1.414l-.707-.707
-                        a1 1 0 00-1.414 1.414zm2.12-10.607
-                        a1 1 0 010 1.414l-.706.707
-                        a1 1 0 11-1.414-1.414l.707-.707
-                        a1 1 0 011.414 0zM17 11a1 1 0
-                        100-2h-1a1 1 0 100 2h1zm-7 
-                        4a1 1 0 011 1v1a1 1 0 11-2
-                        0v-1a1 1 0 011-1zM5.05 6.464A1 1 0
-                        106.465 5.05l-.708-.707
-                        a1 1 0 00-1.414 1.414l.707.707zm1.414
-                        8.486l-.707.707a1 1 0
-                        01-1.414-1.414l.707-.707
-                        a1 1 0 011.414 1.414zM4
-                        11a1 1 0 100-2H3a1 1 0
-                        000 2h1z"/>
-             </svg>Light Mode`
-          : `<svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-               <path d="M17.293 13.293A8 8 0 016.707 2.707
-                 a8.001 8.001 0 1010.586 10.586z"/>
-             </svg>Dark Mode`;
-      },
-    
-      /**
-       * Batch operations
-       */
-      handleBatchOperation(action, model) {
-        const checkedApps = document.querySelectorAll(
-          `[data-model="${model}"] .app-checkbox:checked`
-        );
-        if (checkedApps.length === 0) {
-          this.showToast('Please select at least one app', 'warning');
-          return;
-        }
-    
-        const promises = Array.from(checkedApps).map(checkbox => {
-          const app = checkbox.closest('[data-app-id]');
-          const actionButton = app.querySelector(`[data-action="${action}"]`);
-          return this.controlApp(model, app.dataset.appId, action, actionButton);
-        });
-    
-        Promise.all(promises)
-          .then(() => {
-            this.showToast(`Batch ${this.capitalize(action)} operation completed`, 'success');
-          })
-          .catch(error => {
-            console.error('Batch operation error:', error);
-            this.showToast('Error during batch operation', 'error');
-          });
-      },
-    
-      /**
-       * Helper to show toast messages
-       */
-      showToast(message, type = 'info') {
-        const toast      = document.createElement('div');
-        const bgColorMap = {
-          error:   'bg-red-500',
-          success: 'bg-green-500',
-          warning: 'bg-yellow-500',
-          info:    'bg-blue-500'
-        };
-        const bgColor    = bgColorMap[type] || bgColorMap.info;
-    
-        toast.className = `
-          fixed bottom-4 right-4
-          ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg
-          transform transition-transform duration-300 translate-y-full z-50
-        `.trim();
-        toast.textContent = message;
-        document.body.appendChild(toast);
-    
-        // Animate in
-        requestAnimationFrame(() => {
-          toast.style.transform = 'translateY(0)';
-          setTimeout(() => {
-            toast.style.transform = 'translateY(100%)';
-            toast.addEventListener('transitionend', () => {
-              document.body.removeChild(toast);
-            });
-          }, 3000);
-        });
-      },
-    
-      /**
-       * Helper to capitalize strings (for action names, etc.)
-       */
-      capitalize(str) {
-        if (!str || typeof str !== 'string') return '';
-        return str.charAt(0).toUpperCase() + str.slice(1);
-      }
-    };
-    
-    /**
-     * DOM Loaded: Initialize everything
-     */
-    document.addEventListener('DOMContentLoaded', () => {
-      PageController.init();
-    });
-    </script>
-    
-{% endblock %}
+        </script>
+    {% endblock %}
 {% endblock %}
