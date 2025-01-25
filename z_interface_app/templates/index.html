@@ -268,491 +268,169 @@
 {% block extra_scripts %}
 <script>
   /** Modal management */
-  class ModalManager {
-    constructor() {
-      this.modal = null;
-      this.modalTitle = null;
-      this.modalContent = null;
-      this.closeButtons = [];
-      this.focusedElementBeforeModal = null;
-      this.boundTrapFocus = this.trapFocus.bind(this);
-    }
-    init() {
-      this.modal = document.getElementById('modal');
-      this.modalTitle = document.getElementById('modalTitle');
-      this.modalContent = document.getElementById('modalContent');
-      this.closeButtons = document.querySelectorAll('.modal-close');
-      this.closeButtons.forEach(btn => {
-        btn.addEventListener('click', () => this.hideModal());
+  document.addEventListener('DOMContentLoaded', () => {
+  // Core state
+  let autoRefreshTimer = null;
+  const AUTO_REFRESH_INTERVAL = 30000;
+
+  // Status classes mapping
+  const STATUS_CLASSES = {
+    running: 'bg-green-100 text-green-800',
+    partial: 'bg-yellow-100 text-yellow-800',
+    stopped: 'bg-red-100 text-red-800'
+  };
+
+  // Core functionality
+  async function controlApp(model, appNum, action, button) {
+    const originalText = button.textContent;
+    button.textContent = 'Working...';
+    button.disabled = true;
+
+    try {
+      const res = await fetch(`/${action}/${model}/${appNum}`, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
       });
-      if (this.modal) {
-        this.modal.addEventListener('click', (e) => {
-          if (e.target === this.modal) this.hideModal();
-        });
-      }
+      if (!res.ok) throw new Error(`Failed to ${action}`);
+      
+      await checkAppStatus(model, appNum);
+      showToast(`${action.charAt(0).toUpperCase() + action.slice(1)} successful`);
+    } catch (err) {
+      console.error(`Error during ${action}:`, err);
+      showToast(err.message, 'error');
+    } finally {
+      button.textContent = originalText;
+      button.disabled = false;
     }
-    showModal(title, content) {
-      if (!this.modal) return;
-      this.focusedElementBeforeModal = document.activeElement;
-      this.modalTitle.textContent = title;
-      this.modalContent.innerHTML = content;
-      this.modal.classList.remove('hidden');
-      const closeButton = this.modal.querySelector('.modal-close');
-      if (closeButton) closeButton.focus();
-      this.modal.addEventListener('keydown', this.boundTrapFocus);
+  }
+
+  async function checkAppStatus(model, appNum) {
+    try {
+      const res = await fetch(`/api/container/${model}/${appNum}/status`);
+      if (!res.ok) throw new Error('Status check failed');
+      const data = await res.json();
+      updateStatusUI(model, appNum, data);
+    } catch (err) {
+      console.error('Status check failed:', err);
     }
-    hideModal() {
-      if (!this.modal) return;
-      this.modal.classList.add('hidden');
-      this.modal.removeEventListener('keydown', this.boundTrapFocus);
-      if (this.focusedElementBeforeModal) {
-        this.focusedElementBeforeModal.focus();
-      }
-    }
-    trapFocus(e) {
-      if (e.key === 'Escape') {
-        this.hideModal();
-        return;
-      }
-      if (e.key !== 'Tab') return;
-      const focusable = this.modal.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  }
+
+  function updateStatusUI(model, appNum, { backend, frontend }) {
+    const app = document.querySelector(`[data-app-id="${appNum}"][data-model="${model}"]`);
+    if (!app) return;
+
+    const status = getContainerStatus(backend, frontend);
+    const badge = app.querySelector('[class*="bg-"][class*="text-"]');
+    if (badge) {
+      Object.values(STATUS_CLASSES).forEach(cls => 
+        cls.split(' ').forEach(c => badge.classList.remove(c))
       );
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        last.focus();
-        e.preventDefault();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        first.focus();
-        e.preventDefault();
-      }
+      STATUS_CLASSES[status].split(' ').forEach(c => badge.classList.add(c));
+      badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
     }
+
+    ['backend', 'frontend'].forEach(service => {
+      const el = app.querySelector(`[data-status="${service}"]`);
+      if (el) {
+        const isRunning = service === 'backend' ? backend.running : frontend.running;
+        el.className = `font-medium ${isRunning ? 'text-green-600' : 'text-red-600'}`;
+        el.textContent = isRunning ? 'Running' : 'Stopped';
+      }
+    });
   }
 
-  /** Status indicator polling */
-  class StatusMonitor {
-    constructor() {
-      this.indicator = document.getElementById('statusIndicator');
-      this.checkInterval = 30000;
-      this.intervalId = null;
-    }
-    updateStatus(state, msg) {
-      if (!this.indicator) return;
-      const map = { healthy: 'bg-green-400', warning: 'bg-yellow-400', error: 'bg-red-400' };
-      const dot = this.indicator.querySelector('.rounded-full');
-      if (dot) {
-        Object.values(map).forEach(c => dot.classList.remove(c));
-        dot.classList.add(map[state] || map.error);
-      }
-      this.indicator.querySelector('.text-sm').textContent = msg;
-    }
-    async checkStatus() {
-      try {
-        const res = await fetch('/api/status');
-        const data = await res.json();
-        data.status === 'healthy'
-          ? this.updateStatus('healthy', 'System Active')
-          : this.updateStatus('warning', 'System Warning');
-      } catch {
-        this.updateStatus('error', 'Connection Error');
-      }
-    }
-    startMonitoring() {
-      this.checkStatus();
-      this.intervalId = setInterval(() => this.checkStatus(), this.checkInterval);
-    }
-    stopMonitoring() {
-      if (this.intervalId) clearInterval(this.intervalId);
-      this.intervalId = null;
-    }
+  function getContainerStatus(backend, frontend) {
+    if (backend.running && frontend.running) return 'running';
+    if (backend.running || frontend.running) return 'partial';
+    return 'stopped';
   }
 
-  /** Performance tracking (optional) */
-  class PerformanceMonitor {
-    constructor() {
-      this.metrics = {};
-    }
-    startMeasure(name) {
-      performance.mark?.(`${name}-start`);
-    }
-    endMeasure(name) {
-      if (!performance.mark) return;
-      performance.mark(`${name}-end`);
-      performance.measure(name, `${name}-start`, `${name}-end`);
-      const entry = performance.getEntriesByName(name)[0];
-      if (entry) {
-        this.metrics[name] = entry.duration;
-        console.debug(`[${name}] ${entry.duration.toFixed(2)}ms`);
-      }
-    }
-    clearMetrics() {
-      performance.clearMarks?.();
-      performance.clearMeasures?.();
-      this.metrics = {};
-    }
+  function filterApps() {
+    const search = document.getElementById('searchApps')?.value.toLowerCase() || '';
+    const model = document.getElementById('filterModel')?.value || '';
+    const status = document.getElementById('filterStatus')?.value || '';
+
+    document.querySelectorAll('[data-app-id]').forEach(app => {
+      const visible = (!search || app.textContent.toLowerCase().includes(search)) &&
+                     (!model || app.dataset.model === model) &&
+                     (!status || app.querySelector('[class*="bg-"]')?.textContent.toLowerCase().includes(status));
+      app.style.display = visible ? '' : 'none';
+    });
+
+    document.querySelectorAll('[data-model-section]').forEach(section => {
+      const hasVisible = [...section.querySelectorAll('[data-app-id]')].some(app => 
+        app.style.display !== 'none'
+      );
+      section.style.display = hasVisible ? '' : 'none';
+    });
   }
 
-  /** Global error handling */
-  const ErrorHandler = {
-    init() {
-      window.addEventListener('error', this.onError.bind(this));
-      window.addEventListener('unhandledrejection', this.onPromiseError.bind(this));
-    },
-    onError(e) {
-      console.error('Global error:', e.error);
-      this.displayError(e.error?.message || 'An error occurred');
-      return false;
-    },
-    onPromiseError(e) {
-      console.error('Unhandled promise rejection:', e.reason);
-      this.displayError(e.reason?.message || 'An async operation failed');
-      return false;
-    },
-    displayError(msg) {
-      const indicator = document.getElementById('statusIndicator');
-      if (indicator && window.AppUtils?.statusMonitor) {
-        window.AppUtils.statusMonitor.updateStatus('error', 'Error Detected');
-      }
-      PageController.showToast(msg, 'error');
+  function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white
+      ${type === 'error' ? 'bg-red-500' : 'bg-green-500'}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  // Auto-refresh handling
+  function toggleAutoRefresh(enabled) {
+    if (enabled) {
+      refreshAllStatuses();
+      autoRefreshTimer = setInterval(refreshAllStatuses, AUTO_REFRESH_INTERVAL);
+    } else {
+      clearInterval(autoRefreshTimer);
+      autoRefreshTimer = null;
     }
-  };
 
-  /** Utility helpers */
-  const Utils = {
-    debounce(fn, wait) {
-      let timeout;
-      return (...args) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => fn(...args), wait);
-      };
-    },
-    throttle(fn, limit) {
-      let inThrottle;
-      return (...args) => {
-        if (!inThrottle) {
-          fn(...args);
-          inThrottle = true;
-          setTimeout(() => (inThrottle = false), limit);
-        }
-      };
-    },
-    capitalize(str) {
-      if (!str || typeof str !== 'string') return '';
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-  };
-
-  /** Core page logic */
-  const PageController = {
-    modalManager: new ModalManager(),
-    statusMonitor: new StatusMonitor(),
-    performanceMonitor: new PerformanceMonitor(),
-    isAutoRefreshEnabled: false,
-    refreshTimer: null,
-    AUTO_REFRESH_INTERVAL: 30000,
-    STATUS_CLASSES: {
-      running: 'bg-green-100 text-green-800',
-      partial: 'bg-yellow-100 text-yellow-800',
-      stopped: 'bg-red-100 text-red-800'
-    },
-
-    init() {
-      ErrorHandler.init();
-      this.modalManager.init();
-      this.statusMonitor.startMonitoring();
-
-      const yearEl = document.getElementById('currentYear');
-      if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-      const sysInfoBtn = document.getElementById('showSystemInfo');
-      if (sysInfoBtn) {
-        sysInfoBtn.addEventListener('click', () => {
-          const content = `
-            <div class="space-y-4">
-              <div>
-                <h4 class="font-medium text-gray-700">Version</h4>
-                <p class="text-sm text-gray-600">1.0.0</p>
-              </div>
-              <div>
-                <h4 class="font-medium text-gray-700">Environment</h4>
-                <p class="text-sm text-gray-600">Production</p>
-              </div>
-              <div>
-                <h4 class="font-medium text-gray-700">Last Updated</h4>
-                <p class="text-sm text-gray-600">${new Date().toLocaleString()}</p>
-              </div>
-            </div>
-          `;
-          this.modalManager.showModal('System Information', content);
-        });
-      }
-
-      document.addEventListener('visibilitychange', () => {
-        document.hidden
-          ? this.statusMonitor.stopMonitoring()
-          : this.statusMonitor.startMonitoring();
-      });
-
-      document.querySelectorAll('.action-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          const { action, model, appNum } = btn.dataset;
-          console.log(`Button clicked: action=${action}, model=${model}, appNum=${appNum}`);
-          if (action === 'status') {
-            this.checkAppStatus(model, appNum);
-          } else {
-            this.controlApp(model, appNum, action, btn);
-          }
-        });
-      });
-
-      const searchInput = document.getElementById('searchApps');
-      const modelFilter = document.getElementById('filterModel');
-      const statusFilter = document.getElementById('filterStatus');
-      if (searchInput) {
-        searchInput.addEventListener('input', Utils.debounce(() => this.filterApps(), 300));
-      }
-      if (modelFilter) modelFilter.addEventListener('change', () => this.filterApps());
-      if (statusFilter) statusFilter.addEventListener('change', () => this.filterApps());
-
-      const autoRefreshBtn = document.getElementById('toggleAutorefresh');
-      if (autoRefreshBtn) {
-        this.isAutoRefreshEnabled = (autoRefreshBtn.dataset.enabled === 'true');
-        autoRefreshBtn.addEventListener('click', () => {
-          this.isAutoRefreshEnabled = !this.isAutoRefreshEnabled;
-          this.isAutoRefreshEnabled ? this.startAutoRefresh() : this.stopAutoRefresh();
-        });
-        if (this.isAutoRefreshEnabled) this.startAutoRefresh();
-        this.updateAutoRefreshUI(this.isAutoRefreshEnabled);
-      }
-
-      const refreshAllBtn = document.getElementById('refreshAll');
-      if (refreshAllBtn) {
-        refreshAllBtn.addEventListener('click', () => this.refreshAllStatuses());
-      }
-
-      // Expose some utilities globally
-      window.AppUtils = {
-        modalManager: this.modalManager,
-        statusMonitor: this.statusMonitor,
-        performanceMonitor: this.performanceMonitor,
-        utils: Utils
-      };
-    },
-
-    async controlApp(model, appNum, action, button) {
-      const buttonText = button.querySelector('.button-text');
-      const originalText = buttonText ? buttonText.textContent.trim() : button.textContent.trim();
-      let workingText = 'Working...';
-      if (action === 'start') workingText = 'Starting...';
-      else if (action === 'stop') workingText = 'Stopping...';
-      else if (action === 'remove') workingText = 'Removing...';
-
-      button.disabled = true;
-      if (buttonText) {
-        buttonText.textContent = workingText;
-      } else {
-        button.textContent = workingText;
-      }
-
-      try {
-        const res = await fetch(`/${action}/${model}/${appNum}`, {
-          headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        });
-        if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-        await this.checkAppStatus(model, appNum);
-        this.showToast(`${Utils.capitalize(action)} operation successful`, 'success');
-      } catch (err) {
-        console.error(`Error during ${action}:`, err);
-        this.showToast(`Error: ${err.message}`, 'error');
-      } finally {
-        button.disabled = false;
-        if (buttonText) {
-          buttonText.textContent = originalText;
-        } else {
-          button.textContent = originalText;
-        }
-      }
-    },
-
-    async checkAppStatus(model, appNum) {
-      try {
-        const res = await fetch(`/api/container/${model}/${appNum}/status`);
-        if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-        const data = await res.json();
-        const appEl = document.querySelector(`[data-app-id="${appNum}"][data-model="${model}"]`);
-        if (appEl) this.updateStatusUI(appEl, data);
-      } catch (err) {
-        console.error('Status check failed:', err);
-        this.showToast('Failed to check status', 'error');
-      }
-    },
-
-    updateStatusUI(appEl, { backend, frontend }) {
-      const badge = appEl.querySelector('[class*="bg-"][class*="text-"]');
-      if (badge) {
-        Object.values(this.STATUS_CLASSES).forEach(cls => cls.split(' ').forEach(c => badge.classList.remove(c)));
-        const newCls = this.getStatusClass(backend, frontend);
-        newCls.split(' ').forEach(c => badge.classList.add(c));
-        badge.textContent = this.getStatusText(backend, frontend);
-      }
-      this.updateServiceStatus(appEl, 'backend', backend);
-      this.updateServiceStatus(appEl, 'frontend', frontend);
-    },
-
-    updateServiceStatus(appEl, service, statusObj) {
-      const el = appEl.querySelector(`[data-status="${service}"]`);
-      if (!el) return;
-      el.className = el.className.replace(/text-\w+-\d+/g, '').trim(); 
-      const { text, colorClass } = this.getDisplayStatus(statusObj);
-      el.classList.add('font-medium', colorClass);
-      el.textContent = text;
-    },
-
-    getDisplayStatus(s) {
-      if (!s.exists) return { text: 'No Container', colorClass: 'text-gray-600' };
-      switch (s.status) {
-        case 'running': return { text: 'Running', colorClass: 'text-green-600' };
-        case 'created': return { text: 'Created', colorClass: 'text-yellow-600' };
-        case 'stopped': return { text: 'Stopped', colorClass: 'text-red-600' };
-        default: return { text: s.status || 'Unknown', colorClass: 'text-gray-600' };
-      }
-    },
-
-    getStatusClass(b, f) {
-      if (b.running && f.running) return this.STATUS_CLASSES.running;
-      if (b.running || f.running) return this.STATUS_CLASSES.partial;
-      return this.STATUS_CLASSES.stopped;
-    },
-
-    getStatusText(b, f) {
-      if (b.running && f.running) return 'Running';
-      if (b.running || f.running) return 'Partial';
-      return 'Stopped';
-    },
-
-    filterApps() {
-      const searchTerm = (document.getElementById('searchApps')?.value || '').toLowerCase();
-      const modelFilter = document.getElementById('filterModel')?.value || '';
-      const statusFilter = document.getElementById('filterStatus')?.value || '';
-      let count = 0;
-
-      document.querySelectorAll('[data-app-id]').forEach(app => {
-        const section = app.closest('[data-model-section]');
-        const nameEl = app.querySelector('h3');
-        const badge = app.querySelector('[class*="bg-"][class*="text-"]');
-        if (!nameEl || !badge) return;
-
-        const nameTxt = nameEl.textContent.toLowerCase();
-        const modelName = app.dataset.model;
-        const statusTxt = badge.textContent.toLowerCase();
-
-        const visible =
-          (nameTxt.includes(searchTerm) || app.textContent.toLowerCase().includes(searchTerm)) &&
-          (!modelFilter || modelName === modelFilter) &&
-          (!statusFilter || statusTxt.includes(statusFilter.toLowerCase()));
-
-        app.style.display = visible ? '' : 'none';
-        if (visible) count++;
-
-        if (section) {
-          const hasVisibleApps = Array.from(section.querySelectorAll('[data-app-id]'))
-            .some(a => a.style.display !== 'none');
-          section.style.display = hasVisibleApps ? '' : 'none';
-        }
-      });
-
-      const noResults = document.getElementById('noResultsMessage');
-      if (noResults) noResults.classList.toggle('hidden', count > 0);
-    },
-
-    startAutoRefresh() {
-      this.refreshAllStatuses();
-      this.refreshTimer = setInterval(() => this.refreshAllStatuses(), this.AUTO_REFRESH_INTERVAL);
-      this.updateAutoRefreshUI(true);
-      this.showToast('Auto-refresh enabled', 'success');
-    },
-
-    stopAutoRefresh() {
-      if (this.refreshTimer) clearInterval(this.refreshTimer);
-      this.refreshTimer = null;
-      this.updateAutoRefreshUI(false);
-      this.showToast('Auto-refresh disabled', 'info');
-    },
-
-    async refreshAllStatuses() {
-      const btn = document.getElementById('refreshAll');
-      const originalHTML = btn?.innerHTML;
-      try {
-        if (btn) {
-          btn.disabled = true;
-          btn.innerHTML = `
-            <svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Refreshing...
-          `;
-        }
-        const allApps = document.querySelectorAll('[data-app-id]');
-        await Promise.all([...allApps].map(a => this.checkAppStatus(a.dataset.model, a.dataset.appId)));
-        this.showToast('All statuses refreshed', 'success');
-      } catch (err) {
-        console.error('Refresh failed:', err);
-        this.showToast('Failed to refresh statuses', 'error');
-      } finally {
-        if (btn) {
-          btn.disabled = false;
-          if (originalHTML) btn.innerHTML = originalHTML;
-        }
-      }
-    },
-
-    updateAutoRefreshUI(enabled) {
-      const btn = document.getElementById('toggleAutorefresh');
-      if (!btn) return;
-      btn.dataset.enabled = enabled.toString();
-      btn.setAttribute('aria-pressed', enabled.toString());
-
-      btn.classList.toggle('bg-gray-500', !enabled);
-      btn.classList.toggle('hover:bg-gray-600', !enabled);
+    const btn = document.getElementById('toggleAutorefresh');
+    if (btn) {
       btn.classList.toggle('bg-green-500', enabled);
-      btn.classList.toggle('hover:bg-green-600', enabled);
-
-      const textSpan = document.getElementById('autorefreshText');
-      if (textSpan) textSpan.textContent = `Auto Refresh: ${enabled ? 'On' : 'Off'}`;
-    },
-
-    showToast(msg, type = 'info') {
-      const colors = {
-        error: 'bg-red-500',
-        success: 'bg-green-500',
-        warning: 'bg-yellow-500',
-        info: 'bg-blue-500'
-      };
-      const toast = document.createElement('div');
-      toast.className = `
-        fixed bottom-4 right-4
-        ${colors[type] || colors.info} text-white px-6 py-3
-        rounded-lg shadow-lg transform translate-y-full transition duration-300 z-50
-      `.trim();
-      toast.textContent = msg;
-      document.body.appendChild(toast);
-
-      // Animate in
-      requestAnimationFrame(() => {
-        toast.style.transform = 'translateY(0)';
-        setTimeout(() => {
-          toast.style.transform = 'translateY(100%)';
-          toast.addEventListener('transitionend', () => document.body.removeChild(toast));
-        }, 3000);
-      });
+      btn.classList.toggle('bg-gray-500', !enabled);
+      document.getElementById('autorefreshText').textContent = 
+        `Auto Refresh: ${enabled ? 'On' : 'Off'}`;
     }
-  };
+  }
 
-  document.addEventListener('DOMContentLoaded', () => PageController.init());
-</script>
+  async function refreshAllStatuses() {
+    const apps = document.querySelectorAll('[data-app-id]');
+    await Promise.all([...apps].map(app => 
+      checkAppStatus(app.dataset.model, app.dataset.appId)
+    ));
+  }
+
+  // Event listeners
+  document.querySelectorAll('.action-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      const { action, model, appNum } = btn.dataset;
+      action === 'status' ? 
+        checkAppStatus(model, appNum) : 
+        controlApp(model, appNum, action, btn);
+    });
+  });
+
+  const searchInput = document.getElementById('searchApps');
+  if (searchInput) {
+    let timeout;
+    searchInput.addEventListener('input', () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(filterApps, 300);
+    });
+  }
+
+  ['filterModel', 'filterStatus'].forEach(id => {
+    document.getElementById(id)?.addEventListener('change', filterApps);
+  });
+
+  document.getElementById('toggleAutorefresh')?.addEventListener('click', function() {
+    const enabled = this.dataset.enabled !== 'true';
+    this.dataset.enabled = enabled;
+    toggleAutoRefresh(enabled);
+  });
+
+  document.getElementById('refreshAll')?.addEventListener('click', refreshAllStatuses);
+});
 
 {% endblock %}
 {% endblock %}
