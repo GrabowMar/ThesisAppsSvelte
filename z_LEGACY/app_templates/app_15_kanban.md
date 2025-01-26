@@ -1,63 +1,59 @@
-# Simple Feedback Form Application Template - Flask + Svelte
+# Simple Kanban Application Template - Flask + Svelte
 
 ## Important Implementation Notes
 
 As an AI assistant, when implementing this template:
-1. Generate a SIMPLE feedback collection system
+1. Generate a SIMPLE kanban system
 2. Keep ALL changes within app.py and App.svelte files only
 3. Do NOT modify the project structure
 4. Do NOT create additional files unless explicitly requested
-5. Include essential form features
-6. Focus on user input and data collection
-
-## Introduction
-
-This template provides a simple feedback collection system built with Flask and Svelte. The implementation focuses on form handling and data storage while maintaining clean, maintainable code.
+5. Include basic board features
+6. Focus on task management essentials
 
 ## Project Description
 
-Simple Feedback System
-A streamlined feedback collection application built with Flask and Svelte, featuring form submission and response management capabilities.
+Simple Kanban System
+A basic task management application built with Flask and Svelte, featuring kanban board functionality.
 
 Key Features:
-- Multi-field feedback form
-- Form validation
-- Submission handling
-- Response storage
-- Success notifications
+- Board management
+- Task creation/editing
+- Column organization
+- Drag-and-drop
+- Basic filtering
 
 Technical Stack:
 - Backend: Flask with SQLAlchemy
-- Frontend: Svelte with form handling
-- Additional: Data validation
+- Frontend: Svelte with drag-drop
+- Additional: Task organization
 
 ## Technical Requirements Analysis
 
 ### Backend Requirements
 1. Core Features:
-   - Form data processing
-   - Data storage
-   - Response management
-   - Basic analytics
+   - Board management
+   - Task handling
+   - Column operations
+   - State tracking
 
 2. Integration Requirements:
    - Database setup
-   - Data validation
-   - Response handling
+   - Task storage
+   - State persistence
 
 ### Frontend Requirements
 1. Visual Elements:
-   - Dynamic form fields
-   - Progress indicators
-   - Success messages
-   - Error displays
-   - Rating inputs
+   - Kanban board
+   - Task cards
+   - Column layout
+   - Add/Edit forms
+   - Filter controls
 
 2. Functional Elements:
-   - Form validation
-   - Input handling
-   - Submit process
-   - Response display
+   - Drag-drop handling
+   - Task management
+   - Column ordering
+   - Filter system
 
 ## Implementation Structure
 
@@ -90,9 +86,9 @@ app/
 
 # 3. Database Models
 
-# 4. Form Processing
+# 4. Board Management
 
-# 5. Data Storage
+# 5. Task Operations
 
 # 6. API Routes
 
@@ -105,20 +101,21 @@ if __name__ == '__main__':
 <script>
   // 1. Imports
 
-  // 2. Form State
+  // 2. Board State
 
-  // 3. Validation Logic
+  // 3. Task Management
 
-  // 4. Submit Handling
+  // 4. Drag-Drop Logic
 
-  // 5. Response Management
+  // 5. Filter Handling
 </script>
 
 <!-- UI Components -->
 <main>
-  <!-- Feedback Form -->
-  <!-- Progress Indicators -->
-  <!-- Response Messages -->
+  <!-- Board Layout -->
+  <!-- Task Cards -->
+  <!-- Add/Edit Forms -->
+  <!-- Filters -->
 </main>
 
 <style>
@@ -130,23 +127,23 @@ if __name__ == '__main__':
 
 1. **Initial Setup**
    - Confirm ports (XXXX, YYYY)
-   - Form field definition
    - Database setup
+   - Board structure
 
 2. **Implementation**
-   - Form structure
-   - Validation rules
-   - Submit handling
-   - Response storage
+   - Board setup
+   - Task handling
+   - Drag-drop system
+   - Filter functions
 
 3. **Modifications**
-   - Update form fields
-   - Adjust validation
-   - Modify storage
+   - Update board logic
+   - Adjust tasks
+   - Modify columns
 
 4. **Error Handling**
-   - Input validation
-   - Submit errors
+   - Task validation
+   - State updates
    - User feedback
 
-Remember: This template emphasizes simple form handling while maintaining the single-file architecture approach.
+Remember: This template emphasizes simple kanban functionality while maintaining the single-file architecture approach.

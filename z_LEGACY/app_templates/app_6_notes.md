@@ -1,63 +1,59 @@
-# Simple Feedback Form Application Template - Flask + Svelte
+# Basic Notes Application Template - Flask + Svelte
 
 ## Important Implementation Notes
 
 As an AI assistant, when implementing this template:
-1. Generate a SIMPLE feedback collection system
+1. Generate a BASIC note-taking system
 2. Keep ALL changes within app.py and App.svelte files only
 3. Do NOT modify the project structure
 4. Do NOT create additional files unless explicitly requested
-5. Include essential form features
-6. Focus on user input and data collection
-
-## Introduction
-
-This template provides a simple feedback collection system built with Flask and Svelte. The implementation focuses on form handling and data storage while maintaining clean, maintainable code.
+5. Include core note features
+6. Focus on simple content management
 
 ## Project Description
 
-Simple Feedback System
-A streamlined feedback collection application built with Flask and Svelte, featuring form submission and response management capabilities.
+Basic Notes System
+A straightforward note-taking application built with Flask and Svelte, featuring essential content management capabilities.
 
 Key Features:
-- Multi-field feedback form
-- Form validation
-- Submission handling
-- Response storage
-- Success notifications
+- Note creation/editing
+- Note listing/viewing
+- Simple categorization
+- Basic search
+- Note archiving
 
 Technical Stack:
 - Backend: Flask with SQLAlchemy
-- Frontend: Svelte with form handling
-- Additional: Data validation
+- Frontend: Svelte with state management
+- Additional: Rich text support
 
 ## Technical Requirements Analysis
 
 ### Backend Requirements
 1. Core Features:
-   - Form data processing
-   - Data storage
-   - Response management
-   - Basic analytics
+   - Note storage
+   - Content management
+   - Tag handling
+   - Search functionality
 
 2. Integration Requirements:
    - Database setup
-   - Data validation
-   - Response handling
+   - Content processing
+   - Query handling
 
 ### Frontend Requirements
 1. Visual Elements:
-   - Dynamic form fields
-   - Progress indicators
-   - Success messages
-   - Error displays
-   - Rating inputs
+   - Note editor
+   - Note list
+   - Search bar
+   - Tag selector
+   - Archive view
 
 2. Functional Elements:
-   - Form validation
-   - Input handling
-   - Submit process
-   - Response display
+   - Content editing
+   - Note filtering
+   - Search handling
+   - Tag management
 
 ## Implementation Structure
 
@@ -90,11 +86,13 @@ app/
 
 # 3. Database Models
 
-# 4. Form Processing
+# 4. Note Management
 
-# 5. Data Storage
+# 5. Tag Handling
 
-# 6. API Routes
+# 6. Search Logic
+
+# 7. API Routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -105,20 +103,21 @@ if __name__ == '__main__':
 <script>
   // 1. Imports
 
-  // 2. Form State
+  // 2. Note State
 
-  // 3. Validation Logic
+  // 3. Editor Setup
 
-  // 4. Submit Handling
+  // 4. Note Operations
 
-  // 5. Response Management
+  // 5. Search/Filter Logic
 </script>
 
 <!-- UI Components -->
 <main>
-  <!-- Feedback Form -->
-  <!-- Progress Indicators -->
-  <!-- Response Messages -->
+  <!-- Note Editor -->
+  <!-- Note List -->
+  <!-- Search/Filters -->
+  <!-- Tag Management -->
 </main>
 
 <style>
@@ -130,23 +129,23 @@ if __name__ == '__main__':
 
 1. **Initial Setup**
    - Confirm ports (XXXX, YYYY)
-   - Form field definition
-   - Database setup
+   - Database configuration
+   - Note structure definition
 
 2. **Implementation**
-   - Form structure
-   - Validation rules
-   - Submit handling
-   - Response storage
+   - Note management
+   - Content editing
+   - Search functionality
+   - Tag system
 
 3. **Modifications**
-   - Update form fields
-   - Adjust validation
-   - Modify storage
+   - Update note handling
+   - Adjust editor features
+   - Modify search/filters
 
 4. **Error Handling**
-   - Input validation
-   - Submit errors
+   - Content validation
+   - Save operations
    - User feedback
 
-Remember: This template emphasizes simple form handling while maintaining the single-file architecture approach.
+Remember: This template emphasizes simple note management while maintaining the single-file architecture approach.

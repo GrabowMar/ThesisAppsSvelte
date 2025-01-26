@@ -1,63 +1,59 @@
-# Simple Feedback Form Application Template - Flask + Svelte
+# Simple Polling Application Template - Flask + Svelte
 
 ## Important Implementation Notes
 
 As an AI assistant, when implementing this template:
-1. Generate a SIMPLE feedback collection system
+1. Generate a SIMPLE polling system
 2. Keep ALL changes within app.py and App.svelte files only
 3. Do NOT modify the project structure
 4. Do NOT create additional files unless explicitly requested
-5. Include essential form features
-6. Focus on user input and data collection
-
-## Introduction
-
-This template provides a simple feedback collection system built with Flask and Svelte. The implementation focuses on form handling and data storage while maintaining clean, maintainable code.
+5. Include basic voting features
+6. Focus on poll management essentials
 
 ## Project Description
 
-Simple Feedback System
-A streamlined feedback collection application built with Flask and Svelte, featuring form submission and response management capabilities.
+Simple Polling System
+A basic voting application built with Flask and Svelte, featuring poll creation and voting functionality.
 
 Key Features:
-- Multi-field feedback form
-- Form validation
-- Submission handling
-- Response storage
-- Success notifications
+- Poll creation
+- Vote casting
+- Results display
+- Basic analytics
+- Time-limited polls
 
 Technical Stack:
 - Backend: Flask with SQLAlchemy
-- Frontend: Svelte with form handling
-- Additional: Data validation
+- Frontend: Svelte with chart display
+- Additional: Real-time updates
 
 ## Technical Requirements Analysis
 
 ### Backend Requirements
 1. Core Features:
-   - Form data processing
-   - Data storage
-   - Response management
-   - Basic analytics
+   - Poll management
+   - Vote processing 
+   - Results calculation
+   - Time tracking
 
 2. Integration Requirements:
    - Database setup
-   - Data validation
-   - Response handling
+   - Vote handling
+   - Results caching
 
 ### Frontend Requirements
 1. Visual Elements:
-   - Dynamic form fields
-   - Progress indicators
-   - Success messages
-   - Error displays
-   - Rating inputs
+   - Poll creator
+   - Voting interface
+   - Results display
+   - Charts view
+   - Timer display
 
 2. Functional Elements:
-   - Form validation
-   - Input handling
-   - Submit process
-   - Response display
+   - Vote submission
+   - Results updates
+   - Chart rendering
+   - Timer handling
 
 ## Implementation Structure
 
@@ -90,9 +86,9 @@ app/
 
 # 3. Database Models
 
-# 4. Form Processing
+# 4. Poll Management
 
-# 5. Data Storage
+# 5. Vote Processing
 
 # 6. API Routes
 
@@ -105,20 +101,21 @@ if __name__ == '__main__':
 <script>
   // 1. Imports
 
-  // 2. Form State
+  // 2. Poll State
 
-  // 3. Validation Logic
+  // 3. Vote Handling
 
-  // 4. Submit Handling
+  // 4. Results Display
 
-  // 5. Response Management
+  // 5. Chart Management
 </script>
 
 <!-- UI Components -->
 <main>
-  <!-- Feedback Form -->
-  <!-- Progress Indicators -->
-  <!-- Response Messages -->
+  <!-- Poll Creator -->
+  <!-- Voting Interface -->
+  <!-- Results View -->
+  <!-- Charts -->
 </main>
 
 <style>
@@ -130,23 +127,23 @@ if __name__ == '__main__':
 
 1. **Initial Setup**
    - Confirm ports (XXXX, YYYY)
-   - Form field definition
    - Database setup
+   - Poll schema
 
 2. **Implementation**
-   - Form structure
-   - Validation rules
-   - Submit handling
-   - Response storage
+   - Poll creation
+   - Vote handling
+   - Results display
+   - Charts/analytics
 
 3. **Modifications**
-   - Update form fields
-   - Adjust validation
-   - Modify storage
+   - Update poll logic
+   - Adjust voting
+   - Modify results
 
 4. **Error Handling**
-   - Input validation
-   - Submit errors
+   - Vote validation
+   - Poll status
    - User feedback
 
-Remember: This template emphasizes simple form handling while maintaining the single-file architecture approach.
+Remember: This template emphasizes simple polling functionality while maintaining the single-file architecture approach.

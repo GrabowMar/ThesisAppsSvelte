@@ -1,30 +1,26 @@
-# Simple Feedback Form Application Template - Flask + Svelte
+# Minimal CRUD Inventory Application Template - Flask + Svelte
 
 ## Important Implementation Notes
 
 As an AI assistant, when implementing this template:
-1. Generate a SIMPLE feedback collection system
+1. Generate a MINIMAL inventory system
 2. Keep ALL changes within app.py and App.svelte files only
 3. Do NOT modify the project structure
 4. Do NOT create additional files unless explicitly requested
-5. Include essential form features
-6. Focus on user input and data collection
-
-## Introduction
-
-This template provides a simple feedback collection system built with Flask and Svelte. The implementation focuses on form handling and data storage while maintaining clean, maintainable code.
+5. Include basic CRUD operations
+6. Focus on inventory management essentials
 
 ## Project Description
 
-Simple Feedback System
-A streamlined feedback collection application built with Flask and Svelte, featuring form submission and response management capabilities.
+Minimal CRUD Inventory System
+A basic inventory management system built with Flask and Svelte, featuring essential CRUD operations.
 
 Key Features:
-- Multi-field feedback form
-- Form validation
-- Submission handling
-- Response storage
-- Success notifications
+- Item management (CRUD)
+- Basic inventory tracking
+- Simple categorization
+- Stock level alerts
+- Search/filter items
 
 Technical Stack:
 - Backend: Flask with SQLAlchemy
@@ -35,29 +31,29 @@ Technical Stack:
 
 ### Backend Requirements
 1. Core Features:
-   - Form data processing
-   - Data storage
-   - Response management
-   - Basic analytics
+   - CRUD operations
+   - Stock tracking
+   - Category management
+   - Search functionality
 
 2. Integration Requirements:
    - Database setup
    - Data validation
-   - Response handling
+   - Query handling
 
 ### Frontend Requirements
 1. Visual Elements:
-   - Dynamic form fields
-   - Progress indicators
-   - Success messages
-   - Error displays
-   - Rating inputs
+   - Item list/grid
+   - Edit form
+   - Stock indicators
+   - Category filters
+   - Search interface
 
 2. Functional Elements:
-   - Form validation
-   - Input handling
-   - Submit process
-   - Response display
+   - CRUD operations
+   - Data filtering
+   - Sort functionality
+   - Stock alerts
 
 ## Implementation Structure
 
@@ -90,9 +86,9 @@ app/
 
 # 3. Database Models
 
-# 4. Form Processing
+# 4. CRUD Operations
 
-# 5. Data Storage
+# 5. Search/Filter Logic
 
 # 6. API Routes
 
@@ -105,20 +101,21 @@ if __name__ == '__main__':
 <script>
   // 1. Imports
 
-  // 2. Form State
+  // 2. Item State
 
-  // 3. Validation Logic
+  // 3. CRUD Handlers
 
-  // 4. Submit Handling
+  // 4. Filter/Sort Logic
 
-  // 5. Response Management
+  // 5. Form Management
 </script>
 
 <!-- UI Components -->
 <main>
-  <!-- Feedback Form -->
-  <!-- Progress Indicators -->
-  <!-- Response Messages -->
+  <!-- Item List/Grid -->
+  <!-- CRUD Forms -->
+  <!-- Filters/Search -->
+  <!-- Alerts -->
 </main>
 
 <style>
@@ -130,23 +127,23 @@ if __name__ == '__main__':
 
 1. **Initial Setup**
    - Confirm ports (XXXX, YYYY)
-   - Form field definition
-   - Database setup
+   - Database configuration
+   - Item schema definition
 
 2. **Implementation**
-   - Form structure
-   - Validation rules
-   - Submit handling
-   - Response storage
+   - CRUD operations
+   - Data management
+   - Filter system
+   - Alert handling
 
 3. **Modifications**
-   - Update form fields
-   - Adjust validation
-   - Modify storage
+   - Update operations
+   - Adjust data model
+   - Modify filters
 
 4. **Error Handling**
-   - Input validation
-   - Submit errors
+   - Data validation
+   - Operation status
    - User feedback
 
-Remember: This template emphasizes simple form handling while maintaining the single-file architecture approach.
+Remember: This template emphasizes minimal CRUD functionality while maintaining the single-file architecture approach.

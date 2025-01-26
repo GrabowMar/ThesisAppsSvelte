@@ -1,63 +1,59 @@
-# Simple Feedback Form Application Template - Flask + Svelte
+# Basic Wiki Application Template - Flask + Svelte
 
 ## Important Implementation Notes
 
 As an AI assistant, when implementing this template:
-1. Generate a SIMPLE feedback collection system
+1. Generate a BASIC wiki system
 2. Keep ALL changes within app.py and App.svelte files only
 3. Do NOT modify the project structure
 4. Do NOT create additional files unless explicitly requested
-5. Include essential form features
-6. Focus on user input and data collection
-
-## Introduction
-
-This template provides a simple feedback collection system built with Flask and Svelte. The implementation focuses on form handling and data storage while maintaining clean, maintainable code.
+5. Include core wiki features
+6. Focus on content management essentials
 
 ## Project Description
 
-Simple Feedback System
-A streamlined feedback collection application built with Flask and Svelte, featuring form submission and response management capabilities.
+Basic Wiki System
+A simple wiki platform built with Flask and Svelte, featuring page management and content organization.
 
 Key Features:
-- Multi-field feedback form
-- Form validation
-- Submission handling
-- Response storage
-- Success notifications
+- Page creation/editing
+- Content organization
+- Basic search
+- Version history
+- Simple formatting
 
 Technical Stack:
 - Backend: Flask with SQLAlchemy
-- Frontend: Svelte with form handling
-- Additional: Data validation
+- Frontend: Svelte with markdown
+- Additional: Content versioning
 
 ## Technical Requirements Analysis
 
 ### Backend Requirements
 1. Core Features:
-   - Form data processing
-   - Data storage
-   - Response management
-   - Basic analytics
+   - Page management
+   - Content versioning
+   - Search functionality
+   - Link handling
 
 2. Integration Requirements:
    - Database setup
-   - Data validation
-   - Response handling
+   - Content storage
+   - Version control
 
 ### Frontend Requirements
 1. Visual Elements:
-   - Dynamic form fields
-   - Progress indicators
-   - Success messages
-   - Error displays
-   - Rating inputs
+   - Page editor
+   - Content view
+   - Search interface
+   - History display
+   - Navigation menu
 
 2. Functional Elements:
-   - Form validation
-   - Input handling
-   - Submit process
-   - Response display
+   - Content editing
+   - Page navigation
+   - Search handling
+   - Version control
 
 ## Implementation Structure
 
@@ -90,9 +86,9 @@ app/
 
 # 3. Database Models
 
-# 4. Form Processing
+# 4. Page Management
 
-# 5. Data Storage
+# 5. Version Control
 
 # 6. API Routes
 
@@ -105,20 +101,21 @@ if __name__ == '__main__':
 <script>
   // 1. Imports
 
-  // 2. Form State
+  // 2. Page State
 
-  // 3. Validation Logic
+  // 3. Editor Setup
 
-  // 4. Submit Handling
+  // 4. Version Handling
 
-  // 5. Response Management
+  // 5. Search Logic
 </script>
 
 <!-- UI Components -->
 <main>
-  <!-- Feedback Form -->
-  <!-- Progress Indicators -->
-  <!-- Response Messages -->
+  <!-- Page Editor -->
+  <!-- Content View -->
+  <!-- Search Bar -->
+  <!-- History View -->
 </main>
 
 <style>
@@ -130,23 +127,23 @@ if __name__ == '__main__':
 
 1. **Initial Setup**
    - Confirm ports (XXXX, YYYY)
-   - Form field definition
    - Database setup
+   - Content schema
 
 2. **Implementation**
-   - Form structure
-   - Validation rules
-   - Submit handling
-   - Response storage
+   - Page handling
+   - Version control
+   - Search system
+   - Editor setup
 
 3. **Modifications**
-   - Update form fields
-   - Adjust validation
-   - Modify storage
+   - Update content management
+   - Adjust versioning
+   - Modify search
 
 4. **Error Handling**
-   - Input validation
-   - Submit errors
+   - Content validation
+   - Version conflicts
    - User feedback
 
-Remember: This template emphasizes simple form handling while maintaining the single-file architecture approach.
+Remember: This template emphasizes basic wiki functionality while maintaining the single-file architecture approach.

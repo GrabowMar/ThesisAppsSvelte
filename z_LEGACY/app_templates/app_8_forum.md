@@ -1,63 +1,59 @@
-# Simple Feedback Form Application Template - Flask + Svelte
+# Compact Forum Application Template - Flask + Svelte
 
 ## Important Implementation Notes
 
 As an AI assistant, when implementing this template:
-1. Generate a SIMPLE feedback collection system
+1. Generate a COMPACT forum system
 2. Keep ALL changes within app.py and App.svelte files only
 3. Do NOT modify the project structure
 4. Do NOT create additional files unless explicitly requested
-5. Include essential form features
-6. Focus on user input and data collection
-
-## Introduction
-
-This template provides a simple feedback collection system built with Flask and Svelte. The implementation focuses on form handling and data storage while maintaining clean, maintainable code.
+5. Include essential discussion features
+6. Focus on thread and comment management
 
 ## Project Description
 
-Simple Feedback System
-A streamlined feedback collection application built with Flask and Svelte, featuring form submission and response management capabilities.
+Compact Forum System
+A lightweight discussion platform built with Flask and Svelte, featuring thread and comment management.
 
 Key Features:
-- Multi-field feedback form
-- Form validation
-- Submission handling
-- Response storage
-- Success notifications
+- Thread creation/viewing
+- Comment system
+- Basic categories
+- Simple sorting
+- Thread search
 
 Technical Stack:
 - Backend: Flask with SQLAlchemy
-- Frontend: Svelte with form handling
-- Additional: Data validation
+- Frontend: Svelte with state management
+- Additional: Thread organization
 
 ## Technical Requirements Analysis
 
 ### Backend Requirements
 1. Core Features:
-   - Form data processing
-   - Data storage
-   - Response management
-   - Basic analytics
+   - Thread management
+   - Comment handling
+   - Category system
+   - Search functionality
 
 2. Integration Requirements:
    - Database setup
-   - Data validation
-   - Response handling
+   - Content storage
+   - Query handling
 
 ### Frontend Requirements
 1. Visual Elements:
-   - Dynamic form fields
-   - Progress indicators
-   - Success messages
-   - Error displays
-   - Rating inputs
+   - Thread list
+   - Thread view
+   - Comment section
+   - Category selector
+   - Sort controls
 
 2. Functional Elements:
-   - Form validation
-   - Input handling
-   - Submit process
-   - Response display
+   - Thread creation
+   - Comment posting
+   - Content sorting
+   - Search handling
 
 ## Implementation Structure
 
@@ -90,11 +86,13 @@ app/
 
 # 3. Database Models
 
-# 4. Form Processing
+# 4. Thread Management
 
-# 5. Data Storage
+# 5. Comment Handling
 
-# 6. API Routes
+# 6. Category System
+
+# 7. API Routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -105,20 +103,21 @@ if __name__ == '__main__':
 <script>
   // 1. Imports
 
-  // 2. Form State
+  // 2. Thread State
 
-  // 3. Validation Logic
+  // 3. Comment Management
 
-  // 4. Submit Handling
+  // 4. Sort/Filter Logic
 
-  // 5. Response Management
+  // 5. Content Operations
 </script>
 
 <!-- UI Components -->
 <main>
-  <!-- Feedback Form -->
-  <!-- Progress Indicators -->
-  <!-- Response Messages -->
+  <!-- Thread List -->
+  <!-- Thread View -->
+  <!-- Comment Section -->
+  <!-- Category Nav -->
 </main>
 
 <style>
@@ -130,23 +129,23 @@ if __name__ == '__main__':
 
 1. **Initial Setup**
    - Confirm ports (XXXX, YYYY)
-   - Form field definition
    - Database setup
+   - Thread structure
 
 2. **Implementation**
-   - Form structure
-   - Validation rules
-   - Submit handling
-   - Response storage
+   - Thread management
+   - Comment system
+   - Category handling
+   - Search/sort
 
 3. **Modifications**
-   - Update form fields
-   - Adjust validation
-   - Modify storage
+   - Update thread logic
+   - Adjust comments
+   - Modify categories
 
 4. **Error Handling**
-   - Input validation
-   - Submit errors
+   - Content validation
+   - Post operations
    - User feedback
 
-Remember: This template emphasizes simple form handling while maintaining the single-file architecture approach.
+Remember: This template emphasizes compact discussion management while maintaining the single-file architecture appro

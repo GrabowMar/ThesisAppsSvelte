@@ -7,31 +7,24 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div>
         <label for="searchApps" class="block text-sm font-medium text-gray-700">Search Apps</label>
-        <input
-          type="text"
-          id="searchApps"
+        <input type="text" id="searchApps"
           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          placeholder="Search by name, port, status..."
-        />
+          placeholder="Search by name, port, status..." />
       </div>
       <div>
         <label for="filterModel" class="block text-sm font-medium text-gray-700">Filter by Model</label>
-        <select
-          id="filterModel"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-        >
+        <select id="filterModel"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
           <option value="">All Models</option>
           {% for model in models %}
-            <option value="{{ model.name }}">{{ model.name }}</option>
+          <option value="{{ model.name }}">{{ model.name }}</option>
           {% endfor %}
         </select>
       </div>
       <div>
         <label for="filterStatus" class="block text-sm font-medium text-gray-700">Filter by Status</label>
-        <select
-          id="filterStatus"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-        >
+        <select id="filterStatus"
+          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
           <option value="">All Statuses</option>
           <option value="running">Running</option>
           <option value="partial">Partial</option>
@@ -47,19 +40,13 @@
       <h1 class="text-2xl font-bold text-gray-900">AI Model Dashboard</h1>
       <div class="flex space-x-4">
         <!-- Auto-refresh Toggle -->
-        <button
-          id="toggleAutorefresh"
+        <button id="toggleAutorefresh"
           class="inline-flex items-center px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200
           {% if autorefresh_enabled %}bg-green-500 hover:bg-green-600{% else %}bg-gray-500 hover:bg-gray-600{% endif %} text-white"
-          data-enabled="{{ 'true' if autorefresh_enabled else 'false' }}"
-        >
+          data-enabled="{{ 'true' if autorefresh_enabled else 'false' }}">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span id="autorefreshText">
             Auto Refresh: {{ "On" if autorefresh_enabled else "Off" }}
@@ -67,17 +54,11 @@
         </button>
 
         <!-- Manual Refresh -->
-        <button
-          id="refreshAll"
-          class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
-        >
+        <button id="refreshAll"
+          class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
           <span>Refresh All</span>
         </button>
@@ -87,21 +68,21 @@
     <!-- Status Overview -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       {% set running_apps = apps
-          |selectattr('backend_status.running','true')
-          |selectattr('frontend_status.running','true')
-          |list %}
+      |selectattr('backend_status.running','true')
+      |selectattr('frontend_status.running','true')
+      |list %}
       {% set partial_apps = (apps
-          |selectattr('backend_status.running','true')
-          |rejectattr('frontend_status.running','true')
-          |list)
-        + (apps
-          |rejectattr('backend_status.running','true')
-          |selectattr('frontend_status.running','true')
-          |list) %}
+      |selectattr('backend_status.running','true')
+      |rejectattr('frontend_status.running','true')
+      |list)
+      + (apps
+      |rejectattr('backend_status.running','true')
+      |selectattr('frontend_status.running','true')
+      |list) %}
       {% set stopped_apps = apps
-          |rejectattr('backend_status.running','true')
-          |rejectattr('frontend_status.running','true')
-          |list %}
+      |rejectattr('backend_status.running','true')
+      |rejectattr('frontend_status.running','true')
+      |list %}
 
       <div class="bg-white p-4 rounded-lg border" role="status">
         <h3 class="text-sm font-medium text-gray-500">Total Apps</h3>
@@ -131,29 +112,23 @@
 
     <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       {% for app in apps if app.model == model.name %}
-      <div
-        class="border rounded-lg p-4 relative"
-        data-app-id="{{ app.app_num }}"
-        data-model="{{ app.model }}"
-      >
+      <div class="border rounded-lg p-4 relative" data-app-id="{{ app.app_num }}" data-model="{{ app.model }}">
         <!-- Status Badge -->
         <div class="absolute top-4 right-4">
-          <span
-            class="px-2 py-1 text-sm rounded-full
+          <span class="px-2 py-1 text-sm rounded-full
             {% if app.backend_status.running and app.frontend_status.running %}
               bg-green-100 text-green-800
             {% elif app.backend_status.running or app.frontend_status.running %}
               bg-yellow-100 text-yellow-800
             {% else %}
               bg-red-100 text-red-800
-            {% endif %}"
-          >
+            {% endif %}">
             {{
-              "Running"
-              if app.backend_status.running and app.frontend_status.running
-              else "Partial"
-              if app.backend_status.running or app.frontend_status.running
-              else "Stopped"
+            "Running"
+            if app.backend_status.running and app.frontend_status.running
+            else "Partial"
+            if app.backend_status.running or app.frontend_status.running
+            else "Stopped"
             }}
           </span>
         </div>
@@ -163,39 +138,27 @@
         <div class="space-y-3 mb-4">
           <div class="flex justify-between items-center text-sm">
             <span class="text-gray-500">Backend Status:</span>
-            <span
-              class="font-medium {{ 'text-green-600' if app.backend_status.running else 'text-red-600' }}"
-              data-status="backend"
-            >
+            <span class="font-medium {{ 'text-green-600' if app.backend_status.running else 'text-red-600' }}"
+              data-status="backend">
               {{ "Running" if app.backend_status.running else "Stopped" }}
             </span>
           </div>
           <div class="flex justify-between items-center text-sm">
             <span class="text-gray-500">Frontend Status:</span>
-            <span
-              class="font-medium {{ 'text-green-600' if app.frontend_status.running else 'text-red-600' }}"
-              data-status="frontend"
-            >
+            <span class="font-medium {{ 'text-green-600' if app.frontend_status.running else 'text-red-600' }}"
+              data-status="frontend">
               {{ "Running" if app.frontend_status.running else "Stopped" }}
             </span>
           </div>
           <div class="flex justify-between items-center text-sm">
             <span class="text-gray-500">Backend Port:</span>
-            <a
-              href="{{ app.backend_url }}"
-              target="_blank"
-              class="text-blue-500 hover:text-blue-600"
-            >
+            <a href="{{ app.backend_url }}" target="_blank" class="text-blue-500 hover:text-blue-600">
               {{ app.backend_port }}
             </a>
           </div>
           <div class="flex justify-between items-center text-sm">
             <span class="text-gray-500">Frontend Port:</span>
-            <a
-              href="{{ app.frontend_url }}"
-              target="_blank"
-              class="text-blue-500 hover:text-blue-600"
-            >
+            <a href="{{ app.frontend_url }}" target="_blank" class="text-blue-500 hover:text-blue-600">
               {{ app.frontend_port }}
             </a>
           </div>
@@ -203,50 +166,28 @@
 
         <!-- Individual Action Buttons -->
         <div class="grid grid-cols-3 gap-2">
-          <button
-            class="action-btn bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 transition-colors"
-            data-action="start"
-            data-model="{{ app.model }}"
-            data-app-num="{{ app.app_num }}"
-          >
+          <button class="action-btn bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 transition-colors"
+            data-action="start" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
             <span class="button-text">Start</span>
           </button>
-          <button
-            class="action-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition-colors"
-            data-action="stop"
-            data-model="{{ app.model }}"
-            data-app-num="{{ app.app_num }}"
-          >
+          <button class="action-btn bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition-colors"
+            data-action="stop" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
             <span class="button-text">Stop</span>
           </button>
-          <button
-            class="action-btn bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600 transition-colors"
-            data-action="reload"
-            data-model="{{ app.model }}"
-            data-app-num="{{ app.app_num }}"
-          >
+          <button class="action-btn bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600 transition-colors"
+            data-action="reload" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
             <span class="button-text">Reload</span>
           </button>
-          <button
-            class="action-btn bg-purple-500 text-white px-3 py-2 rounded hover:bg-purple-600 transition-colors"
-            data-action="rebuild"
-            data-model="{{ app.model }}"
-            data-app-num="{{ app.app_num }}"
-          >
+          <button class="action-btn bg-purple-500 text-white px-3 py-2 rounded hover:bg-purple-600 transition-colors"
+            data-action="rebuild" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
             <span class="button-text">Rebuild</span>
           </button>
-          <a
-            href="{{ url_for('view_logs', model=app.model, app_num=app.app_num) }}"
-            class="bg-indigo-500 text-white px-3 py-2 rounded text-center hover:bg-indigo-600 transition-colors"
-          >
+          <a href="{{ url_for('view_logs', model=app.model, app_num=app.app_num) }}"
+            class="bg-indigo-500 text-white px-3 py-2 rounded text-center hover:bg-indigo-600 transition-colors">
             Logs
           </a>
-          <button
-            class="action-btn bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition-colors"
-            data-action="status"
-            data-model="{{ app.model }}"
-            data-app-num="{{ app.app_num }}"
-          >
+          <button class="action-btn bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition-colors"
+            data-action="status" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
             <span class="button-text">Status</span>
           </button>
         </div>
@@ -257,10 +198,7 @@
   {% endfor %}
 
   <!-- No Results Message -->
-  <div
-    id="noResultsMessage"
-    class="hidden bg-white shadow rounded-lg p-6 text-center"
-  >
+  <div id="noResultsMessage" class="hidden bg-white shadow rounded-lg p-6 text-center">
     <p class="text-gray-500">No apps match your search criteria</p>
   </div>
 </div>
@@ -269,168 +207,174 @@
 <script>
   /** Modal management */
   document.addEventListener('DOMContentLoaded', () => {
-  // Core state
-  let autoRefreshTimer = null;
-  const AUTO_REFRESH_INTERVAL = 30000;
+    // Core state
+    let autoRefreshTimer = null;
+    const AUTO_REFRESH_INTERVAL = 30000;
 
-  // Status classes mapping
-  const STATUS_CLASSES = {
-    running: 'bg-green-100 text-green-800',
-    partial: 'bg-yellow-100 text-yellow-800',
-    stopped: 'bg-red-100 text-red-800'
-  };
+    // Status classes mapping
+    const STATUS_CLASSES = {
+      running: 'bg-green-100 text-green-800',
+      partial: 'bg-yellow-100 text-yellow-800',
+      stopped: 'bg-red-100 text-red-800'
+    };
 
-  // Core functionality
-  async function controlApp(model, appNum, action, button) {
-    const originalText = button.textContent;
-    button.textContent = 'Working...';
-    button.disabled = true;
+    // Core functionality
+    async function controlApp(model, appNum, action, button) {
+      const originalText = button.textContent;
+      button.textContent = 'Working...';
+      button.disabled = true;
 
-    try {
-      const res = await fetch(`/${action}/${model}/${appNum}`, {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-      });
-      if (!res.ok) throw new Error(`Failed to ${action}`);
-      
-      await checkAppStatus(model, appNum);
-      showToast(`${action.charAt(0).toUpperCase() + action.slice(1)} successful`);
-    } catch (err) {
-      console.error(`Error during ${action}:`, err);
-      showToast(err.message, 'error');
-    } finally {
-      button.textContent = originalText;
-      button.disabled = false;
-    }
-  }
+      try {
+        const res = await fetch(`/${action}/${model}/${appNum}`, {
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        if (!res.ok) throw new Error(`Failed to ${action}`);
 
-  async function checkAppStatus(model, appNum) {
-    try {
-      const res = await fetch(`/api/container/${model}/${appNum}/status`);
-      if (!res.ok) throw new Error('Status check failed');
-      const data = await res.json();
-      updateStatusUI(model, appNum, data);
-    } catch (err) {
-      console.error('Status check failed:', err);
-    }
-  }
-
-  function updateStatusUI(model, appNum, { backend, frontend }) {
-    const app = document.querySelector(`[data-app-id="${appNum}"][data-model="${model}"]`);
-    if (!app) return;
-
-    const status = getContainerStatus(backend, frontend);
-    const badge = app.querySelector('[class*="bg-"][class*="text-"]');
-    if (badge) {
-      Object.values(STATUS_CLASSES).forEach(cls => 
-        cls.split(' ').forEach(c => badge.classList.remove(c))
-      );
-      STATUS_CLASSES[status].split(' ').forEach(c => badge.classList.add(c));
-      badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-    }
-
-    ['backend', 'frontend'].forEach(service => {
-      const el = app.querySelector(`[data-status="${service}"]`);
-      if (el) {
-        const isRunning = service === 'backend' ? backend.running : frontend.running;
-        el.className = `font-medium ${isRunning ? 'text-green-600' : 'text-red-600'}`;
-        el.textContent = isRunning ? 'Running' : 'Stopped';
+        await checkAppStatus(model, appNum);
+        showToast(`${action.charAt(0).toUpperCase() + action.slice(1)} successful`);
+      } catch (err) {
+        console.error(`Error during ${action}:`, err);
+        showToast(err.message, 'error');
+      } finally {
+        button.textContent = originalText;
+        button.disabled = false;
       }
-    });
-  }
+    }
 
-  function getContainerStatus(backend, frontend) {
-    if (backend.running && frontend.running) return 'running';
-    if (backend.running || frontend.running) return 'partial';
-    return 'stopped';
-  }
 
-  function filterApps() {
-    const search = document.getElementById('searchApps')?.value.toLowerCase() || '';
-    const model = document.getElementById('filterModel')?.value || '';
-    const status = document.getElementById('filterStatus')?.value || '';
+    function updateStatusUI(model, appNum, data) {
+      const app = document.querySelector(`[data-app-id="${appNum}"][data-model="${model}"]`);
+      if (!app) return;
 
-    document.querySelectorAll('[data-app-id]').forEach(app => {
-      const visible = (!search || app.textContent.toLowerCase().includes(search)) &&
-                     (!model || app.dataset.model === model) &&
-                     (!status || app.querySelector('[class*="bg-"]')?.textContent.toLowerCase().includes(status));
-      app.style.display = visible ? '' : 'none';
-    });
+      const status = getContainerStatus(data.backend, data.frontend);
+      const badge = app.querySelector('[class*="bg-"][class*="text-"]');
 
-    document.querySelectorAll('[data-model-section]').forEach(section => {
-      const hasVisible = [...section.querySelectorAll('[data-app-id]')].some(app => 
-        app.style.display !== 'none'
-      );
-      section.style.display = hasVisible ? '' : 'none';
-    });
-  }
+      if (badge) {
+        Object.values(STATUS_CLASSES).forEach(cls =>
+          cls.split(' ').forEach(c => badge.classList.remove(c))
+        );
+        badge.classList.add(...STATUS_CLASSES[status].split(' '));
+        badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+      }
 
-  function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white
+      ['backend', 'frontend'].forEach(service => {
+        const el = app.querySelector(`[data-status="${service}"]`);
+        if (el) {
+          const serviceData = data[service];
+          const isRunning = serviceData && serviceData.running;
+          el.className = `font-medium ${isRunning ? 'text-green-600' : 'text-red-600'}`;
+          el.textContent = isRunning ? 'Running' : 'Stopped';
+        }
+      });
+    }
+
+    function getContainerStatus(backend, frontend) {
+      if (!backend || !frontend) return 'stopped';
+      if (backend.running && frontend.running) return 'running';
+      if (backend.running || frontend.running) return 'partial';
+      return 'stopped';
+    }
+
+    async function checkAppStatus(model, appNum) {
+      try {
+        const res = await fetch(`/api/container/${model}/${appNum}/status`);
+        if (!res.ok) throw new Error('Status check failed');
+        const data = await res.json();
+        updateStatusUI(model, appNum, data);
+      } catch (err) {
+        console.error('Status check failed:', err);
+        showToast('Failed to check status', 'error');
+      }
+    }
+
+
+    function filterApps() {
+      const search = document.getElementById('searchApps')?.value.toLowerCase() || '';
+      const model = document.getElementById('filterModel')?.value || '';
+      const status = document.getElementById('filterStatus')?.value || '';
+
+      document.querySelectorAll('[data-app-id]').forEach(app => {
+        const visible = (!search || app.textContent.toLowerCase().includes(search)) &&
+          (!model || app.dataset.model === model) &&
+          (!status || app.querySelector('[class*="bg-"]')?.textContent.toLowerCase().includes(status));
+        app.style.display = visible ? '' : 'none';
+      });
+
+      document.querySelectorAll('[data-model-section]').forEach(section => {
+        const hasVisible = [...section.querySelectorAll('[data-app-id]')].some(app =>
+          app.style.display !== 'none'
+        );
+        section.style.display = hasVisible ? '' : 'none';
+      });
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white
       ${type === 'error' ? 'bg-red-500' : 'bg-green-500'}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
-  }
-
-  // Auto-refresh handling
-  function toggleAutoRefresh(enabled) {
-    if (enabled) {
-      refreshAllStatuses();
-      autoRefreshTimer = setInterval(refreshAllStatuses, AUTO_REFRESH_INTERVAL);
-    } else {
-      clearInterval(autoRefreshTimer);
-      autoRefreshTimer = null;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
     }
 
-    const btn = document.getElementById('toggleAutorefresh');
-    if (btn) {
-      btn.classList.toggle('bg-green-500', enabled);
-      btn.classList.toggle('bg-gray-500', !enabled);
-      document.getElementById('autorefreshText').textContent = 
-        `Auto Refresh: ${enabled ? 'On' : 'Off'}`;
+    // Auto-refresh handling
+    function toggleAutoRefresh(enabled) {
+      if (enabled) {
+        refreshAllStatuses();
+        autoRefreshTimer = setInterval(refreshAllStatuses, AUTO_REFRESH_INTERVAL);
+      } else {
+        clearInterval(autoRefreshTimer);
+        autoRefreshTimer = null;
+      }
+
+      const btn = document.getElementById('toggleAutorefresh');
+      if (btn) {
+        btn.classList.toggle('bg-green-500', enabled);
+        btn.classList.toggle('bg-gray-500', !enabled);
+        document.getElementById('autorefreshText').textContent =
+          `Auto Refresh: ${enabled ? 'On' : 'Off'}`;
+      }
     }
-  }
 
-  async function refreshAllStatuses() {
-    const apps = document.querySelectorAll('[data-app-id]');
-    await Promise.all([...apps].map(app => 
-      checkAppStatus(app.dataset.model, app.dataset.appId)
-    ));
-  }
+    async function refreshAllStatuses() {
+      const apps = document.querySelectorAll('[data-app-id]');
+      await Promise.all([...apps].map(app =>
+        checkAppStatus(app.dataset.model, app.dataset.appId)
+      ));
+    }
 
-  // Event listeners
-  document.querySelectorAll('.action-btn').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.preventDefault();
-      const { action, model, appNum } = btn.dataset;
-      action === 'status' ? 
-        checkAppStatus(model, appNum) : 
-        controlApp(model, appNum, action, btn);
+    // Event listeners
+    document.querySelectorAll('.action-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        const { action, model, appNum } = btn.dataset;
+        action === 'status' ?
+          checkAppStatus(model, appNum) :
+          controlApp(model, appNum, action, btn);
+      });
     });
-  });
 
-  const searchInput = document.getElementById('searchApps');
-  if (searchInput) {
-    let timeout;
-    searchInput.addEventListener('input', () => {
-      clearTimeout(timeout);
-      timeout = setTimeout(filterApps, 300);
+    const searchInput = document.getElementById('searchApps');
+    if (searchInput) {
+      let timeout;
+      searchInput.addEventListener('input', () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(filterApps, 300);
+      });
+    }
+
+    ['filterModel', 'filterStatus'].forEach(id => {
+      document.getElementById(id)?.addEventListener('change', filterApps);
     });
-  }
 
-  ['filterModel', 'filterStatus'].forEach(id => {
-    document.getElementById(id)?.addEventListener('change', filterApps);
+    document.getElementById('toggleAutorefresh')?.addEventListener('click', function () {
+      const enabled = this.dataset.enabled !== 'true';
+      this.dataset.enabled = enabled;
+      toggleAutoRefresh(enabled);
+    });
+
+    document.getElementById('refreshAll')?.addEventListener('click', refreshAllStatuses);
   });
 
-  document.getElementById('toggleAutorefresh')?.addEventListener('click', function() {
-    const enabled = this.dataset.enabled !== 'true';
-    this.dataset.enabled = enabled;
-    toggleAutoRefresh(enabled);
-  });
-
-  document.getElementById('refreshAll')?.addEventListener('click', refreshAllStatuses);
-});
-
-{% endblock %}
-{% endblock %}
+  {% endblock %}
+  {% endblock %}

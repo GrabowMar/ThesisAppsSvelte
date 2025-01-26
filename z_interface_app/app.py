@@ -23,15 +23,15 @@ import docker
 from docker.errors import DockerException, NotFound
 from docker.models.containers import Container
 from flask import (
-    Flask,
-    Response,
-    abort,
-    flash,
-    jsonify,
-    redirect,
-    render_template,
-    request,
-    url_for,
+	Flask,
+	Response,
+	abort,
+	flash,
+	jsonify,
+	redirect,
+	render_template,
+	request,
+	url_for,
 )
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -41,18 +41,20 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 # -------------------------
 @dataclass
 class AppConfig:
-    DEBUG: bool = True
-    SECRET_KEY: str = os.getenv('FLASK_SECRET_KEY', 'your-secret-key-here')
-    BASE_DIR: Path = Path(__file__).parent 
-    LOG_LEVEL: str = os.getenv('LOG_LEVEL', 'ERROR')
-    DOCKER_TIMEOUT: int = int(os.getenv('DOCKER_TIMEOUT', '10'))
-    CACHE_DURATION: int = int(os.getenv('CACHE_DURATION', '5'))
-    HOST: str = '0.0.0.0' if os.getenv('FLASK_ENV') == 'production' else '127.0.0.1'
-    PORT: int = int(os.getenv('PORT', '5000'))
+	DEBUG: bool = True
+	SECRET_KEY: str = os.getenv("FLASK_SECRET_KEY", "your-secret-key-here")
+	BASE_DIR: Path = Path(__file__).parent
+	LOG_LEVEL: str = os.getenv("LOG_LEVEL", "ERROR")
+	DOCKER_TIMEOUT: int = int(os.getenv("DOCKER_TIMEOUT", "10"))
+	CACHE_DURATION: int = int(os.getenv("CACHE_DURATION", "5"))
+	HOST: str = (
+		"0.0.0.0" if os.getenv("FLASK_ENV") == "production" else "127.0.0.1"
+	)
+	PORT: int = int(os.getenv("PORT", "5000"))
 
-    @classmethod
-    def from_env(cls):
-        return cls()
+	@classmethod
+	def from_env(cls):
+		return cls()
 
 
 # -------------------------
@@ -60,31 +62,33 @@ class AppConfig:
 # -------------------------
 @dataclass
 class AIModel:
-   name: str
-   color: str
+	name: str
+	color: str
+
 
 @dataclass
 class DockerStatus:
-   exists: bool = False 
-   running: bool = False
-   health: str = "unknown"
-   status: str = "unknown"
-   details: str = ""
+	exists: bool = False
+	running: bool = False
+	health: str = "unknown"
+	status: str = "unknown"
+	details: str = ""
 
-   def to_dict(self):
-       return asdict(self)
+	def to_dict(self):
+		return asdict(self)
+
 
 # -------------------------
 # Constants
 # -------------------------
 AI_MODELS = [
-    AIModel("ChatGPT", "#10a37f"),
-    AIModel("ChatGPTo1", "#0ea47f"),
-    AIModel("ClaudeSonnet", "#7b2bf9"),
-    AIModel("CodeLlama", "#f97316"),
-    AIModel("Gemini", "#1a73e8"),
-    AIModel("Grok", "#ff4d4f"),
-    AIModel("Mixtral", "#9333ea"),
+	AIModel("ChatGPT", "#10a37f"),
+	AIModel("ChatGPTo1", "#0ea47f"),
+	AIModel("ClaudeSonnet", "#7b2bf9"),
+	AIModel("CodeLlama", "#f97316"),
+	AIModel("Gemini", "#1a73e8"),
+	AIModel("Grok", "#ff4d4f"),
+	AIModel("Mixtral", "#9333ea"),
 ]
 
 
@@ -92,421 +96,555 @@ AI_MODELS = [
 # Logging & Filtering
 # -------------------------
 class LoggingService:
-   @staticmethod
-   def configure(log_level: str):
-       logging.basicConfig(
-           level=getattr(logging, log_level),
-           format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-       )
-       logging.getLogger("werkzeug").addFilter(StatusEndpointFilter())
+	@staticmethod
+	def configure(log_level: str):
+		logging.basicConfig(
+			level=getattr(logging, log_level),
+			format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+		)
+		logging.getLogger("werkzeug").addFilter(StatusEndpointFilter())
+
 
 class StatusEndpointFilter(logging.Filter):
-   def filter(self, record):
-       if not hasattr(record, "args") or len(record.args) < 3:
-           return True
-       msg = record.args[2] if isinstance(record.args[2], str) else ""
-       return not ("GET /api/container/" in msg and msg.endswith(' HTTP/1.1" 200 -'))
+	def filter(self, record):
+		if not hasattr(record, "args") or len(record.args) < 3:
+			return True
+		msg = record.args[2] if isinstance(record.args[2], str) else ""
+		return not (
+			"GET /api/container/" in msg and msg.endswith(' HTTP/1.1" 200 -')
+		)
 
 
 # -------------------------
 # Port Management
 # -------------------------
 class PortManager:
-   BASE_BACKEND_PORT = 5001
-   BASE_FRONTEND_PORT = 5501
-   PORTS_PER_APP = 2 
-   BUFFER_PORTS = 5
-   APPS_PER_MODEL = 20
+	BASE_BACKEND_PORT = 5001
+	BASE_FRONTEND_PORT = 5501
+	PORTS_PER_APP = 2
+	BUFFER_PORTS = 5
+	APPS_PER_MODEL = 20
 
-   @classmethod
-   def get_port_range(cls, model_idx):
-       total_needed = cls.APPS_PER_MODEL * cls.PORTS_PER_APP + cls.BUFFER_PORTS
-       return {
-           "backend": {
-               "start": cls.BASE_BACKEND_PORT + (model_idx * total_needed),
-               "end": cls.BASE_BACKEND_PORT + ((model_idx + 1) * total_needed) - cls.BUFFER_PORTS,
-           },
-           "frontend": {
-               "start": cls.BASE_FRONTEND_PORT + (model_idx * total_needed), 
-               "end": cls.BASE_FRONTEND_PORT + ((model_idx + 1) * total_needed) - cls.BUFFER_PORTS,
-           },
-       }
+	@classmethod
+	def get_port_range(cls, model_idx):
+		total_needed = (
+			cls.APPS_PER_MODEL * cls.PORTS_PER_APP + cls.BUFFER_PORTS
+		)
+		return {
+			"backend": {
+				"start": cls.BASE_BACKEND_PORT + (model_idx * total_needed),
+				"end": cls.BASE_BACKEND_PORT
+				+ ((model_idx + 1) * total_needed)
+				- cls.BUFFER_PORTS,
+			},
+			"frontend": {
+				"start": cls.BASE_FRONTEND_PORT + (model_idx * total_needed),
+				"end": cls.BASE_FRONTEND_PORT
+				+ ((model_idx + 1) * total_needed)
+				- cls.BUFFER_PORTS,
+			},
+		}
 
-   @classmethod
-   def get_app_ports(cls, model_idx, app_num):
-       rng = cls.get_port_range(model_idx)
-       return {
-           "backend": rng["backend"]["start"] + (app_num - 1) * 2,
-           "frontend": rng["frontend"]["start"] + (app_num - 1) * 2,
-       }
+	@classmethod
+	def get_app_ports(cls, model_idx, app_num):
+		rng = cls.get_port_range(model_idx)
+		return {
+			"backend": rng["backend"]["start"] + (app_num - 1) * 2,
+			"frontend": rng["frontend"]["start"] + (app_num - 1) * 2,
+		}
 
 
 # -------------------------
 # Docker Management
 # -------------------------
 class DockerManager:
-   def __init__(self, client=None):
-       self.logger = logging.getLogger(__name__)
-       self.client = client or self._create_docker_client()
-       self._cache = {}
-       self._cache_duration = AppConfig.from_env().CACHE_DURATION
-       self._lock = asyncio.Lock()
+	def __init__(self, client=None):
+		self.logger = logging.getLogger(__name__)
+		self.client = client or self._create_docker_client()
+		self._cache = {}
+		self._cache_duration = AppConfig.from_env().CACHE_DURATION
+		self._lock = asyncio.Lock()
 
-   def _create_docker_client(self):
-       try:
-           docker_host = os.getenv("DOCKER_HOST", "npipe:////./pipe/docker_engine")
-           return docker.DockerClient(
-               base_url=docker_host, 
-               timeout=AppConfig.from_env().DOCKER_TIMEOUT
-           )
-       except Exception as e:
-           self.logger.error(f"Docker client creation failed: {e}")
-           return None
+	def _create_docker_client(self):
+		try:
+			docker_host = os.getenv(
+				"DOCKER_HOST", "npipe:////./pipe/docker_engine"
+			)
+			return docker.DockerClient(
+				base_url=docker_host,
+				timeout=AppConfig.from_env().DOCKER_TIMEOUT,
+			)
+		except Exception as e:
+			self.logger.error(f"Docker client creation failed: {e}")
+			return None
 
-   def get_container_status(self, container_name):
-       now = time.time()
-       if container_name in self._cache:
-           timestamp, status = self._cache[container_name]
-           if now - timestamp < self._cache_duration:
-               return status
+	def get_container_status(self, container_name):
+		now = time.time()
+		if container_name in self._cache:
+			timestamp, status = self._cache[container_name]
+			if now - timestamp < self._cache_duration:
+				return status
 
-       status = self._fetch_container_status(container_name)
-       self._cache[container_name] = (now, status)
-       return status
+		status = self._fetch_container_status(container_name)
+		self._cache[container_name] = (now, status)
+		return status
 
-   def _fetch_container_status(self, container_name):
-        if not self.client:
-            return DockerStatus(exists=False, status="error", details="Docker client unavailable")
-        try:
-            container = self.client.containers.get(container_name)
-            is_running = container.status == "running"
-            
-            # Safely get health status with fallback
-            state = container.attrs.get("State", {})
-            health = state.get("Health", {}).get("Status", 
-                    "healthy" if is_running else "stopped")
-            
-            return DockerStatus(
-                exists=True,
-                running=is_running,
-                health=health,
-                status=container.status,
-                details=state.get("Status", "unknown")
-            )
-        except NotFound:
-            return DockerStatus(exists=False, status="no_container", details="Container not found")
-        except Exception as e:
-            self.logger.error(f"Docker error for {container_name}: {e}")
-            return DockerStatus(exists=False, status="error", details=str(e))
+	def _fetch_container_status(self, container_name):
+		if not self.client:
+			return DockerStatus(
+				exists=False,
+				status="error",
+				details="Docker client unavailable",
+			)
+		try:
+			container = self.client.containers.get(container_name)
+			is_running = container.status == "running"
 
+			# Safely get health status with fallback
+			state = container.attrs.get("State", {})
+			health = state.get("Health", {}).get(
+				"Status", "healthy" if is_running else "stopped"
+			)
 
-   def get_container_logs(self, container_name, tail=100):
-       if not self.client:
-           return "Docker client unavailable"
-       try:
-           container = self.client.containers.get(container_name)
-           return container.logs(tail=tail).decode("utf-8")
-       except Exception as e:
-           self.logger.error(f"Log retrieval failed for {container_name}: {e}")
-           return f"Log retrieval error: {e}"
+			return DockerStatus(
+				exists=True,
+				running=is_running,
+				health=health,
+				status=container.status,
+				details=state.get("Status", "unknown"),
+			)
+		except NotFound:
+			return DockerStatus(
+				exists=False,
+				status="no_container",
+				details="Container not found",
+			)
+		except Exception as e:
+			self.logger.error(f"Docker error for {container_name}: {e}")
+			return DockerStatus(exists=False, status="error", details=str(e))
 
-   def cleanup_containers(self):
-       if not self.client:
-           return
-       try:
-           self.client.containers.prune(filters={"until": "24h"})
-       except Exception as e:
-           self.logger.error(f"Container cleanup failed: {e}")
+	def get_container_logs(self, container_name, tail=100):
+		if not self.client:
+			return "Docker client unavailable"
+		try:
+			container = self.client.containers.get(container_name)
+			return container.logs(tail=tail).decode("utf-8")
+		except Exception as e:
+			self.logger.error(
+				f"Log retrieval failed for {container_name}: {e}"
+			)
+			return f"Log retrieval error: {e}"
+
+	def cleanup_containers(self):
+		if not self.client:
+			return
+		try:
+			self.client.containers.prune(filters={"until": "24h"})
+		except Exception as e:
+			self.logger.error(f"Container cleanup failed: {e}")
 
 
 # -------------------------
 # Health Monitoring
 # -------------------------
 class SystemHealthMonitor:
-   @staticmethod
-   def check_disk_space():
-       try:
-           if os.name == "nt":
-               df = subprocess.run(["wmic", "logicaldisk", "get", "size,freespace,caption"], capture_output=True, text=True, check=True)
-               for line in df.stdout.strip().split("\n")[1:]:
-                   parts = line.split()
-                   if len(parts) >= 3:
-                       try:
-                           free = int(parts[1])
-                           total = int(parts[2])
-                           if total > 0 and (total - free) / total * 100 > 90:
-                               logging.warning(f"Disk usage critical: {parts[0]}")
-                               return False
-                       except ValueError:
-                           continue
-           else:
-               df = subprocess.run(["df", "-h"], capture_output=True, text=True, check=True)
-               for line in df.stdout.split("\n")[1:]:
-                   if line and len(fields := line.split()) >= 5:
-                       if int(fields[4].rstrip("%")) > 90:
-                           logging.warning(f"Disk usage critical: {fields[5]}")
-                           return False
-       except Exception as e:
-           logging.error(f"Disk check failed: {e}")
-           return False
-       return True
+	@staticmethod
+	def check_disk_space():
+		try:
+			if os.name == "nt":
+				df = subprocess.run(
+					["wmic", "logicaldisk", "get", "size,freespace,caption"],
+					capture_output=True,
+					text=True,
+					check=True,
+				)
+				for line in df.stdout.strip().split("\n")[1:]:
+					parts = line.split()
+					if len(parts) >= 3:
+						try:
+							free = int(parts[1])
+							total = int(parts[2])
+							if total > 0 and (total - free) / total * 100 > 90:
+								logging.warning(
+									f"Disk usage critical: {parts[0]}"
+								)
+								return False
+						except ValueError:
+							continue
+			else:
+				df = subprocess.run(
+					["df", "-h"], capture_output=True, text=True, check=True
+				)
+				for line in df.stdout.split("\n")[1:]:
+					if line and len(fields := line.split()) >= 5:
+						if int(fields[4].rstrip("%")) > 90:
+							logging.warning(
+								f"Disk usage critical: {fields[5]}"
+							)
+							return False
+		except Exception as e:
+			logging.error(f"Disk check failed: {e}")
+			return False
+		return True
 
-   @staticmethod 
-   def check_health(docker_client):
-       if not docker_client:
-           logging.error("No Docker client")
-           return False
-       try:
-           docker_client.ping()
-           return SystemHealthMonitor.check_disk_space()
-       except Exception as e:
-           logging.error(f"Health check failed: {e}")
-           return False
+	@staticmethod
+	def check_health(docker_client):
+		if not docker_client:
+			logging.error("No Docker client")
+			return False
+		try:
+			docker_client.ping()
+			return SystemHealthMonitor.check_disk_space()
+		except Exception as e:
+			logging.error(f"Health check failed: {e}")
+			return False
 
 
 # -------------------------
 # Utility & Decorators
 # -------------------------
 def error_handler(f):
-   @wraps(f)
-   def wrapped(*args, **kwargs):
-       try:
-           return f(*args, **kwargs)
-       except Exception as e:
-           logging.error(f"Error in {f.__name__}: {e}")
-           if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-               return jsonify({"error": str(e)}), 500
-           return render_template("500.html"), 500
-   return wrapped
+	@wraps(f)
+	def wrapped(*args, **kwargs):
+		try:
+			return f(*args, **kwargs)
+		except Exception as e:
+			logging.error(f"Error in {f.__name__}: {e}")
+			if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+				return jsonify({"error": str(e)}), 500
+			return render_template("500.html"), 500
+
+	return wrapped
+
 
 def get_model_index(model_name):
-   return next((i for i, m in enumerate(AI_MODELS) if m.name == model_name), 0)
+	return next(
+		(i for i, m in enumerate(AI_MODELS) if m.name == model_name), 0
+	)
+
 
 def get_container_names(model, app_num):
-   idx = get_model_index(model)
-   ports = PortManager.get_app_ports(idx, app_num)
-   base = model.lower()
-   return (f"{base}_backend_{ports['backend']}", f"{base}_frontend_{ports['frontend']}")
+	idx = get_model_index(model)
+	ports = PortManager.get_app_ports(idx, app_num)
+	base = model.lower()
+	return (
+		f"{base}_backend_{ports['backend']}",
+		f"{base}_frontend_{ports['frontend']}",
+	)
+
 
 def get_app_info(model_name, app_num):
-   idx = get_model_index(model_name)
-   model_color = next((m.color for m in AI_MODELS if m.name == model_name), "#666666")
-   ports = PortManager.get_app_ports(idx, app_num)
-   return {
-       "name": f"{model_name} App {app_num}",
-       "model": model_name,
-       "color": model_color,
-       "backend_port": ports["backend"],
-       "frontend_port": ports["frontend"],
-       "app_num": app_num,
-       "backend_url": f"http://localhost:{ports['backend']}",
-       "frontend_url": f"http://localhost:{ports['frontend']}",
-   }
+	idx = get_model_index(model_name)
+	model_color = next(
+		(m.color for m in AI_MODELS if m.name == model_name), "#666666"
+	)
+	ports = PortManager.get_app_ports(idx, app_num)
+	return {
+		"name": f"{model_name} App {app_num}",
+		"model": model_name,
+		"color": model_color,
+		"backend_port": ports["backend"],
+		"frontend_port": ports["frontend"],
+		"app_num": app_num,
+		"backend_url": f"http://localhost:{ports['backend']}",
+		"frontend_url": f"http://localhost:{ports['frontend']}",
+	}
+
 
 def get_apps_for_model(model_name):
-   base_path = Path(f"{model_name}/flask_apps")
-   if not base_path.exists():
-       return []
-   apps = []
-   app_dirs = sorted(
-       (d for d in base_path.iterdir() if d.is_dir() and d.name.startswith("app")),
-       key=lambda x: int(x.name.replace("app", ""))
-   )
-   for app_dir in app_dirs:
-       try:
-           app_num = int(app_dir.name.replace("app", ""))
-           apps.append(get_app_info(model_name, app_num))
-       except ValueError as e:
-           logging.error(f"Error processing {app_dir}: {e}")
-   return apps
+	base_path = Path(f"{model_name}/flask_apps")
+	if not base_path.exists():
+		return []
+	apps = []
+	app_dirs = sorted(
+		(
+			d
+			for d in base_path.iterdir()
+			if d.is_dir() and d.name.startswith("app")
+		),
+		key=lambda x: int(x.name.replace("app", "")),
+	)
+	for app_dir in app_dirs:
+		try:
+			app_num = int(app_dir.name.replace("app", ""))
+			apps.append(get_app_info(model_name, app_num))
+		except ValueError as e:
+			logging.error(f"Error processing {app_dir}: {e}")
+	return apps
+
 
 def get_all_apps():
-   return [app for model in AI_MODELS for app in get_apps_for_model(model.name)]
+	return [
+		app for model in AI_MODELS for app in get_apps_for_model(model.name)
+	]
+
 
 def run_docker_compose(command, model, app_num, timeout=60, check=True):
-   app_dir = Path(f"{model}/flask_apps/app{app_num}")
-   if not app_dir.exists():
-       return False, f"Directory not found: {app_dir}"
+	app_dir = Path(f"{model}/flask_apps/app{app_num}")
+	if not app_dir.exists():
+		return False, f"Directory not found: {app_dir}"
 
-   output_queue = queue.Queue()
-   def target():
-       try:
-           result = subprocess.run(
-               ["docker-compose"] + command,
-               cwd=app_dir,
-               check=check,
-               capture_output=True,
-               text=True
-           )
-           output_queue.put((result.returncode == 0, result.stdout or result.stderr))
-       except Exception as e:
-           output_queue.put((False, str(e)))
+	output_queue = queue.Queue()
 
-   thread = threading.Thread(target=target)
-   thread.daemon = True 
-   thread.start()
-   thread.join(timeout)
+	def target():
+		try:
+			result = subprocess.run(
+				["docker-compose"] + command,
+				cwd=app_dir,
+				check=check,
+				capture_output=True,
+				text=True,
+			)
+			output_queue.put(
+				(result.returncode == 0, result.stdout or result.stderr)
+			)
+		except Exception as e:
+			output_queue.put((False, str(e)))
 
-   return output_queue.get_nowait() if not thread.is_alive() else (False, f"Timeout after {timeout}s")
+	thread = threading.Thread(target=target)
+	thread.daemon = True
+	thread.start()
+	thread.join(timeout)
+
+	return (
+		output_queue.get_nowait()
+		if not thread.is_alive()
+		else (False, f"Timeout after {timeout}s")
+	)
+
 
 def handle_docker_action(action, model, app_num):
-   commands = {
-       "start": [("up", "-d", 120)],
-       "stop": [("down", None, 30)],
-       "reload": [("restart", None, 90)],
-       "rebuild": [("down", None, 30), ("build", None, 300), ("up", "-d", 120)],
-       "build": [("build", None, 300)]
-   }
-   if action not in commands:
-       return False, f"Invalid action: {action}"
+	commands = {
+		"start": [("up", "-d", 120)],
+		"stop": [("down", None, 30)],
+		"reload": [("restart", None, 90)],
+		"rebuild": [
+			("down", None, 30),
+			("build", None, 300),
+			("up", "-d", 120),
+		],
+		"build": [("build", None, 300)],
+	}
+	if action not in commands:
+		return False, f"Invalid action: {action}"
 
-   for base_cmd, extra_arg, timeout in commands[action]:
-       cmd = [base_cmd] + ([extra_arg] if extra_arg else [])
-       success, msg = run_docker_compose(cmd, model, app_num, timeout=timeout)
-       if not success:
-           logging.error(f"Docker {action} failed on {cmd}: {msg}")
-           return False, msg
-   return True, f"Successfully completed {action}"
+	for base_cmd, extra_arg, timeout in commands[action]:
+		cmd = [base_cmd] + ([extra_arg] if extra_arg else [])
+		success, msg = run_docker_compose(cmd, model, app_num, timeout=timeout)
+		if not success:
+			logging.error(f"Docker {action} failed on {cmd}: {msg}")
+			return False, msg
+	return True, f"Successfully completed {action}"
 
-def verify_container_health(docker_manager, model, app_num, max_retries=10, retry_delay=3):
-   backend_name, frontend_name = get_container_names(model, app_num)
-   for _ in range(max_retries):
-       backend = docker_manager.get_container_status(backend_name)
-       frontend = docker_manager.get_container_status(frontend_name)
-       if backend.health == "healthy" and frontend.health == "healthy":
-           return True, "All containers healthy"
-       time.sleep(retry_delay)
-   return False, "Containers failed to reach healthy state"
+
+def verify_container_health(
+	docker_manager, model, app_num, max_retries=10, retry_delay=3
+):
+	backend_name, frontend_name = get_container_names(model, app_num)
+	for _ in range(max_retries):
+		backend = docker_manager.get_container_status(backend_name)
+		frontend = docker_manager.get_container_status(frontend_name)
+		if backend.health == "healthy" and frontend.health == "healthy":
+			return True, "All containers healthy"
+		time.sleep(retry_delay)
+	return False, "Containers failed to reach healthy state"
+
 
 # -------------------------
 # Flask App Factory
 # -------------------------
 def create_app(config=None):
-   app = Flask(__name__)
-   app.config.from_object(config or AppConfig.from_env())
-   LoggingService.configure(app.config['LOG_LEVEL'])
+	app = Flask(__name__)
+	app.config.from_object(config or AppConfig.from_env())
+	LoggingService.configure(app.config["LOG_LEVEL"])
 
-   docker_manager = DockerManager()
-   app.wsgi_app = ProxyFix(app.wsgi_app)
-   register_routes(app, docker_manager)
-   register_error_handlers(app)
-   register_request_hooks(app, docker_manager)
-   return app
+	docker_manager = DockerManager()
+	app.wsgi_app = ProxyFix(app.wsgi_app)
+	register_routes(app, docker_manager)
+	register_error_handlers(app)
+	register_request_hooks(app, docker_manager)
+	return app
 
 
 # -------------------------
 # Route Registration
 # -------------------------
 def register_routes(app, docker_manager):
-   @app.route("/")
-   @error_handler
-   def index():
-       apps = get_all_apps()
-       for app_info in apps:
-           b_name, f_name = get_container_names(app_info["model"], app_info["app_num"])
-           app_info["backend_status"] = docker_manager.get_container_status(b_name)
-           app_info["frontend_status"] = docker_manager.get_container_status(f_name)
-       return render_template("index.html", apps=apps, models=AI_MODELS)
+	@app.route("/")
+	@error_handler
+	def index():
+		apps = get_all_apps()
+		for app_info in apps:
+			b_name, f_name = get_container_names(
+				app_info["model"], app_info["app_num"]
+			)
+			app_info["backend_status"] = docker_manager.get_container_status(
+				b_name
+			)
+			app_info["frontend_status"] = docker_manager.get_container_status(
+				f_name
+			)
+		return render_template("index.html", apps=apps, models=AI_MODELS)
 
-   @app.route("/api/container/<string:model>/<int:app_num>/status")
-   @error_handler
-   def container_status(model, app_num):
-       b_name, f_name = get_container_names(model, app_num)
-       return jsonify({
-           "backend": docker_manager.get_container_status(b_name).to_dict(),
-           "frontend": docker_manager.get_container_status(f_name).to_dict(),
-       })
+	@app.route("/status/<string:model>/<int:app_num>")
+	@error_handler
+	def check_app_status(model, app_num):
+		b_name, f_name = get_container_names(model, app_num)
+		status = {
+			"backend": docker_manager.get_container_status(b_name).to_dict(),
+			"frontend": docker_manager.get_container_status(f_name).to_dict()
+		}
+		
+		if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+			return jsonify(status)
+		
+		flash(f"Status checked for {model} App {app_num}", "info")
+		return redirect(url_for("index"))
 
-   @app.route("/logs/<string:model>/<int:app_num>")
-   @error_handler
-   def view_logs(model, app_num):
-       b_name, f_name = get_container_names(model, app_num)
-       logs = {
-           "backend": docker_manager.get_container_logs(b_name),
-           "frontend": docker_manager.get_container_logs(f_name),
-       }
-       return render_template("logs.html", logs=logs, model=model, app_num=app_num)
+	@app.route("/api/container/<string:model>/<int:app_num>/status")
+	@error_handler
+	def container_status(model, app_num):
+		try:
+			b_name, f_name = get_container_names(model, app_num)
+			return jsonify(
+				{
+					"backend": docker_manager.get_container_status(
+						b_name
+					).to_dict(),
+					"frontend": docker_manager.get_container_status(
+						f_name
+					).to_dict(),
+				}
+			)
+		except Exception as e:
+			logging.error(
+				f"Status check failed for {model} app {app_num}: {e}"
+			)
+			return jsonify({"error": str(e)}), 500
 
-   @app.route("/api/status")
-   @error_handler
-   def system_status():
-       disk_ok = SystemHealthMonitor.check_disk_space()
-       docker_ok = SystemHealthMonitor.check_health(docker_manager.client)
-       return jsonify({
-           "status": "healthy" if (disk_ok and docker_ok) else "warning",
-           "details": {"disk_space": disk_ok, "docker_health": docker_ok}
-       })
+	@app.route("/logs/<string:model>/<int:app_num>")
+	@error_handler
+	def view_logs(model, app_num):
+		b_name, f_name = get_container_names(model, app_num)
+		logs = {
+			"backend": docker_manager.get_container_logs(b_name),
+			"frontend": docker_manager.get_container_logs(f_name),
+		}
+		return render_template(
+			"logs.html", logs=logs, model=model, app_num=app_num
+		)
 
-   @app.route("/api/model-info")
-   @error_handler 
-   def get_model_info():
-       return jsonify([{
-           "name": model.name,
-           "color": model.color,
-           "ports": PortManager.get_port_range(idx),
-           "total_apps": len(get_apps_for_model(model.name)),
-       } for idx, model in enumerate(AI_MODELS)])
+	@app.route("/api/status")
+	@error_handler
+	def system_status():
+		disk_ok = SystemHealthMonitor.check_disk_space()
+		docker_ok = SystemHealthMonitor.check_health(docker_manager.client)
+		return jsonify(
+			{
+				"status": "healthy" if (disk_ok and docker_ok) else "warning",
+				"details": {"disk_space": disk_ok, "docker_health": docker_ok},
+			}
+		)
 
-   @app.route("/<action>/<string:model>/<int:app_num>")
-   @error_handler
-   def handle_docker_action_route(action, model, app_num):
-       success, message = handle_docker_action(action, model, app_num)
-       if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-           return jsonify({"status": "success" if success else "error", "message": message}), (200 if success else 500)
-       flash(f"{'Success' if success else 'Error'}: {message}", "success" if success else "error")
-       return redirect(url_for("index"))
+	@app.route("/api/model-info")
+	@error_handler
+	def get_model_info():
+		return jsonify(
+			[
+				{
+					"name": model.name,
+					"color": model.color,
+					"ports": PortManager.get_port_range(idx),
+					"total_apps": len(get_apps_for_model(model.name)),
+				}
+				for idx, model in enumerate(AI_MODELS)
+			]
+		)
 
-   @app.route("/api/health/<string:model>/<int:app_num>")
-   @error_handler
-   def check_container_health(model, app_num):
-       healthy, message = verify_container_health(docker_manager, model, app_num)
-       return jsonify({"healthy": healthy, "message": message})
+	@app.route("/<action>/<string:model>/<int:app_num>")
+	@error_handler
+	def handle_docker_action_route(action, model, app_num):
+		success, message = handle_docker_action(action, model, app_num)
+		if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+			return jsonify(
+				{
+					"status": "success" if success else "error",
+					"message": message,
+				}
+			), (200 if success else 500)
+		flash(
+			f"{'Success' if success else 'Error'}: {message}",
+			"success" if success else "error",
+		)
+		return redirect(url_for("index"))
+
+	@app.route("/api/health/<string:model>/<int:app_num>")
+	@error_handler
+	def check_container_health(model, app_num):
+		healthy, message = verify_container_health(
+			docker_manager, model, app_num
+		)
+		return jsonify({"healthy": healthy, "message": message})
+
 
 def register_error_handlers(app):
-   @app.errorhandler(404)
-   def not_found(_):
-       return render_template("404.html"), 404
+	@app.errorhandler(404)
+	def not_found(_):
+		return render_template("404.html"), 404
 
-   @app.errorhandler(500) 
-   def server_error(_):
-       return render_template("500.html"), 500
+	@app.errorhandler(500)
+	def server_error(_):
+		return render_template("500.html"), 500
+
 
 def register_request_hooks(app, docker_manager):
-   @app.before_request
-   def before():
-       if random.random() < 0.01:
-           docker_manager.cleanup_containers()
+	@app.before_request
+	def before():
+		if random.random() < 0.01:
+			docker_manager.cleanup_containers()
 
-   @app.after_request 
-   def after(response):
-       response.headers.update({
-           "X-Content-Type-Options": "nosniff",
-           "X-Frame-Options": "SAMEORIGIN", 
-           "X-XSS-Protection": "1; mode=block",
-           "Strict-Transport-Security": "max-age=31536000; includeSubDomains"
-       })
-       return response
+	@app.after_request
+	def after(response):
+		response.headers.update(
+			{
+				"X-Content-Type-Options": "nosniff",
+				"X-Frame-Options": "SAMEORIGIN",
+				"X-XSS-Protection": "1; mode=block",
+				"Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+			}
+		)
+		return response
 
 
 # -------------------------
 # Main Entry Point
 # -------------------------
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=getattr(logging, AppConfig.from_env().LOG_LEVEL),
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    logger = logging.getLogger(__name__)
+	logging.basicConfig(
+		level=getattr(logging, AppConfig.from_env().LOG_LEVEL),
+		format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+	)
+	logger = logging.getLogger(__name__)
 
-    try:
-        app = create_app()
-        docker_manager = DockerManager()
-        if docker_manager.client and not SystemHealthMonitor.check_health(docker_manager.client):
-            logger.warning("System health check failed - reduced functionality expected.")
-        elif not docker_manager.client:
-            logger.warning("Docker client unavailable - reduced functionality expected.")
+	try:
+		app = create_app()
+		docker_manager = DockerManager()
+		if docker_manager.client and not SystemHealthMonitor.check_health(
+			docker_manager.client
+		):
+			logger.warning(
+				"System health check failed - reduced functionality expected."
+			)
+		elif not docker_manager.client:
+			logger.warning(
+				"Docker client unavailable - reduced functionality expected."
+			)
 
-        app.run(host=app.config["HOST"], port=app.config["PORT"], debug=app.config["DEBUG"])
-    except Exception as e:
-        logger.critical(f"Failed to start: {e}")
-        raise
+		app.run(
+			host=app.config["HOST"],
+			port=app.config["PORT"],
+			debug=app.config["DEBUG"],
+		)
+	except Exception as e:
+		logger.critical(f"Failed to start: {e}")
+		raise

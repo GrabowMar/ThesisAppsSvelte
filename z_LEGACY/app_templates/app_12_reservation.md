@@ -1,63 +1,59 @@
-# Simple Feedback Form Application Template - Flask + Svelte
+# Basic Reservation Application Template - Flask + Svelte
 
 ## Important Implementation Notes
 
 As an AI assistant, when implementing this template:
-1. Generate a SIMPLE feedback collection system
+1. Generate a BASIC reservation system
 2. Keep ALL changes within app.py and App.svelte files only
 3. Do NOT modify the project structure
 4. Do NOT create additional files unless explicitly requested
-5. Include essential form features
-6. Focus on user input and data collection
-
-## Introduction
-
-This template provides a simple feedback collection system built with Flask and Svelte. The implementation focuses on form handling and data storage while maintaining clean, maintainable code.
+5. Include essential booking features
+6. Focus on time slot management
 
 ## Project Description
 
-Simple Feedback System
-A streamlined feedback collection application built with Flask and Svelte, featuring form submission and response management capabilities.
+Basic Reservation System
+A straightforward booking application built with Flask and Svelte, featuring time slot management and reservation handling.
 
 Key Features:
-- Multi-field feedback form
-- Form validation
-- Submission handling
-- Response storage
-- Success notifications
+- Time slot booking
+- Availability check
+- Reservation management
+- Calendar view
+- Booking confirmation
 
 Technical Stack:
 - Backend: Flask with SQLAlchemy
-- Frontend: Svelte with form handling
-- Additional: Data validation
+- Frontend: Svelte with calendar
+- Additional: Date/time handling
 
 ## Technical Requirements Analysis
 
 ### Backend Requirements
 1. Core Features:
-   - Form data processing
-   - Data storage
-   - Response management
-   - Basic analytics
+   - Slot management
+   - Booking processing
+   - Availability checking
+   - Calendar logic
 
 2. Integration Requirements:
    - Database setup
-   - Data validation
-   - Response handling
+   - Time handling
+   - Booking validation
 
 ### Frontend Requirements
 1. Visual Elements:
-   - Dynamic form fields
-   - Progress indicators
-   - Success messages
-   - Error displays
-   - Rating inputs
+   - Calendar interface
+   - Booking form
+   - Time slot picker
+   - Confirmation view
+   - Availability display
 
 2. Functional Elements:
-   - Form validation
-   - Input handling
-   - Submit process
-   - Response display
+   - Date selection
+   - Time slot picking
+   - Booking submission
+   - Status updates
 
 ## Implementation Structure
 
@@ -90,9 +86,9 @@ app/
 
 # 3. Database Models
 
-# 4. Form Processing
+# 4. Slot Management
 
-# 5. Data Storage
+# 5. Booking Logic
 
 # 6. API Routes
 
@@ -105,20 +101,21 @@ if __name__ == '__main__':
 <script>
   // 1. Imports
 
-  // 2. Form State
+  // 2. Calendar State
 
-  // 3. Validation Logic
+  // 3. Booking Handling
 
-  // 4. Submit Handling
+  // 4. Time Management
 
-  // 5. Response Management
+  // 5. Form Processing
 </script>
 
 <!-- UI Components -->
 <main>
-  <!-- Feedback Form -->
-  <!-- Progress Indicators -->
-  <!-- Response Messages -->
+  <!-- Calendar View -->
+  <!-- Booking Form -->
+  <!-- Time Picker -->
+  <!-- Confirmations -->
 </main>
 
 <style>
@@ -130,23 +127,23 @@ if __name__ == '__main__':
 
 1. **Initial Setup**
    - Confirm ports (XXXX, YYYY)
-   - Form field definition
    - Database setup
+   - Time zone config
 
 2. **Implementation**
-   - Form structure
-   - Validation rules
-   - Submit handling
-   - Response storage
+   - Calendar setup
+   - Booking flow
+   - Availability check
+   - Confirmation system
 
 3. **Modifications**
-   - Update form fields
-   - Adjust validation
-   - Modify storage
+   - Update time slots
+   - Adjust bookings
+   - Modify calendar
 
 4. **Error Handling**
-   - Input validation
-   - Submit errors
+   - Slot validation
+   - Booking conflicts
    - User feedback
 
-Remember: This template emphasizes simple form handling while maintaining the single-file architecture approach.
+Remember: This template emphasizes basic reservation functionality while maintaining the single-file architecture approach.

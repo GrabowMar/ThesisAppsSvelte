@@ -1,63 +1,59 @@
-# Simple Feedback Form Application Template - Flask + Svelte
+# Mini File Uploader Application Template - Flask + Svelte
 
 ## Important Implementation Notes
 
 As an AI assistant, when implementing this template:
-1. Generate a SIMPLE feedback collection system
+1. Generate a MINI file upload system
 2. Keep ALL changes within app.py and App.svelte files only
 3. Do NOT modify the project structure
 4. Do NOT create additional files unless explicitly requested
-5. Include essential form features
-6. Focus on user input and data collection
-
-## Introduction
-
-This template provides a simple feedback collection system built with Flask and Svelte. The implementation focuses on form handling and data storage while maintaining clean, maintainable code.
+5. Include basic file handling features
+6. Focus on upload/download functionality
 
 ## Project Description
 
-Simple Feedback System
-A streamlined feedback collection application built with Flask and Svelte, featuring form submission and response management capabilities.
+Mini File Uploader System
+A lightweight file handling application built with Flask and Svelte, featuring basic upload and download capabilities.
 
 Key Features:
-- Multi-field feedback form
-- Form validation
-- Submission handling
-- Response storage
-- Success notifications
+- File upload
+- File listing
+- Download functionality
+- Basic file preview
+- Simple organization
 
 Technical Stack:
-- Backend: Flask with SQLAlchemy
-- Frontend: Svelte with form handling
-- Additional: Data validation
+- Backend: Flask with file handling
+- Frontend: Svelte with upload management
+- Additional: Progress tracking
 
 ## Technical Requirements Analysis
 
 ### Backend Requirements
 1. Core Features:
-   - Form data processing
-   - Data storage
-   - Response management
-   - Basic analytics
+   - File processing
+   - Storage management
+   - Download handling
+   - File organization
 
 2. Integration Requirements:
-   - Database setup
-   - Data validation
-   - Response handling
+   - File storage setup
+   - Upload handling
+   - Stream management
 
 ### Frontend Requirements
 1. Visual Elements:
-   - Dynamic form fields
-   - Progress indicators
-   - Success messages
-   - Error displays
-   - Rating inputs
+   - Upload zone
+   - File list
+   - Progress bars
+   - Preview pane
+   - Download buttons
 
 2. Functional Elements:
-   - Form validation
-   - Input handling
-   - Submit process
-   - Response display
+   - Upload handling
+   - Progress tracking
+   - File selection
+   - Download triggers
 
 ## Implementation Structure
 
@@ -88,11 +84,11 @@ app/
 
 # 2. App Configuration
 
-# 3. Database Models
+# 3. Storage Setup
 
-# 4. Form Processing
+# 4. Upload Handling
 
-# 5. Data Storage
+# 5. Download Management
 
 # 6. API Routes
 
@@ -105,20 +101,21 @@ if __name__ == '__main__':
 <script>
   // 1. Imports
 
-  // 2. Form State
+  // 2. Upload State
 
-  // 3. Validation Logic
+  // 3. File Handling
 
-  // 4. Submit Handling
+  // 4. Progress Tracking
 
-  // 5. Response Management
+  // 5. Download Management
 </script>
 
 <!-- UI Components -->
 <main>
-  <!-- Feedback Form -->
+  <!-- Upload Zone -->
+  <!-- File List -->
   <!-- Progress Indicators -->
-  <!-- Response Messages -->
+  <!-- Download Area -->
 </main>
 
 <style>
@@ -130,23 +127,23 @@ if __name__ == '__main__':
 
 1. **Initial Setup**
    - Confirm ports (XXXX, YYYY)
-   - Form field definition
-   - Database setup
+   - Storage configuration
+   - Upload limits
 
 2. **Implementation**
-   - Form structure
-   - Validation rules
-   - Submit handling
-   - Response storage
+   - Upload handling
+   - File management
+   - Download system
+   - Progress tracking
 
 3. **Modifications**
-   - Update form fields
-   - Adjust validation
-   - Modify storage
+   - Update file handling
+   - Adjust storage
+   - Modify limits
 
 4. **Error Handling**
-   - Input validation
-   - Submit errors
+   - Upload validation
+   - Storage checks
    - User feedback
 
-Remember: This template emphasizes simple form handling while maintaining the single-file architecture approach.
+Remember: This template emphasizes simple file handling while maintaining the single-file architecture approach.
