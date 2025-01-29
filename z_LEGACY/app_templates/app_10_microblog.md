@@ -3,57 +3,63 @@
 ## Important Implementation Notes
 
 As an AI assistant, when implementing this template:
-1. Generate a MINIMAL inventory system
+1. Generate a MINIMAL microblog system
 2. Keep ALL changes within app.py and App.svelte files only
 3. Do NOT modify the project structure
 4. Do NOT create additional files unless explicitly requested
 5. Include basic CRUD operations
-6. Focus on inventory management essentials
+6. Focus on microblog essentials
 
 ## Project Description
 
 Minimal CRUD Inventory System
-A basic inventory management system built with Flask and Svelte, featuring essential CRUD operations.
+A basic microblog system built with Flask and Svelte.
+
 
 Key Features:
-- Item management (CRUD)
-- Basic inventory tracking
-- Simple categorization
-- Stock level alerts
-- Search/filter items
+- Post creation and management (CRUD)
+- User profile management
+- Post timeline/feed
+- Post interactions (likes/comments)
+- Basic post search
 
 Technical Stack:
 - Backend: Flask with SQLAlchemy
-- Frontend: Svelte with form handling
-- Additional: Data validation
+- Frontend: Svelte with state management
+- Additional: User authentication
 
 ## Technical Requirements Analysis
 
 ### Backend Requirements
 1. Core Features:
-   - CRUD operations
-   - Stock tracking
-   - Category management
-   - Search functionality
+   - Post CRUD operations
+   - User authentication/profiles
+   - Timeline/feed generation
+   - Comment management
+   - Like functionality
 
 2. Integration Requirements:
-   - Database setup
-   - Data validation
-   - Query handling
+   - User session management
+   - Database relationships
+   - Feed pagination
+   - Search functionality
 
 ### Frontend Requirements
 1. Visual Elements:
-   - Item list/grid
-   - Edit form
-   - Stock indicators
-   - Category filters
-   - Search interface
+   - Post creation interface
+   - Timeline/feed display
+   - User profile page
+   - Comment threads
+   - Like/interaction buttons
+   - Search bar
 
 2. Functional Elements:
-   - CRUD operations
-   - Data filtering
-   - Sort functionality
-   - Stock alerts
+   - Real-time post updates
+   - Comment threading
+   - Profile customization
+   - Feed sorting options
+   - Post search/filtering
+
 
 ## Implementation Structure
 

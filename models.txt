@@ -1,0 +1,20 @@
+Minimal Login/Register
+Basic Chat
+Simple Feedback Form
+Lightweight Blog
+Tiny E-Commerce Cart
+Basic Notes App
+Mini File Uploader
+Compact Forum
+Minimal CRUD Inventory
+Tiny Microblog
+Simple Polling
+Basic Reservation
+Mini Photo Gallery
+Lightweight Cloud Storage
+Simple Kanban
+Minimal IoT Controller
+Tiny Fitness Logger
+Basic Wiki
+Mini Crypto Wallet
+Simple Map Sharing

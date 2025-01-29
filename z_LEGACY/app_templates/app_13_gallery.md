@@ -1,58 +1,60 @@
-# Basic Reservation Application Template - Flask + Svelte
+I'll help rewrite this for a gallery app instead of a reservation system. Here's the modified version:
+
+# Basic Gallery Application Template - Flask + Svelte
 
 ## Important Implementation Notes
 
 As an AI assistant, when implementing this template:
-1. Generate a BASIC reservation system
+1. Generate a BASIC gallery system
 2. Keep ALL changes within app.py and App.svelte files only
 3. Do NOT modify the project structure
 4. Do NOT create additional files unless explicitly requested
-5. Include essential booking features
-6. Focus on time slot management
+5. Include essential gallery features
+6. Focus on image management
 
 ## Project Description
 
-Basic Reservation System
-A straightforward booking application built with Flask and Svelte, featuring time slot management and reservation handling.
+Basic Gallery System
+A straightforward gallery application built with Flask and Svelte, featuring image management and gallery organization.
 
 Key Features:
-- Time slot booking
-- Availability check
-- Reservation management
-- Calendar view
-- Booking confirmation
+- Image upload
+- Gallery organization
+- Image viewing
+- Grid/List views
+- Image details/metadata
 
 Technical Stack:
 - Backend: Flask with SQLAlchemy
-- Frontend: Svelte with calendar
-- Additional: Date/time handling
+- Frontend: Svelte with image handling
+- Additional: Image processing
 
 ## Technical Requirements Analysis
 
 ### Backend Requirements
 1. Core Features:
-   - Slot management
-   - Booking processing
-   - Availability checking
-   - Calendar logic
+   - Image storage
+   - Gallery management
+   - Metadata handling
+   - Image processing
 
 2. Integration Requirements:
    - Database setup
-   - Time handling
-   - Booking validation
+   - File handling
+   - Image validation
 
 ### Frontend Requirements
 1. Visual Elements:
-   - Calendar interface
-   - Booking form
-   - Time slot picker
-   - Confirmation view
-   - Availability display
+   - Gallery interface
+   - Upload form
+   - Image grid/list
+   - Image preview
+   - Details display
 
 2. Functional Elements:
-   - Date selection
-   - Time slot picking
-   - Booking submission
+   - Image selection
+   - Upload handling
+   - Gallery navigation
    - Status updates
 
 ## Implementation Structure
@@ -86,9 +88,9 @@ app/
 
 # 3. Database Models
 
-# 4. Slot Management
+# 4. Image Management
 
-# 5. Booking Logic
+# 5. Gallery Logic
 
 # 6. API Routes
 
@@ -101,21 +103,21 @@ if __name__ == '__main__':
 <script>
   // 1. Imports
 
-  // 2. Calendar State
+  // 2. Gallery State
 
-  // 3. Booking Handling
+  // 3. Upload Handling
 
-  // 4. Time Management
+  // 4. Image Management
 
   // 5. Form Processing
 </script>
 
 <!-- UI Components -->
 <main>
-  <!-- Calendar View -->
-  <!-- Booking Form -->
-  <!-- Time Picker -->
-  <!-- Confirmations -->
+  <!-- Gallery View -->
+  <!-- Upload Form -->
+  <!-- Image Preview -->
+  <!-- Details Display -->
 </main>
 
 <style>
@@ -128,22 +130,22 @@ if __name__ == '__main__':
 1. **Initial Setup**
    - Confirm ports (XXXX, YYYY)
    - Database setup
-   - Time zone config
+   - Storage config
 
 2. **Implementation**
-   - Calendar setup
-   - Booking flow
-   - Availability check
-   - Confirmation system
+   - Gallery setup
+   - Upload flow
+   - Image processing
+   - Preview system
 
 3. **Modifications**
-   - Update time slots
-   - Adjust bookings
-   - Modify calendar
+   - Update galleries
+   - Adjust layouts
+   - Modify views
 
 4. **Error Handling**
-   - Slot validation
-   - Booking conflicts
+   - File validation
+   - Storage limits
    - User feedback
 
-Remember: This template emphasizes basic reservation functionality while maintaining the single-file architecture approach.
+Remember: This template emphasizes basic gallery functionality while maintaining the single-file architecture approach.

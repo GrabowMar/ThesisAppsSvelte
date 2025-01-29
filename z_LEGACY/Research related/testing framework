@@ -1,0 +1,89 @@
+# LLM Code Generation Evaluation Framework
+
+## 1. Standard Evaluation Matrix
+
+| Category | Criteria | Testing Method | Points | Pass/Fail Criteria |
+|----------|----------|----------------|---------|-------------------|
+| **Template Adherence** (20 pts) |||||
+| File Structure | Single app.py file | `check_structure.py` | 5 | ✓ File exists in correct location |
+| | Single App.svelte file | `check_structure.py` | 5 | ✓ File exists in correct location |
+| | No additional files | `check_structure.py` | 5 | ✓ No extra .py/.svelte files |
+| | Port configuration | `check_ports.py` | 5 | ✓ Correct port settings |
+| **Security** (35 pts) |||||
+| Bandit Results | High severity issues | `bandit -r app.py` | 10 | ✓ No high issues<br>✗ -3 pts per issue |
+| | Medium severity issues | `bandit -r app.py` | 5 | ✓ No medium issues<br>✗ -2 pts per issue |
+| ZAP Results | Critical alerts | `zap-cli scan` | 10 | ✓ No critical alerts<br>✗ -3 pts per alert |
+| | High alerts | `zap-cli scan` | 5 | ✓ No high alerts<br>✗ -2 pts per alert |
+| Security Features | Input validation | Manual check | 5 | ✓ All inputs validated |
+| **Code Quality** (25 pts) |||||
+| Style | PEP 8 compliance | `flake8 app.py` | 10 | ✓ No style violations |
+| Documentation | Docstrings | `pydocstyle` | 5 | ✓ All functions documented |
+| | Comments | Manual check | 5 | ✓ Complex logic explained |
+| Testing | Test coverage | `pytest --cov` | 5 | ✓ >80% coverage |
+| **Performance** (20 pts) |||||
+| Load Testing | Response time | `locust` | 10 | ✓ <200ms average |
+| | Error rate | `locust` | 5 | ✓ <1% errors |
+| Resource Usage | Memory usage | System monitoring | 5 | ✓ <500MB under load |
+
+## 2. App-Specific Requirements
+
+### Login/Register App
+| Feature | Required | Testing Method | Pass Criteria |
+|---------|----------|----------------|---------------|
+| User Registration | Yes | `test_registration.py` | Creates valid user |
+| Login Function | Yes | `test_login.py` | Authenticates user |
+| Password Hashing | Yes | Manual check | Uses secure hashing |
+| Session Management | Yes | `test_session.py` | Maintains session |
+| Logout Function | Yes | `test_logout.py` | Clears session |
+
+### Chat App
+| Feature | Required | Testing Method | Pass Criteria |
+|---------|----------|----------------|---------------|
+| Message Sending | Yes | `test_messaging.py` | Delivers messages |
+| Real-time Updates | Yes | `test_websocket.py` | Updates < 1s |
+| User Presence | Yes | `test_presence.py` | Shows online status |
+| Message History | Yes | `test_history.py` | Loads past messages |
+| User List | Yes | Manual check | Shows all active users |
+
+### Feedback Form
+| Feature | Required | Testing Method | Pass Criteria |
+|---------|----------|----------------|---------------|
+| Form Submission | Yes | `test_form.py` | Saves feedback |
+| Input Validation | Yes | `test_validation.py` | Validates all fields |
+| Email Notification | Yes | `test_email.py` | Sends confirmation |
+| File Upload | Optional | `test_upload.py` | Handles attachments |
+| Response Display | Yes | Manual check | Shows success/error |
+
+## 3. Testing Commands Reference
+
+```bash
+# Security Testing
+bandit -r app.py -ll -f json -o security_results.json
+zap-cli quick-scan --self-contained http://localhost:5000
+
+# Code Quality
+flake8 app.py --max-complexity 10
+pylint app.py
+pydocstyle app.py
+
+# Performance Testing
+locust -f locustfile.py --headless -u 50 -r 5
+```
+
+## 4. Scoring Guidelines
+
+### Final Score Calculation
+- Base Score: Sum of all categories (max 100)
+- Bonus Points: Up to +10 for extra features
+- Penalties: -5 per major issue
+
+### Grade Ranges
+- 90-100: Excellent (Production Ready)
+- 80-89: Good (Minor Issues)
+- 70-79: Fair (Needs Work)
+- <70: Poor (Major Issues)
+
+### Automatic Disqualification
+- Critical security vulnerabilities
+- Failed core functionality
+- Template structure violations
