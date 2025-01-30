@@ -206,11 +206,11 @@ def new_frontend_setup(frontend_dir: str, port: int, deno_base_image: str, backe
     with open(os.path.join(frontend_dir, "package.json"), "w") as f:
         f.write(package_json)
 
-    # deno.json
-    with open("z_code_templates/frontend/deno.json.template", "r") as t:
-        deno_json = t.read()
-    with open(os.path.join(frontend_dir, "deno.json"), "w") as f:
-        f.write(deno_json)
+    # # deno.json
+    # with open("z_code_templates/frontend/deno.json.template", "r") as t:
+    #     deno_json = t.read()
+    # with open(os.path.join(frontend_dir, "deno.json"), "w") as f:
+    #     f.write(deno_json)
 
     # vite.config.js
     with open("z_code_templates/frontend/vite.config.js.template", "r") as t:

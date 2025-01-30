@@ -113,14 +113,14 @@ if __name__ == '__main__':
    - Must include all specified backend features
    - Must list required pip dependencies
    - Wait for user confirmation before proceeding
-   - Try to aim for best practices and proffessionalism
+   - Try to aim for best practices and professionalism
    - Example format: "Generate the Flask frontend code with the specified features:"
 
 3. **Frontend Generation Prompt**
    - Request complete App.svelte code generation
    - Must include all specified frontend features
    - Must list required npm dependencies
-   - Try to aim for best practices and proffessionalism
+   - Try to aim for best practices and professionalism
    - Example format: "Generate the Svelte frontend code with the specified features:"
 
 Note: Backend implementation must be confirmed before proceeding with frontend generation.
