@@ -35,7 +35,8 @@ from flask import (
 )
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-
+from security_analysis import SecurityAnalyzer
+from frontend_security_analysis import FrontendSecurityAnalyzer
 # -------------------------
 # Configuration
 # -------------------------
@@ -64,7 +65,6 @@ class AppConfig:
 class AIModel:
 	name: str
 	color: str
-
 
 @dataclass
 class DockerStatus:
@@ -458,8 +458,15 @@ def create_app(config=None):
 	app.config.from_object(config or AppConfig.from_env())
 	LoggingService.configure(app.config["LOG_LEVEL"])
 
+	# Initialize once with correct base path
+	base_path = Path(__file__).parent.parent
+	logging.info(f"Initializing SecurityAnalyzer with base path: {base_path}")
+	app.security_analyzer = SecurityAnalyzer(base_path)
+	app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
+
 	docker_manager = DockerManager()
 	app.wsgi_app = ProxyFix(app.wsgi_app)
+	
 	register_routes(app, docker_manager)
 	register_error_handlers(app)
 	register_request_hooks(app, docker_manager)
@@ -534,6 +541,63 @@ def register_routes(app, docker_manager):
 			"logs.html", logs=logs, model=model, app_num=app_num
 		)
 
+	@app.route("/security/<string:model>/<int:app_num>")
+	@error_handler
+	def security_analysis(model, app_num):
+		"""Run security analysis on the backend code."""
+		use_all_tools = request.args.get('full', '').lower() == 'true'
+		
+		try:
+			issues, tool_status = app.security_analyzer.run_bandit_analysis(
+				model, app_num, use_all_tools=use_all_tools
+			)
+			if not issues:  # No security issues found
+				return render_template(
+					"security_analysis.html",
+					model=model,
+					app_num=app_num,
+					issues=[],
+					summary=app.security_analyzer.get_analysis_summary([]),
+					error=None,
+					message="No security issues found in the codebase.",
+					full_scan=use_all_tools,
+					tool_status=tool_status
+				)
+			
+			summary = app.security_analyzer.get_analysis_summary(issues)
+			return render_template(
+				"security_analysis.html",
+				model=model,
+				app_num=app_num,
+				issues=issues,
+				summary=summary,
+				error=None,
+				full_scan=use_all_tools,
+				tool_status=tool_status
+			)
+		except ValueError as e:  # No Python files found
+			logging.warning(f"No files to analyze: {e}")
+			return render_template(
+				"security_analysis.html",
+				model=model,
+				app_num=app_num,
+				issues=None,
+				error=str(e),
+				full_scan=use_all_tools,
+				tool_status={}
+			)
+		except Exception as e:
+			logging.error(f"Security analysis failed: {e}")
+			return render_template(
+				"security_analysis.html",
+				model=model,
+				app_num=app_num,
+				issues=None,
+				error=f"Security analysis failed: {str(e)}",
+				full_scan=use_all_tools,
+				tool_status={}
+			)
+
 	@app.route("/api/status")
 	@error_handler
 	def system_status():
@@ -577,6 +641,63 @@ def register_routes(app, docker_manager):
 			"success" if success else "error",
 		)
 		return redirect(url_for("index"))
+	
+	@app.route("/frontend-security/<string:model>/<int:app_num>")
+	@error_handler
+	def frontend_security_analysis(model, app_num):
+		"""Run security analysis on the frontend code."""
+		use_all_tools = request.args.get('full', '').lower() == 'true'
+		
+		try:
+			issues, tool_status = app.frontend_security_analyzer.run_security_analysis(
+				model, app_num, use_all_tools=use_all_tools
+			)
+			if not issues:  # No security issues found
+				return render_template(
+					"frontend_security_analysis.html",
+					model=model,
+					app_num=app_num,
+					issues=[],
+					summary=app.frontend_security_analyzer.get_analysis_summary([]),
+					error=None,
+					message="No security issues found in the frontend code.",
+					full_scan=use_all_tools,
+					tool_status=tool_status
+				)
+			
+			summary = app.frontend_security_analyzer.get_analysis_summary(issues)
+			return render_template(
+				"frontend_security_analysis.html",
+				model=model,
+				app_num=app_num,
+				issues=issues,
+				summary=summary,
+				error=None,
+				full_scan=use_all_tools,
+				tool_status=tool_status
+			)
+		except ValueError as e:  # No frontend files found
+			logging.warning(f"No files to analyze: {e}")
+			return render_template(
+				"frontend_security_analysis.html",
+				model=model,
+				app_num=app_num,
+				issues=None,
+				error=str(e),
+				full_scan=use_all_tools,
+				tool_status={}
+			)
+		except Exception as e:
+			logging.error(f"Frontend security analysis failed: {e}")
+			return render_template(
+				"frontend_security_analysis.html",
+				model=model,
+				app_num=app_num,
+				issues=None,
+				error=f"Frontend security analysis failed: {str(e)}",
+				full_scan=use_all_tools,
+				tool_status={}
+			)
 
 	@app.route("/api/health/<string:model>/<int:app_num>")
 	@error_handler
@@ -589,12 +710,24 @@ def register_routes(app, docker_manager):
 
 def register_error_handlers(app):
 	@app.errorhandler(404)
-	def not_found(_):
-		return render_template("404.html"), 404
+	def not_found(error):
+		if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+			return jsonify({"error": "Not found"}), 404
+		return render_template("404.html", error=error), 404
 
 	@app.errorhandler(500)
-	def server_error(_):
-		return render_template("500.html"), 500
+	def server_error(error):
+		logging.error(f"Server error: {error}")
+		if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+			return jsonify({"error": "Internal server error"}), 500
+		return render_template("500.html", error=error), 500
+		
+	@app.errorhandler(Exception)
+	def handle_exception(error):
+		logging.error(f"Unhandled exception: {error}")
+		if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+			return jsonify({"error": str(error)}), 500
+		return render_template("500.html", error=error), 500
 
 
 def register_request_hooks(app, docker_manager):

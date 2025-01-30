@@ -1,59 +1,62 @@
-# Mini Photo Gallery Application Template - Flask + Svelte
+# Mini File Storage Application Template - Flask + Svelte
 
 ## Important Implementation Notes
 
 As an AI assistant, when implementing this template:
-1. Generate a MINI photo gallery system
+1. Generate a MINI file storage system
 2. Keep ALL changes within app.py and App.svelte files only
 3. Do NOT modify the project structure
 4. Do NOT create additional files unless explicitly requested
-5. Include essential gallery features
-6. Focus on image management basics
+5. Include essential storage features
+6. Focus on secure file management basics
 
 ## Project Description
 
-Mini Photo Gallery System
-A lightweight image gallery built with Flask and Svelte, featuring basic photo management.
+Mini File Storage System
+A lightweight cloud storage solution built with Flask and Svelte, featuring secure file management and sharing capabilities.
 
 Key Features:
-- Image upload
-- Gallery view
-- Basic categorization
-- Simple slideshow
-- Image preview
+- File upload/download
+- Folder organization
+- Basic file sharing
+- Storage quota management
+- File type filtering
 
 Technical Stack:
-- Backend: Flask with image handling
-- Frontend: Svelte with preview
-- Additional: Image processing
+- Backend: Flask with secure file handling
+- Frontend: Svelte with upload management
+- Additional: File validation and security
 
 ## Technical Requirements Analysis
 
 ### Backend Requirements
 1. Core Features:
-   - Image storage
-   - File processing
-   - Gallery management
-   - Category handling
+   - Secure file storage
+   - Download handling
+   - Folder management
+   - Share link generation
+   - Quota tracking
 
 2. Integration Requirements:
-   - File storage setup
-   - Image processing
-   - Thumbnail generation
+   - Storage system setup
+   - File validation
+   - Access control
+   - Share management
 
 ### Frontend Requirements
 1. Visual Elements:
-   - Gallery grid
-   - Image preview
-   - Upload interface
-   - Category filters
-   - Slideshow view
+   - File/folder list
+   - Upload progress
+   - Storage usage indicator
+   - Share interface
+   - File type icons
 
 2. Functional Elements:
-   - Image upload
-   - Gallery navigation
-   - Preview handling
-   - Category sorting
+   - Drag-drop upload
+   - Folder navigation
+   - Download handling
+   - Share management
+   - Storage metrics
 
 ## Implementation Structure
 
@@ -84,11 +87,11 @@ app/
 
 # 2. App Configuration
 
-# 3. Image Processing
+# 3. Storage Management
 
-# 4. Gallery Management
+# 4. File Operations
 
-# 5. File Handling
+# 5. Share Handling
 
 # 6. API Routes
 
@@ -101,21 +104,21 @@ if __name__ == '__main__':
 <script>
   // 1. Imports
 
-  // 2. Gallery State
+  // 2. Storage State
 
-  // 3. Upload Handling
+  // 3. Upload Management
 
-  // 4. Preview Logic
+  // 4. Folder Navigation
 
-  // 5. Slideshow Management
+  // 5. Share Controls
 </script>
 
 <!-- UI Components -->
 <main>
-  <!-- Gallery Grid -->
+  <!-- File Explorer -->
   <!-- Upload Area -->
-  <!-- Image Preview -->
-  <!-- Slideshow -->
+  <!-- Storage Stats -->
+  <!-- Share Dialog -->
 </main>
 
 <style>
@@ -128,22 +131,22 @@ if __name__ == '__main__':
 1. **Initial Setup**
    - Confirm ports (XXXX, YYYY)
    - Storage configuration
-   - Image processing setup
+   - Security settings
 
 2. **Implementation**
-   - Upload handling
-   - Gallery display
-   - Preview system
-   - Slideshow function
+   - Upload/download system
+   - Folder structure
+   - Share functionality
+   - Quota management
 
 3. **Modifications**
-   - Update gallery logic
-   - Adjust processing
-   - Modify preview
+   - Update storage logic
+   - Adjust sharing
+   - Modify quotas
 
 4. **Error Handling**
    - Upload validation
-   - Processing errors
-   - User feedback
+   - Storage limits
+   - Access control
 
-Remember: This template emphasizes mini gallery functionality while maintaining the single-file architecture approach.
+Remember: This template emphasizes secure file management while maintaining the single-file architecture approach.
