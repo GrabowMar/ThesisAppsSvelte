@@ -83,17 +83,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. Storage Management
-
-# 4. File Operations
-
-# 5. Share Handling
-
-# 6. API Routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -102,51 +91,18 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. Storage State
-
-  // 3. Upload Management
-
-  // 4. Folder Navigation
-
-  // 5. Share Controls
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- File Explorer -->
-  <!-- Upload Area -->
-  <!-- Storage Stats -->
-  <!-- Share Dialog -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
 ## Response Protocol
-
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Storage configuration
-   - Security settings
-
-2. **Implementation**
-   - Upload/download system
-   - Folder structure
-   - Share functionality
-   - Quota management
-
-3. **Modifications**
-   - Update storage logic
-   - Adjust sharing
-   - Modify quotas
-
-4. **Error Handling**
-   - Upload validation
-   - Storage limits
-   - Access control
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
 Remember: This template emphasizes secure file management while maintaining the single-file architecture approach.

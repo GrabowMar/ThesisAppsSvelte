@@ -4,7 +4,7 @@
 
 As an AI assistant, when implementing this template:
 
-1. Generate a MINIMAL authentication system
+1. Generate a authentication system
 2. Keep ALL changes within app.py and App.svelte files only
 3. Do NOT modify the project structure
 4. Do NOT create additional files unless explicitly requested
@@ -93,12 +93,6 @@ app/
 #### Backend (app.py)
 
 ```python
-# 1. Imports Section
-# 2. App Configuration
-# 3. Database Models
-# 4. Basic Auth Logic
-# 5. API Routes
-# 6. Error Handlers
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -108,45 +102,19 @@ if __name__ == '__main__':
 
 ```svelte
 <script>
-  // 1. Imports
-  // 2. Basic State
-  // 3. Form Handling
-  // 4. API Calls
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Login/Register Forms -->
-  <!-- Error Messages -->
 </main>
 
 <style>
-  /* Essential Styles */
 </style>
 ```
-
 ## Response Protocol
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Basic database setup
-   - Security configuration
-
-2. **Implementation**
-   - Core auth logic
-   - Basic UI components
-   - Essential validation
-   - Error handling
-
-3. **Modifications**
-   - Keep changes minimal
-   - Maintain security basics
-   - Preserve simplicity
-
-4. **Error Handling**
-   - Basic error messages
-   - Simple validation
-   - User feedback
 
 Remember: This template emphasizes minimalism while maintaining essential
 security practices.

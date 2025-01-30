@@ -80,18 +80,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. Database Models
-
-# 4. Workout Management
-
-# 5. Stats Processing
-
-# 6. API Routes
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
 ```
@@ -99,51 +87,18 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. Workout State
-
-  // 3. Progress Tracking
-
-  // 4. Chart Management
-
-  // 5. Stats Display
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Workout Form -->
-  <!-- Progress View -->
-  <!-- Stats Display -->
-  <!-- Charts -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
 ## Response Protocol
-
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Database setup
-   - Exercise library
-
-2. **Implementation**
-   - Workout logging
-   - Progress tracking
-   - Stats calculation
-   - Chart display
-
-3. **Modifications**
-   - Update workout types
-   - Adjust tracking
-   - Modify stats
-
-4. **Error Handling**
-   - Input validation
-   - Data processing
-   - User feedback
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
 Remember: This template emphasizes tiny fitness tracking while maintaining the single-file architecture approach.

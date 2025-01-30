@@ -84,19 +84,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. Database Models
-
-# 4. Cart Management
-
-# 5. Product Handling
-
-# 6. Order Processing
-
-# 7. API Routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -105,51 +92,18 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. Cart State
-
-  // 3. Product Handling
-
-  // 4. Cart Operations
-
-  // 5. Checkout Logic
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Product List -->
-  <!-- Cart View -->
-  <!-- Checkout Form -->
-  <!-- Order Summary -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
 ## Response Protocol
-
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Product data structure
-   - Cart configuration
-
-2. **Implementation**
-   - Product management
-   - Cart functionality
-   - Checkout process
-   - Order handling
-
-3. **Modifications**
-   - Update cart logic
-   - Adjust product handling
-   - Modify checkout flow
-
-4. **Error Handling**
-   - Inventory checks
-   - Cart validation
-   - User feedback
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
 Remember: This template emphasizes essential e-commerce functionality while maintaining the single-file architecture approach.

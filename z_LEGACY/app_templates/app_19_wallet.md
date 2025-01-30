@@ -80,17 +80,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. Wallet Management
-
-# 4. Transaction Processing
-
-# 5. Address Handling
-
-# 6. API Routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -99,51 +88,18 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. Wallet State
-
-  // 3. Transaction Management
-
-  // 4. Address Handling
-
-  // 5. Security Functions
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Balance Display -->
-  <!-- Transaction Form -->
-  <!-- Address Book -->
-  <!-- History View -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
 ## Response Protocol
-
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Wallet configuration
-   - Blockchain setup
-
-2. **Implementation**
-   - Wallet functions
-   - Transaction handling
-   - Address management
-   - Security features
-
-3. **Modifications**
-   - Update transaction logic
-   - Adjust security
-   - Modify interfaces
-
-4. **Error Handling**
-   - Transaction validation
-   - Network issues
-   - User feedback
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
 Remember: This template emphasizes mini wallet functionality while maintaining the single-file architecture approach.

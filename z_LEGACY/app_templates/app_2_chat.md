@@ -84,17 +84,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. Socket Setup
-
-# 4. Message Handling
-
-# 5. Room Management
-
-# 6. Event Handlers
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -103,50 +92,20 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. WebSocket Setup
-
-  // 3. Message Handling
-
-  // 4. User Interface State
-
-  // 5. Event Handlers
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Chat Interface -->
-  <!-- Message Input -->
-  <!-- User List -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
+
 ## Response Protocol
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - WebSocket configuration
-   - Message format definition
-
-2. **Implementation**
-   - Core message handling
-   - Real-time updates
-   - User interface
-   - Room functionality
-
-3. **Modifications**
-   - Maintain message flow
-   - Update event handling
-   - Preserve real-time features
-
-4. **Error Handling**
-   - Connection management
-   - Message delivery status
-   - User feedback
 
 Remember: This template emphasizes real-time communication while maintaining the single-file architecture approach.

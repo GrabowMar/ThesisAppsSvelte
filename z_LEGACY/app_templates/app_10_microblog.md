@@ -86,17 +86,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. Database Models
-
-# 4. CRUD Operations
-
-# 5. Search/Filter Logic
-
-# 6. API Routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -105,51 +94,18 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. Item State
-
-  // 3. CRUD Handlers
-
-  // 4. Filter/Sort Logic
-
-  // 5. Form Management
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Item List/Grid -->
-  <!-- CRUD Forms -->
-  <!-- Filters/Search -->
-  <!-- Alerts -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
 ## Response Protocol
-
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Database configuration
-   - Item schema definition
-
-2. **Implementation**
-   - CRUD operations
-   - Data management
-   - Filter system
-   - Alert handling
-
-3. **Modifications**
-   - Update operations
-   - Adjust data model
-   - Modify filters
-
-4. **Error Handling**
-   - Data validation
-   - Operation status
-   - User feedback
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
 Remember: This template emphasizes minimal CRUD functionality while maintaining the single-file architecture approach.

@@ -80,17 +80,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. Database Models
-
-# 4. Board Management
-
-# 5. Task Operations
-
-# 6. API Routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -99,51 +88,19 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. Board State
-
-  // 3. Task Management
-
-  // 4. Drag-Drop Logic
-
-  // 5. Filter Handling
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Board Layout -->
-  <!-- Task Cards -->
-  <!-- Add/Edit Forms -->
-  <!-- Filters -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
 ## Response Protocol
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Database setup
-   - Board structure
-
-2. **Implementation**
-   - Board setup
-   - Task handling
-   - Drag-drop system
-   - Filter functions
-
-3. **Modifications**
-   - Update board logic
-   - Adjust tasks
-   - Modify columns
-
-4. **Error Handling**
-   - Task validation
-   - State updates
-   - User feedback
 
 Remember: This template emphasizes simple kanban functionality while maintaining the single-file architecture approach.

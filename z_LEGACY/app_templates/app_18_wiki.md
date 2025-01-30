@@ -80,17 +80,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. Database Models
-
-# 4. Page Management
-
-# 5. Version Control
-
-# 6. API Routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -99,51 +88,18 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. Page State
-
-  // 3. Editor Setup
-
-  // 4. Version Handling
-
-  // 5. Search Logic
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Page Editor -->
-  <!-- Content View -->
-  <!-- Search Bar -->
-  <!-- History View -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
 ## Response Protocol
-
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Database setup
-   - Content schema
-
-2. **Implementation**
-   - Page handling
-   - Version control
-   - Search system
-   - Editor setup
-
-3. **Modifications**
-   - Update content management
-   - Adjust versioning
-   - Modify search
-
-4. **Error Handling**
-   - Content validation
-   - Version conflicts
-   - User feedback
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
 Remember: This template emphasizes basic wiki functionality while maintaining the single-file architecture approach.

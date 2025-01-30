@@ -80,19 +80,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. Database Models
-
-# 4. Thread Management
-
-# 5. Comment Handling
-
-# 6. Category System
-
-# 7. API Routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -101,51 +88,18 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. Thread State
-
-  // 3. Comment Management
-
-  // 4. Sort/Filter Logic
-
-  // 5. Content Operations
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Thread List -->
-  <!-- Thread View -->
-  <!-- Comment Section -->
-  <!-- Category Nav -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
 ## Response Protocol
-
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Database setup
-   - Thread structure
-
-2. **Implementation**
-   - Thread management
-   - Comment system
-   - Category handling
-   - Search/sort
-
-3. **Modifications**
-   - Update thread logic
-   - Adjust comments
-   - Modify categories
-
-4. **Error Handling**
-   - Content validation
-   - Post operations
-   - User feedback
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
 Remember: This template emphasizes compact discussion management while maintaining the single-file architecture appro

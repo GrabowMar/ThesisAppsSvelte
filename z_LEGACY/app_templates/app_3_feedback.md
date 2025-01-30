@@ -84,17 +84,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. Database Models
-
-# 4. Form Processing
-
-# 5. Data Storage
-
-# 6. API Routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -103,50 +92,20 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. Form State
-
-  // 3. Validation Logic
-
-  // 4. Submit Handling
-
-  // 5. Response Management
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Feedback Form -->
-  <!-- Progress Indicators -->
-  <!-- Response Messages -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
+
 ## Response Protocol
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Form field definition
-   - Database setup
-
-2. **Implementation**
-   - Form structure
-   - Validation rules
-   - Submit handling
-   - Response storage
-
-3. **Modifications**
-   - Update form fields
-   - Adjust validation
-   - Modify storage
-
-4. **Error Handling**
-   - Input validation
-   - Submit errors
-   - User feedback
 
 Remember: This template emphasizes simple form handling while maintaining the single-file architecture approach.

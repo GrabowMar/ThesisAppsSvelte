@@ -80,17 +80,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. Location Management
-
-# 4. Share System
-
-# 5. Route Handling
-
-# 6. API Routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -99,51 +88,19 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. Map State
-
-  // 3. Location Handling
-
-  // 4. Marker Management
-
-  // 5. Share Functions
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Map View -->
-  <!-- Location Controls -->
-  <!-- Marker Tools -->
-  <!-- Share Options -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
 ## Response Protocol
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Map configuration
-   - Location services
-
-2. **Implementation**
-   - Map integration
-   - Location handling
-   - Marker system
-   - Share functionality
-
-3. **Modifications**
-   - Update map features
-   - Adjust locations
-   - Modify sharing
-
-4. **Error Handling**
-   - Location validation
-   - Map loading
-   - User feedback
 
 Remember: This template emphasizes simple map sharing while maintaining the single-file architecture approach.

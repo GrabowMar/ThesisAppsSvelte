@@ -82,17 +82,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. Database Models
-
-# 4. Image Management
-
-# 5. Gallery Logic
-
-# 6. API Routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -101,51 +90,19 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. Gallery State
-
-  // 3. Upload Handling
-
-  // 4. Image Management
-
-  // 5. Form Processing
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Gallery View -->
-  <!-- Upload Form -->
-  <!-- Image Preview -->
-  <!-- Details Display -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
 ## Response Protocol
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Database setup
-   - Storage config
-
-2. **Implementation**
-   - Gallery setup
-   - Upload flow
-   - Image processing
-   - Preview system
-
-3. **Modifications**
-   - Update galleries
-   - Adjust layouts
-   - Modify views
-
-4. **Error Handling**
-   - File validation
-   - Storage limits
-   - User feedback
 
 Remember: This template emphasizes basic gallery functionality while maintaining the single-file architecture approach.

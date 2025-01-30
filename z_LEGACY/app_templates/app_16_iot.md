@@ -80,17 +80,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. WebSocket Setup
-
-# 4. Device Management
-
-# 5. Command Processing
-
-# 6. API Routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -99,51 +88,19 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. Device State
-
-  // 3. WebSocket Handler
-
-  // 4. Control Logic
-
-  // 5. Data Display
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Device List -->
-  <!-- Control Panel -->
-  <!-- Status Display -->
-  <!-- Data View -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
 ## Response Protocol
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - WebSocket configuration
-   - Device protocol
-
-2. **Implementation**
-   - Device management
-   - Control interface
-   - Status tracking
-   - Data visualization
-
-3. **Modifications**
-   - Update device handling
-   - Adjust controls
-   - Modify displays
-
-4. **Error Handling**
-   - Connection issues
-   - Command failures
-   - User feedback
 
 Remember: This template emphasizes minimal IoT control while maintaining the single-file architecture approach.

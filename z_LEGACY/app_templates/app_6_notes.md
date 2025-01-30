@@ -80,19 +80,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. Database Models
-
-# 4. Note Management
-
-# 5. Tag Handling
-
-# 6. Search Logic
-
-# 7. API Routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -101,51 +88,18 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. Note State
-
-  // 3. Editor Setup
-
-  // 4. Note Operations
-
-  // 5. Search/Filter Logic
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Note Editor -->
-  <!-- Note List -->
-  <!-- Search/Filters -->
-  <!-- Tag Management -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
 ## Response Protocol
-
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Database configuration
-   - Note structure definition
-
-2. **Implementation**
-   - Note management
-   - Content editing
-   - Search functionality
-   - Tag system
-
-3. **Modifications**
-   - Update note handling
-   - Adjust editor features
-   - Modify search/filters
-
-4. **Error Handling**
-   - Content validation
-   - Save operations
-   - User feedback
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
 Remember: This template emphasizes simple note management while maintaining the single-file architecture approach.

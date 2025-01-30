@@ -80,17 +80,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. Storage Setup
-
-# 4. Upload Handling
-
-# 5. Download Management
-
-# 6. API Routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -99,51 +88,18 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. Upload State
-
-  // 3. File Handling
-
-  // 4. Progress Tracking
-
-  // 5. Download Management
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Upload Zone -->
-  <!-- File List -->
-  <!-- Progress Indicators -->
-  <!-- Download Area -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
 ## Response Protocol
-
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Storage configuration
-   - Upload limits
-
-2. **Implementation**
-   - Upload handling
-   - File management
-   - Download system
-   - Progress tracking
-
-3. **Modifications**
-   - Update file handling
-   - Adjust storage
-   - Modify limits
-
-4. **Error Handling**
-   - Upload validation
-   - Storage checks
-   - User feedback
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
 Remember: This template emphasizes simple file handling while maintaining the single-file architecture approach.

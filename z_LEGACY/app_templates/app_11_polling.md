@@ -80,17 +80,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. Database Models
-
-# 4. Poll Management
-
-# 5. Vote Processing
-
-# 6. API Routes
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
@@ -99,51 +88,18 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. Poll State
-
-  // 3. Vote Handling
-
-  // 4. Results Display
-
-  // 5. Chart Management
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Poll Creator -->
-  <!-- Voting Interface -->
-  <!-- Results View -->
-  <!-- Charts -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
 ## Response Protocol
-
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Database setup
-   - Poll schema
-
-2. **Implementation**
-   - Poll creation
-   - Vote handling
-   - Results display
-   - Charts/analytics
-
-3. **Modifications**
-   - Update poll logic
-   - Adjust voting
-   - Modify results
-
-4. **Error Handling**
-   - Vote validation
-   - Poll status
-   - User feedback
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
 Remember: This template emphasizes simple polling functionality while maintaining the single-file architecture approach.

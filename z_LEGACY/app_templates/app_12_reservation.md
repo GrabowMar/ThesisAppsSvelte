@@ -80,18 +80,6 @@ app/
 
 #### Backend (app.py)
 ```python
-# 1. Imports Section
-
-# 2. App Configuration
-
-# 3. Database Models
-
-# 4. Slot Management
-
-# 5. Booking Logic
-
-# 6. API Routes
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
 ```
@@ -99,51 +87,18 @@ if __name__ == '__main__':
 #### Frontend (App.svelte)
 ```svelte
 <script>
-  // 1. Imports
-
-  // 2. Calendar State
-
-  // 3. Booking Handling
-
-  // 4. Time Management
-
-  // 5. Form Processing
 </script>
 
-<!-- UI Components -->
 <main>
-  <!-- Calendar View -->
-  <!-- Booking Form -->
-  <!-- Time Picker -->
-  <!-- Confirmations -->
 </main>
 
 <style>
-  /* Component Styles */
 </style>
 ```
 
 ## Response Protocol
-
-1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
-   - Database setup
-   - Time zone config
-
-2. **Implementation**
-   - Calendar setup
-   - Booking flow
-   - Availability check
-   - Confirmation system
-
-3. **Modifications**
-   - Update time slots
-   - Adjust bookings
-   - Modify calendar
-
-4. **Error Handling**
-   - Slot validation
-   - Booking conflicts
-   - User feedback
+- Confirm ports (XXXX, YYYY)
+- Generate backend remembering requested features
+- Generate frontend remembering requested features
 
 Remember: This template emphasizes basic reservation functionality while maintaining the single-file architecture approach.
