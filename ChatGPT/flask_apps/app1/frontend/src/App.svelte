@@ -1,85 +1,37 @@
 <script>
-  import { onMount } from 'svelte';
-  let username = '';
-  let password = '';
-  let message = '';
-  let isRegister = false;
+  let message = 'Loading...';
 
-  const apiBase = 'http://localhost:5001';
-
-  async function handleSubmit() {
-    const endpoint = isRegister ? '/register' : '/login';
-    const response = await fetch(`${apiBase}${endpoint}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ username, password })
-    });
-
-    const result = await response.json();
-    message = result.message;
-    if (response.ok) {
-      if (!isRegister) {
-        alert('Logged in successfully!');
-      } else {
-        username = '';
-        password = '';
-      }
+  async function fetchMessage() {
+    try {
+      const response = await fetch('http://localhost:5001/');
+      const data = await response.json();
+      message = data.message;
+    } catch (error) {
+      message = 'Error connecting to ChatGPT backend';
     }
   }
 
-  async function logout() {
-    const response = await fetch(`${apiBase}/logout`, {
-      method: 'POST',
-      credentials: 'include',
-    });
-    const result = await response.json();
-    message = result.message;
-  }
+  fetchMessage();
 </script>
 
 <main>
-  <h1>{isRegister ? 'Register' : 'Login'}</h1>
-  <form on:submit|preventDefault={handleSubmit}>
-    <input
-      type="text"
-      placeholder="Username"
-      bind:value={username}
-      required
-    />
-    <input
-      type="password"
-      placeholder="Password"
-      bind:value={password}
-      required
-    />
-    <button type="submit">{isRegister ? 'Register' : 'Login'}</button>
-  </form>
-  <button on:click={() => (isRegister = !isRegister)}>
-    Switch to {isRegister ? 'Login' : 'Register'}
-  </button>
-  <button on:click={logout}>Logout</button>
-  <p>{message}</p>
+  <h1>ChatGPT App</h1>
+  <p class="message">{message}</p>
 </main>
 
 <style>
   main {
-    max-width: 400px;
-    margin: 50px auto;
-    font-family: Arial, sans-serif;
     text-align: center;
+    padding: 2em;
   }
-  input {
-    display: block;
-    margin: 10px auto;
-    padding: 10px;
-    width: 80%;
+  h1 {
+    color: #333;
+    font-size: 2em;
+    margin-bottom: 0.5em;
   }
-  button {
-    margin: 10px;
-    padding: 10px 20px;
-  }
-  p {
-    color: red;
+  .message {
+    color: #444;
+    font-size: 1.2em;
+    margin: 1em;
   }
 </style>

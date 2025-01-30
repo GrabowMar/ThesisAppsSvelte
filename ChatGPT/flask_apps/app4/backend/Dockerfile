@@ -1,6 +1,19 @@
-FROM python:3.9-slim
+# Use a lightweight Python base image
+FROM python
+
+# Set working directory
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+
+# Copy and install dependencies separately for layer caching
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code
 COPY . .
+
+# Expose the application port
+EXPOSE 5007
+
+# Run the application
 CMD ["python", "app.py"]

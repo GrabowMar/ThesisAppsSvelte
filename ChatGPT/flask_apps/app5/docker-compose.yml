@@ -1,32 +1,27 @@
 version: '3.8'
 services:
-  backend:
-    build: ./backend
-    ports:
-      - "5009:5009"
-    environment:
-      - PORT=5009
-    volumes:
-      - ./backend:/app
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5009/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    backend:
+        build: ./backend
+        container_name: chatgpt_backend_5009
+        ports:
+            - "5009:5009"
+        volumes:
+            - ./backend:/app
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
 
-  frontend:
-    build: ./frontend
-    ports:
-      - "5509:5509"
-    environment:
-      - PORT=5509
-      - BACKEND_URL=http://localhost:5009
-    volumes:
-      - ./frontend:/app
-    depends_on:
-      - backend
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5509/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    frontend:
+        build: ./frontend
+        container_name: chatgpt_frontend_5509
+        ports:
+            - "5509:5509"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=5509
+        restart: always
+        depends_on:
+            - backend
+

@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: deepseek_backend_5346
+        ports:
+            - "5346:5346"
+        volumes:
+            - ./backend:/app
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: deepseek_frontend_5846
+        ports:
+            - "5846:5846"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=5846
+        restart: always
+        depends_on:
+            - backend
+

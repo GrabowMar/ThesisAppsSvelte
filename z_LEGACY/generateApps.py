@@ -20,7 +20,8 @@ class PortManager:
         "CodeLlama": "#f97316",
         "Gemini": "#1a73e8",
         "Grok": "#ff4d4f",
-        "Mixtral": "#9333ea"
+        "Mixtral": "#9333ea",
+        "DeepSeek": "#fa8c16",
     }
 
     @classmethod
