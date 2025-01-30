@@ -167,7 +167,7 @@ Generate package.json when:
 ## Response Protocol
 
 1. **Initial Setup**
-   - Confirm ports (XXXX, YYYY)
+   - Take ports from user input   and replace (XXXX, YYYY)
    - Verify project requirements
    - List needed dependencies
 

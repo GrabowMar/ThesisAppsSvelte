@@ -98,8 +98,27 @@ if __name__ == '__main__':
 ```
 
 ## Response Protocol
-- Confirm ports (XXXX, YYYY)
-- Generate backend remembering requested features
-- Generate frontend remembering requested features
 
-Remember: This template emphasizes minimal CRUD functionality while maintaining the single-file architecture approach.
+### Protocol Steps
+
+1. **Port Configuration Prompt**
+   - Request port numbers for backend and frontend
+   - Replace XXXX (backend) and YYYY (frontend) placeholders
+   - Example format: "Please provide two port numbers for backend and frontend"
+
+2. **Backend Generation Prompt**
+   - Request complete app.py code generation
+   - Must include all specified backend features
+   - Must list required pip dependencies
+   - Wait for user confirmation before proceeding
+   - Try to aim for best practices and proffessionalism
+   - Example format: "Generate the Flask frontend code with the specified features:"
+
+3. **Frontend Generation Prompt**
+   - Request complete App.svelte code generation
+   - Must include all specified frontend features
+   - Must list required npm dependencies
+   - Try to aim for best practices and proffessionalism
+   - Example format: "Generate the Svelte frontend code with the specified features:"
+
+Note: Backend implementation must be confirmed before proceeding with frontend generation.
