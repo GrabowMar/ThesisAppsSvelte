@@ -1,5 +1,5 @@
 // Dashboard JavaScript
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize controllers
     const dashboard = new DashboardController();
     dashboard.init();
@@ -118,10 +118,10 @@ class DashboardController {
         try {
             const response = await fetch(`/api/container/${model}/${appNum}/status`);
             if (!response.ok) throw new Error('Failed to fetch status');
-            
+
             const data = await response.json();
             const appCard = document.querySelector(`[data-app-id="${appNum}"][data-model="${model}"]`);
-            
+
             if (appCard) {
                 this.updateStatusUI(appCard, data);
             }
@@ -150,13 +150,13 @@ class DashboardController {
         if (badge) {
             const isRunning = status.backend.running && status.frontend.running;
             const isPartial = status.backend.running || status.frontend.running;
-            
+
             badge.className = 'px-2 py-1 text-sm rounded-full ' + (
                 isRunning ? 'bg-green-100 text-green-800' :
-                isPartial ? 'bg-yellow-100 text-yellow-800' :
-                'bg-red-100 text-red-800'
+                    isPartial ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
             );
-            
+
             badge.textContent = isRunning ? 'Running' : isPartial ? 'Partial' : 'Stopped';
         }
     }
@@ -176,7 +176,7 @@ class DashboardController {
             `;
 
             const apps = document.querySelectorAll('[data-app-id]');
-            const promises = Array.from(apps).map(app => 
+            const promises = Array.from(apps).map(app =>
                 this.updateAppStatus(app.dataset.model, app.dataset.appId)
             );
 
@@ -247,13 +247,21 @@ class DashboardController {
 
             // Filter app cards
             document.querySelectorAll('[data-app-id]').forEach(app => {
-                const appName = app.querySelector('h3').textContent.toLowerCase();
-                const model = app.dataset.model;
-                const status = app.querySelector('.absolute.top-4.right-4 span').textContent.toLowerCase();
+                // Get elements with null checks
+                const appNameElement = app.querySelector('h3');
+                const statusElement = app.querySelector('[class*="bg-"]'); // Changed selector to match status badge
+
+                // Get values with fallbacks
+                const appName = appNameElement?.textContent?.toLowerCase() || '';
+                const model = app.dataset.model || '';
+                const status = statusElement?.textContent?.toLowerCase().trim() || '';
+
+                // Debug logging
+                console.debug('Filtering:', { appName, model, status, searchTerm, modelValue, statusValue });
 
                 const matchesSearch = appName.includes(searchTerm);
                 const matchesModel = !modelValue || model === modelValue;
-                const matchesStatus = !statusValue || status === statusValue;
+                const matchesStatus = !statusValue || status.includes(statusValue);
 
                 const shouldShow = matchesSearch && matchesModel && matchesStatus;
                 app.style.display = shouldShow ? '' : 'none';

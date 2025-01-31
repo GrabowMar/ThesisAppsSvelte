@@ -1,232 +1,306 @@
-/***********************************************************************
-  Dark & Crude Dashboard Overrides with Light Dashed Background
-  - Darker, more saturated colors
-  - Tighter spacing & smaller radii
-  - Subtle gradients & hover animations for "pop"
-  - Light, dashed background overlay for added texture
-***********************************************************************/
+/**********************************************************************
+  Desktop-Oriented Dashboard Styles
+  - Compact, dense layout
+  - Traditional Windows/desktop aesthetics
+  - Minimal animations
+  - Sharp edges and defined borders
+**********************************************************************/
 
-/* Root & Body: sharper color palette, subtle 2-tone gradient with dashed overlay */
+/* Base Styles */
 html, body {
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol";
-  background: 
-    linear-gradient(160deg, #f3f4f6 0%, #e8e9ed 100%),
-    repeating-linear-gradient(
-      45deg,
-      rgba(255, 255, 255, 0.05),
-      rgba(255, 255, 255, 0.05) 5px,
-      transparent 5px,
-      transparent 10px
-    );
-  background-size: cover;
-  color: #222;
-  font-size: 14px;
-  line-height: 1.4;
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  background: #f0f0f0;
+  color: #000;
+  font-size: 12px;
+  line-height: 1.3;
   margin: 0;
   padding: 0;
 }
 
-/* Headings: bolder weights, slightly darker to stand out */
+/* Headings - Compact, bold, clear hierarchy */
 h1 {
-  @apply text-2xl font-semibold mb-3;
-  color: #1c1c1c;
+  @apply text-xl font-bold mb-2;
+  color: #000;
 }
 h2 {
-  @apply text-xl font-semibold mb-2;
-  color: #202020;
+  @apply text-lg font-bold mb-2;
+  color: #000;
 }
 h3 {
-  @apply text-lg font-medium mb-1;
-  color: #272727;
+  @apply text-base font-bold mb-1;
+  color: #000;
 }
 
-/* Tighter spacing & margin overrides using Tailwind utilities */
-.p-6 {
-  padding: 1rem !important;
-}
-.mb-6, .mt-6 {
-  margin: 1rem 0 !important;
-}
+/* Tighter Layout */
+.p-6 { padding: 0.5rem !important; }
+.mb-6, .mt-6 { margin: 0.5rem 0 !important; }
 .space-y-8 > :not([hidden]) ~ :not([hidden]) {
-  margin-top: 1rem !important;
+  margin-top: 0.5rem !important;
 }
 
-/* Cards & Panels: Crisp edges, subtle shadow, border accent on hover */
+/* Cards & Panels - Sharp edges, defined borders */
 .bg-white.shadow.rounded-lg {
   background: #fff;
-  border-radius: 0.1875rem; /* 3px */
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  border: 1px solid #dee0e3;
-  position: relative;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  border-radius: 0;
+  box-shadow: none;
+  border: 1px solid #999;
 }
+
 .bg-white.shadow.rounded-lg:hover {
-  border-color: #b7bcc1;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  border-color: #666;
 }
 
-/* Section accent: narrower left border with a bold highlight color */
+/* Section styling - Clear separation */
 section.bg-white.shadow.rounded-lg.p-6 {
-  border-left: 4px solid #6366f1;
-  padding: 1rem !important;
-  margin-bottom: 1rem !important;
-  border-radius: 0.1875rem;
+  border-left: none;
+  border-top: 2px solid #0066cc;
+  padding: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
 }
 
-/* Inputs: smaller, sharper edges, tinted states */
+/* Form Controls - Classic desktop look */
 input[type="text"], select {
-  padding: 0.35rem 0.5rem;
-  border-radius: 0.1875rem; 
-  border: 1px solid #cfd4da;
-  background: #fafbfc;
-  font-size: 0.85rem;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  padding: 2px 4px;
+  border-radius: 0;
+  border: 1px solid #7f9db9;
+  background: #fff;
+  font-size: 12px;
+  height: 20px;
 }
-input[type="text"]:hover, select:hover {
-  border-color: #959ba5;
-}
+
 input[type="text"]:focus, select:focus {
-  border-color: #5b63d9;
+  border-color: #0066cc;
   outline: none;
-  box-shadow: 0 0 0 2px rgba(91,99,217,0.2);
+  box-shadow: none;
 }
 
-/* Buttons & Action Buttons using Tailwind variants */
+/* Buttons - Enhanced Desktop Style */
 button, .action-btn {
-  font-size: 0.85rem;
-  padding: 0.4rem 0.75rem;
-  border-radius: 0.1875rem;
-  border: none;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 1px;
+  border: 1px solid #888;
+  border-bottom-color: #666;
+  background: #e8e8e8;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
-  background-image: linear-gradient(to bottom right, rgba(255,255,255,0.15), rgba(0,0,0,0.05));
-}
-button:hover, .action-btn:hover {
-  transform: scale(1.02);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  height: 22px;
+  min-width: 70px;
+  color: #222;
+  font-weight: 500;
+  background-image: linear-gradient(to bottom, #f8f8f8, #e0e0e0);
+  box-shadow: inset 0 -1px 1px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.8);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+  position: relative;
 }
 
-/* Color classes: more vivid variations */
-.action-btn.bg-green-500 {
-  background-color: #369e72 !important;
+/* Specialized Button Types */
+.action-btn[data-action="start"] {
+  background-image: linear-gradient(to bottom, #f0f7f0, #dceadc);
+  border-color: #68956c;
+  border-bottom-color: #527a55;
+  color: #2d5530;
 }
-.action-btn.bg-green-500:hover {
-  background-color: #2f8b63 !important;
+
+.action-btn[data-action="stop"] {
+  background-image: linear-gradient(to bottom, #fff0f0, #f5dada);
+  border-color: #c66;
+  border-bottom-color: #b44;
+  color: #933;
+}
+
+.action-btn[data-action="reload"] {
+  background-image: linear-gradient(to bottom, #fff7e6, #ffedc6);
+  border-color: #cca352;
+  border-bottom-color: #b38a3d;
+  color: #8a6318;
+}
+
+.action-btn[data-action="rebuild"] {
+  background-image: linear-gradient(to bottom, #f0f0ff, #e6e6fa);
+  border-color: #8080bf;
+  border-bottom-color: #6b6ba6;
+  color: #444488;
+}
+
+/* Hover States */
+button:hover, .action-btn:hover {
+  background-image: linear-gradient(to bottom, #ffffff, #f0f0f0);
+  box-shadow: inset 0 -1px 1px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.8), 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.action-btn[data-action="start"]:hover {
+  background-image: linear-gradient(to bottom, #f8fff8, #e8f5e8);
+}
+
+.action-btn[data-action="stop"]:hover {
+  background-image: linear-gradient(to bottom, #fff8f8, #ffe8e8);
+}
+
+.action-btn[data-action="reload"]:hover {
+  background-image: linear-gradient(to bottom, #fffaf0, #fff0d0);
+}
+
+.action-btn[data-action="rebuild"]:hover {
+  background-image: linear-gradient(to bottom, #f8f8ff, #f0f0ff);
+}
+
+/* Active/Pressed State */
+button:active, .action-btn:active {
+  background-image: linear-gradient(to bottom, #e0e0e0, #e8e8e8);
+  box-shadow: inset 0 2px 3px rgba(0,0,0,0.2);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+  border-color: #666;
+  padding-top: 4px;
+  padding-bottom: 2px;
+}
+
+/* Disabled State */
+button:disabled, .action-btn:disabled {
+  background: #f0f0f0;
+  border-color: #ccc;
+  color: #999;
+  text-shadow: none;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Action Button Colors - Muted, professional */
+.action-btn.bg-green-500 {
+  background: #e1e1e1;
+  color: #000;
+  border: 1px solid #999;
 }
 .action-btn.bg-red-500 {
-  background-color: #d35c50 !important;
-}
-.action-btn.bg-red-500:hover {
-  background-color: #bf4d40 !important;
+  background: #e1e1e1;
+  color: #000;
+  border: 1px solid #999;
 }
 .action-btn.bg-yellow-500 {
-  background-color: #cf8b2c !important;
-}
-.action-btn.bg-yellow-500:hover {
-  background-color: #b77a26 !important;
+  background: #e1e1e1;
+  color: #000;
+  border: 1px solid #999;
 }
 .action-btn.bg-blue-500 {
-  background-color: #2979ff !important;
-}
-.action-btn.bg-blue-500:hover {
-  background-color: #1f64e3 !important;
-}
-
-/* Additional color overrides */
-.bg-indigo-500 {
-  background-color: #4f46e5 !important;
-}
-.bg-indigo-500:hover {
-  background-color: #4338ca !important;
-}
-.bg-purple-500 {
-  background-color: #8b5cf6 !important;
-}
-.bg-purple-500:hover {
-  background-color: #7c49f3 !important;
-}
-.bg-gray-500 {
-  background-color: #646f87 !important;
-}
-.bg-gray-500:hover {
-  background-color: #535d72 !important;
+  background: #e1e1e1;
+  color: #000;
+  border: 1px solid #999;
 }
 
-/* Scale down icon sizes, minimal margins */
-button svg.w-4.h-4, .action-btn svg.w-4.h-4 {
-  width: 0.85rem !important;
-  height: 0.85rem !important;
-  margin-right: 0.3rem !important;
-}
-
-/* Individual app cards: Crisp edges, mild float on hover */
-[data-app-id] {
-  @apply border border-solid border-gray-300 rounded-md p-3 bg-white relative transition-transform duration-150;
-}
-[data-app-id]:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.07);
-  border-color: #c4c8cd;
-}
-
-/* Status badges: smaller text, vibrant background, subtle gradient */
-[data-app-id] .absolute.top-4.right-4 span {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.45rem;
-  border-radius: 0.125rem;
-  font-weight: 500;
-  background-image: linear-gradient(to bottom left, rgba(255,255,255,0.15), rgba(0,0,0,0.05));
-}
-
-/* Distinct color combos for each state */
+/* Status Colors - High contrast */
 .bg-green-100.text-green-800 {
-  background-color: #ddf7e3 !important;
-  color: #1c7d4f !important;
+  background-color: #e0ffe0 !important;
+  color: #006600 !important;
+  border: 1px solid #006600;
 }
 .bg-yellow-100.text-yellow-800 {
-  background-color: #fff2cf !important;
-  color: #925c05 !important;
+  background-color: #ffffd0 !important;
+  color: #666600 !important;
+  border: 1px solid #666600;
 }
 .bg-red-100.text-red-800 {
-  background-color: #fde1df !important;
-  color: #a81f20 !important;
+  background-color: #ffe0e0 !important;
+  color: #660000 !important;
+  border: 1px solid #660000;
 }
 
-/* Darker color for "Running"/"Stopped" text labels */
-.font-medium.text-green-600 {
-  color: #1c7d4f !important;
-}
-.font-medium.text-red-600 {
-  color: #c2403f !important;
-}
-.font-medium.text-yellow-600 {
-  color: #925c05 !important;
+/* App Cards - Compact grid layout */
+[data-app-id] {
+  @apply border border-solid border-gray-400 p-2 bg-white relative;
+  transition: none;
 }
 
-/* Log links: cohesive with other buttons, smaller rounding & gradient */
+[data-app-id]:hover {
+  transform: none;
+  border-color: #666;
+  box-shadow: none;
+}
+
+/* Status Badges - Clear, visible states */
+[data-app-id] .absolute.top-4.right-4 span {
+  font-size: 11px;
+  padding: 1px 4px;
+  border-radius: 0;
+  font-weight: normal;
+  background-image: none;
+}
+
+/* Status Text Colors */
+.font-medium.text-green-600 { color: #006600 !important; }
+.font-medium.text-red-600 { color: #660000 !important; }
+.font-medium.text-yellow-600 { color: #666600 !important; }
+
+/* Links - Underlined, classic style */
 a.bg-indigo-500.text-white {
-  @apply inline-flex items-center px-3 py-2 rounded-md text-sm;
-  text-decoration: none;
-  background-image: linear-gradient(to bottom right, rgba(255,255,255,0.12), rgba(0,0,0,0.04));
+  @apply inline-flex items-center px-2 py-1;
+  text-decoration: underline;
+  background: none;
+  color: #0066cc;
 }
 
-/* Toast notifications: crisp corners, sharper color transitions, subtle "pop" */
+a.bg-indigo-500.text-white:hover {
+  color: #003399;
+}
+
+/* Toast Notifications - Windows-style alerts */
 .fixed.bottom-4.right-4 {
-  font-size: 0.85rem;
-  border-radius: 0.1875rem;
+  font-size: 12px;
+  border-radius: 0;
+  border: 1px solid #999;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+  background: #fff;
+  color: #000;
+  padding: 8px 12px;
   min-width: 200px;
-  transform: translateY(100%) scale(0.95);
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
-.fixed.bottom-4.right-4.show {
-  transform: translateY(0) scale(1);
-  opacity: 1;
+  transform: none;
+  transition: opacity 0.2s;
 }
 
-/* Color overrides for toast backgrounds */
-.bg-red-500.text-white { background-color: #d35c50 !important; }
-.bg-green-500.text-white { background-color: #369e72 !important; }
-.bg-blue-500.text-white { background-color: #2979ff !important; }
-.bg-yellow-500.text-white { background-color: #cf8b2c !important; }
+/* Icon Sizing */
+button svg.w-4.h-4, .action-btn svg.w-4.h-4 {
+  width: 12px !important;
+  height: 12px !important;
+  margin-right: 4px !important;
+}
+
+/* Grid Layout Adjustments */
+.grid { gap: 0.5rem !important; }
+.grid-cols-1 { gap: 0.5rem !important; }
+.md\\:grid-cols-2 { gap: 0.5rem !important; }
+.lg\\:grid-cols-3 { gap: 0.5rem !important; }
+
+/* Table Styles */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  border: 1px solid #999;
+  padding: 4px 8px;
+  font-size: 12px;
+  text-align: left;
+}
+
+th {
+  background: #e1e1e1;
+  font-weight: bold;
+}
+
+/* Scrollbars - Windows style */
+::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border: 1px solid #999;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}

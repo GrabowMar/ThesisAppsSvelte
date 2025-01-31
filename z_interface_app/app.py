@@ -89,6 +89,7 @@ AI_MODELS = [
 	AIModel("Gemini", "#1a73e8"),
 	AIModel("Grok", "#ff4d4f"),
 	AIModel("Mixtral", "#9333ea"),
+	AIModel("DeepSeek", "#ff5555")
 ]
 
 

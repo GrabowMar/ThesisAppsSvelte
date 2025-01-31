@@ -19,14 +19,8 @@
   <link rel="preload" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" as="style" />
 
   <!-- CSS & Fonts -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-    rel="stylesheet"
-  />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 
   <!-- Main Dashboard Script -->
@@ -35,62 +29,42 @@
   {% block extra_head %}{% endblock %}
 </head>
 
-<body class="min-h-screen bg-gray-50 flex flex-col antialiased">
+<body class="min-h-screen bg-gray-100 flex flex-col">
   <!-- Skip to main content link (accessibility) -->
-  <a
-    href="#main-content"
-    class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded"
-  >
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2">
     Skip to main content
   </a>
 
   <!-- Header Navigation -->
-  <header class="bg-white shadow-sm">
-    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
-      <div class="flex justify-between h-16">
+  <header class="bg-gray-200 border-b border-gray-400">
+    <nav class="px-2" aria-label="Main navigation">
+      <div class="flex justify-between h-8">
         <div class="flex items-center">
-          <a
-            href="{{ url_for('index') }}"
-            class="flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-1"
-            aria-label="Home"
-          >
-            <svg
-              class="h-8 w-8 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
-              />
+          <a href="{{ url_for('index') }}" class="flex items-center hover:bg-gray-300 px-2" aria-label="Home">
+            <svg class="h-4 w-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
             </svg>
-            <span class="font-semibold text-gray-900 text-lg">AI Model Manager</span>
+            <span class="font-bold text-gray-900 ml-1">AI Model Manager</span>
           </a>
         </div>
         <div id="statusIndicator" class="flex items-center" role="status" aria-live="polite">
-          <span class="h-2 w-2 rounded-full bg-green-400 mr-2"></span>
-          <span class="text-sm text-gray-600">System Active</span>
+          <span class="h-2 w-2 bg-green-600"></span>
+          <span class="ml-1 text-xs text-gray-600">System Active</span>
         </div>
       </div>
     </nav>
   </header>
 
   <!-- Main Content -->
-  <main id="main-content" class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <main id="main-content" class="flex-grow p-2">
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="space-y-2" aria-live="polite">
+        <div class="space-y-1" aria-live="polite">
           {% for category, message in messages %}
-            <div
-              class="rounded-md p-4 {% if category == 'error' %}bg-red-50 text-red-700{% else %}bg-green-50 text-green-700{% endif %}"
-              role="alert"
-            >
-              <p class="text-sm font-medium">{{ message }}</p>
+            <div class="border p-2 {% if category == 'error' %}border-red-700 bg-red-50 text-red-700{% else %}border-green-700 bg-green-50 text-green-700{% endif %}">
+              <p class="text-xs">{{ message }}</p>
             </div>
           {% endfor %}
         </div>
@@ -101,47 +75,42 @@
   </main>
 
   <!-- Footer -->
-  <footer class="bg-white shadow-sm mt-auto">
-    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-      <p class="text-sm text-gray-500">
+  <footer class="bg-gray-200 border-t border-gray-400">
+    <div class="flex justify-between items-center px-2 h-6">
+      <p class="text-xs text-gray-600">
         &copy; <span id="currentYear"></span> AI Model Management System
       </p>
-      <button
-        id="showSystemInfo"
-        class="text-sm text-blue-600 hover:text-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg px-2 py-1"
-        aria-haspopup="dialog"
-      >
+      <button id="showSystemInfo" class="text-xs hover:bg-gray-300 px-2 h-full" aria-haspopup="dialog">
         System Information
       </button>
     </div>
   </footer>
 
   <!-- Modal (System Info / Misc) -->
-  <div
-    id="modal"
-    class="fixed inset-0 bg-gray-500 bg-opacity-75 hidden z-50"
-    role="dialog"
-    aria-labelledby="modalTitle"
-    aria-modal="true"
-  >
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-30 hidden z-50" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
     <div class="flex items-center justify-center min-h-screen p-4">
-      <div class="bg-white rounded-lg shadow-xl max-w-lg w-full">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h3 class="text-lg font-medium text-gray-900" id="modalTitle"></h3>
+      <div class="bg-gray-100 border border-gray-400 shadow-md w-full max-w-md">
+        <!-- Title Bar -->
+        <div class="bg-gray-200 border-b border-gray-400 px-2 py-1">
+          <h3 class="text-sm font-bold text-gray-900" id="modalTitle"></h3>
         </div>
-        <div class="px-6 py-4" id="modalContent"></div>
-        <div class="px-6 py-4 bg-gray-50 rounded-b-lg flex justify-end">
-          <button
-            type="button"
-            class="modal-close px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
-          >
-            Close
-          </button>
+        
+        <!-- Content -->
+        <div class="p-4" id="modalContent"></div>
+        
+        <!-- Button Bar -->
+        <div class="bg-gray-200 border-t border-gray-400 p-2 flex justify-end">
+          <button type="button" class="modal-close action-btn">Close</button>
         </div>
       </div>
     </div>
   </div>
 
   {% block extra_scripts %}{% endblock %}
+
+  <script>
+    // Update current year
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
