@@ -1,37 +1,81 @@
 <script>
-  let message = 'Loading...';
+  import { onMount } from 'svelte';
+  import { writable } from 'svelte/store';
 
-  async function fetchMessage() {
-    try {
-      const response = await fetch('http://localhost:5001/');
-      const data = await response.json();
-      message = data.message;
-    } catch (error) {
-      message = 'Error connecting to ChatGPT4o backend';
+  const username = writable('');
+  const password = writable('');
+  const message = writable('');
+  const loggedIn = writable(false);
+  const currentUser = writable('');
+  const backendUrl = 'http://localhost:5001';
+
+  async function register() {
+    const response = await fetch(`${backendUrl}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: $username, password: $password })
+    });
+    const data = await response.json();
+    message.set(data.message || data.error);
+  }
+
+  async function login() {
+    const response = await fetch(`${backendUrl}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: $username, password: $password })
+    });
+    const data = await response.json();
+    if (response.ok) {
+      loggedIn.set(true);
+      currentUser.set($username);
+      message.set('Login successful');
+    } else {
+      message.set(data.error);
     }
   }
 
-  fetchMessage();
+  async function logout() {
+    await fetch(`${backendUrl}/logout`, { method: 'POST', credentials: 'include' });
+    loggedIn.set(false);
+    currentUser.set('');
+    message.set('Logged out successfully');
+  }
+
+  async function checkStatus() {
+    const response = await fetch(`${backendUrl}/status`, { credentials: 'include' });
+    const data = await response.json();
+    loggedIn.set(data.loggedIn);
+    currentUser.set(data.username || '');
+  }
+
+  onMount(checkStatus);
 </script>
 
 <main>
-  <h1>ChatGPT4o App</h1>
-  <p class="message">{message}</p>
+  {#if $loggedIn}
+    <h2>Welcome, {$currentUser}!</h2>
+    <button on:click={logout}>Logout</button>
+  {:else}
+    <h2>Login / Register</h2>
+    <input type="text" placeholder="Username" bind:value={$username}>
+    <input type="password" placeholder="Password" bind:value={$password}>
+    <button on:click={login}>Login</button>
+    <button on:click={register}>Register</button>
+    <p>{$message}</p>
+  {/if}
 </main>
 
 <style>
   main {
-    text-align: center;
-    padding: 2em;
+    max-width: 300px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
-  h1 {
-    color: #333;
-    font-size: 2em;
-    margin-bottom: 0.5em;
-  }
-  .message {
-    color: #444;
-    font-size: 1.2em;
-    margin: 1em;
+  input, button {
+    padding: 10px;
+    font-size: 1rem;
   }
 </style>

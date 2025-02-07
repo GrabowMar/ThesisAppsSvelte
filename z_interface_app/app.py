@@ -82,17 +82,17 @@ class DockerStatus:
 # Constants
 # -------------------------
 AI_MODELS = [
-	AIModel("ChatGPT", "#10a37f"),
+	AIModel("ChatGPT4o", "#10a37f"),
 	AIModel("ChatGPTo1", "#0ea47f"),
+	AIModel("ChatGPTo3", "#0ca57f"),
 	AIModel("ClaudeSonnet", "#7b2bf9"),
 	AIModel("CodeLlama", "#f97316"),
 	AIModel("Gemini", "#1a73e8"),
 	AIModel("Grok", "#ff4d4f"),
 	AIModel("Mixtral", "#9333ea"),
-	AIModel("DeepSeek", "#ff5555")
+	AIModel("DeepSeek", "#ff5555"),
+	AIModel("Qwen", "#fa541c")
 ]
-
-
 # -------------------------
 # Logging & Filtering
 # -------------------------
@@ -123,7 +123,7 @@ class PortManager:
 	BASE_BACKEND_PORT = 5001
 	BASE_FRONTEND_PORT = 5501
 	PORTS_PER_APP = 2
-	BUFFER_PORTS = 5
+	BUFFER_PORTS = 20
 	APPS_PER_MODEL = 20
 
 	@classmethod
@@ -353,7 +353,7 @@ def get_app_info(model_name, app_num):
 
 
 def get_apps_for_model(model_name):
-	base_path = Path(f"{model_name}/flask_apps")
+	base_path = Path(f"{model_name}")
 	if not base_path.exists():
 		return []
 	apps = []
@@ -381,7 +381,7 @@ def get_all_apps():
 
 
 def run_docker_compose(command, model, app_num, timeout=60, check=True):
-	app_dir = Path(f"{model}/flask_apps/app{app_num}")
+	app_dir = Path(f"{model}/app{app_num}")
 	if not app_dir.exists():
 		return False, f"Directory not found: {app_dir}"
 

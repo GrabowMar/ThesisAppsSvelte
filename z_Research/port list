@@ -1,0 +1,231 @@
+
+1. ChatGPT4o (Index 0)
+Backend base = 5001, Frontend base = 5501
+
+App 1: Backend 5001, Frontend 5501 [x]
+App 2: Backend 5003, Frontend 5503 
+App 3: Backend 5005, Frontend 5505
+App 4: Backend 5007, Frontend 5507
+App 5: Backend 5009, Frontend 5509
+App 6: Backend 5011, Frontend 5511
+App 7: Backend 5013, Frontend 5513
+App 8: Backend 5015, Frontend 5515
+App 9: Backend 5017, Frontend 5517
+App 10: Backend 5019, Frontend 5519
+App 11: Backend 5021, Frontend 5521
+App 12: Backend 5023, Frontend 5523
+App 13: Backend 5025, Frontend 5525
+App 14: Backend 5027, Frontend 5527
+App 15: Backend 5029, Frontend 5529
+App 16: Backend 5031, Frontend 5531
+App 17: Backend 5033, Frontend 5533
+App 18: Backend 5035, Frontend 5535
+App 19: Backend 5037, Frontend 5537
+App 20: Backend 5039, Frontend 5539
+2. ChatGPTo1 (Index 1)
+Backend base = 5061, Frontend base = 5561
+
+App 1: Backend 5061, Frontend 5561
+App 2: Backend 5063, Frontend 5563
+App 3: Backend 5065, Frontend 5565
+App 4: Backend 5067, Frontend 5567
+App 5: Backend 5069, Frontend 5569
+App 6: Backend 5071, Frontend 5571
+App 7: Backend 5073, Frontend 5573
+App 8: Backend 5075, Frontend 5575
+App 9: Backend 5077, Frontend 5577
+App 10: Backend 5079, Frontend 5579
+App 11: Backend 5081, Frontend 5581
+App 12: Backend 5083, Frontend 5583
+App 13: Backend 5085, Frontend 5585
+App 14: Backend 5087, Frontend 5587
+App 15: Backend 5089, Frontend 5589
+App 16: Backend 5091, Frontend 5591
+App 17: Backend 5093, Frontend 5593
+App 18: Backend 5095, Frontend 5595
+App 19: Backend 5097, Frontend 5597
+App 20: Backend 5099, Frontend 5599
+3. ChatGPTo3 (Index 2)
+Backend base = 5121, Frontend base = 5621
+
+App 1: Backend 5121, Frontend 5621
+App 2: Backend 5123, Frontend 5623
+App 3: Backend 5125, Frontend 5625
+App 4: Backend 5127, Frontend 5627
+App 5: Backend 5129, Frontend 5629
+App 6: Backend 5131, Frontend 5631
+App 7: Backend 5133, Frontend 5633
+App 8: Backend 5135, Frontend 5635
+App 9: Backend 5137, Frontend 5637
+App 10: Backend 5139, Frontend 5639
+App 11: Backend 5141, Frontend 5641
+App 12: Backend 5143, Frontend 5643
+App 13: Backend 5145, Frontend 5645
+App 14: Backend 5147, Frontend 5647
+App 15: Backend 5149, Frontend 5649
+App 16: Backend 5151, Frontend 5651
+App 17: Backend 5153, Frontend 5653
+App 18: Backend 5155, Frontend 5655
+App 19: Backend 5157, Frontend 5657
+App 20: Backend 5159, Frontend 5659
+4. ClaudeSonnet (Index 3)
+Backend base = 5181, Frontend base = 5681
+
+App 1: Backend 5181, Frontend 5681
+App 2: Backend 5183, Frontend 5683
+App 3: Backend 5185, Frontend 5685
+App 4: Backend 5187, Frontend 5687
+App 5: Backend 5189, Frontend 5689
+App 6: Backend 5191, Frontend 5691
+App 7: Backend 5193, Frontend 5693
+App 8: Backend 5195, Frontend 5695
+App 9: Backend 5197, Frontend 5697
+App 10: Backend 5199, Frontend 5699
+App 11: Backend 5201, Frontend 5701
+App 12: Backend 5203, Frontend 5703
+App 13: Backend 5205, Frontend 5705
+App 14: Backend 5207, Frontend 5707
+App 15: Backend 5209, Frontend 5709
+App 16: Backend 5211, Frontend 5711
+App 17: Backend 5213, Frontend 5713
+App 18: Backend 5215, Frontend 5715
+App 19: Backend 5217, Frontend 5717
+App 20: Backend 5219, Frontend 5719
+5. Llama (Index 4)
+Backend base = 5241, Frontend base = 5741
+
+App 1: Backend 5241, Frontend 5741
+App 2: Backend 5243, Frontend 5743
+App 3: Backend 5245, Frontend 5745
+App 4: Backend 5247, Frontend 5747
+App 5: Backend 5249, Frontend 5749
+App 6: Backend 5251, Frontend 5751
+App 7: Backend 5253, Frontend 5753
+App 8: Backend 5255, Frontend 5755
+App 9: Backend 5257, Frontend 5757
+App 10: Backend 5259, Frontend 5759
+App 11: Backend 5261, Frontend 5761
+App 12: Backend 5263, Frontend 5763
+App 13: Backend 5265, Frontend 5765
+App 14: Backend 5267, Frontend 5767
+App 15: Backend 5269, Frontend 5769
+App 16: Backend 5271, Frontend 5771
+App 17: Backend 5273, Frontend 5773
+App 18: Backend 5275, Frontend 5775
+App 19: Backend 5277, Frontend 5777
+App 20: Backend 5279, Frontend 5779
+6. Gemini (Index 5)
+Backend base = 5301, Frontend base = 5801
+
+App 1: Backend 5301, Frontend 5801
+App 2: Backend 5303, Frontend 5803
+App 3: Backend 5305, Frontend 5805
+App 4: Backend 5307, Frontend 5807
+App 5: Backend 5309, Frontend 5809
+App 6: Backend 5311, Frontend 5811
+App 7: Backend 5313, Frontend 5813
+App 8: Backend 5315, Frontend 5815
+App 9: Backend 5317, Frontend 5817
+App 10: Backend 5319, Frontend 5819
+App 11: Backend 5321, Frontend 5821
+App 12: Backend 5323, Frontend 5823
+App 13: Backend 5325, Frontend 5825
+App 14: Backend 5327, Frontend 5827
+App 15: Backend 5329, Frontend 5829
+App 16: Backend 5331, Frontend 5831
+App 17: Backend 5333, Frontend 5833
+App 18: Backend 5335, Frontend 5835
+App 19: Backend 5337, Frontend 5837
+App 20: Backend 5339, Frontend 5839
+7. Grok (Index 6)
+Backend base = 5361, Frontend base = 5861
+
+App 1: Backend 5361, Frontend 5861
+App 2: Backend 5363, Frontend 5863
+App 3: Backend 5365, Frontend 5865
+App 4: Backend 5367, Frontend 5867
+App 5: Backend 5369, Frontend 5869
+App 6: Backend 5371, Frontend 5871
+App 7: Backend 5373, Frontend 5873
+App 8: Backend 5375, Frontend 5875
+App 9: Backend 5377, Frontend 5877
+App 10: Backend 5379, Frontend 5879
+App 11: Backend 5381, Frontend 5881
+App 12: Backend 5383, Frontend 5883
+App 13: Backend 5385, Frontend 5885
+App 14: Backend 5387, Frontend 5887
+App 15: Backend 5389, Frontend 5889
+App 16: Backend 5391, Frontend 5891
+App 17: Backend 5393, Frontend 5893
+App 18: Backend 5395, Frontend 5895
+App 19: Backend 5397, Frontend 5897
+App 20: Backend 5399, Frontend 5899
+8. Mixtral (Index 7)
+Backend base = 5421, Frontend base = 5921
+
+App 1: Backend 5421, Frontend 5921
+App 2: Backend 5423, Frontend 5923
+App 3: Backend 5425, Frontend 5925
+App 4: Backend 5427, Frontend 5927
+App 5: Backend 5429, Frontend 5929
+App 6: Backend 5431, Frontend 5931
+App 7: Backend 5433, Frontend 5933
+App 8: Backend 5435, Frontend 5935
+App 9: Backend 5437, Frontend 5937
+App 10: Backend 5439, Frontend 5939
+App 11: Backend 5441, Frontend 5941
+App 12: Backend 5443, Frontend 5943
+App 13: Backend 5445, Frontend 5945
+App 14: Backend 5447, Frontend 5947
+App 15: Backend 5449, Frontend 5949
+App 16: Backend 5451, Frontend 5951
+App 17: Backend 5453, Frontend 5953
+App 18: Backend 5455, Frontend 5955
+App 19: Backend 5457, Frontend 5957
+App 20: Backend 5459, Frontend 5959
+9. DeepSeek (Index 8)
+Backend base = 5481, Frontend base = 5981
+
+App 1: Backend 5481, Frontend 5981
+App 2: Backend 5483, Frontend 5983
+App 3: Backend 5485, Frontend 5985
+App 4: Backend 5487, Frontend 5987
+App 5: Backend 5489, Frontend 5989
+App 6: Backend 5491, Frontend 5991
+App 7: Backend 5493, Frontend 5993
+App 8: Backend 5495, Frontend 5995
+App 9: Backend 5497, Frontend 5997
+App 10: Backend 5499, Frontend 5999
+App 11: Backend 5501, Frontend 6001
+App 12: Backend 5503, Frontend 6003
+App 13: Backend 5505, Frontend 6005
+App 14: Backend 5507, Frontend 6007
+App 15: Backend 5509, Frontend 6009
+App 16: Backend 5511, Frontend 6011
+App 17: Backend 5513, Frontend 6013
+App 18: Backend 5515, Frontend 6015
+App 19: Backend 5517, Frontend 6017
+App 20: Backend 5519, Frontend 6019
+10. Qwen (Index 9)
+Backend base = 5541, Frontend base = 6041
+
+App 1: Backend 5541, Frontend 6041
+App 2: Backend 5543, Frontend 6043
+App 3: Backend 5545, Frontend 6045
+App 4: Backend 5547, Frontend 6047
+App 5: Backend 5549, Frontend 6049
+App 6: Backend 5551, Frontend 6051
+App 7: Backend 5553, Frontend 6053
+App 8: Backend 5555, Frontend 6055
+App 9: Backend 5557, Frontend 6057
+App 10: Backend 5559, Frontend 6059
+App 11: Backend 5561, Frontend 6061
+App 12: Backend 5563, Frontend 6063
+App 13: Backend 5565, Frontend 6065
+App 14: Backend 5567, Frontend 6067
+App 15: Backend 5569, Frontend 6069
+App 16: Backend 5571, Frontend 6071
+App 17: Backend 5573, Frontend 6073
+App 18: Backend 5575, Frontend 6075
+App 19: Backend 5577, Frontend 6077
+App 20: Backend 5579, Frontend 6079
