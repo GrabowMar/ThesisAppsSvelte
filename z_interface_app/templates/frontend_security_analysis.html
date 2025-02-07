@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </svg>
         Analyzing...`;
       try {
-        // Could be an AJAX call; here we just reload
+        // For example, this could trigger an AJAX call. Here, we simply reload.
         window.location.reload();
       } finally {
         refreshBtn.disabled = false;

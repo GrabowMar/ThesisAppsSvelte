@@ -63,8 +63,13 @@
       {% if messages %}
         <div class="space-y-1" aria-live="polite">
           {% for category, message in messages %}
-            <div class="border p-2 {% if category == 'error' %}border-red-700 bg-red-50 text-red-700{% else %}border-green-700 bg-green-50 text-green-700{% endif %}">
-              <p class="text-xs">{{ message }}</p>
+            <div class="border p-2 text-xs rounded
+                        {% if category == 'error' %}
+                          border-red-700 bg-red-50 text-red-700
+                        {% else %}
+                          border-green-700 bg-green-50 text-green-700
+                        {% endif %}">
+              <p>{{ message }}</p>
             </div>
           {% endfor %}
         </div>
@@ -109,7 +114,7 @@
   {% block extra_scripts %}{% endblock %}
 
   <script>
-    // Update current year
+    // Update current year in the footer
     document.getElementById('currentYear').textContent = new Date().getFullYear();
   </script>
 </body>

@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: chatgpt4o_backend_5033
+        ports:
+            - "5033:5033"
+        volumes:
+            - ./backend:/app
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: chatgpt4o_frontend_5533
+        ports:
+            - "5533:5533"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=5533
+        restart: always
+        depends_on:
+            - backend
+

@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: qwen_backend_5561
+        ports:
+            - "5561:5561"
+        volumes:
+            - ./backend:/app
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: qwen_frontend_6061
+        ports:
+            - "6061:6061"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=6061
+        restart: always
+        depends_on:
+            - backend
+
