@@ -3,65 +3,26 @@
 
 ## Important Implementation Notes
 
-As an AI assistant, when implementing this template:
-1. Generate a microblog system.
-2. Keep ALL changes within **app.py** and **App.svelte** files only.
-3. Do NOT modify the project structure.
-4. Do NOT create additional files unless explicitly requested.
-5. Include CRUD operations.
-6. Focus on microblog essentials.
-7. **Note:** Multipage routing is possible in both the backend and frontend. In **app.py**, you can define multiple routes to handle different pages or API endpoints. In **App.svelte**, client-side routing can be implemented using conditional rendering or a routing library.
-
+1. Generate web app with properly implemented key features mentioned below.
+2. Try to keep all changes within **app.py** and **App.svelte** files.
+3. Try to write feature complete production ready app, with comments, fails states, etc.
+4. **Note:** Multipage routing is possible within these files. On the backend, you can define multiple routes (e.g., `/login`, `/register`, `/dashboard`, etc.) in **app.py**. On the frontend, client-side routing can be managed within **App.svelte** using conditional rendering or a routing library, all within the single-file constraint.
 ## Project Description
 
 **CRUD Microblog System**  
 A microblog system built with Flask and Svelte.
 
-**Key Features:**
+**Required Features:**
+- **Multipage Routing:** Extendable routing on both backend and frontend for additional pages/views
+- SImple and modern UI
+
+**Template Specific:**
 
 - Post creation and management (CRUD)
 - User profile management
 - Post timeline/feed
 - Post interactions (likes/comments)
 - Post search
-
-**Technical Stack:**
-
-- **Backend:** Flask with SQLAlchemy
-- **Frontend:** Svelte with state management
-- **Additional:** User authentication
-
-## Technical Requirements Analysis
-
-### Backend Requirements
-1. **Core Features:**
-   - Post CRUD operations
-   - User authentication/profiles
-   - Timeline/feed generation
-   - Comment management
-   - Like functionality
-
-2. **Integration Requirements:**
-   - User session management
-   - Database relationships
-   - Feed pagination
-   - Search functionality
-
-### Frontend Requirements
-1. **Visual Elements:**
-   - Post creation interface
-   - Timeline/feed display
-   - User profile page
-   - Comment threads
-   - Like/interaction buttons
-   - Search bar
-
-2. **Functional Elements:**
-   - Real-time post updates
-   - Comment threading
-   - Profile customization
-   - Feed sorting options
-   - Post search/filtering
 
 ## Implementation Structure
 
@@ -138,5 +99,5 @@ if __name__ == '__main__':
    - Aim for best practices and professionalism.
    - **Example format:** "Generate the Svelte frontend code with the specified features:"
 
-**Note:** Backend implementation must be confirmed before proceeding with frontend generation.
+**Very important:** Your app should be feature rich and production ready.
 ```

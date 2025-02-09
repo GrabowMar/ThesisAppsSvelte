@@ -3,61 +3,26 @@
 
 ## Important Implementation Notes
 
-As an AI assistant, when implementing this template:
-1. Generate a crypto wallet system.
-2. Keep ALL changes within **app.py** and **App.svelte** files only.
-3. Do NOT modify the project structure.
-4. Do NOT create additional files unless explicitly requested.
-5. Include essential wallet features.
-6. Focus on transaction essentials.
-7. **Note:** Multipage routing is possible in both the backend and frontend. In **app.py**, you can define multiple routes to handle different pages or API endpoints. In **App.svelte**, client-side routing can be implemented using conditional rendering or a routing library.
-
+1. Generate web app with properly implemented key features mentioned below.
+2. Try to keep all changes within **app.py** and **App.svelte** files.
+3. Try to write feature complete production ready app, with comments, fails states, etc.
+4. **Note:** Multipage routing is possible within these files. On the backend, you can define multiple routes (e.g., `/login`, `/register`, `/dashboard`, etc.) in **app.py**. On the frontend, client-side routing can be managed within **App.svelte** using conditional rendering or a routing library, all within the single-file constraint.
 ## Project Description
 
 **Crypto Wallet System**  
 A cryptocurrency wallet built with Flask and Svelte, featuring essential transaction capabilities.
 
-**Key Features:**
+**Required Features:**
+- **Multipage Routing:** Extendable routing on both backend and frontend for additional pages/views
+- SImple and modern UI
+
+**Template Specific:**
 
 - Balance checking
 - Send/Receive functionality
 - Transaction history
 - Address management
 - Basic security
-
-**Technical Stack:**
-
-- **Backend:** Flask with crypto libraries
-- **Frontend:** Svelte with encryption support
-- **Additional:** Blockchain integration
-
-## Technical Requirements Analysis
-
-### Backend Requirements
-1. **Core Features:**
-   - Wallet management
-   - Transaction handling
-   - Balance tracking
-   - Address handling
-
-2. **Integration Requirements:**
-   - Blockchain connection
-   - Key management
-   - Transaction signing
-
-### Frontend Requirements
-1. **Visual Elements:**
-   - Balance display
-   - Transaction form
-   - Address book
-   - History view
-   - Security controls
-
-2. **Functional Elements:**
-   - Transaction creation
-   - Address validation
-   - Balance updates
-   - History tracking
 
 ## Implementation Structure
 
@@ -134,5 +99,5 @@ if __name__ == '__main__':
    - Aim for best practices and professionalism.
    - **Example format:** "Generate the Svelte frontend code with the specified features:"
 
-**Note:** Backend implementation must be confirmed before proceeding with frontend generation.
+**Very important:** Your app should be feature rich and production ready.
 ```

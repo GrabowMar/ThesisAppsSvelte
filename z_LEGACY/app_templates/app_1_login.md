@@ -1,17 +1,11 @@
-```markdown
 # Login/Register Application Template - Flask + Svelte
 
 ## Important Implementation Notes
 
-As an AI assistant, when implementing this template:
-
-1. Generate an authentication system.
-2. Keep ALL changes within **app.py** and **App.svelte** files only.
-3. Do NOT modify the project structure.
-4. Do NOT create additional files unless explicitly requested.
-5. Include only essential auth features.
-6. Focus on security.
-7. **Note:** Multipage routing is possible within these files. On the backend, you can define multiple routes (e.g., `/login`, `/register`, `/dashboard`, etc.) in **app.py**. On the frontend, client-side routing can be managed within **App.svelte** using conditional rendering or a routing library, all within the single-file constraint.
+1. Generate web app with properly implemented key features mentioned below.
+2. Try to keep all changes within **app.py** and **App.svelte** files.
+3. Try to write feature complete production ready app, with comments, fails states, etc.
+4. **Note:** Multipage routing is possible within these files. On the backend, you can define multiple routes (e.g., `/login`, `/register`, `/dashboard`, etc.) in **app.py**. On the frontend, client-side routing can be managed within **App.svelte** using conditional rendering or a routing library, all within the single-file constraint.
 
 ## Introduction
 
@@ -22,7 +16,11 @@ This template provides a secure authentication system built with Flask and Svelt
 **Authentication System**  
 A streamlined user authentication system built with Flask and Svelte, featuring user registration and login capabilities with core security features.
 
-**Key Features:**
+**Required Features:**
+- **Multipage Routing:** Extendable routing on both backend and frontend for additional pages/views
+- SImple and modern UI
+
+**Template Specific:**
 
 - User registration
 - Login functionality
@@ -31,40 +29,6 @@ A streamlined user authentication system built with Flask and Svelte, featuring 
 - Error handling
 - **Multipage Routing:** Extendable routing on both backend and frontend for additional pages/views
 
-**Technical Stack:**
-
-- **Backend:** Flask with SQLAlchemy, Flask-Login
-- **Frontend:** Svelte with form handling
-- **Additional:** CORS protection
-
-## Technical Requirements Analysis
-
-### Backend Requirements
-
-1. **Core Features:**
-   - User storage
-   - Password hashing
-   - Session management
-   - Error handling
-
-2. **Integration Requirements:**
-   - SQLite database
-   - Security middleware
-   - Session handling
-
-### Frontend Requirements
-
-1. **Visual Elements:**
-   - Login form
-   - Registration form
-   - Loading indicators
-   - Error messages
-
-2. **Functional Elements:**
-   - Form validation
-   - Session handling
-   - Error display
-   - Loading states
 
 ## Implementation Structure
 
@@ -141,5 +105,4 @@ if __name__ == '__main__':
    - Aim for best practices and professionalism.
    - **Example format:** "Generate the Svelte frontend code with the specified features:"
 
-**Note:** Backend implementation must be confirmed before proceeding with frontend generation.
-```
+**Very important:** Your app should be feature rich and production ready. Remember you write whole app not only module or feature.

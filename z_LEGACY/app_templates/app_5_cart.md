@@ -3,15 +3,10 @@
 
 ## Important Implementation Notes
 
-As an AI assistant, when implementing this template:
-1. Generate an e-commerce cart system.
-2. Keep ALL changes within **app.py** and **App.svelte** files only.
-3. Do NOT modify the project structure.
-4. Do NOT create additional files unless explicitly requested.
-5. Include shopping features.
-6. Focus on cart management functionality.
-7. **Note:** Multipage routing is supported in both the backend and frontend. In **app.py**, you can define multiple routes for different API endpoints or pages. In **App.svelte**, client-side routing can be implemented using conditional rendering or a routing library.
-
+1. Generate web app with properly implemented key features mentioned below.
+2. Try to keep all changes within **app.py** and **App.svelte** files.
+3. Try to write feature complete production ready app, with comments, fails states, etc.
+4. **Note:** Multipage routing is possible within these files. On the backend, you can define multiple routes (e.g., `/login`, `/register`, `/dashboard`, etc.) in **app.py**. On the frontend, client-side routing can be managed within **App.svelte** using conditional rendering or a routing library, all within the single-file constraint.
 ## Introduction
 
 This template provides an e-commerce cart system built with Flask and Svelte. The implementation focuses on shopping features while maintaining clean, maintainable code.
@@ -21,47 +16,17 @@ This template provides an e-commerce cart system built with Flask and Svelte. Th
 **E-Commerce Cart System**  
 A shopping cart application built with Flask and Svelte, featuring product management and cart functionality.
 
-**Key Features:**
+**Required Features:**
+- **Multipage Routing:** Extendable routing on both backend and frontend for additional pages/views
+- SImple and modern UI
+
+**Template Specific:**
 
 - Product listing
 - Cart management
 - Checkout
 - Order summary
 - Inventory tracking
-
-**Technical Stack:**
-
-- **Backend:** Flask with SQLAlchemy
-- **Frontend:** Svelte with state management
-- **Additional:** Cart session handling
-
-## Technical Requirements Analysis
-
-### Backend Requirements
-1. **Core Features:**
-   - Product management
-   - Cart operations
-   - Order processing
-   - Inventory tracking
-
-2. **Integration Requirements:**
-   - Database setup
-   - Session handling
-   - Cart persistence
-
-### Frontend Requirements
-1. **Visual Elements:**
-   - Product grid
-   - Cart display
-   - Checkout form
-   - Order summary
-   - Inventory status
-
-2. **Functional Elements:**
-   - Cart operations
-   - Product filtering
-   - Quantity handling
-   - Total calculation
 
 ## Implementation Structure
 
@@ -138,5 +103,5 @@ if __name__ == '__main__':
    - Aim for best practices and professionalism.
    - **Example format:** "Generate the Svelte frontend code with the specified features:"
 
-**Note:** Backend implementation must be confirmed before proceeding with frontend generation.
+**Very important:** Your app should be feature rich and production ready.
 ```

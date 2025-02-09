@@ -3,61 +3,26 @@
 
 ## Important Implementation Notes
 
-As an AI assistant, when implementing this template:
-1. Generate a file upload system.
-2. Keep ALL changes within **app.py** and **App.svelte** files only.
-3. Do NOT modify the project structure.
-4. Do NOT create additional files unless explicitly requested.
-5. Include file handling features.
-6. Focus on upload/download functionality.
-7. **Note:** Multipage routing is supported in both the backend and frontend. In **app.py**, you can define multiple routes for different API endpoints or pages. In **App.svelte**, client-side routing can be implemented using conditional rendering or a routing library.
-
+1. Generate web app with properly implemented key features mentioned below.
+2. Try to keep all changes within **app.py** and **App.svelte** files.
+3. Try to write feature complete production ready app, with comments, fails states, etc.
+4. **Note:** Multipage routing is possible within these files. On the backend, you can define multiple routes (e.g., `/login`, `/register`, `/dashboard`, etc.) in **app.py**. On the frontend, client-side routing can be managed within **App.svelte** using conditional rendering or a routing library, all within the single-file constraint.
 ## Project Description
 
 **File Uploader System**  
 A file handling application built with Flask and Svelte, featuring upload and download capabilities.
 
-**Key Features:**
+**Required Features:**
+- **Multipage Routing:** Extendable routing on both backend and frontend for additional pages/views
+- SImple and modern UI
+
+**Template Specific:**
 
 - File upload
 - File listing
 - Download functionality
 - File preview
 - Organization
-
-**Technical Stack:**
-
-- **Backend:** Flask with file handling
-- **Frontend:** Svelte with upload management
-- **Additional:** Progress tracking
-
-## Technical Requirements Analysis
-
-### Backend Requirements
-1. **Core Features:**
-   - File processing
-   - Storage management
-   - Download handling
-   - File organization
-
-2. **Integration Requirements:**
-   - File storage setup
-   - Upload handling
-   - Stream management
-
-### Frontend Requirements
-1. **Visual Elements:**
-   - Upload zone
-   - File list
-   - Progress bars
-   - Preview pane
-   - Download buttons
-
-2. **Functional Elements:**
-   - Upload handling
-   - Progress tracking
-   - File selection
-   - Download triggers
 
 ## Implementation Structure
 
@@ -134,5 +99,5 @@ if __name__ == '__main__':
    - Aim for best practices and professionalism.
    - **Example format:** "Generate the Svelte frontend code with the specified features:"
 
-**Note:** Backend implementation must be confirmed before proceeding with frontend generation.
+**Very important:** Your app should be feature rich and production ready.
 ```

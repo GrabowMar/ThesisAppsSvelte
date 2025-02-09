@@ -3,64 +3,26 @@
 
 ## Important Implementation Notes
 
-As an AI assistant, when implementing this template:
-1. Generate a file storage system.
-2. Keep ALL changes within **app.py** and **App.svelte** files only.
-3. Do NOT modify the project structure.
-4. Do NOT create additional files unless explicitly requested.
-5. Include essential storage features.
-6. Focus on secure file management.
-7. **Note:** Multipage routing is possible in both the backend and frontend. In **app.py**, you can define multiple routes to handle different pages or API endpoints. In **App.svelte**, client-side routing can be implemented using conditional rendering or a routing library.
-
+1. Generate web app with properly implemented key features mentioned below.
+2. Try to keep all changes within **app.py** and **App.svelte** files.
+3. Try to write feature complete production ready app, with comments, fails states, etc.
+4. **Note:** Multipage routing is possible within these files. On the backend, you can define multiple routes (e.g., `/login`, `/register`, `/dashboard`, etc.) in **app.py**. On the frontend, client-side routing can be managed within **App.svelte** using conditional rendering or a routing library, all within the single-file constraint.
 ## Project Description
 
 **File Storage System**  
 A cloud storage solution built with Flask and Svelte, featuring secure file management and sharing capabilities.
 
-**Key Features:**
+**Required Features:**
+- **Multipage Routing:** Extendable routing on both backend and frontend for additional pages/views
+- SImple and modern UI
+
+**Template Specific:**
 
 - File upload/download
 - Folder organization
 - File sharing
 - Storage quota management
 - File type filtering
-
-**Technical Stack:**
-
-- **Backend:** Flask with secure file handling
-- **Frontend:** Svelte with upload management
-- **Additional:** File validation and security
-
-## Technical Requirements Analysis
-
-### Backend Requirements
-1. **Core Features:**
-   - Secure file storage
-   - Download handling
-   - Folder management
-   - Share link generation
-   - Quota tracking
-
-2. **Integration Requirements:**
-   - Storage system setup
-   - File validation
-   - Access control
-   - Share management
-
-### Frontend Requirements
-1. **Visual Elements:**
-   - File/folder list
-   - Upload progress
-   - Storage usage indicator
-   - Share interface
-   - File type icons
-
-2. **Functional Elements:**
-   - Drag-drop upload
-   - Folder navigation
-   - Download handling
-   - Share management
-   - Storage metrics
 
 ## Implementation Structure
 
@@ -137,5 +99,5 @@ if __name__ == '__main__':
    - Aim for best practices and professionalism.
    - **Example format:** "Generate the Svelte frontend code with the specified features:"
 
-**Note:** Backend implementation must be confirmed before proceeding with frontend generation.
+**Very important:** Your app should be feature rich and production ready.
 ```
