@@ -1,0 +1,455 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex min-h-screen bg-gray-100">
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <!-- Top Bar -->
+    <div class="bg-gray-200 border-b border-gray-400 p-1">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <a href="{{ url_for('index') }}" class="action-btn h-6 px-2 text-xs">Back</a>
+          <button id="startAnalysis" class="action-btn h-6 px-2 text-xs">Start Analysis</button>
+          <select id="analysisType" class="h-6 px-2 text-xs border border-gray-300">
+            <option value="security">Security Analysis</option>
+            <option value="features">Feature Analysis</option>
+            <option value="quality">Code Quality</option>
+          </select>
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="text" id="searchIssues" placeholder="Search issues..." class="h-6 px-2 text-xs border border-gray-300">
+          <select id="severityFilter" class="h-6 px-2 text-xs border border-gray-300">
+            <option value="all">All Severities</option>
+            <option value="HIGH">High</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="LOW">Low</option>
+          </select>
+          <select id="fileFilter" class="h-6 px-2 text-xs border border-gray-300">
+            <option value="all">All Files</option>
+            {% set files = [] %}
+            {% for issue in issues %}
+              {% if issue.filename not in files %}
+                {% set _ = files.append(issue.filename) %}
+                <option value="{{ issue.filename }}">{{ issue.filename }}</option>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analysis Grid -->
+    <div class="p-2 grid grid-cols-4 gap-2">
+      <div class="border border-gray-400 bg-white p-2">
+        <div class="text-xs text-gray-600">Total Issues</div>
+        <div class="text-xs font-bold">{{ summary.total_issues if summary else 0 }}</div>
+      </div>
+      <div class="border border-gray-400 bg-white p-2">
+        <div class="text-xs text-red-800">High Severity</div>
+        <div class="text-xs font-bold text-red-700">{{ summary.severity_counts.HIGH if summary else 0 }}</div>
+      </div>
+      <div class="border border-gray-400 bg-white p-2">
+        <div class="text-xs text-yellow-800">Medium Severity</div>
+        <div class="text-xs font-bold text-yellow-700">{{ summary.severity_counts.MEDIUM if summary else 0 }}</div>
+      </div>
+      <div class="border border-gray-400 bg-white p-2">
+        <div class="text-xs text-blue-800">Low Severity</div>
+        <div class="text-xs font-bold text-blue-700">{{ summary.severity_counts.LOW if summary else 0 }}</div>
+      </div>
+    </div>
+
+    <!-- Analysis Progress -->
+    <div id="analysisProgress" class="hidden p-2">
+      <div class="border border-gray-400 bg-white p-2">
+        <div class="flex justify-between items-center mb-2">
+          <div class="text-xs font-bold">Analysis in Progress</div>
+          <div class="text-xs" id="progressStatus">Starting...</div>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div class="bg-blue-600 rounded-full h-2 transition-all duration-500" style="width: 0%" id="progressBar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issue List -->
+    <div class="p-2 flex-1 overflow-auto space-y-2">
+      {% if issues %}
+      <div class="space-y-2" id="issueList">
+        {% for issue in issues %}
+        <div class="border border-gray-400 bg-white {% if issue.severity == 'HIGH' %}bg-red-50{% elif issue.severity == 'MEDIUM' %}bg-yellow-50{% else %}bg-blue-50{% endif %}"
+             data-severity="{{ issue.severity }}" data-file="{{ issue.filename }}"
+             data-searchable="{{ issue.issue_type }} {{ issue.issue_text }} {{ issue.filename }}">
+          <div class="p-2">
+            <div class="flex items-center space-x-2 mb-1">
+              <span class="text-xs px-2 py-0.5 border {% if issue.severity == 'HIGH' %}bg-red-100 text-red-800 border-red-700{% elif issue.severity == 'MEDIUM' %}bg-yellow-100 text-yellow-800 border-yellow-700{% else %}bg-blue-100 text-blue-800 border-blue-700{% endif %}">
+                {{ issue.severity }}
+              </span>
+              <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400">{{ issue.confidence }}</span>
+              <button class="ml-auto action-btn h-6 px-2 text-xs expand-btn">Expand</button>
+            </div>
+            <div class="space-y-2">
+              <div>
+                <div class="text-xs font-bold">{{ issue.issue_type }}</div>
+                <div class="text-xs text-gray-600">{{ issue.issue_text }}</div>
+              </div>
+              <div class="issue-details hidden space-y-2">
+                <div class="text-xs font-mono text-gray-600">
+                  {{ issue.filename }}{% if issue.line_number > 0 %}:{{ issue.line_number }}{% endif %}
+                </div>
+                {% if issue.code %}
+                <pre class="text-xs font-mono bg-gray-800 text-white p-1 overflow-x-auto"><code>{{ issue.code }}</code></pre>
+                {% endif %}
+                {% if issue.suggested_fix %}
+                <div class="text-xs bg-green-50 border border-green-300 p-2">
+                  <div class="font-bold text-green-800">Suggested Fix:</div>
+                  <div class="whitespace-pre-wrap">{{ issue.suggested_fix }}</div>
+                </div>
+                {% endif %}
+                {% if issue.explanation %}
+                <div class="text-xs bg-blue-50 border border-blue-300 p-2">
+                  <div class="font-bold text-blue-800">Explanation:</div>
+                  <div class="whitespace-pre-wrap">{{ issue.explanation }}</div>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="border border-gray-400 bg-white p-4 text-center">
+        {% if error %}
+        <div class="inline-block border border-red-700 bg-red-50 p-2">
+          <p class="text-xs font-bold text-red-700">{{ error }}</p>
+        </div>
+        {% else %}
+        <div class="inline-block border border-gray-700 bg-gray-50 p-2">
+          <p class="text-xs font-bold text-gray-700">No issues found. Start an analysis to begin.</p>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Right Sidebar -->
+  <aside class="w-64 bg-gray-200 border-l border-gray-400 flex flex-col">
+    <div class="p-2 space-y-2 flex-1 overflow-auto">
+      <!-- Analysis Info -->
+      <div class="border border-gray-400 bg-white">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+          <h2 class="font-bold text-xs">Analysis Info</h2>
+        </div>
+        <div class="p-2 text-xs space-y-1">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Model:</span>
+            <span class="font-bold">{{ model }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">App:</span>
+            <span class="font-bold">{{ app_num }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Last Analysis:</span>
+            <span class="font-bold">{{ summary.scan_time if summary else 'Never' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Model Selection -->
+      <div class="border border-gray-400 bg-white">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+          <h2 class="font-bold text-xs">Model Settings</h2>
+        </div>
+        <div class="p-2 space-y-2">
+          <select id="modelType" class="w-full h-6 px-2 text-xs border border-gray-300">
+            <option value="gpt-4">GPT-4 (Most Accurate)</option>
+            <option value="gpt-3.5-turbo">GPT-3.5 (Faster)</option>
+          </select>
+          <div class="text-xs text-gray-600">
+            Select GPT-4 for more thorough analysis or GPT-3.5 for faster results.
+          </div>
+        </div>
+      </div>
+
+      <!-- Analysis Stats -->
+      <div class="border border-gray-400 bg-white">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+          <h2 class="font-bold text-xs">Analysis Stats</h2>
+        </div>
+        <div class="p-2 text-xs">
+          {% if summary %}
+          <div class="space-y-1">
+            <div class="flex justify-between">
+              <span class="text-gray-600">Files Analyzed:</span>
+              <span class="font-bold">{{ summary.files_affected }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Analysis Duration:</span>
+              <span class="font-bold" id="analysisDuration">-</span>
+            </div>
+            <div class="border-t border-gray-200 pt-1 mt-1">
+              <div class="font-bold mb-1">Issue Types:</div>
+              {% for type, count in summary.issue_types.items() %}
+              <div class="flex justify-between">
+                <span>{{ type }}</span>
+                <span class="font-bold">{{ count }}</span>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% else %}
+          <div class="text-center text-gray-600">
+            No analysis data available
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const startBtn = document.getElementById('startAnalysis');
+  const progressBar = document.getElementById('progressBar');
+  const progressDiv = document.getElementById('analysisProgress');
+  const progressStatus = document.getElementById('progressStatus');
+  const searchInput = document.getElementById('searchIssues');
+  const severityFilter = document.getElementById('severityFilter');
+  const fileFilter = document.getElementById('fileFilter');
+  
+  // Expand/Collapse functionality
+  document.querySelectorAll('.expand-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const details = this.closest('div').nextElementSibling.querySelector('.issue-details');
+      details.classList.toggle('hidden');
+      this.textContent = details.classList.contains('hidden') ? 'Expand' : 'Collapse';
+    });
+  });
+
+  // Filter functionality
+  function applyFilters() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const selectedSeverity = severityFilter.value;
+    const selectedFile = fileFilter.value;
+
+    document.querySelectorAll('#issueList > div').forEach(issue => {
+      const severityMatch = selectedSeverity === 'all' || issue.dataset.severity === selectedSeverity;
+      const fileMatch = selectedFile === 'all' || issue.dataset.file === selectedFile;
+      const searchMatch = !searchTerm || issue.dataset.searchable.toLowerCase().includes(searchTerm);
+      
+      issue.style.display = (severityMatch && fileMatch && searchMatch) ? 'block' : 'none';
+    });
+  }
+
+  // Add filter event listeners
+  [severityFilter, fileFilter].forEach(filter => {
+    filter?.addEventListener('change', applyFilters);
+  });
+
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchInput.timeout);
+      searchInput.timeout = setTimeout(applyFilters, 300);
+    });
+  }
+
+  // Analysis functionality
+  if (startBtn) {
+    startBtn.addEventListener('click', async function() {
+      try {
+        startBtn.disabled = true;
+        progressDiv.classList.remove('hidden');
+        progressBar.style.width = '0%';
+        progressStatus.textContent = 'Starting analysis...';
+
+        const analysisType = document.getElementById('analysisType').value;
+        const modelType = document.getElementById('modelType').value;
+
+        const response = await fetch('/api/analyze-openai/{{ model }}/{{ app_num }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            analysis_type: analysisType,
+            model: modelType
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Analysis failed');
+        }
+
+        // Poll for progress
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+          progress += 5;
+          if (progress <= 95) {
+            progressBar.style.width = `${progress}%`;
+            progressStatus.textContent = `Analyzing... ${progress}%`;
+          }
+        }, 1000);
+
+        const result = await response.json();
+        clearInterval(progressInterval);
+        progressBar.style.width = '100%';
+        progressStatus.textContent = 'Analysis complete!';
+
+        // Reload page to show results
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+
+      } catch (error) {
+        progressStatus.textContent = `Error: ${error.message}`;
+        progressBar.style.width = '100%';
+        progressBar.classList.remove('bg-blue-600');
+        progressBar.classList.add('bg-red-600');
+      } finally {
+        startBtn.disabled = false;
+      }
+    });
+  }
+
+  // Calculate and display analysis duration if available
+  function updateAnalysisDuration() {
+    const durationElement = document.getElementById('analysisDuration');
+    if (durationElement && summary?.start_time && summary?.end_time) {
+      const start = new Date(summary.start_time);
+      const end = new Date(summary.end_time);
+      const duration = Math.round((end - start) / 1000);
+      durationElement.textContent = `${duration}s`;
+    }
+  }
+
+  updateAnalysisDuration();
+
+  // Add tooltips for model selection
+  const modelSelect = document.getElementById('modelType');
+  if (modelSelect) {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'hidden absolute bg-gray-900 text-white text-xs p-2 rounded shadow-lg z-50';
+    tooltip.style.maxWidth = '200px';
+    
+    modelSelect.addEventListener('mouseover', function(e) {
+      tooltip.textContent = e.target.value === 'gpt-4' ? 
+        'GPT-4 provides more detailed analysis but takes longer' :
+        'GPT-3.5 is faster but may miss some nuanced issues';
+      tooltip.style.left = `${e.target.offsetLeft}px`;
+      tooltip.style.top = `${e.target.offsetTop + e.target.offsetHeight + 5}px`;
+      tooltip.classList.remove('hidden');
+    });
+
+    modelSelect.addEventListener('mouseout', () => {
+      tooltip.classList.add('hidden');
+    });
+
+    modelSelect.parentNode.style.position = 'relative';
+    modelSelect.parentNode.appendChild(tooltip);
+  }
+
+  // Handle file selection change
+  const handleFileFilterChange = () => {
+    const selectedFile = fileFilter.value;
+    if (selectedFile !== 'all') {
+      // Automatically expand issues for the selected file
+      document.querySelectorAll(`[data-file="${selectedFile}"] .expand-btn`).forEach(btn => {
+        const details = btn.closest('div').nextElementSibling.querySelector('.issue-details');
+        if (details.classList.contains('hidden')) {
+          btn.click();
+        }
+      });
+    }
+  };
+
+  if (fileFilter) {
+    fileFilter.addEventListener('change', handleFileFilterChange);
+  }
+
+  // Update issue count badge
+  function updateIssueCounts() {
+    const visibleIssues = document.querySelectorAll('#issueList > div:not([style*="display: none"])');
+    const totalCount = visibleIssues.length;
+    
+    // Update count in the grid
+    const totalElement = document.querySelector('.text-xs.font-bold');
+    if (totalElement) {
+      totalElement.textContent = totalCount;
+    }
+
+    // Update severity counts
+    const severityCounts = {
+      HIGH: 0,
+      MEDIUM: 0,
+      LOW: 0
+    };
+
+    visibleIssues.forEach(issue => {
+      const severity = issue.dataset.severity;
+      if (severity in severityCounts) {
+        severityCounts[severity]++;
+      }
+    });
+
+    // Update severity count displays
+    Object.entries(severityCounts).forEach(([severity, count]) => {
+      const element = document.querySelector(`[class*="text-${severity.toLowerCase()}-700"]`);
+      if (element) {
+        element.textContent = count;
+      }
+    });
+  }
+
+  // Add listeners to update counts when filters change
+  [searchInput, severityFilter, fileFilter].forEach(element => {
+    element?.addEventListener('input', updateIssueCounts);
+    element?.addEventListener('change', updateIssueCounts);
+  });
+
+  // Export functionality
+  function exportAnalysis() {
+    const issues = Array.from(document.querySelectorAll('#issueList > div')).map(issue => ({
+      severity: issue.dataset.severity,
+      file: issue.dataset.file,
+      type: issue.querySelector('.text-xs.font-bold').textContent,
+      description: issue.querySelector('.text-xs.text-gray-600').textContent,
+      code: issue.querySelector('code')?.textContent || '',
+      fix: issue.querySelector('.text-green-800')?.nextElementSibling?.textContent || ''
+    }));
+
+    const exportData = {
+      summary: {
+        total_issues: issues.length,
+        severity_counts: {
+          HIGH: issues.filter(i => i.severity === 'HIGH').length,
+          MEDIUM: issues.filter(i => i.severity === 'MEDIUM').length,
+          LOW: issues.filter(i => i.severity === 'LOW').length
+        },
+        scan_time: new Date().toISOString()
+      },
+      issues: issues
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `openai-analysis-${new Date().toISOString()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // Add export button
+  const exportBtn = document.createElement('button');
+  exportBtn.className = 'action-btn h-6 px-2 text-xs';
+  exportBtn.textContent = 'Export Analysis';
+  exportBtn.addEventListener('click', exportAnalysis);
+  document.querySelector('.top-bar .flex.items-center:first-child')?.appendChild(exportBtn);
+});
+</script>
+{% endblock %}

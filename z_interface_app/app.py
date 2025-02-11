@@ -40,7 +40,7 @@ from dataclasses import asdict
 from performance_analysis import PerformanceTester
 from codacy_analysis import CodacyAnalyzer
 from zap_scanner import ZAPScanner
-
+from openai_analysis import OpenAIAnalyzer
 # -------------------------------------------------------------------
 # Configuration
 # -------------------------------------------------------------------
@@ -525,13 +525,26 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
 	app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
 	app.codacy_analyzer = CodacyAnalyzer(base_path)  # Initialize Codacy analyzer
 	app.zap_scanner = ZAPScanner(base_path)  # Initialize ZAP scanner
-	
+	app.openai_analyzer = OpenAIAnalyzer(base_path)
 	docker_manager = DockerManager()
 	app.wsgi_app = ProxyFix(app.wsgi_app)
 
 	register_routes(app, docker_manager)
 	register_error_handlers(app)
 	register_request_hooks(app, docker_manager)
+
+	# Initialize the analyzer
+	analyzer = OpenAIAnalyzer(base_path)
+
+	# Analyze an app
+	issues, summary = asyncio.run(analyzer.analyze_app(
+		model="ChatGPT4o",
+		app_num=1,
+		analysis_type="security"
+	))
+
+	# Get analysis summary
+	summary = analyzer.get_analysis_summary(issues)
 	return app
 
 
@@ -1073,6 +1086,38 @@ def register_routes(app: Flask, docker_manager: DockerManager) -> None:
 	def check_container_health(model: str, app_num: int):
 		healthy, message = verify_container_health(docker_manager, model, app_num)
 		return jsonify({"healthy": healthy, "message": message})
+	
+	@app.route("/api/analyze-openai/<string:model>/<int:app_num>")
+	async def analyze_openai(model: str, app_num: int):
+		issues, summary = await app.openai_analyzer.analyze_app(model, app_num)
+		return jsonify({
+			"issues": [asdict(issue) for issue in issues],
+			"summary": summary
+		})
+	
+	@app.route("/openai-analysis/<string:model>/<int:app_num>")
+	@error_handler
+	def openai_analysis(model: str, app_num: int):
+		try:
+			analyzer = app.openai_analyzer
+			issues, summary = asyncio.run(analyzer.analyze_app(model, app_num))
+			return render_template(
+				"openai_analysis.html",
+				model=model,
+				app_num=app_num,
+				issues=issues,
+				summary=summary,
+				error=None
+			)
+		except Exception as e:
+			return render_template(
+				"openai_analysis.html",
+				model=model,
+				app_num=app_num,
+				issues=[],
+				summary=None,
+				error=str(e)
+			)
 
 
 def register_error_handlers(app: Flask) -> None:
@@ -1138,6 +1183,7 @@ if __name__ == "__main__":
 	config = AppConfig.from_env()
 	LoggingService.configure(config.LOG_LEVEL)
 	logger = logging.getLogger(__name__)
+	
 
 	
 
@@ -1149,6 +1195,7 @@ if __name__ == "__main__":
 			logger.warning("System health check failed - reduced functionality expected.")
 		elif not docker_manager.client:
 			logger.warning("Docker client unavailable - reduced functionality expected.")
+			
 			
 		app.run(
 			host=config.HOST,
