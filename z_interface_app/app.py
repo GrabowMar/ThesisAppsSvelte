@@ -13,6 +13,7 @@ import os
 import random
 import subprocess
 import time
+import json
 from dataclasses import asdict, dataclass
 from functools import wraps
 from pathlib import Path
@@ -30,11 +31,16 @@ from flask import (
 	url_for,
 )
 from werkzeug.middleware.proxy_fix import ProxyFix
+from datetime import datetime
+from werkzeug.exceptions import BadRequest
 
 from frontend_security_analysis import FrontendSecurityAnalyzer
 from security_analysis import SecurityAnalyzer
 from dataclasses import asdict
 from performance_analysis import PerformanceTester
+from codacy_analysis import CodacyAnalyzer
+# from zap_scanner import ZAPScanner
+
 # -------------------------------------------------------------------
 # Configuration
 # -------------------------------------------------------------------
@@ -508,10 +514,13 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
 	LoggingService.configure(app.config["LOG_LEVEL"])
 
 	base_path = AppConfig.from_env().BASE_DIR.parent
-	logging.info(f"Initializing SecurityAnalyzer with base path: {base_path}")
+	logging.info(f"Initializing analyzers with base path: {base_path}")
+	
+	# Initialize all analyzers
 	app.security_analyzer = SecurityAnalyzer(base_path)
 	app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
-
+	app.codacy_analyzer = CodacyAnalyzer(base_path)  # Initialize Codacy analyzer
+	
 	docker_manager = DockerManager()
 	app.wsgi_app = ProxyFix(app.wsgi_app)
 
@@ -554,6 +563,183 @@ def register_routes(app: Flask, docker_manager: DockerManager) -> None:
 			"frontend": docker_manager.get_container_status(f_name).to_dict(),
 		}
 		return jsonify(status)
+	
+
+	# @app.route("/zap/<string:model>/<int:app_num>")
+	# @error_handler
+	# def zap_scan(model: str, app_num: int):
+	# 	"""Display ZAP scan page and results"""
+	# 	try:
+	# 		# Initialize ZAP scanner
+	# 		scanner = ZAPScanner(app.config["BASE_DIR"])
+			
+	# 		# Get saved results if they exist
+	# 		results_file = app.config["BASE_DIR"] / f"{model}/app{app_num}/.zap_results.json"
+	# 		alerts = []
+	# 		error = None
+			
+	# 		if results_file.exists():
+	# 			try:
+	# 				with open(results_file) as f:
+	# 					data = json.load(f)
+	# 					alerts = data.get("alerts", [])
+	# 			except Exception as e:
+	# 				error = f"Failed to load previous results: {e}"
+			
+	# 		return render_template(
+	# 			"zap_scan.html",
+	# 			model=model,
+	# 			app_num=app_num,
+	# 			alerts=alerts,
+	# 			error=error
+	# 		)
+			
+	# 	except Exception as e:
+	# 		logger.error(f"Error in ZAP scan page: {e}")
+	# 		return render_template(
+	# 			"zap_scan.html",
+	# 			model=model,
+	# 			app_num=app_num,
+	# 			alerts=[],
+	# 			error=str(e)
+	# 		)
+
+	# @app.route("/api/zap/scan/<string:model>/<int:app_num>", methods=["POST"])
+	# @error_handler
+	# def start_zap_scan(model: str, app_num: int):
+	# 	"""Start a ZAP scan"""
+	# 	try:
+	# 		data = request.get_json()
+			
+	# 		# Initialize scanner
+	# 		scanner = ZAPScanner(app.config["BASE_DIR"])
+			
+	# 		# Calculate target URL
+	# 		frontend_port = 5501 + ((app_num - 1) * 2)
+	# 		target_url = f"http://localhost:{frontend_port}"
+			
+	# 		# Store scan options in app state
+	# 		scan_id = f"{model}-{app_num}-{int(time.time())}"
+	# 		app.config["ZAP_SCANS"] = getattr(app.config, "ZAP_SCANS", {})
+	# 		app.config["ZAP_SCANS"][scan_id] = {
+	# 			"status": "Starting",
+	# 			"progress": 0,
+	# 			"scanner": scanner,
+	# 			"start_time": datetime.now().isoformat(),
+	# 			"options": data
+	# 		}
+			
+	# 		# Start scan in background thread
+	# 		def run_scan():
+	# 			try:
+	# 				vulnerabilities, summary = scanner.scan_target(
+	# 					target_url,
+	# 					scan_policy=data.get("scanPolicy")
+	# 				)
+					
+	# 				# Save results
+	# 				results_file = app.config["BASE_DIR"] / f"{model}/app{app_num}/.zap_results.json"
+	# 				with open(results_file, "w") as f:
+	# 					json.dump({
+	# 						"alerts": [asdict(v) for v in vulnerabilities],
+	# 						"summary": summary,
+	# 						"scan_time": datetime.now().isoformat()
+	# 					}, f, indent=2)
+					
+	# 				# Update scan status
+	# 				app.config["ZAP_SCANS"][scan_id]["status"] = "Complete"
+	# 				app.config["ZAP_SCANS"][scan_id]["progress"] = 100
+					
+	# 			except Exception as e:
+	# 				logger.error(f"Scan error: {e}")
+	# 				app.config["ZAP_SCANS"][scan_id]["status"] = f"Failed: {e}"
+			
+	# 		import threading
+	# 		thread = threading.Thread(target=run_scan)
+	# 		thread.start()
+			
+	# 		return jsonify({"status": "started", "scan_id": scan_id})
+			
+	# 	except Exception as e:
+	# 		logger.error(f"Failed to start ZAP scan: {e}")
+	# 		return jsonify({"error": str(e)}), 500
+
+	# @app.route("/api/zap/scan/<string:model>/<int:app_num>/status")
+	# @error_handler
+	# def zap_scan_status(model: str, app_num: int):
+	# 	"""Get ZAP scan status"""
+	# 	try:
+	# 		# Find the relevant scan
+	# 		scan_id = None
+	# 		for sid, scan in app.config.get("ZAP_SCANS", {}).items():
+	# 			if sid.startswith(f"{model}-{app_num}-"):
+	# 				scan_id = sid
+	# 				break
+			
+	# 		if not scan_id:
+	# 			return jsonify({
+	# 				"status": "Not Started",
+	# 				"progress": 0
+	# 			})
+			
+	# 		scan = app.config["ZAP_SCANS"][scan_id]
+	# 		scanner = scan["scanner"]
+			
+	# 		# Get current counts from saved results
+	# 		results_file = app.config["BASE_DIR"] / f"{model}/app{app_num}/.zap_results.json"
+	# 		counts = {"high": 0, "medium": 0, "low": 0, "info": 0}
+			
+	# 		if results_file.exists():
+	# 			with open(results_file) as f:
+	# 				data = json.load(f)
+	# 				for alert in data.get("alerts", []):
+	# 					risk = alert.get("risk", "").lower()
+	# 					if risk in counts:
+	# 						counts[risk] += 1
+			
+	# 		return jsonify({
+	# 			"status": scan["status"],
+	# 			"progress": scan["progress"],
+	# 			"high_count": counts["high"],
+	# 			"medium_count": counts["medium"],
+	# 			"low_count": counts["low"],
+	# 			"info_count": counts["info"]
+	# 		})
+			
+	# 	except Exception as e:
+	# 		logger.error(f"Failed to get ZAP status: {e}")
+	# 		return jsonify({"error": str(e)}), 500
+
+	# @app.route("/api/zap/scan/<string:model>/<int:app_num>/stop", methods=["POST"])
+	# @error_handler
+	# def stop_zap_scan(model: str, app_num: int):
+	# 	"""Stop a running ZAP scan"""
+	# 	try:
+	# 		# Find the relevant scan
+	# 		scan_id = None
+	# 		for sid, scan in app.config.get("ZAP_SCANS", {}).items():
+	# 			if sid.startswith(f"{model}-{app_num}-"):
+	# 				scan_id = sid
+	# 				break
+			
+	# 		if not scan_id:
+	# 			return jsonify({"error": "No running scan found"}), 404
+			
+	# 		scan = app.config["ZAP_SCANS"][scan_id]
+	# 		scanner = scan["scanner"]
+			
+	# 		# Stop the scanner
+	# 		scanner._stop_zap_daemon()
+			
+	# 		# Update status
+	# 		scan["status"] = "Stopped"
+	# 		scan["progress"] = 0
+			
+	# 		return jsonify({"status": "stopped"})
+			
+	# 	except Exception as e:
+	# 		logger.error(f"Failed to stop ZAP scan: {e}")
+	# 		return jsonify({"error": str(e)}), 500
 
 	@app.route("/logs/<string:model>/<int:app_num>")
 	@error_handler
@@ -624,6 +810,193 @@ def register_routes(app: Flask, docker_manager: DockerManager) -> None:
 			app_num=app_num
 		)
 
+	@app.route("/codacy/<string:model>/<int:app_num>")
+	@error_handler
+	def codacy_analysis(model: str, app_num: int):
+		"""Display Codacy analysis results for a specific app."""
+		try:
+			# Get the app path
+			app_path = app.config["BASE_DIR"] / f"{model}/app{app_num}"
+			
+			# Run the analysis
+			issues, raw_output = app.codacy_analyzer.analyze_app(model, app_num)
+			
+			# Load current Codacy configuration
+			config_path = app_path / ".codacy.json"
+			if config_path.exists():
+				with open(config_path) as f:
+					config = json.load(f)
+			else:
+				config = {
+					"tools": {
+						"python": True,
+						"javascript": True,
+						"typescript": True
+					},
+					"exclude_paths": [
+						"tests/**",
+						"**/__pycache__/**",
+						"node_modules/**"
+					]
+				}
+			
+			# Get unique categories from issues
+			categories = sorted(set(issue.issue_type for issue in issues))
+			
+			# Generate analysis summary
+			summary = {
+				"total_issues": len(issues),
+				"severity_counts": {
+					"HIGH": sum(1 for i in issues if i.severity == "HIGH"),
+					"MEDIUM": sum(1 for i in issues if i.severity == "MEDIUM"),
+					"LOW": sum(1 for i in issues if i.severity == "LOW")
+				},
+				"scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+			}
+			
+			return render_template(
+				"codacy_analysis.html",
+				model=model,
+				app_num=app_num,
+				issues=issues,
+				summary=summary,
+				categories=categories,
+				config=config,
+				raw_output=raw_output,
+				error=None
+			)
+			
+		except Exception as e:
+			app.logger.error(f"Codacy analysis failed: {e}")
+			return render_template(
+				"codacy_analysis.html",
+				model=model,
+				app_num=app_num,
+				issues=[],
+				summary=None,
+				categories=[],
+				config={},
+				raw_output="",
+				error=str(e)
+			)
+
+	@app.route("/api/codacy/config", methods=["POST"])
+	@error_handler
+	def update_codacy_config():
+		"""Update Codacy configuration for an app."""
+		try:
+			data = request.get_json()
+			if not data:
+				raise BadRequest("No JSON data provided")
+			
+			model = data.get("model")
+			app_num = data.get("app_num")
+			if not model or not app_num:
+				raise BadRequest("Model and app number required")
+			
+			# Validate and process configuration
+			tools = data.get("tools", [])
+			excludes = data.get("excludes", [])
+			
+			# Create new configuration
+			config = {
+				"tools": {
+					tool: {"enabled": True} for tool in tools
+				},
+				"exclude_paths": excludes
+			}
+			
+			# Get app path and save configuration
+			app_path = app.config["BASE_DIR"] / f"{model}/app{app_num}"
+			config_path = app_path / ".codacy.json"
+			
+			with open(config_path, "w") as f:
+				json.dump(config, f, indent=2)
+			
+			flash("Codacy configuration updated successfully", "success")
+			return jsonify({"status": "success"})
+			
+		except BadRequest as e:
+			app.logger.warning(f"Bad request in Codacy config update: {e}")
+			return jsonify({"error": str(e)}), 400
+		except Exception as e:
+			app.logger.error(f"Failed to update Codacy config: {e}")
+			return jsonify({"error": str(e)}), 500
+
+	@app.route("/api/codacy/<string:model>/<int:app_num>/status")
+	@error_handler
+	def codacy_status(model: str, app_num: int):
+		"""Get current Codacy analysis status."""
+		try:
+			# Check if analysis is in progress
+			app_path = app.config["BASE_DIR"] / f"{model}/app{app_num}"
+			status_file = app_path / ".codacy_status"
+			
+			if status_file.exists():
+				with open(status_file) as f:
+					status = json.load(f)
+			else:
+				status = {
+					"last_run": None,
+					"status": "not_run",
+					"issues_count": 0
+				}
+			
+			return jsonify(status)
+			
+		except Exception as e:
+			app.logger.error(f"Failed to get Codacy status: {e}")
+			return jsonify({"error": str(e)}), 500
+
+	@app.route("/api/codacy/<string:model>/<int:app_num>/analyze", methods=["POST"])
+	@error_handler
+	def trigger_codacy_analysis(model: str, app_num: int):
+		"""Trigger a new Codacy analysis."""
+		try:
+			# Get app path
+			app_path = app.config["BASE_DIR"] / f"{model}/app{app_num}"
+			
+			# Create status file to indicate analysis is running
+			status_file = app_path / ".codacy_status"
+			with open(status_file, "w") as f:
+				json.dump({
+					"status": "running",
+					"start_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+				}, f)
+			
+			# Run analysis asynchronously
+			def run_analysis():
+				try:
+					issues, _ = app.codacy_analyzer.analyze_app(model, app_num)
+					# Update status file with results
+					with open(status_file, "w") as f:
+						json.dump({
+							"status": "completed",
+							"last_run": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+							"issues_count": len(issues)
+						}, f)
+				except Exception as e:
+					app.logger.error(f"Async Codacy analysis failed: {e}")
+					with open(status_file, "w") as f:
+						json.dump({
+							"status": "failed",
+							"error": str(e),
+							"last_run": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+						}, f)
+			
+			# Start analysis in background thread
+			import threading
+			thread = threading.Thread(target=run_analysis)
+			thread.start()
+			
+			return jsonify({
+				"status": "started",
+				"message": "Analysis started successfully"
+			})
+			
+		except Exception as e:
+			app.logger.error(f"Failed to trigger Codacy analysis: {e}")
+			return jsonify({"error": str(e)}), 500
 
 	@app.route("/frontend-security/<string:model>/<int:app_num>")
 	def frontend_security_analysis(model, app_num):
@@ -750,10 +1123,12 @@ if __name__ == "__main__":
 	try:
 		app = create_app(config)
 		docker_manager = DockerManager()
+		
 		if docker_manager.client and not SystemHealthMonitor.check_health(docker_manager.client):
 			logger.warning("System health check failed - reduced functionality expected.")
 		elif not docker_manager.client:
 			logger.warning("Docker client unavailable - reduced functionality expected.")
+			
 		app.run(
 			host=config.HOST,
 			port=config.PORT,
