@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-2">
+    <!-- Toolbar -->
+    <div class="bg-gray-200 border border-gray-400 p-1">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <a href="{{ url_for('index') }}" class="action-btn">Back</a>
+                <button id="runTest" class="action-btn">Run Test</button>
+            </div>
+            <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-1">
+                    <label class="text-xs">Users:</label>
+                    <input type="number" id="numUsers" value="10" min="1" max="100" 
+                           class="h-6 px-2 text-xs border border-gray-300 w-16">
+                </div>
+                <div class="flex items-center space-x-1">
+                    <label class="text-xs">Duration (s):</label>
+                    <input type="number" id="duration" value="30" min="10" max="300" 
+                           class="h-6 px-2 text-xs border border-gray-300 w-16">
+                </div>
+                <div class="flex items-center space-x-1">
+                    <label class="text-xs">Spawn Rate:</label>
+                    <input type="number" id="spawnRate" value="1" min="1" max="50" 
+                           class="h-6 px-2 text-xs border border-gray-300 w-16">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Information -->
+    <div class="border border-gray-400 bg-white">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+            <h2 class="font-bold text-sm">Test Information</h2>
+        </div>
+        <div class="p-2">
+            <div class="grid grid-cols-4 gap-2">
+                <div class="border border-gray-300 p-2">
+                    <div class="text-xs text-gray-600">Model</div>
+                    <div class="text-xs font-bold">{{ model }}</div>
+                </div>
+                <div class="border border-gray-300 p-2">
+                    <div class="text-xs text-gray-600">App Number</div>
+                    <div class="text-xs font-bold">{{ app_num }}</div>
+                </div>
+                <div class="border border-gray-300 p-2">
+                    <div class="text-xs text-gray-600">Last Run</div>
+                    <div class="text-xs font-bold" id="lastRun">Never</div>
+                </div>
+                <div class="border border-gray-300 p-2">
+                    <div class="text-xs text-gray-600">Status</div>
+                    <div class="text-xs font-bold" id="testStatus">Not Started</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="border border-gray-400 bg-white">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+            <h2 class="font-bold text-sm">Test Results</h2>
+        </div>
+        <div class="p-2">
+            <div class="grid grid-cols-3 gap-2">
+                <div class="border border-gray-300 p-2">
+                    <div class="text-xs text-gray-600">Total Requests</div>
+                    <div class="text-xs font-bold" id="totalRequests">-</div>
+                </div>
+                <div class="border border-gray-300 p-2">
+                    <div class="text-xs text-gray-600">Average Response Time</div>
+                    <div class="text-xs font-bold" id="avgResponseTime">-</div>
+                </div>
+                <div class="border border-gray-300 p-2">
+                    <div class="text-xs text-gray-600">Requests Per Second</div>
+                    <div class="text-xs font-bold" id="requestsPerSec">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Output Section -->
+    <div class="border border-gray-400 bg-white">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
+            <h2 class="font-bold text-sm">Test Output</h2>
+            <button id="clearOutput" class="text-xs text-gray-600 hover:text-gray-900">Clear</button>
+        </div>
+        <div class="p-2">
+            <pre id="outputLog" class="text-xs font-mono bg-gray-50 p-2 border border-gray-300 h-48 overflow-auto whitespace-pre-wrap"></pre>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const runTestBtn = document.getElementById('runTest');
+    const clearOutputBtn = document.getElementById('clearOutput');
+    const outputLog = document.getElementById('outputLog');
+    
+    function appendToLog(message) {
+        const timestamp = new Date().toLocaleTimeString();
+        outputLog.textContent += `[${timestamp}] ${message}\n`;
+        outputLog.scrollTop = outputLog.scrollHeight;
+    }
+    
+    function updateResults(data) {
+        document.getElementById('totalRequests').textContent = data.total_requests;
+        document.getElementById('avgResponseTime').textContent = `${data.avg_response_time.toFixed(2)} ms`;
+        document.getElementById('requestsPerSec').textContent = data.requests_per_sec.toFixed(2);
+        document.getElementById('lastRun').textContent = data.start_time;
+        document.getElementById('testStatus').textContent = 'Completed';
+    }
+    
+    runTestBtn.addEventListener('click', async function() {
+        const numUsers = document.getElementById('numUsers').value;
+        const duration = document.getElementById('duration').value;
+        const spawnRate = document.getElementById('spawnRate').value;
+        
+        try {
+            // Update UI for test start
+            runTestBtn.disabled = true;
+            document.getElementById('testStatus').textContent = 'Running...';
+            appendToLog('Starting performance test...');
+            
+            // Make API request
+            const response = await fetch(window.location.href, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    num_users: parseInt(numUsers),
+                    duration: parseInt(duration),
+                    spawn_rate: parseInt(spawnRate)
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                updateResults(result.data);
+                appendToLog('Test completed successfully');
+            } else {
+                throw new Error(result.error || 'Test failed');
+            }
+        } catch (error) {
+            document.getElementById('testStatus').textContent = 'Failed';
+            appendToLog(`Error: ${error.message}`);
+        } finally {
+            runTestBtn.disabled = false;
+        }
+    });
+    
+    clearOutputBtn.addEventListener('click', function() {
+        outputLog.textContent = '';
+    });
+});
+</script>
+{% endblock %}

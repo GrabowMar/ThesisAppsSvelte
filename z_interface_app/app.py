@@ -33,7 +33,8 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from frontend_security_analysis import FrontendSecurityAnalyzer
 from security_analysis import SecurityAnalyzer
-
+from dataclasses import asdict
+from performance_analysis import PerformanceTester
 # -------------------------------------------------------------------
 # Configuration
 # -------------------------------------------------------------------
@@ -429,70 +430,70 @@ def verify_container_health(
 
 
 def process_security_analysis(
-    template: str,
-    analyzer,
-    analysis_method,
-    model: str,
-    app_num: int,
-    full_scan: bool,
-    no_issue_message: str,
+	template: str,
+	analyzer,
+	analysis_method,
+	model: str,
+	app_num: int,
+	full_scan: bool,
+	no_issue_message: str,
 ):
-    """
-    Helper to process security analysis and render the given template.
-    Unpacks (issues, tool_status, tool_output_details) from the analysis method.
-    """
-    try:
-        # Unpack three values now:
-        issues, tool_status, tool_output_details = analysis_method(model, app_num, use_all_tools=full_scan)
-        if not issues:
-            return render_template(
-                template,
-                model=model,
-                app_num=app_num,
-                issues=[],
-                summary=analyzer.get_analysis_summary([]),
-                error=None,
-                message=no_issue_message,
-                full_scan=full_scan,
-                tool_status=tool_status,
-                tool_output_details=tool_output_details,
-            )
-        summary = analyzer.get_analysis_summary(issues)
-        return render_template(
-            template,
-            model=model,
-            app_num=app_num,
-            issues=issues,
-            summary=summary,
-            error=None,
-            full_scan=full_scan,
-            tool_status=tool_status,
-            tool_output_details=tool_output_details,
-        )
-    except ValueError as e:
-        logging.warning(f"No files to analyze: {e}")
-        return render_template(
-            template,
-            model=model,
-            app_num=app_num,
-            issues=None,
-            error=str(e),
-            full_scan=full_scan,
-            tool_status={},
-            tool_output_details={}
-        )
-    except Exception as e:
-        logging.error(f"Security analysis failed: {e}")
-        return render_template(
-            template,
-            model=model,
-            app_num=app_num,
-            issues=None,
-            error=f"Security analysis failed: {str(e)}",
-            full_scan=full_scan,
-            tool_status={},
-            tool_output_details={}
-        )
+	"""
+	Helper to process security analysis and render the given template.
+	Unpacks (issues, tool_status, tool_output_details) from the analysis method.
+	"""
+	try:
+		# Unpack three values now:
+		issues, tool_status, tool_output_details = analysis_method(model, app_num, use_all_tools=full_scan)
+		if not issues:
+			return render_template(
+				template,
+				model=model,
+				app_num=app_num,
+				issues=[],
+				summary=analyzer.get_analysis_summary([]),
+				error=None,
+				message=no_issue_message,
+				full_scan=full_scan,
+				tool_status=tool_status,
+				tool_output_details=tool_output_details,
+			)
+		summary = analyzer.get_analysis_summary(issues)
+		return render_template(
+			template,
+			model=model,
+			app_num=app_num,
+			issues=issues,
+			summary=summary,
+			error=None,
+			full_scan=full_scan,
+			tool_status=tool_status,
+			tool_output_details=tool_output_details,
+		)
+	except ValueError as e:
+		logging.warning(f"No files to analyze: {e}")
+		return render_template(
+			template,
+			model=model,
+			app_num=app_num,
+			issues=None,
+			error=str(e),
+			full_scan=full_scan,
+			tool_status={},
+			tool_output_details={}
+		)
+	except Exception as e:
+		logging.error(f"Security analysis failed: {e}")
+		return render_template(
+			template,
+			model=model,
+			app_num=app_num,
+			issues=None,
+			error=f"Security analysis failed: {str(e)}",
+			full_scan=full_scan,
+			tool_status={},
+			tool_output_details={}
+		)
 
 
 
@@ -578,6 +579,50 @@ def register_routes(app: Flask, docker_manager: DockerManager) -> None:
 			no_issue_message="No security issues found in the codebase."
 		)
 
+	@app.route("/performance/<string:model>/<int:app_num>", methods=['GET', 'POST'])
+	def performance_test(model: str, app_num: int):
+		tester = PerformanceTester(AppConfig.from_env().BASE_DIR)
+		
+		if request.method == 'POST':
+			# Get test parameters from request
+			data = request.get_json()
+			num_users = int(data.get('num_users', 10))
+			duration = int(data.get('duration', 30))
+			spawn_rate = int(data.get('spawn_rate', 1))
+			
+			# Run test
+			result, info = tester.run_test(
+				model=model,
+				app_num=app_num,
+				num_users=num_users,
+				duration=duration,
+				spawn_rate=spawn_rate
+			)
+			
+			if result:
+				return jsonify({
+					"status": "success",
+					"data": {
+						"total_requests": result.total_requests,
+						"avg_response_time": result.avg_response_time,
+						"requests_per_sec": result.requests_per_sec,
+						"duration": result.duration,
+						"start_time": result.start_time,
+						"end_time": result.end_time
+					}
+				})
+			else:
+				return jsonify({
+					"status": "error",
+					"error": info.get('error', 'Unknown error')
+				}), 500
+		
+		# GET request - show the test form
+		return render_template(
+			'performance_test.html',
+			model=model,
+			app_num=app_num
+		)
 
 
 	@app.route("/frontend-security/<string:model>/<int:app_num>")

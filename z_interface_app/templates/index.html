@@ -13,8 +13,7 @@
         Refresh All
       </button>
 
-      <button id="toggleAutorefresh" class="action-btn" 
-              data-enabled="{{ 'true' if autorefresh_enabled else 'false' }}">
+      <button id="toggleAutorefresh" class="action-btn" data-enabled="{{ 'true' if autorefresh_enabled else 'false' }}">
         <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -26,8 +25,7 @@
 
       <div class="border-l border-gray-400 h-4 mx-2"></div>
 
-      <input type="text" id="searchApps" class="h-6 px-2" style="width: 200px"
-        placeholder="Search apps..." />
+      <input type="text" id="searchApps" class="h-6 px-2" style="width: 200px" placeholder="Search apps..." />
 
       <select id="filterModel" class="h-6">
         <option value="">All Models</option>
@@ -52,10 +50,13 @@
     </div>
     <div class="p-2">
       <div class="grid grid-cols-4 gap-2">
-        {% set running_apps = apps|selectattr('backend_status.running','true')|selectattr('frontend_status.running','true')|list %}
-        {% set partial_apps = (apps|selectattr('backend_status.running','true')|rejectattr('frontend_status.running','true')|list) + 
-                            (apps|rejectattr('backend_status.running','true')|selectattr('frontend_status.running','true')|list) %}
-        {% set stopped_apps = apps|rejectattr('backend_status.running','true')|rejectattr('frontend_status.running','true')|list %}
+        {% set running_apps =
+        apps|selectattr('backend_status.running','true')|selectattr('frontend_status.running','true')|list %}
+        {% set partial_apps =
+        (apps|selectattr('backend_status.running','true')|rejectattr('frontend_status.running','true')|list) +
+        (apps|rejectattr('backend_status.running','true')|selectattr('frontend_status.running','true')|list) %}
+        {% set stopped_apps =
+        apps|rejectattr('backend_status.running','true')|rejectattr('frontend_status.running','true')|list %}
 
         <div class="border border-gray-300 p-2">
           <div class="text-xs text-gray-600">Total Apps</div>
@@ -98,8 +99,8 @@
               bg-red-100 text-red-800 border-red-700
             {% endif %}">
             {{ "Running" if app.backend_status.running and app.frontend_status.running
-               else "Partial" if app.backend_status.running or app.frontend_status.running
-               else "Stopped" }}
+            else "Partial" if app.backend_status.running or app.frontend_status.running
+            else "Stopped" }}
           </span>
         </div>
 
@@ -109,14 +110,14 @@
             <div>
               <div class="text-gray-600">Backend Status:</div>
               <div class="font-medium {{ 'text-green-700' if app.backend_status.running else 'text-red-700' }}"
-                   data-status="backend">
+                data-status="backend">
                 {{ "Running" if app.backend_status.running else "Stopped" }}
               </div>
             </div>
             <div>
               <div class="text-gray-600">Frontend Status:</div>
               <div class="font-medium {{ 'text-green-700' if app.frontend_status.running else 'text-red-700' }}"
-                   data-status="frontend">
+                data-status="frontend">
                 {{ "Running" if app.frontend_status.running else "Stopped" }}
               </div>
             </div>
@@ -136,37 +137,40 @@
 
           <!-- Action Buttons -->
           <div class="grid grid-cols-4 gap-1">
-            <button class="action-btn" title="Start"
-                    data-action="start" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
+            <button class="action-btn" title="Start" data-action="start" data-model="{{ app.model }}"
+              data-app-num="{{ app.app_num }}">
               Start
             </button>
-            <button class="action-btn" title="Stop"
-                    data-action="stop" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
+            <button class="action-btn" title="Stop" data-action="stop" data-model="{{ app.model }}"
+              data-app-num="{{ app.app_num }}">
               Stop
             </button>
-            <button class="action-btn" title="Reload"
-                    data-action="reload" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
+            <button class="action-btn" title="Reload" data-action="reload" data-model="{{ app.model }}"
+              data-app-num="{{ app.app_num }}">
               Reload
             </button>
-            <button class="action-btn" title="Status"
-                    data-action="status" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
+            <button class="action-btn" title="Status" data-action="status" data-model="{{ app.model }}"
+              data-app-num="{{ app.app_num }}">
               Status
             </button>
-            <button class="action-btn" title="Rebuild"
-                    data-action="rebuild" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">
+            <button class="action-btn" title="Rebuild" data-action="rebuild" data-model="{{ app.model }}"
+              data-app-num="{{ app.app_num }}">
               Rebuild
             </button>
-            <a href="{{ url_for('view_logs', model=app.model, app_num=app.app_num) }}"
-               class="action-btn text-center">
+            <a href="{{ url_for('view_logs', model=app.model, app_num=app.app_num) }}" class="action-btn text-center">
               Logs
             </a>
             <a href="{{ url_for('security_analysis', model=app.model, app_num=app.app_num) }}"
-               class="action-btn text-center" title="Backend Security Analysis">
+              class="action-btn text-center" title="Backend Security Analysis">
               Back Sec
             </a>
             <a href="{{ url_for('frontend_security_analysis', model=app.model, app_num=app.app_num) }}"
-               class="action-btn text-center" title="Frontend Security Analysis">
+              class="action-btn text-center" title="Frontend Security Analysis">
               Front Sec
+            </a>
+            <a href="{{ url_for('performance_test', model=app.model, app_num=app.app_num) }}"
+              class="action-btn text-center" title="Performance">
+              Performance
             </a>
           </div>
         </div>

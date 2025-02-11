@@ -1,216 +1,182 @@
 """
-performance_analysis.py - Performance and Usability Analysis Module
-
-Integrates multiple testing tools:
-- Locust for load testing
-- Lighthouse for frontend performance
-- Custom response time monitoring
-- User interaction tracking
+Simple performance testing module using Locust.
+Tests basic HTTP endpoints for load testing.
 """
 
 import json
+import logging
 import os
 import subprocess
-import logging
-import statistics
+import tempfile
 from dataclasses import dataclass
-from pathlib import Path
-from typing import List, Dict, Optional, Tuple
 from datetime import datetime
-import requests
-from locust import HttpUser, task, between
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @dataclass
-class PerformanceMetric:
-    name: str
-    value: float
-    unit: str
-    threshold: float
-    status: str  # 'good', 'warning', 'critical'
-    timestamp: str
-    context: Dict[str, any]
-
-@dataclass
-class PerformanceReport:
+class PerformanceResult:
+    """Store performance test results"""
     total_requests: int
+    total_failures: int
     avg_response_time: float
-    peak_response_time: float
-    requests_per_second: float
-    failure_rate: float
-    metrics: List[PerformanceMetric]
-    timestamp: str
+    median_response_time: float
+    requests_per_sec: float
+    start_time: str
+    end_time: str
+    duration: int
 
-class PerformanceAnalyzer:
+class PerformanceTester:
+    """Simple performance testing using Locust"""
+    
     def __init__(self, base_path: Path):
         self.base_path = base_path
-        self.logger = logging.getLogger(__name__)
-        self.thresholds = {
-            'response_time': 200,  # ms
-            'load_time': 3000,    # ms
-            'cpu_usage': 80,      # percent
-            'memory_usage': 80,   # percent
-        }
+        self.stats_file = None
+        self.locustfile = None
 
-    def run_locust_test(self, target_url: str, users: int = 10, spawn_rate: int = 1, 
-                       duration: int = 60) -> Tuple[PerformanceReport, str]:
-        """Run a Locust load test against the target URL."""
+    def _create_locustfile(self, host: str) -> str:
+        """Create a temporary Locustfile with basic tests"""
+        content = f'''
+from locust import HttpUser, task, between
+
+class TestUser(HttpUser):
+    wait_time = between(1, 3)
+    host = "{host}"
+    
+    @task
+    def test_api_health(self):
+        self.client.get("/api/health")
+        
+    @task
+    def test_api_status(self):
+        self.client.get("/api/status")
+'''
+        # Create temporary file
+        fd, path = tempfile.mkstemp(suffix='.py')
+        with os.fdopen(fd, 'w') as f:
+            f.write(content)
+        return path
+
+    def run_test(
+        self,
+        model: str,
+        app_num: int,
+        num_users: int = 10,
+        duration: int = 30,
+        spawn_rate: int = 1
+    ) -> Tuple[Optional[PerformanceResult], Dict[str, str]]:
+        """Run a performance test"""
         try:
-            # Define Locust user behavior
-            class WebsiteUser(HttpUser):
-                wait_time = between(1, 2)
-                host = target_url
+            # Calculate backend port (simplified)
+            base_port = 5001
+            backend_port = base_port + app_num
+            host = f"http://localhost:{backend_port}"
 
-                @task
-                def index_page(self):
-                    self.client.get("/")
+            # Create temporary files
+            self.locustfile = self._create_locustfile(host)
+            fd, self.stats_file = tempfile.mkstemp(suffix='.json')
+            os.close(fd)
 
-            # Run Locust programmatically
-            command = [
+            # Build locust command
+            cmd = [
                 "locust",
-                "-f", "locustfile.py",  # Create this file dynamically
+                "-f", self.locustfile,
                 "--headless",
-                f"--users={users}",
-                f"--spawn-rate={spawn_rate}",
-                f"--run-time={duration}s",
-                "--host", target_url,
-                "--json"
+                "--host", host,
+                "--users", str(num_users),
+                "--spawn-rate", str(spawn_rate),
+                "--run-time", f"{duration}s",
+                "--json", self.stats_file
             ]
 
-            result = subprocess.run(command, capture_output=True, text=True)
-            stats = json.loads(result.stdout)
+            # Run the test
+            start_time = datetime.now()
+            process = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=duration + 10
+            )
+            end_time = datetime.now()
 
-            # Process results
-            metrics = []
-            for endpoint in stats['stats']:
-                metrics.append(
-                    PerformanceMetric(
-                        name=f"Response Time ({endpoint['name']})",
-                        value=endpoint['avg_response_time'],
-                        unit='ms',
-                        threshold=self.thresholds['response_time'],
-                        status=self._get_status(endpoint['avg_response_time'], 
-                                              self.thresholds['response_time']),
-                        timestamp=datetime.now().isoformat(),
-                        context={'endpoint': endpoint['name']}
-                    )
-                )
+            # Check if test was successful
+            if process.returncode != 0:
+                logger.error(f"Locust test failed: {process.stderr}")
+                return None, {
+                    "status": "failed",
+                    "error": process.stderr
+                }
 
-            report = PerformanceReport(
-                total_requests=sum(e['num_requests'] for e in stats['stats']),
-                avg_response_time=statistics.mean(e['avg_response_time'] 
-                                               for e in stats['stats']),
-                peak_response_time=max(e['max_response_time'] for e in stats['stats']),
-                requests_per_second=sum(e['current_rps'] for e in stats['stats']),
-                failure_rate=sum(e['failure_count'] for e in stats['stats']) / 
-                            sum(e['num_requests'] for e in stats['stats']) * 100,
-                metrics=metrics,
-                timestamp=datetime.now().isoformat()
+            # Parse results
+            with open(self.stats_file, 'r') as f:
+                stats = json.load(f)
+
+            # Create result object
+            result = PerformanceResult(
+                total_requests=stats.get("total_requests", 0),
+                total_failures=stats.get("total_failures", 0),
+                avg_response_time=stats.get("avg_response_time", 0),
+                median_response_time=stats.get("median_response_time", 0),
+                requests_per_sec=stats.get("current_rps", 0),
+                start_time=start_time.strftime("%Y-%m-%d %H:%M:%S"),
+                end_time=end_time.strftime("%Y-%m-%d %H:%M:%S"),
+                duration=duration
             )
 
-            return report, result.stdout
-
-        except Exception as e:
-            self.logger.error(f"Locust test failed: {e}")
-            return None, str(e)
-
-    def run_lighthouse_audit(self, url: str) -> Tuple[Dict[str, any], str]:
-        """Run Lighthouse audit for frontend performance."""
-        try:
-            command = [
-                "lighthouse",
-                url,
-                "--output=json",
-                "--chrome-flags=--headless"
-            ]
-            result = subprocess.run(command, capture_output=True, text=True)
-            
-            if result.returncode != 0:
-                raise Exception(f"Lighthouse failed: {result.stderr}")
-
-            audit_data = json.loads(result.stdout)
-            metrics = {
-                'performance': audit_data['categories']['performance']['score'] * 100,
-                'accessibility': audit_data['categories']['accessibility']['score'] * 100,
-                'best-practices': audit_data['categories']['best-practices']['score'] * 100,
-                'seo': audit_data['categories']['seo']['score'] * 100,
+            return result, {
+                "status": "success",
+                "output": process.stdout
             }
 
-            return metrics, result.stdout
-
-        except Exception as e:
-            self.logger.error(f"Lighthouse audit failed: {e}")
-            return None, str(e)
-
-    def monitor_system_resources(self, duration: int = 60) -> Dict[str, float]:
-        """Monitor system resource usage."""
-        try:
-            import psutil
-            cpu_usage = []
-            memory_usage = []
-
-            for _ in range(duration):
-                cpu_usage.append(psutil.cpu_percent())
-                memory_usage.append(psutil.virtual_memory().percent)
-
-            return {
-                'avg_cpu': statistics.mean(cpu_usage),
-                'max_cpu': max(cpu_usage),
-                'avg_memory': statistics.mean(memory_usage),
-                'max_memory': max(memory_usage)
+        except subprocess.TimeoutExpired:
+            logger.error("Performance test timed out")
+            return None, {
+                "status": "timeout",
+                "error": "Test timed out"
             }
-
         except Exception as e:
-            self.logger.error(f"Resource monitoring failed: {e}")
-            return None
+            logger.error(f"Performance test error: {str(e)}")
+            return None, {
+                "status": "error",
+                "error": str(e)
+            }
+        finally:
+            # Cleanup temporary files
+            self._cleanup()
 
-    def analyze_response_times(self, url: str, requests: int = 100) -> Dict[str, float]:
-        """Analyze response times for a given URL."""
-        times = []
-        errors = 0
+    def _cleanup(self):
+        """Clean up temporary files"""
+        try:
+            if self.stats_file and os.path.exists(self.stats_file):
+                os.unlink(self.stats_file)
+            if self.locustfile and os.path.exists(self.locustfile):
+                os.unlink(self.locustfile)
+        except Exception as e:
+            logger.warning(f"Cleanup failed: {str(e)}")
 
-        for _ in range(requests):
-            try:
-                start = datetime.now()
-                response = requests.get(url)
-                duration = (datetime.now() - start).total_seconds() * 1000
-                times.append(duration)
-                if response.status_code >= 400:
-                    errors += 1
-            except Exception:
-                errors += 1
+def main():
+    """Test function"""
+    base_path = Path(__file__).parent
+    tester = PerformanceTester(base_path)
+    
+    result, info = tester.run_test(
+        model="test",
+        app_num=1,
+        num_users=5,
+        duration=10,
+        spawn_rate=1
+    )
+    
+    if result:
+        print(f"Test completed successfully:")
+        print(f"Total requests: {result.total_requests}")
+        print(f"Average response time: {result.avg_response_time:.2f}ms")
+        print(f"Requests per second: {result.requests_per_sec:.2f}")
+    else:
+        print(f"Test failed: {info.get('error', 'Unknown error')}")
 
-        if not times:
-            return None
-
-        return {
-            'avg_response_time': statistics.mean(times),
-            'median_response_time': statistics.median(times),
-            'p95_response_time': statistics.quantiles(times, n=20)[18],
-            'min_response_time': min(times),
-            'max_response_time': max(times),
-            'error_rate': (errors / requests) * 100
-        }
-
-    def _get_status(self, value: float, threshold: float) -> str:
-        """Determine status based on value and threshold."""
-        if value <= threshold * 0.7:
-            return 'good'
-        elif value <= threshold * 0.9:
-            return 'warning'
-        return 'critical'
-
-    def get_analysis_summary(self, report: PerformanceReport) -> dict:
-        """Generate a summary of performance analysis results."""
-        return {
-            'total_requests': report.total_requests,
-            'avg_response_time': round(report.avg_response_time, 2),
-            'peak_response_time': round(report.peak_response_time, 2),
-            'requests_per_second': round(report.requests_per_second, 2),
-            'failure_rate': round(report.failure_rate, 2),
-            'metrics_summary': {
-                'good': len([m for m in report.metrics if m.status == 'good']),
-                'warning': len([m for m in report.metrics if m.status == 'warning']),
-                'critical': len([m for m in report.metrics if m.status == 'critical'])
-            },
-            'timestamp': report.timestamp
-        }
+if __name__ == "__main__":
+    main()
