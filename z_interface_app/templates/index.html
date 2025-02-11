@@ -176,6 +176,10 @@
               class="action-btn text-center" title="Codacy Analysis">
               Codacy
             </a>
+            <a href="{{ url_for('zap_scan', model=app.model, app_num=app.app_num) }}" class="action-btn text-center"
+              title="ZAP Security Scan">
+              ZAP Scan
+            </a>
           </div>
         </div>
       </div>

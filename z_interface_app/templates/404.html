@@ -1,16 +1,178 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Not Found</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h1>404 - Page Not Found</h1>
-        <p>Sorry, the page you are looking for does not exist.</p>
-        <a href="{{ url_for('index') }}">Go back to the homepage</a>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex min-h-screen bg-gray-100">
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <!-- Top Bar -->
+    <div class="bg-gray-200 border-b border-gray-400 p-1">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <a href="{{ url_for('index') }}" class="action-btn h-6 px-2 text-xs">Back</a>
+        </div>
+      </div>
     </div>
-</body>
-</html>
+
+    <!-- Main Error Section -->
+    <div class="p-2 flex-1 overflow-auto">
+      <div class="border border-gray-400 bg-white p-4 text-center">
+        <div class="inline-block border border-gray-700 bg-gray-50 p-4 max-w-lg mx-auto">
+          <!-- ASCII Art Container -->
+          <div class="glitch-container mb-4">
+            <pre class="glitch-text text-xs leading-none font-mono" aria-hidden="true">
+██╗  ██╗ ██████╗ ██╗  ██╗
+██║  ██║██╔═████╗██║  ██║
+███████║██║██╔██║███████║
+╚════██║████╔╝██║╚════██║
+     ██║╚██████╔╝     ██║
+     ╚═╝ ╚═════╝      ╚═╝</pre>
+          </div>
+          <h1 class="text-lg font-bold text-gray-900 mb-2">Page Not Found</h1>
+          <p class="text-xs text-gray-600 mb-4">The page you are looking for could not be found.</p>
+          <div class="flex justify-center space-x-2">
+            <a href="{{ url_for('index') }}" class="action-btn h-6 px-2 text-xs">Return to Dashboard</a>
+            <button onclick="window.location.reload()" class="action-btn h-6 px-2 text-xs">Retry</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Sidebar -->
+  <aside class="w-64 bg-gray-200 border-l border-gray-400 flex flex-col">
+    <div class="p-2 space-y-2 flex-1 overflow-auto">
+      <!-- Info Card -->
+      <div class="border border-gray-400 bg-white">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+          <h2 class="font-bold text-xs">Error Info</h2>
+        </div>
+        <div class="p-2 text-xs space-y-1">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Status:</span>
+            <span class="font-bold">404 Not Found</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Time:</span>
+            <span class="font-bold" id="currentTime"></span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Path:</span>
+            <span class="font-bold" id="currentPath"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="border border-gray-400 bg-white">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+          <h2 class="font-bold text-xs">Quick Actions</h2>
+        </div>
+        <div class="p-2 space-y-1">
+          <button onclick="window.history.back()" class="action-btn h-6 px-2 text-xs w-full">
+            Go Back
+          </button>
+          <button onclick="window.location.href='/'" class="action-btn h-6 px-2 text-xs w-full">
+            Go to Homepage
+          </button>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<style>
+@keyframes glitch-anim-1 {
+  0% { clip-path: inset(40% 0 61% 0); transform: translate(-2px); }
+  20% { clip-path: inset(92% 0 1% 0); transform: translate(2px); }
+  40% { clip-path: inset(43% 0 1% 0); transform: translate(3px); }
+  60% { clip-path: inset(25% 0 58% 0); transform: translate(-1px); }
+  80% { clip-path: inset(54% 0 7% 0); transform: translate(-3px); }
+  100% { clip-path: inset(58% 0 43% 0); transform: translate(2px); }
+}
+
+@keyframes glitch-anim-2 {
+  0% { opacity: 1; transform: translate(0); }
+  20% { opacity: 0.8; transform: translate(-2px, 2px); }
+  40% { opacity: 0.9; transform: translate(2px, -2px); }
+  60% { opacity: 0.7; transform: translate(-1px); }
+  80% { opacity: 0.9; transform: translate(1px, 1px); }
+  100% { opacity: 1; transform: translate(0); }
+}
+
+.glitch-container {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch-text {
+  position: relative;
+  color: #1a1a1a;
+  text-shadow: 0.5px 0.5px #666;
+  animation: glitch-anim-2 3s infinite linear alternate-reverse;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch-text::before {
+  left: 1px;
+  text-shadow: -1px 0 #ff0000;
+  animation: glitch-anim-1 2s infinite linear alternate-reverse;
+}
+
+.glitch-text::after {
+  left: -1px;
+  text-shadow: 1px 0 #0000ff;
+  animation: glitch-anim-1 3s infinite linear alternate-reverse;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set current time
+    const timeElement = document.getElementById('currentTime');
+    if (timeElement) {
+        timeElement.textContent = new Date().toLocaleTimeString();
+    }
+    
+    // Set current path
+    const pathElement = document.getElementById('currentPath');
+    if (pathElement) {
+        pathElement.textContent = window.location.pathname;
+    }
+
+    // Set up glitch text
+    const glitchText = document.querySelector('.glitch-text');
+    if (glitchText) {
+        const text = glitchText.innerText;
+        glitchText.setAttribute('data-text', text);
+        
+        // Random glitch effect
+        setInterval(() => {
+            if (Math.random() < 0.1) { // 10% chance of glitch
+                const chars = '█▓▒░█▓▒░';
+                let glitched = text.split('\n').map(line => {
+                    if (Math.random() < 0.3) { // 30% chance to glitch each line
+                        return line.split('').map(char => 
+                            Math.random() < 0.3 ? chars[Math.floor(Math.random() * chars.length)] : char
+                        ).join('');
+                    }
+                    return line;
+                }).join('\n');
+                glitchText.innerText = glitched;
+                setTimeout(() => {
+                    glitchText.innerText = text;
+                }, 100);
+            }
+        }, 2000);
+    }
+});
+</script>
+{% endblock %}

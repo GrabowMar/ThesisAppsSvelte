@@ -39,7 +39,7 @@ from security_analysis import SecurityAnalyzer
 from dataclasses import asdict
 from performance_analysis import PerformanceTester
 from codacy_analysis import CodacyAnalyzer
-# from zap_scanner import ZAPScanner
+from zap_scanner import ZAPScanner
 
 # -------------------------------------------------------------------
 # Configuration
@@ -115,13 +115,16 @@ class StatusEndpointFilter(logging.Filter):
 
 
 class LoggingService:
-	@staticmethod
-	def configure(log_level: str) -> None:
-		logging.basicConfig(
-			level=getattr(logging, log_level),
-			format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-		)
-		logging.getLogger("werkzeug").addFilter(StatusEndpointFilter())
+    @staticmethod
+    def configure(log_level: str) -> None:
+        logging.basicConfig(
+            level=getattr(logging, log_level),
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        )
+        # Configure specific loggers
+        logging.getLogger("werkzeug").addFilter(StatusEndpointFilter())
+        logging.getLogger("zap_scanner").setLevel(logging.INFO)
+        logging.getLogger("owasp_zap").setLevel(logging.WARNING)  # Reduce ZAP API noise
 
 
 # -------------------------------------------------------------------
@@ -517,9 +520,11 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
 	logging.info(f"Initializing analyzers with base path: {base_path}")
 	
 	# Initialize all analyzers
+		# Initialize all analyzers
 	app.security_analyzer = SecurityAnalyzer(base_path)
 	app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
 	app.codacy_analyzer = CodacyAnalyzer(base_path)  # Initialize Codacy analyzer
+	app.zap_scanner = ZAPScanner(base_path)  # Initialize ZAP scanner
 	
 	docker_manager = DockerManager()
 	app.wsgi_app = ProxyFix(app.wsgi_app)
@@ -565,181 +570,181 @@ def register_routes(app: Flask, docker_manager: DockerManager) -> None:
 		return jsonify(status)
 	
 
-	# @app.route("/zap/<string:model>/<int:app_num>")
-	# @error_handler
-	# def zap_scan(model: str, app_num: int):
-	# 	"""Display ZAP scan page and results"""
-	# 	try:
-	# 		# Initialize ZAP scanner
-	# 		scanner = ZAPScanner(app.config["BASE_DIR"])
+	@app.route("/zap/<string:model>/<int:app_num>")
+	@error_handler
+	def zap_scan(model: str, app_num: int):
+		"""Display ZAP scan page and results"""
+		try:
+			# Initialize ZAP scanner
+			scanner = ZAPScanner(app.config["BASE_DIR"])
 			
-	# 		# Get saved results if they exist
-	# 		results_file = app.config["BASE_DIR"] / f"{model}/app{app_num}/.zap_results.json"
-	# 		alerts = []
-	# 		error = None
+			# Get saved results if they exist
+			results_file = app.config["BASE_DIR"] / f"{model}/app{app_num}/.zap_results.json"
+			alerts = []
+			error = None
 			
-	# 		if results_file.exists():
-	# 			try:
-	# 				with open(results_file) as f:
-	# 					data = json.load(f)
-	# 					alerts = data.get("alerts", [])
-	# 			except Exception as e:
-	# 				error = f"Failed to load previous results: {e}"
+			if results_file.exists():
+				try:
+					with open(results_file) as f:
+						data = json.load(f)
+						alerts = data.get("alerts", [])
+				except Exception as e:
+					error = f"Failed to load previous results: {e}"
 			
-	# 		return render_template(
-	# 			"zap_scan.html",
-	# 			model=model,
-	# 			app_num=app_num,
-	# 			alerts=alerts,
-	# 			error=error
-	# 		)
+			return render_template(
+				"zap_scan.html",
+				model=model,
+				app_num=app_num,
+				alerts=alerts,
+				error=error
+			)
 			
-	# 	except Exception as e:
-	# 		logger.error(f"Error in ZAP scan page: {e}")
-	# 		return render_template(
-	# 			"zap_scan.html",
-	# 			model=model,
-	# 			app_num=app_num,
-	# 			alerts=[],
-	# 			error=str(e)
-	# 		)
+		except Exception as e:
+			logger.error(f"Error in ZAP scan page: {e}")
+			return render_template(
+				"zap_scan.html",
+				model=model,
+				app_num=app_num,
+				alerts=[],
+				error=str(e)
+			)
 
-	# @app.route("/api/zap/scan/<string:model>/<int:app_num>", methods=["POST"])
-	# @error_handler
-	# def start_zap_scan(model: str, app_num: int):
-	# 	"""Start a ZAP scan"""
-	# 	try:
-	# 		data = request.get_json()
+	@app.route("/api/zap/scan/<string:model>/<int:app_num>", methods=["POST"])
+	@error_handler
+	def start_zap_scan(model: str, app_num: int):
+		"""Start a ZAP scan"""
+		try:
+			data = request.get_json()
 			
-	# 		# Initialize scanner
-	# 		scanner = ZAPScanner(app.config["BASE_DIR"])
+			# Initialize scanner
+			scanner = ZAPScanner(app.config["BASE_DIR"])
 			
-	# 		# Calculate target URL
-	# 		frontend_port = 5501 + ((app_num - 1) * 2)
-	# 		target_url = f"http://localhost:{frontend_port}"
+			# Calculate target URL
+			frontend_port = 5501 + ((app_num - 1) * 2)
+			target_url = f"http://localhost:{frontend_port}"
 			
-	# 		# Store scan options in app state
-	# 		scan_id = f"{model}-{app_num}-{int(time.time())}"
-	# 		app.config["ZAP_SCANS"] = getattr(app.config, "ZAP_SCANS", {})
-	# 		app.config["ZAP_SCANS"][scan_id] = {
-	# 			"status": "Starting",
-	# 			"progress": 0,
-	# 			"scanner": scanner,
-	# 			"start_time": datetime.now().isoformat(),
-	# 			"options": data
-	# 		}
+			# Store scan options in app state
+			scan_id = f"{model}-{app_num}-{int(time.time())}"
+			app.config["ZAP_SCANS"] = getattr(app.config, "ZAP_SCANS", {})
+			app.config["ZAP_SCANS"][scan_id] = {
+				"status": "Starting",
+				"progress": 0,
+				"scanner": scanner,
+				"start_time": datetime.now().isoformat(),
+				"options": data
+			}
 			
-	# 		# Start scan in background thread
-	# 		def run_scan():
-	# 			try:
-	# 				vulnerabilities, summary = scanner.scan_target(
-	# 					target_url,
-	# 					scan_policy=data.get("scanPolicy")
-	# 				)
+			# Start scan in background thread
+			def run_scan():
+				try:
+					vulnerabilities, summary = scanner.scan_target(
+						target_url,
+						scan_policy=data.get("scanPolicy")
+					)
 					
-	# 				# Save results
-	# 				results_file = app.config["BASE_DIR"] / f"{model}/app{app_num}/.zap_results.json"
-	# 				with open(results_file, "w") as f:
-	# 					json.dump({
-	# 						"alerts": [asdict(v) for v in vulnerabilities],
-	# 						"summary": summary,
-	# 						"scan_time": datetime.now().isoformat()
-	# 					}, f, indent=2)
+					# Save results
+					results_file = app.config["BASE_DIR"] / f"{model}/app{app_num}/.zap_results.json"
+					with open(results_file, "w") as f:
+						json.dump({
+							"alerts": [asdict(v) for v in vulnerabilities],
+							"summary": summary,
+							"scan_time": datetime.now().isoformat()
+						}, f, indent=2)
 					
-	# 				# Update scan status
-	# 				app.config["ZAP_SCANS"][scan_id]["status"] = "Complete"
-	# 				app.config["ZAP_SCANS"][scan_id]["progress"] = 100
+					# Update scan status
+					app.config["ZAP_SCANS"][scan_id]["status"] = "Complete"
+					app.config["ZAP_SCANS"][scan_id]["progress"] = 100
 					
-	# 			except Exception as e:
-	# 				logger.error(f"Scan error: {e}")
-	# 				app.config["ZAP_SCANS"][scan_id]["status"] = f"Failed: {e}"
+				except Exception as e:
+					logger.error(f"Scan error: {e}")
+					app.config["ZAP_SCANS"][scan_id]["status"] = f"Failed: {e}"
 			
-	# 		import threading
-	# 		thread = threading.Thread(target=run_scan)
-	# 		thread.start()
+			import threading
+			thread = threading.Thread(target=run_scan)
+			thread.start()
 			
-	# 		return jsonify({"status": "started", "scan_id": scan_id})
+			return jsonify({"status": "started", "scan_id": scan_id})
 			
-	# 	except Exception as e:
-	# 		logger.error(f"Failed to start ZAP scan: {e}")
-	# 		return jsonify({"error": str(e)}), 500
+		except Exception as e:
+			logger.error(f"Failed to start ZAP scan: {e}")
+			return jsonify({"error": str(e)}), 500
 
-	# @app.route("/api/zap/scan/<string:model>/<int:app_num>/status")
-	# @error_handler
-	# def zap_scan_status(model: str, app_num: int):
-	# 	"""Get ZAP scan status"""
-	# 	try:
-	# 		# Find the relevant scan
-	# 		scan_id = None
-	# 		for sid, scan in app.config.get("ZAP_SCANS", {}).items():
-	# 			if sid.startswith(f"{model}-{app_num}-"):
-	# 				scan_id = sid
-	# 				break
+	@app.route("/api/zap/scan/<string:model>/<int:app_num>/status")
+	@error_handler
+	def zap_scan_status(model: str, app_num: int):
+		"""Get ZAP scan status"""
+		try:
+			# Find the relevant scan
+			scan_id = None
+			for sid, scan in app.config.get("ZAP_SCANS", {}).items():
+				if sid.startswith(f"{model}-{app_num}-"):
+					scan_id = sid
+					break
 			
-	# 		if not scan_id:
-	# 			return jsonify({
-	# 				"status": "Not Started",
-	# 				"progress": 0
-	# 			})
+			if not scan_id:
+				return jsonify({
+					"status": "Not Started",
+					"progress": 0
+				})
 			
-	# 		scan = app.config["ZAP_SCANS"][scan_id]
-	# 		scanner = scan["scanner"]
+			scan = app.config["ZAP_SCANS"][scan_id]
+			scanner = scan["scanner"]
 			
-	# 		# Get current counts from saved results
-	# 		results_file = app.config["BASE_DIR"] / f"{model}/app{app_num}/.zap_results.json"
-	# 		counts = {"high": 0, "medium": 0, "low": 0, "info": 0}
+			# Get current counts from saved results
+			results_file = app.config["BASE_DIR"] / f"{model}/app{app_num}/.zap_results.json"
+			counts = {"high": 0, "medium": 0, "low": 0, "info": 0}
 			
-	# 		if results_file.exists():
-	# 			with open(results_file) as f:
-	# 				data = json.load(f)
-	# 				for alert in data.get("alerts", []):
-	# 					risk = alert.get("risk", "").lower()
-	# 					if risk in counts:
-	# 						counts[risk] += 1
+			if results_file.exists():
+				with open(results_file) as f:
+					data = json.load(f)
+					for alert in data.get("alerts", []):
+						risk = alert.get("risk", "").lower()
+						if risk in counts:
+							counts[risk] += 1
 			
-	# 		return jsonify({
-	# 			"status": scan["status"],
-	# 			"progress": scan["progress"],
-	# 			"high_count": counts["high"],
-	# 			"medium_count": counts["medium"],
-	# 			"low_count": counts["low"],
-	# 			"info_count": counts["info"]
-	# 		})
+			return jsonify({
+				"status": scan["status"],
+				"progress": scan["progress"],
+				"high_count": counts["high"],
+				"medium_count": counts["medium"],
+				"low_count": counts["low"],
+				"info_count": counts["info"]
+			})
 			
-	# 	except Exception as e:
-	# 		logger.error(f"Failed to get ZAP status: {e}")
-	# 		return jsonify({"error": str(e)}), 500
+		except Exception as e:
+			logger.error(f"Failed to get ZAP status: {e}")
+			return jsonify({"error": str(e)}), 500
 
-	# @app.route("/api/zap/scan/<string:model>/<int:app_num>/stop", methods=["POST"])
-	# @error_handler
-	# def stop_zap_scan(model: str, app_num: int):
-	# 	"""Stop a running ZAP scan"""
-	# 	try:
-	# 		# Find the relevant scan
-	# 		scan_id = None
-	# 		for sid, scan in app.config.get("ZAP_SCANS", {}).items():
-	# 			if sid.startswith(f"{model}-{app_num}-"):
-	# 				scan_id = sid
-	# 				break
+	@app.route("/api/zap/scan/<string:model>/<int:app_num>/stop", methods=["POST"])
+	@error_handler
+	def stop_zap_scan(model: str, app_num: int):
+		"""Stop a running ZAP scan"""
+		try:
+			# Find the relevant scan
+			scan_id = None
+			for sid, scan in app.config.get("ZAP_SCANS", {}).items():
+				if sid.startswith(f"{model}-{app_num}-"):
+					scan_id = sid
+					break
 			
-	# 		if not scan_id:
-	# 			return jsonify({"error": "No running scan found"}), 404
+			if not scan_id:
+				return jsonify({"error": "No running scan found"}), 404
 			
-	# 		scan = app.config["ZAP_SCANS"][scan_id]
-	# 		scanner = scan["scanner"]
+			scan = app.config["ZAP_SCANS"][scan_id]
+			scanner = scan["scanner"]
 			
-	# 		# Stop the scanner
-	# 		scanner._stop_zap_daemon()
+			# Stop the scanner
+			scanner._stop_zap_daemon()
 			
-	# 		# Update status
-	# 		scan["status"] = "Stopped"
-	# 		scan["progress"] = 0
+			# Update status
+			scan["status"] = "Stopped"
+			scan["progress"] = 0
 			
-	# 		return jsonify({"status": "stopped"})
+			return jsonify({"status": "stopped"})
 			
-	# 	except Exception as e:
-	# 		logger.error(f"Failed to stop ZAP scan: {e}")
-	# 		return jsonify({"error": str(e)}), 500
+		except Exception as e:
+			logger.error(f"Failed to stop ZAP scan: {e}")
+			return jsonify({"error": str(e)}), 500
 
 	@app.route("/logs/<string:model>/<int:app_num>")
 	@error_handler
@@ -1093,23 +1098,37 @@ def register_error_handlers(app: Flask) -> None:
 
 
 def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
-	@app.before_request
-	def before():
-		# Occasionally clean up containers.
-		if random.random() < 0.01:
-			docker_manager.cleanup_containers()
+    @app.before_request
+    def before():
+        # Occasionally clean up containers and ZAP processes
+        if random.random() < 0.01:
+            docker_manager.cleanup_containers()
+            # Clean up any stale ZAP processes
+            if hasattr(app, 'zap_scanner'):
+                for scan_id, scan in app.config.get("ZAP_SCANS", {}).items():
+                    if scan["status"] not in ["Running", "Starting"]:
+                        scanner = scan.get("scanner")
+                        if scanner:
+                            scanner._stop_zap_daemon()
 
-	@app.after_request
-	def after(response):
-		response.headers.update(
-			{
-				"X-Content-Type-Options": "nosniff",
-				"X-Frame-Options": "SAMEORIGIN",
-				"X-XSS-Protection": "1; mode=block",
-				"Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-			}
-		)
-		return response
+    @app.after_request
+    def after(response):
+        response.headers.update({
+            "X-Content-Type-Options": "nosniff",
+            "X-Frame-Options": "SAMEORIGIN",
+            "X-XSS-Protection": "1; mode=block",
+            "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+        })
+        return response
+
+    @app.teardown_appcontext
+    def teardown(exception=None):
+        # Ensure ZAP processes are cleaned up
+        if hasattr(app, 'zap_scanner'):
+            for scan_id, scan in app.config.get("ZAP_SCANS", {}).items():
+                scanner = scan.get("scanner")
+                if scanner:
+                    scanner._stop_zap_daemon()
 
 
 # -------------------------------------------------------------------
@@ -1119,6 +1138,8 @@ if __name__ == "__main__":
 	config = AppConfig.from_env()
 	LoggingService.configure(config.LOG_LEVEL)
 	logger = logging.getLogger(__name__)
+
+	
 
 	try:
 		app = create_app(config)
