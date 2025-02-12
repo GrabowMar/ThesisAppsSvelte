@@ -40,7 +40,8 @@ from dataclasses import asdict
 from performance_analysis import PerformanceTester
 from codacy_analysis import CodacyAnalyzer
 from zap_scanner import ZAPScanner
-from openai_analysis import OpenAIAnalyzer
+from gpt4all_analysis import GPT4AllAnalyzer, get_analysis_summary
+
 # -------------------------------------------------------------------
 # Configuration
 # -------------------------------------------------------------------
@@ -115,16 +116,16 @@ class StatusEndpointFilter(logging.Filter):
 
 
 class LoggingService:
-    @staticmethod
-    def configure(log_level: str) -> None:
-        logging.basicConfig(
-            level=getattr(logging, log_level),
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        )
-        # Configure specific loggers
-        logging.getLogger("werkzeug").addFilter(StatusEndpointFilter())
-        logging.getLogger("zap_scanner").setLevel(logging.INFO)
-        logging.getLogger("owasp_zap").setLevel(logging.WARNING)  # Reduce ZAP API noise
+	@staticmethod
+	def configure(log_level: str) -> None:
+		logging.basicConfig(
+			level=getattr(logging, log_level),
+			format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+		)
+		# Configure specific loggers
+		logging.getLogger("werkzeug").addFilter(StatusEndpointFilter())
+		logging.getLogger("zap_scanner").setLevel(logging.INFO)
+		logging.getLogger("owasp_zap").setLevel(logging.WARNING)  # Reduce ZAP API noise
 
 
 # -------------------------------------------------------------------
@@ -520,12 +521,13 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
 	logging.info(f"Initializing analyzers with base path: {base_path}")
 	
 	# Initialize all analyzers
-		# Initialize all analyzers
 	app.security_analyzer = SecurityAnalyzer(base_path)
 	app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
-	app.codacy_analyzer = CodacyAnalyzer(base_path)  # Initialize Codacy analyzer
-	app.zap_scanner = ZAPScanner(base_path)  # Initialize ZAP scanner
-	app.openai_analyzer = OpenAIAnalyzer(base_path)
+	app.codacy_analyzer = CodacyAnalyzer(base_path)
+	app.zap_scanner = ZAPScanner(base_path)
+	app.json_encoder = CustomJSONEncoder
+
+	
 	docker_manager = DockerManager()
 	app.wsgi_app = ProxyFix(app.wsgi_app)
 
@@ -533,19 +535,13 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
 	register_error_handlers(app)
 	register_request_hooks(app, docker_manager)
 
-	# Initialize the analyzer
-	analyzer = OpenAIAnalyzer(base_path)
-
-	# Analyze an app
-	issues, summary = asyncio.run(analyzer.analyze_app(
-		model="ChatGPT4o",
-		app_num=1,
-		analysis_type="security"
-	))
-
-	# Get analysis summary
-	summary = analyzer.get_analysis_summary(issues)
 	return app
+
+class CustomJSONEncoder(json.JSONEncoder):
+	def default(self, obj):
+		if hasattr(obj, '__dict__'):
+			return obj.__dict__
+		return super().default(obj)
 
 
 def register_routes(app: Flask, docker_manager: DockerManager) -> None:
@@ -1087,37 +1083,103 @@ def register_routes(app: Flask, docker_manager: DockerManager) -> None:
 		healthy, message = verify_container_health(docker_manager, model, app_num)
 		return jsonify({"healthy": healthy, "message": message})
 	
-	@app.route("/api/analyze-openai/<string:model>/<int:app_num>")
-	async def analyze_openai(model: str, app_num: int):
-		issues, summary = await app.openai_analyzer.analyze_app(model, app_num)
-		return jsonify({
-			"issues": [asdict(issue) for issue in issues],
-			"summary": summary
-		})
-	
-	@app.route("/openai-analysis/<string:model>/<int:app_num>")
+
+
+
+	@app.route("/api/analyze-gpt4all/<string:analysis_type>", methods=['POST'])
 	@error_handler
-	def openai_analysis(model: str, app_num: int):
+	def analyze_gpt4all(analysis_type: str):
+		"""API endpoint for GPT4All analysis with Phi-3 Mini model"""
 		try:
-			analyzer = app.openai_analyzer
-			issues, summary = asyncio.run(analyzer.analyze_app(model, app_num))
+			data = request.get_json()
+			directory = Path(data.get('directory', app.config["BASE_DIR"]))
+			file_patterns = data.get('file_patterns', ["*.py", "*.js", "*.ts", "*.svelte"])
+
+			analyzer = GPT4AllAnalyzer(directory)
+			
+			# Run async function in sync context
+			issues, summary = asyncio.run(analyzer.analyze_directory(
+				directory=directory,
+				file_patterns=file_patterns,
+				analysis_type=analysis_type
+			))
+			
+			# Ensure summary has required fields
+			if not isinstance(summary, dict):
+				summary = get_analysis_summary(issues)
+
+			return jsonify({
+				"issues": [dataclasses.asdict(issue) for issue in issues],
+				"summary": summary
+			})
+		except Exception as e:
+			logger.error(f"GPT4All analysis failed: {e}")
+			return jsonify({"error": str(e)}), 500
+
+	@app.route("/gpt4all-analysis")
+	@error_handler
+	def gpt4all_analysis():
+		"""Page for displaying GPT4All analysis results"""
+		try:
+			model = request.args.get('model')
+			app_num = request.args.get('app_num')
+			analysis_type = request.args.get('type', 'security')
+			
+			if not model or not app_num:
+				raise ValueError("Model and app number are required")
+				
+			# Construct app-specific directory path
+			directory = app.config["BASE_DIR"] / f"{model}/app{app_num}"
+			if not directory.exists():
+				raise ValueError(f"Directory not found: {directory}")
+				
+			analyzer = GPT4AllAnalyzer(directory)
+			issues, summary = asyncio.run(analyzer.analyze_directory(
+				directory=directory,
+				analysis_type=analysis_type
+			))
+			
 			return render_template(
-				"openai_analysis.html",
+				"gpt4all_analysis.html",
 				model=model,
 				app_num=app_num,
+				directory=str(directory),
+				analysis_type=analysis_type,
 				issues=issues,
 				summary=summary,
+				model_info={
+					"name": "Phi-3 Mini Instruct",
+					"ram_required": "4 GB",
+					"parameters": "3 billion",
+					"type": "phi"
+				},
 				error=None
 			)
 		except Exception as e:
+			logger.error(f"GPT4All analysis failed: {e}")
 			return render_template(
-				"openai_analysis.html",
-				model=model,
-				app_num=app_num,
+				"gpt4all_analysis.html",
+				model=model if 'model' in locals() else None,
+				app_num=app_num if 'app_num' in locals() else None,
+				directory=str(directory) if 'directory' in locals() else "",
+				analysis_type=analysis_type if 'analysis_type' in locals() else "security",
 				issues=[],
-				summary=None,
+				summary={
+					"total_issues": 0,
+					"severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
+					"files_affected": 0,
+					"issue_types": {},
+					"scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+				},
+				model_info={
+					"name": "Phi-3 Mini Instruct",
+					"ram_required": "4 GB",
+					"parameters": "3 billion",
+					"type": "phi"
+				},
 				error=str(e)
 			)
+
 
 
 def register_error_handlers(app: Flask) -> None:
@@ -1143,37 +1205,37 @@ def register_error_handlers(app: Flask) -> None:
 
 
 def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
-    @app.before_request
-    def before():
-        # Occasionally clean up containers and ZAP processes
-        if random.random() < 0.01:
-            docker_manager.cleanup_containers()
-            # Clean up any stale ZAP processes
-            if hasattr(app, 'zap_scanner'):
-                for scan_id, scan in app.config.get("ZAP_SCANS", {}).items():
-                    if scan["status"] not in ["Running", "Starting"]:
-                        scanner = scan.get("scanner")
-                        if scanner:
-                            scanner._stop_zap_daemon()
+	@app.before_request
+	def before():
+		# Occasionally clean up containers and ZAP processes
+		if random.random() < 0.01:
+			docker_manager.cleanup_containers()
+			# Clean up any stale ZAP processes
+			if hasattr(app, 'zap_scanner'):
+				for scan_id, scan in app.config.get("ZAP_SCANS", {}).items():
+					if scan["status"] not in ["Running", "Starting"]:
+						scanner = scan.get("scanner")
+						if scanner:
+							scanner._stop_zap_daemon()
 
-    @app.after_request
-    def after(response):
-        response.headers.update({
-            "X-Content-Type-Options": "nosniff",
-            "X-Frame-Options": "SAMEORIGIN",
-            "X-XSS-Protection": "1; mode=block",
-            "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-        })
-        return response
+	@app.after_request
+	def after(response):
+		response.headers.update({
+			"X-Content-Type-Options": "nosniff",
+			"X-Frame-Options": "SAMEORIGIN",
+			"X-XSS-Protection": "1; mode=block",
+			"Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+		})
+		return response
 
-    @app.teardown_appcontext
-    def teardown(exception=None):
-        # Ensure ZAP processes are cleaned up
-        if hasattr(app, 'zap_scanner'):
-            for scan_id, scan in app.config.get("ZAP_SCANS", {}).items():
-                scanner = scan.get("scanner")
-                if scanner:
-                    scanner._stop_zap_daemon()
+	@app.teardown_appcontext
+	def teardown(exception=None):
+		# Ensure ZAP processes are cleaned up
+		if hasattr(app, 'zap_scanner'):
+			for scan_id, scan in app.config.get("ZAP_SCANS", {}).items():
+				scanner = scan.get("scanner")
+				if scanner:
+					scanner._stop_zap_daemon()
 
 
 # -------------------------------------------------------------------

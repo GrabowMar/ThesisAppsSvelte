@@ -157,18 +157,28 @@
         </div>
       </div>
 
-      <!-- Model Selection -->
+      <!-- Model Info -->
       <div class="border border-gray-400 bg-white">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-          <h2 class="font-bold text-xs">Model Settings</h2>
+          <h2 class="font-bold text-xs">Model Information</h2>
         </div>
         <div class="p-2 space-y-2">
-          <select id="modelType" class="w-full h-6 px-2 text-xs border border-gray-300">
-            <option value="gpt-4">GPT-4 (Most Accurate)</option>
-            <option value="gpt-3.5-turbo">GPT-3.5 (Faster)</option>
-          </select>
-          <div class="text-xs text-gray-600">
-            Select GPT-4 for more thorough analysis or GPT-3.5 for faster results.
+          <div class="text-xs">
+            <div class="font-bold mb-1">DeepSeek-R1-Distill-Qwen-7B</div>
+            <div class="space-y-1">
+              <div class="flex justify-between">
+                <span class="text-gray-600">RAM Required:</span>
+                <span>8 GB</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Parameters:</span>
+                <span>7 billion</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Type:</span>
+                <span>deepseek</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -260,27 +270,34 @@ document.addEventListener('DOMContentLoaded', function() {
   if (startBtn) {
     startBtn.addEventListener('click', async function() {
       try {
+        const pathParts = window.location.pathname.split('/');
+        const model = pathParts[pathParts.length - 2];
+        const appNum = pathParts[pathParts.length - 1];
+        
+        if (!model || !appNum) {
+          throw new Error('Invalid model or app number');
+        }
+
         startBtn.disabled = true;
         progressDiv.classList.remove('hidden');
         progressBar.style.width = '0%';
-        progressStatus.textContent = 'Starting analysis...';
+        progressStatus.textContent = 'Starting local analysis...';
 
         const analysisType = document.getElementById('analysisType').value;
-        const modelType = document.getElementById('modelType').value;
 
-        const response = await fetch('/api/analyze-openai/{{ model }}/{{ app_num }}', {
+        const response = await fetch(`/api/analyze-gpt4all/${model}/${appNum}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            analysis_type: analysisType,
-            model: modelType
+            analysis_type: analysisType
           })
         });
 
         if (!response.ok) {
-          throw new Error('Analysis failed');
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Analysis failed');
         }
 
         // Poll for progress
@@ -304,7 +321,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1000);
 
       } catch (error) {
-        progressStatus.textContent = `Error: ${error.message}`;
+        console.error('Analysis error:', error);
+        progressStatus.textContent = error.message || 'Analysis failed';
         progressBar.style.width = '100%';
         progressBar.classList.remove('bg-blue-600');
         progressBar.classList.add('bg-red-600');
@@ -314,12 +332,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Calculate and display analysis duration if available
+  // Calculate and display analysis duration
   function updateAnalysisDuration() {
     const durationElement = document.getElementById('analysisDuration');
-    if (durationElement && summary?.start_time && summary?.end_time) {
-      const start = new Date(summary.start_time);
-      const end = new Date(summary.end_time);
+    if (durationElement && window.summary?.start_time && window.summary?.end_time) {
+      const start = new Date(window.summary.start_time);
+      const end = new Date(window.summary.end_time);
       const duration = Math.round((end - start) / 1000);
       durationElement.textContent = `${duration}s`;
     }
@@ -327,61 +345,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   updateAnalysisDuration();
 
-  // Add tooltips for model selection
-  const modelSelect = document.getElementById('modelType');
-  if (modelSelect) {
-    const tooltip = document.createElement('div');
-    tooltip.className = 'hidden absolute bg-gray-900 text-white text-xs p-2 rounded shadow-lg z-50';
-    tooltip.style.maxWidth = '200px';
-    
-    modelSelect.addEventListener('mouseover', function(e) {
-      tooltip.textContent = e.target.value === 'gpt-4' ? 
-        'GPT-4 provides more detailed analysis but takes longer' :
-        'GPT-3.5 is faster but may miss some nuanced issues';
-      tooltip.style.left = `${e.target.offsetLeft}px`;
-      tooltip.style.top = `${e.target.offsetTop + e.target.offsetHeight + 5}px`;
-      tooltip.classList.remove('hidden');
-    });
-
-    modelSelect.addEventListener('mouseout', () => {
-      tooltip.classList.add('hidden');
-    });
-
-    modelSelect.parentNode.style.position = 'relative';
-    modelSelect.parentNode.appendChild(tooltip);
-  }
-
-  // Handle file selection change
-  const handleFileFilterChange = () => {
-    const selectedFile = fileFilter.value;
-    if (selectedFile !== 'all') {
-      // Automatically expand issues for the selected file
-      document.querySelectorAll(`[data-file="${selectedFile}"] .expand-btn`).forEach(btn => {
-        const details = btn.closest('div').nextElementSibling.querySelector('.issue-details');
-        if (details.classList.contains('hidden')) {
-          btn.click();
-        }
-      });
-    }
-  };
-
-  if (fileFilter) {
-    fileFilter.addEventListener('change', handleFileFilterChange);
-  }
-
   // Update issue count badge
   function updateIssueCounts() {
     const visibleIssues = document.querySelectorAll('#issueList > div:not([style*="display: none"])');
     const totalCount = visibleIssues.length;
     
-    // Update count in the grid
-    const totalElement = document.querySelector('.text-xs.font-bold');
-    if (totalElement) {
-      totalElement.textContent = totalCount;
-    }
-
-    // Update severity counts
-    const severityCounts = {
+    const countsByType = {
       HIGH: 0,
       MEDIUM: 0,
       LOW: 0
@@ -389,17 +358,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     visibleIssues.forEach(issue => {
       const severity = issue.dataset.severity;
-      if (severity in severityCounts) {
-        severityCounts[severity]++;
+      if (severity in countsByType) {
+        countsByType[severity]++;
       }
     });
 
-    // Update severity count displays
-    Object.entries(severityCounts).forEach(([severity, count]) => {
-      const element = document.querySelector(`[class*="text-${severity.toLowerCase()}-700"]`);
-      if (element) {
-        element.textContent = count;
-      }
+    // Update the counts in the grid
+    document.querySelector('[data-type="total"]').textContent = totalCount;
+    Object.entries(countsByType).forEach(([severity, count]) => {
+      document.querySelector(`[data-type="${severity}"]`).textContent = count;
     });
   }
 
@@ -408,48 +375,6 @@ document.addEventListener('DOMContentLoaded', function() {
     element?.addEventListener('input', updateIssueCounts);
     element?.addEventListener('change', updateIssueCounts);
   });
-
-  // Export functionality
-  function exportAnalysis() {
-    const issues = Array.from(document.querySelectorAll('#issueList > div')).map(issue => ({
-      severity: issue.dataset.severity,
-      file: issue.dataset.file,
-      type: issue.querySelector('.text-xs.font-bold').textContent,
-      description: issue.querySelector('.text-xs.text-gray-600').textContent,
-      code: issue.querySelector('code')?.textContent || '',
-      fix: issue.querySelector('.text-green-800')?.nextElementSibling?.textContent || ''
-    }));
-
-    const exportData = {
-      summary: {
-        total_issues: issues.length,
-        severity_counts: {
-          HIGH: issues.filter(i => i.severity === 'HIGH').length,
-          MEDIUM: issues.filter(i => i.severity === 'MEDIUM').length,
-          LOW: issues.filter(i => i.severity === 'LOW').length
-        },
-        scan_time: new Date().toISOString()
-      },
-      issues: issues
-    };
-
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `openai-analysis-${new Date().toISOString()}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  // Add export button
-  const exportBtn = document.createElement('button');
-  exportBtn.className = 'action-btn h-6 px-2 text-xs';
-  exportBtn.textContent = 'Export Analysis';
-  exportBtn.addEventListener('click', exportAnalysis);
-  document.querySelector('.top-bar .flex.items-center:first-child')?.appendChild(exportBtn);
 });
 </script>
 {% endblock %}
