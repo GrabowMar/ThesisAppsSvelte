@@ -1,11 +1,8 @@
 {
   "alerts": [],
   "summary": {
-    "start_time": "2025-02-12T13:49:46.007589",
-    "target_url": "http://localhost:5501",
     "status": "failed",
-    "alerts_count": 0,
-    "error": "HTTPConnectionPool(host='127.0.0.1', port=8081): Max retries exceeded with url: http://zap/JSON/context/action/newContext/?contextName=scan_context (Caused by ProxyError('Unable to connect to proxy', NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001EB47A26CC0>: Failed to establish a new connection: [WinError 10061] Nie mo\u017cna nawi\u0105za\u0107 po\u0142\u0105czenia, poniewa\u017c komputer docelowy aktywnie go odmawia')))"
+    "error": "Failed to start ZAP"
   },
-  "scan_time": "2025-02-12T13:50:00.100218"
+  "scan_time": "2025-02-12T15:32:14.187448"
 }
