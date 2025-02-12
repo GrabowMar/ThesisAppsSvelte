@@ -1,7 +1,7 @@
 """
 security_analysis.py - Optimized Security Analysis Module
 
-Combines multiple security scanning tools with concurrent execution
+Combines multiple security scanning tools with concurrent execution.
 """
 
 import json
@@ -19,9 +19,12 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-# Define a data class for security issues.
+# Timeout (in seconds) for each tool's execution.
+TOOL_TIMEOUT = 30
+
 @dataclass
 class SecurityIssue:
+    """Data class representing a security issue found in the code."""
     filename: str
     line_number: int
     issue_text: str
@@ -32,39 +35,34 @@ class SecurityIssue:
     code: str
     tool: str
 
-TOOL_TIMEOUT = 30  # Timeout in seconds for each tool
 
 class SecurityAnalyzer:
+    """
+    Main class to run security analyses on backend code using various tools.
+    
+    The expected directory structure is:
+    
+        <base_path>/<model>/app<app_num>/backend
+        (This directory should contain Python files.)
+    """
     def __init__(self, base_path: Path):
-        """
-        base_path should point to the project root.
-        For example, if your folder structure is:
-        
-          app/
-            ChatGPT4o/
-              app1/
-                backend/   <-- contains your Python files
-          backend/
-        
-        then base_path should be the path to 'app/'.
-        """
         self.base_path = base_path
-        self.default_tools = ["bandit"]  # Only run Bandit by default for speed
+        self.default_tools = ["bandit"]  # Run only Bandit by default for speed.
         self.all_tools = ["bandit", "safety", "pylint", "vulture"]
 
     def _check_python_files(self, directory: Path) -> Tuple[bool, List[str]]:
-        """Check if directory contains Python files."""
+        """Return whether the directory contains any Python files, and list their paths."""
         if not directory.exists():
             return False, []
-        python_files = []
-        for root, _, files in os.walk(directory):
-            for file in files:
-                if file.endswith('.py'):
-                    python_files.append(os.path.join(root, file))
+        python_files = [
+            os.path.join(root, file)
+            for root, _, files in os.walk(directory)
+            for file in files if file.endswith('.py')
+        ]
         return bool(python_files), python_files
 
     def _run_bandit(self, app_path: Path) -> Tuple[List[SecurityIssue], str]:
-        """Run Bandit security analysis and return issues and raw output."""
+        """Run Bandit security analysis on the given path."""
         try:
             result = subprocess.run(
                 ["bandit", "-r", str(app_path), "-f", "json", "-ll", "-i"],
@@ -77,28 +75,27 @@ class SecurityAnalyzer:
             if result.stderr and "ERROR" in result.stderr:
                 logger.error(f"Bandit warning: {result.stderr}")
             analysis = json.loads(raw_output)
-            issues = []
-            for issue in analysis.get("results", []):
-                issues.append(
-                    SecurityIssue(
-                        filename=issue["filename"].replace(str(app_path), "").lstrip('/\\'),
-                        line_number=issue["line_number"],
-                        issue_text=issue["issue_text"],
-                        severity=issue["issue_severity"],
-                        confidence=issue["issue_confidence"],
-                        issue_type=issue["test_name"],
-                        line_range=issue["line_range"],
-                        code=issue.get("code", "Code not available"),
-                        tool="Bandit"
-                    )
+            issues = [
+                SecurityIssue(
+                    filename=issue["filename"].replace(str(app_path), "").lstrip('/\\'),
+                    line_number=issue["line_number"],
+                    issue_text=issue["issue_text"],
+                    severity=issue["issue_severity"],
+                    confidence=issue["issue_confidence"],
+                    issue_type=issue["test_name"],
+                    line_range=issue["line_range"],
+                    code=issue.get("code", "Code not available"),
+                    tool="Bandit"
                 )
+                for issue in analysis.get("results", [])
+            ]
             return issues, raw_output
         except Exception as e:
-            logger.error(f"Bandit error: {str(e)}")
-            return [], f"Error: {str(e)}"
+            logger.error(f"Bandit error: {e}")
+            return [], f"Error: {e}"
 
     def _run_safety(self, app_path: Path) -> Tuple[List[SecurityIssue], str]:
-        """Check dependencies using Safety and return issues and raw output."""
+        """Run Safety to check dependency vulnerabilities using requirements.txt."""
         try:
             requirements_file = app_path / "requirements.txt"
             if not requirements_file.exists():
@@ -111,7 +108,7 @@ class SecurityAnalyzer:
                 timeout=TOOL_TIMEOUT
             )
             raw_output = result.stdout
-            # If the output contains deprecation warnings or extra text, extract the JSON part.
+            # Extract JSON part from extra text (if any).
             match = re.search(r'({.*)', raw_output, re.DOTALL)
             if match:
                 raw_output = match.group(1)
@@ -123,28 +120,27 @@ class SecurityAnalyzer:
             except json.JSONDecodeError as je:
                 logger.error(f"Safety JSON decode error: {je}. Output: {raw_output}")
                 return [], f"JSON decode error: {raw_output}"
-            issues = []
-            for vuln in vulnerabilities:
-                issues.append(
-                    SecurityIssue(
-                        filename="requirements.txt",
-                        line_number=0,
-                        issue_text=f"Vulnerable package {vuln['package']}: {vuln.get('description', 'No description')}",
-                        severity="HIGH" if vuln.get('severity', '').upper() == 'HIGH' else "MEDIUM",
-                        confidence="HIGH",
-                        issue_type="dependency_vulnerability",
-                        line_range=[0],
-                        code=f"{vuln['package']}=={vuln.get('installed_version', 'unknown')}",
-                        tool="Safety"
-                    )
+            issues = [
+                SecurityIssue(
+                    filename="requirements.txt",
+                    line_number=0,
+                    issue_text=f"Vulnerable package {vuln['package']}: {vuln.get('description', 'No description')}",
+                    severity="HIGH" if vuln.get('severity', '').upper() == 'HIGH' else "MEDIUM",
+                    confidence="HIGH",
+                    issue_type="dependency_vulnerability",
+                    line_range=[0],
+                    code=f"{vuln['package']}=={vuln.get('installed_version', 'unknown')}",
+                    tool="Safety"
                 )
+                for vuln in vulnerabilities
+            ]
             return issues, raw_output
         except Exception as e:
-            logger.error(f"Safety error: {str(e)}")
-            return [], f"Error: {str(e)}"
+            logger.error(f"Safety error: {e}")
+            return [], f"Error: {e}"
 
     def _run_pylint(self, app_path: Path) -> Tuple[List[SecurityIssue], str]:
-        """Run Pylint for code quality issues and return issues and raw output."""
+        """Run Pylint on the given path to detect code quality issues."""
         try:
             result = subprocess.run(
                 ["pylint", "--output-format=json", str(app_path)],
@@ -155,35 +151,28 @@ class SecurityAnalyzer:
             )
             raw_output = result.stdout
             issues_json = json.loads(raw_output)
-            issues = []
-            severity_map = {
-                "E": "HIGH",
-                "W": "MEDIUM",
-                "C": "LOW",
-                "R": "LOW"
-            }
-            # Include all pylint messages.
-            for issue in issues_json:
-                issues.append(
-                    SecurityIssue(
-                        filename=issue["path"].replace(str(app_path), "").lstrip('/\\'),
-                        line_number=issue["line"],
-                        issue_text=issue["message"],
-                        severity=severity_map.get(issue["type"], "LOW"),
-                        confidence="MEDIUM",
-                        issue_type=f"pylint_{issue['symbol']}",
-                        line_range=[issue["line"]],
-                        code=issue.get("message-id", "No code available"),
-                        tool="Pylint"
-                    )
+            severity_map = {"E": "HIGH", "W": "MEDIUM", "C": "LOW", "R": "LOW"}
+            issues = [
+                SecurityIssue(
+                    filename=issue["path"].replace(str(app_path), "").lstrip('/\\'),
+                    line_number=issue["line"],
+                    issue_text=issue["message"],
+                    severity=severity_map.get(issue["type"], "LOW"),
+                    confidence="MEDIUM",
+                    issue_type=f"pylint_{issue['symbol']}",
+                    line_range=[issue["line"]],
+                    code=issue.get("message-id", "No code available"),
+                    tool="Pylint"
                 )
+                for issue in issues_json
+            ]
             return issues, raw_output
         except Exception as e:
-            logger.error(f"Pylint error: {str(e)}")
-            return [], f"Error: {str(e)}"
+            logger.error(f"Pylint error: {e}")
+            return [], f"Error: {e}"
 
     def _run_vulture(self, app_path: Path) -> Tuple[List[SecurityIssue], str]:
-        """Run Vulture to find dead code and return issues and raw output."""
+        """Run Vulture to detect dead code."""
         try:
             result = subprocess.run(
                 ["vulture", str(app_path), "--json"],
@@ -201,25 +190,24 @@ class SecurityAnalyzer:
             except json.JSONDecodeError as je:
                 logger.error(f"Vulture JSON decode error: {je}. Output: {raw_output}")
                 return [], f"JSON decode error: {raw_output}"
-            issues = []
-            for item in dead_code:
-                issues.append(
-                    SecurityIssue(
-                        filename=item["filename"].replace(str(app_path), "").lstrip('/\\'),
-                        line_number=item["first_lineno"],
-                        issue_text=f"Unused {item['type']}: Could indicate unnecessary exposed code",
-                        severity="LOW",
-                        confidence="MEDIUM",
-                        issue_type="dead_code",
-                        line_range=[item["first_lineno"]],
-                        code=str(item.get("size", "No code available")),
-                        tool="Vulture"
-                    )
+            issues = [
+                SecurityIssue(
+                    filename=item["filename"].replace(str(app_path), "").lstrip('/\\'),
+                    line_number=item["first_lineno"],
+                    issue_text=f"Unused {item['type']}: Could indicate unnecessary exposed code",
+                    severity="LOW",
+                    confidence="MEDIUM",
+                    issue_type="dead_code",
+                    line_range=[item["first_lineno"]],
+                    code=str(item.get("size", "No code available")),
+                    tool="Vulture"
                 )
+                for item in dead_code
+            ]
             return issues, raw_output
         except Exception as e:
-            logger.error(f"Vulture error: {str(e)}")
-            return [], f"Error: {str(e)}"
+            logger.error(f"Vulture error: {e}")
+            return [], f"Error: {e}"
 
     def run_bandit_analysis(
         self, model: str, app_num: int, use_all_tools: bool = False
@@ -229,15 +217,14 @@ class SecurityAnalyzer:
 
         Expected directory structure:
             <base_path>/<model>/app<app_num>/backend
-            (contains Python files)
-
-        Returns a tuple containing:
-          - A sorted list of SecurityIssue objects.
-          - A dictionary (tool_status) mapping each tool to a one-line status summary.
-          - A dictionary (tool_output_details) mapping each tool to its full raw text output.
+        
+        Returns:
+            - A sorted list of SecurityIssue objects.
+            - A dictionary mapping each tool to a one-line status summary.
+            - A dictionary mapping each tool to its full raw output.
         
         Raises:
-          ValueError: If no Python files are found in the expected location.
+            ValueError: If no Python files are found in the backend directory.
         """
         app_path = self.base_path / f"{model}/app{app_num}/backend"
         has_files, _ = self._check_python_files(app_path)
@@ -246,6 +233,7 @@ class SecurityAnalyzer:
                 f"No Python files found in {app_path}. "
                 "Please ensure the backend directory exists and contains Python files."
             )
+        # Choose tools based on configuration.
         tools_to_run = self.all_tools if use_all_tools else self.default_tools
         tool_map = {
             "bandit": lambda: self._run_bandit(app_path),
@@ -269,9 +257,9 @@ class SecurityAnalyzer:
                     tool_status[tool] = "✅ No issues found" if not issues else f"⚠️ Found {len(issues)} issues"
                     tool_output_details[tool] = raw_output
                 except Exception as e:
-                    tool_status[tool] = f"❌ Error: {str(e)}"
-                    tool_output_details[tool] = f"Error: {str(e)}"
-                    logger.error(f"{tool} failed: {str(e)}")
+                    tool_status[tool] = f"❌ Error: {e}"
+                    tool_output_details[tool] = f"Error: {e}"
+                    logger.error(f"{tool} failed: {e}")
         for tool in self.all_tools:
             if tool not in tool_status:
                 tool_status[tool] = "⏸️ Not run in quick scan mode"
@@ -302,7 +290,7 @@ class SecurityAnalyzer:
             "total_issues": len(issues),
             "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
             "confidence_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
-            "files_affected": len(set(issue.filename for issue in issues)),
+            "files_affected": len({issue.filename for issue in issues}),
             "issue_types": {},
             "tool_counts": {},
             "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")

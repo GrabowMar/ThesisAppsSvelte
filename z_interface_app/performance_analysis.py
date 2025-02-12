@@ -17,9 +17,10 @@ from typing import Dict, List, Optional, Tuple
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class PerformanceResult:
-    """Store performance test results"""
+    """Store performance test results."""
     total_requests: int
     total_failures: int
     avg_response_time: float
@@ -29,17 +30,27 @@ class PerformanceResult:
     end_time: str
     duration: int
 
+
 class PerformanceTester:
-    """Simple performance testing using Locust"""
+    """Simple performance testing using Locust."""
     
     def __init__(self, base_path: Path):
         self.base_path = base_path
-        self.stats_file = None
-        self.locustfile = None
+        # These attributes will hold temporary file paths for Locustfile and stats.
+        self.stats_file: Optional[str] = None
+        self.locustfile: Optional[str] = None
 
     def _create_locustfile(self, host: str) -> str:
-        """Create a temporary Locustfile with basic tests"""
-        content = f'''
+        """
+        Create a temporary Locustfile with basic HTTP endpoint tests.
+        
+        Args:
+            host: The target host URL.
+        
+        Returns:
+            The path to the temporary Locustfile.
+        """
+        locust_content = f'''
 from locust import HttpUser, task, between
 
 class TestUser(HttpUser):
@@ -54,10 +65,9 @@ class TestUser(HttpUser):
     def test_api_status(self):
         self.client.get("/api/status")
 '''
-        # Create temporary file
         fd, path = tempfile.mkstemp(suffix='.py')
         with os.fdopen(fd, 'w') as f:
-            f.write(content)
+            f.write(locust_content)
         return path
 
     def run_test(
@@ -68,19 +78,36 @@ class TestUser(HttpUser):
         duration: int = 30,
         spawn_rate: int = 1
     ) -> Tuple[Optional[PerformanceResult], Dict[str, str]]:
-        """Run a performance test"""
+        """
+        Run a performance test using Locust.
+        
+        Args:
+            model: Model identifier (currently unused in port calculation).
+            app_num: Application number.
+            num_users: Number of concurrent users.
+            duration: Test duration in seconds.
+            spawn_rate: User spawn rate per second.
+        
+        Returns:
+            A tuple containing a PerformanceResult (or None on failure)
+            and a dictionary with status information.
+        """
         try:
-            # Calculate backend port (simplified)
+            # Calculate the backend port (simplified) and target host.
             base_port = 5001
             backend_port = base_port + app_num
             host = f"http://localhost:{backend_port}"
 
-            # Create temporary files
+            # Create temporary files for the Locustfile and JSON stats.
             self.locustfile = self._create_locustfile(host)
             fd, self.stats_file = tempfile.mkstemp(suffix='.json')
             os.close(fd)
 
-            # Build locust command
+            # Prepare the environment: set LOCUST_STATS_OUTPUT so that Locust writes stats to our file.
+            env = os.environ.copy()
+            env["LOCUST_STATS_OUTPUT"] = self.stats_file
+
+            # Build the Locust command. Notice that we now simply pass the --json flag.
             cmd = [
                 "locust",
                 "-f", self.locustfile,
@@ -89,20 +116,19 @@ class TestUser(HttpUser):
                 "--users", str(num_users),
                 "--spawn-rate", str(spawn_rate),
                 "--run-time", f"{duration}s",
-                "--json", self.stats_file
+                "--json"
             ]
 
-            # Run the test
             start_time = datetime.now()
             process = subprocess.run(
                 cmd,
                 capture_output=True,
                 text=True,
-                timeout=duration + 10
+                timeout=duration + 10,
+                env=env
             )
             end_time = datetime.now()
 
-            # Check if test was successful
             if process.returncode != 0:
                 logger.error(f"Locust test failed: {process.stderr}")
                 return None, {
@@ -110,11 +136,10 @@ class TestUser(HttpUser):
                     "error": process.stderr
                 }
 
-            # Parse results
+            # Read the JSON stats written by Locust.
             with open(self.stats_file, 'r') as f:
                 stats = json.load(f)
 
-            # Create result object
             result = PerformanceResult(
                 total_requests=stats.get("total_requests", 0),
                 total_failures=stats.get("total_failures", 0),
@@ -144,11 +169,10 @@ class TestUser(HttpUser):
                 "error": str(e)
             }
         finally:
-            # Cleanup temporary files
             self._cleanup()
 
     def _cleanup(self):
-        """Clean up temporary files"""
+        """Clean up temporary files created during the test."""
         try:
             if self.stats_file and os.path.exists(self.stats_file):
                 os.unlink(self.stats_file)
@@ -157,8 +181,9 @@ class TestUser(HttpUser):
         except Exception as e:
             logger.warning(f"Cleanup failed: {str(e)}")
 
+
 def main():
-    """Test function"""
+    """Test function for running a simple performance test."""
     base_path = Path(__file__).parent
     tester = PerformanceTester(base_path)
     
@@ -171,12 +196,13 @@ def main():
     )
     
     if result:
-        print(f"Test completed successfully:")
+        print("Test completed successfully:")
         print(f"Total requests: {result.total_requests}")
         print(f"Average response time: {result.avg_response_time:.2f}ms")
         print(f"Requests per second: {result.requests_per_sec:.2f}")
     else:
         print(f"Test failed: {info.get('error', 'Unknown error')}")
+
 
 if __name__ == "__main__":
     main()

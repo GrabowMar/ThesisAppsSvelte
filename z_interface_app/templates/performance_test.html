@@ -86,6 +86,7 @@
             <button id="clearOutput" class="text-xs text-gray-600 hover:text-gray-900">Clear</button>
         </div>
         <div class="p-2">
+            <!-- Preformatted output log with wrapping enabled -->
             <pre id="outputLog" class="text-xs font-mono bg-gray-50 p-2 border border-gray-300 h-48 overflow-auto whitespace-pre-wrap"></pre>
         </div>
     </div>
@@ -117,17 +118,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const spawnRate = document.getElementById('spawnRate').value;
         
         try {
-            // Update UI for test start
             runTestBtn.disabled = true;
             document.getElementById('testStatus').textContent = 'Running...';
             appendToLog('Starting performance test...');
             
-            // Make API request
+            // Make API request to current URL
             const response = await fetch(window.location.href, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     num_users: parseInt(numUsers),
                     duration: parseInt(duration),
