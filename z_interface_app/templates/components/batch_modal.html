@@ -1,0 +1,31 @@
+<!-- components/batch_modal.html -->
+<div id="batchModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-bold">Batch Operations</h3>
+            </div>
+            
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Operation</label>
+                        <select id="batchOperation" class="w-full rounded border-gray-300">
+                            <option value="start">Start Selected</option>
+                            <option value="stop">Stop Selected</option>
+                            <option value="reload">Reload Selected</option>
+                            <option value="security">Security Scan</option>
+                        </select>
+                    </div>
+                    
+                    <div id="batchConfirmation" class="text-sm text-gray-600"></div>
+                </div>
+            </div>
+
+            <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                <button id="executeBatch" class="action-btn bg-blue-600 text-white">Execute</button>
+                <button class="action-btn modal-close">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

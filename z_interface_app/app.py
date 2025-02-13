@@ -35,11 +35,11 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 # =============================================================================
 # Custom Module Imports (assumed to be available in the project)
 # =============================================================================
-from codacy_analysis import CodacyAnalyzer
+from backend_security_analysis import BackendSecurityAnalyzer
 from frontend_security_analysis import FrontendSecurityAnalyzer
+from codacy_analysis import CodacyAnalyzer
 from gpt4all_analysis import GPT4AllAnalyzer, get_analysis_summary
 from performance_analysis import PerformanceTester
-from security_analysis import SecurityAnalyzer
 from zap_scanner import ZAPScanner, create_scanner
 
 # =============================================================================
@@ -576,52 +576,63 @@ def get_app_directory(app: Flask, model: str, app_num: int) -> Path:
 	return app.config["BASE_DIR"] / f"{model}/app{app_num}"
 
 
-def stop_zap_scanners(scans: dict, condition=lambda status: True) -> None:
-	"""
-	Helper to stop ZAP scanners if their status satisfies a condition.
-	"""
-	for scan_id in list(scans.keys()):  # Iterate over a copy of the keys
-		scan = scans[scan_id]
-		if condition(scan.get("status", "")):
-			scanner = scan.get("scanner")
-			if scanner:
-				scanner._stop_zap_daemon()
-				del scans[scan_id] # Remove the scan after stopping it
+# =============================================================================
+# Helper Functions for ZAP
+# =============================================================================
+def stop_zap_scanners(scans, condition=None):
+    """
+    Stop all ZAP scanners that match the given condition.
+    """
+    for scan_id in list(scans.keys()):
+        scan = scans[scan_id]
+        if condition is None or condition(scan["status"]):
+            scanner = scan["scanner"]
+            scanner._stop_zap_daemon()
+            scan["status"] = "Stopped"
+            scan["progress"] = 0
+            scans.pop(scan_id)
 
 
 # =============================================================================
 # Flask App Factory & Route Registration
 # =============================================================================
 def create_app(config: Optional[AppConfig] = None) -> Flask:
-	"""
-	Application factory function.
-	Creates and configures the Flask application, initializes analyzers,
-	the Docker manager, and registers all routes and error handlers.
-	"""
-	app = Flask(__name__)
-	app.config.from_object(config or AppConfig.from_env())
-	LoggingService.configure(app.config["LOG_LEVEL"])
+    """
+    Application factory function.
+    Creates and configures the Flask application, initializes analyzers,
+    the Docker manager, and registers all routes and error handlers.
+    """
+    app = Flask(__name__)
+    app.config.from_object(config or AppConfig.from_env())
+    LoggingService.configure(app.config["LOG_LEVEL"])
 
-	base_path = AppConfig.from_env().BASE_DIR.parent
-	logger.info(f"Initializing analyzers with base path: {base_path}")
+    base_path = AppConfig.from_env().BASE_DIR.parent
+    logger.info(f"Initializing analyzers with base path: {base_path}")
 
-	# Initialize analysis tools and attach them to the app instance.
-	app.security_analyzer = SecurityAnalyzer(base_path)
-	app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
-	app.codacy_analyzer = CodacyAnalyzer(base_path)
-	zap_scanner = create_scanner(app)
-	app.zap_scanner = zap_scanner
-	app.json_encoder = CustomJSONEncoder
+    # Initialize all analysis tools
+    app.backend_security_analyzer = BackendSecurityAnalyzer(base_path)
+    app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
+    app.codacy_analyzer = CodacyAnalyzer(base_path)
+    app.gpt4all_analyzer = GPT4AllAnalyzer(base_path)
+    app.performance_tester = PerformanceTester(base_path)
+    
+    # Initialize ZAP scanner
+    zap_scanner = create_scanner(app.config["BASE_DIR"])
+    app.zap_scanner = zap_scanner
 
-	docker_manager = DockerManager()
-	app.wsgi_app = ProxyFix(app.wsgi_app)
+    # Set custom JSON encoder for serialization
+    app.json_encoder = CustomJSONEncoder
 
-	# Register routes, error handlers, and request hooks.
-	register_routes(app, docker_manager)
-	register_error_handlers(app)
-	register_request_hooks(app, docker_manager)
+    # Initialize Docker manager
+    docker_manager = DockerManager()
+    app.wsgi_app = ProxyFix(app.wsgi_app)
 
-	return app
+    # Register routes, error handlers, and request hooks
+    register_routes(app, docker_manager)
+    register_error_handlers(app)
+    register_request_hooks(app, docker_manager)
+
+    return app
 
 
 class CustomJSONEncoder(json.JSONEncoder):
@@ -821,19 +832,196 @@ def register_routes(app: Flask, docker_manager: DockerManager) -> None:
 		}
 		return render_template("logs.html", logs=logs_data, model=model, app_num=app_num)
 
-	@app.route("/security/<string:model>/<int:app_num>")
+# Add these routes inside register_routes function
+
+	@app.route("/backend-security/<string:model>/<int:app_num>")
 	@error_handler
 	def security_analysis(model: str, app_num: int):
 		full_scan = request.args.get("full", "").lower() == "true"
 		return process_security_analysis(
 			template="security_analysis.html",
-			analyzer=app.security_analyzer,
-			analysis_method=app.security_analyzer.run_bandit_analysis,
+			analyzer=app.backend_security_analyzer,
+			analysis_method=app.backend_security_analyzer.run_security_analysis,  # Changed from run_bandit_analysis
 			model=model,
 			app_num=app_num,
 			full_scan=full_scan,
-			no_issue_message="No security issues found in the codebase.",
+			no_issue_message="No security issues found in the codebase."
 		)
+
+	@app.route("/frontend-security/<string:model>/<int:app_num>")
+	@error_handler
+	def frontend_security_analysis(model: str, app_num: int):
+		"""Handle frontend security analysis requests."""
+		full_scan = request.args.get("full", "").lower() == "true"
+		return process_security_analysis(
+			template="security_analysis.html",
+			analyzer=app.frontend_security_analyzer,
+			analysis_method=app.frontend_security_analyzer.run_security_analysis,
+			model=model,
+			app_num=app_num,
+			full_scan=full_scan,
+			no_issue_message="No security issues found in frontend code."
+		)
+
+	@app.route("/api/analyze-security", methods=["POST"])
+	@error_handler 
+	def analyze_security_issues():
+		"""Analyze security issues using AI."""
+		try:
+			data = request.get_json()
+			if not data or "issues" not in data:
+				raise BadRequest("No issues provided for analysis")
+
+			model = data.get("model", "claude-3-sonnet-20240229")
+			issues = data["issues"]
+
+			# Group issues by severity
+			severity_groups = {"HIGH": [], "MEDIUM": [], "LOW": []}
+			for issue in issues:
+				severity = issue.get("severity", "LOW")
+				severity_groups[severity].append(issue)
+
+			# Build analysis prompt
+			prompt = "Analyze the following security issues:\n\n"
+			
+			# Add high severity issues first
+			if severity_groups["HIGH"]:
+				prompt += "\nHigh Severity Issues:\n"
+				for issue in severity_groups["HIGH"]:
+					prompt += f"- {issue['type']}: {issue['text']}\n"
+					if issue.get('code'):
+						prompt += f"  Code: {issue['code']}\n"
+
+			# Add medium severity issues
+			if severity_groups["MEDIUM"]:
+				prompt += "\nMedium Severity Issues:\n"
+				for issue in severity_groups["MEDIUM"]:
+					prompt += f"- {issue['type']}: {issue['text']}\n"
+					if issue.get('code'):
+						prompt += f"  Code: {issue['code']}\n"
+
+			# Add low severity issues
+			if severity_groups["LOW"]:
+				prompt += "\nLow Severity Issues:\n"
+				for issue in severity_groups["LOW"]:
+					prompt += f"- {issue['type']}: {issue['text']}\n"
+					if issue.get('code'):
+						prompt += f"  Code: {issue['code']}\n"
+
+			prompt += "\nPlease provide:\n"
+			prompt += "1. A high-level summary of the security concerns\n"
+			prompt += "2. Prioritized recommendations for addressing these issues\n"
+			prompt += "3. Potential security implications if issues remain unaddressed\n"
+			prompt += "4. Best practices to prevent similar issues in the future"
+
+			# Make API call to selected model
+			# Note: Implementation details would depend on your AI integration
+			analysis_result = call_ai_service(model, prompt)
+
+			return jsonify({
+				"status": "success",
+				"response": analysis_result
+			})
+
+		except BadRequest as e:
+			logger.warning(f"Bad request in security analysis: {e}")
+			return jsonify({"error": str(e)}), 400
+		except Exception as e:
+			logger.error(f"Error in security analysis: {e}")
+			return jsonify({"error": "Analysis failed"}), 500
+
+	@app.route("/api/security/summary/<string:model>/<int:app_num>")
+	@error_handler
+	def get_security_summary(model: str, app_num: int):
+		"""Get combined security summary for both frontend and backend."""
+		try:
+				# Get backend analysis
+			backend_issues, backend_status, _ = app.backend_security_analyzer.analyze_security(  # Changed from run_bandit_analysis
+				model, app_num, use_all_tools=False
+			)
+			backend_summary = app.backend_security_analyzer.get_analysis_summary(backend_issues)
+
+			# Get frontend analysis
+			frontend_issues, frontend_status, _ = app.frontend_security_analyzer.run_security_analysis(
+				model, app_num, use_all_tools=False
+			)
+			frontend_summary = app.frontend_security_analyzer.get_analysis_summary(frontend_issues)
+
+			# Combine summaries
+			combined_summary = {
+				"backend": {
+					"summary": backend_summary,
+					"status": backend_status
+				},
+				"frontend": {
+					"summary": frontend_summary,
+					"status": frontend_status
+				},
+				"total_issues": backend_summary["total_issues"] + frontend_summary["total_issues"],
+				"severity_counts": {
+					"HIGH": (
+						backend_summary["severity_counts"]["HIGH"] +
+						frontend_summary["severity_counts"]["HIGH"]
+					),
+					"MEDIUM": (
+						backend_summary["severity_counts"]["MEDIUM"] +
+						frontend_summary["severity_counts"]["MEDIUM"]
+					),
+					"LOW": (
+						backend_summary["severity_counts"]["LOW"] +
+						frontend_summary["severity_counts"]["LOW"]
+					)
+				},
+				"scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+			}
+
+			return jsonify(combined_summary)
+
+		except Exception as e:
+			logger.error(f"Error getting security summary: {e}")
+			return jsonify({
+				"error": "Failed to get security summary",
+				"details": str(e)
+			}), 500
+
+	@app.route("/api/security/analyze-file", methods=["POST"])
+	@error_handler
+	def analyze_single_file():
+		"""Analyze a single file for security issues."""
+		try:
+			data = request.get_json()
+			if not data or "file_path" not in data:
+				raise BadRequest("No file path provided")
+
+			file_path = Path(data["file_path"])
+			is_frontend = data.get("is_frontend", False)
+			analyzer = app.frontend_security_analyzer if is_frontend else app.backend_security_analyzer
+
+			# Analyze the single file
+			if is_frontend:
+				issues, tool_status, tool_output = analyzer._run_eslint(file_path.parent)
+			else:
+				issues, tool_status, tool_output = analyzer._run_bandit(file_path.parent)
+
+			# Filter issues for just this file
+			file_issues = [
+				issue for issue in issues 
+				if Path(issue.filename).name == file_path.name
+			]
+
+			return jsonify({
+				"status": "success",
+				"issues": [asdict(issue) for issue in file_issues],
+				"tool_status": tool_status,
+				"tool_output": tool_output
+			})
+
+		except BadRequest as e:
+			logger.warning(f"Bad request in file analysis: {e}")
+			return jsonify({"error": str(e)}), 400
+		except Exception as e:
+			logger.error(f"Error analyzing file: {e}")
+			return jsonify({"error": "File analysis failed"}), 500
 
 	@app.route("/performance/<string:model>/<int:app_num>", methods=["GET", "POST"])
 	def performance_test(model: str, app_num: int):
@@ -1024,27 +1212,7 @@ def register_routes(app: Flask, docker_manager: DockerManager) -> None:
 			app.logger.error(f"Failed to trigger Codacy analysis: {e}")
 			return jsonify({"error": str(e)}), 500
 
-	@app.route("/frontend-security/<string:model>/<int:app_num>")
-	def frontend_security_analysis(model, app_num):
-		try:
-			issues, tool_status, tool_output_details = app.frontend_security_analyzer.run_security_analysis(
-				model, app_num, use_all_tools=True
-			)
-			summary = app.frontend_security_analyzer.get_analysis_summary(issues)
-			return render_template(
-				"frontend_security_analysis.html",
-				model=model,
-				app_num=app_num,
-				full_scan=True,
-				issues=issues,
-				summary=summary,
-				tool_status=tool_status,
-				tool_output_details=tool_output_details,
-				message="Security scan completed successfully.",
-			)
-		except Exception as e:
-			logger.error(f"Error in frontend_security_analysis: {e}")
-			return render_template("500.html", error=str(e)), 500
+
 
 	@app.route("/api/status")
 	@error_handler
@@ -1195,31 +1363,34 @@ def register_error_handlers(app: Flask) -> None:
 		return render_template("500.html", error=error), 500
 
 
+# =============================================================================
+# Request Hooks for ZAP Cleanup
+# =============================================================================
 def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
-	"""
-	Register hooks to execute code before and after each request.
-	"""
-	@app.before_request
-	def before():
-		if random.random() < 0.01:
-			docker_manager.cleanup_containers()
-			if "ZAP_SCANS" in app.config:
-				stop_zap_scanners(app.config["ZAP_SCANS"], condition=lambda status: status not in ["Running", "Starting"])
+    """
+    Register hooks to execute code before and after each request.
+    """
+    @app.before_request
+    def before():
+        if random.random() < 0.01:
+            docker_manager.cleanup_containers()
+            if "ZAP_SCANS" in app.config:
+                stop_zap_scanners(app.config["ZAP_SCANS"], condition=lambda status: status not in ["Running", "Starting"])
 
-	@app.after_request
-	def after(response):
-		response.headers.update({
-			"X-Content-Type-Options": "nosniff",
-			"X-Frame-Options": "SAMEORIGIN",
-			"X-XSS-Protection": "1; mode=block",
-			"Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-		})
-		return response
+    @app.after_request
+    def after(response):
+        response.headers.update({
+            "X-Content-Type-Options": "nosniff",
+            "X-Frame-Options": "SAMEORIGIN",
+            "X-XSS-Protection": "1; mode=block",
+            "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+        })
+        return response
 
-	@app.teardown_appcontext
-	def teardown(exception=None):
-		if "ZAP_SCANS" in app.config:
-			stop_zap_scanners(app.config["ZAP_SCANS"])
+    @app.teardown_appcontext
+    def teardown(exception=None):
+        if "ZAP_SCANS" in app.config:
+            stop_zap_scanners(app.config["ZAP_SCANS"])
 
 
 # =============================================================================

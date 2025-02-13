@@ -51,6 +51,7 @@ class ZAPScanner:
         self.api_key = "5tjkc409k4oaacd69qob5p6uri"
         self.proxy_host = "127.0.0.1"
         self.proxy_port = self._find_free_port()
+        self.zap_log = self.base_path / "zap.log"  # Log file for ZAP output
         
         # Store scans in memory
         self._scans: Dict[str, Dict] = {}
@@ -106,94 +107,139 @@ class ZAPScanner:
             logger.warning(f"Error during ZAP cleanup: {e}")
 
     def _start_zap_daemon(self) -> bool:
-        """Start ZAP daemon process."""
+        """Start ZAP daemon process with improved error handling."""
         try:
             logger.info("Starting ZAP daemon...")
-            # Look for ZAP installation in common locations
-            zap_path = None
-            possible_paths = [
-                self.base_path / "ZAP_2.14.0",  # Local project directory
-                Path("C:/Program Files/ZAP/Zed Attack Proxy"),  # Windows default
-                Path("C:/Program Files (x86)/OWASP/Zed Attack Proxy"),
-                Path("/usr/share/zaproxy"),  # Linux default
-            ]
+            zap_path = self._find_zap_installation()
             
-            for path in possible_paths:
-                if (path / "zap.jar").exists():
-                    zap_path = path / "zap.jar"
-                    break
-                elif (path / "zap.sh").exists():
-                    zap_path = path / "zap.sh"
-                    break
-                elif (path / "zap.exe").exists():
-                    zap_path = path / "zap.exe"
-                    break
-            
-            if not zap_path:
-                raise FileNotFoundError("Could not find ZAP installation")
-
-            # Configure JVM options for better stability
+            # Configure JVM options
             java_opts = [
-                '-Xmx512m',              # Limit memory usage
-                '-XX:+UseG1GC',          # Use G1 garbage collector
-                '-XX:+DisableAttachMechanism',  # Improve startup time
+                '-Xmx512m',
+                '-Djava.net.preferIPv4Stack=true',  # Force IPv4
+                '-DZAP.port.retry=true',  # Allow port retry
             ]
+
+            cmd = self._build_zap_command(zap_path, java_opts)
             
-            # Build command with Java options
-            cmd = [
-                'java'
-            ] + java_opts + [
-                '-jar', str(zap_path),
-                '-daemon',
-                '-port', str(self.proxy_port),
-                '-host', self.proxy_host,
-                '-config', f'api.key={self.api_key}',
-                '-config', 'api.addrs.addr.name=.*',
-                '-config', 'api.addrs.addr.regex=true',
-                '-config', 'connection.timeoutInSecs=120',
-                '-config', 'spider.maxDuration=1',
-                '-silent',   # Reduce console output
-                '-nostdout'  # Don't output to stdout
-            ]
-            
-            # Start process with error handling
-            try:
+            logger.debug(f"ZAP command: {cmd}")  # Log the full command
+
+            # Start process with error capture
+            with open(self.zap_log, 'w') as log_file:
                 self.daemon_process = subprocess.Popen(
                     cmd,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
+                    stdout=log_file,
+                    stderr=subprocess.STDOUT,
                     creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
                 )
-                logger.info("ZAP process started")
-            except Exception as e:
-                logger.error(f"Error starting ZAP process: {e}")
-                return False
-            
-            # Wait for ZAP to start with retry
-            max_attempts = 10
-            for attempt in range(max_attempts):
-                try:
-                    time.sleep(5)  # Wait between attempts
-                    self.zap = ZAPv2(
-                        apikey=self.api_key,
-                        proxies={
-                            'http': f'http://{self.proxy_host}:{self.proxy_port}',
-                            'https': f'http://{self.proxy_host}:{self.proxy_port}'
-                        }
-                    )
-                    # Test connection
-                    self.zap.core.version
-                    logger.info("Successfully connected to ZAP")
-                    break
-                except Exception as e:
-                    logger.warning(f"Attempt {attempt + 1}/{max_attempts} to connect to ZAP failed: {e}")
-                    if attempt == max_attempts - 1:
-                        raise
-            return True
+
+            # Verify process startup
+            time.sleep(5)  # Increased startup delay
+            if self.daemon_process.poll() is not None:
+                error_msg = (
+                    f"ZAP failed to start. Exit code: {self.daemon_process.returncode}\n"
+                    f"Check {self.zap_log} for details."
+                )
+                logger.error(error_msg)
+                self._log_zap_output()  # Log ZAP output before raising
+                raise RuntimeError(error_msg)
+
+            # Connection retry with backoff
+            return self._connect_to_zap_with_retry()
             
         except Exception as e:
-            logger.error(f"Failed to start ZAP: {e}")
+            logger.error(f"ZAP startup failed: {e}")
+            self._log_zap_output()
             return False
+
+    def _find_zap_installation(self) -> Path:
+        """Locate ZAP installation with additional checks."""
+        possible_paths = [
+            self.base_path / "ZAP_2.14.0",
+            self.base_path,
+            Path(os.getenv("ZAP_HOME", "")),
+            Path("C:/Program Files/ZAP/Zed Attack Proxy"),
+            Path("C:/Program Files (x86)/ZAP/Zed Attack Proxy"),
+            Path("/usr/share/zaproxy"),
+            Path("/Applications/OWASP ZAP.app/Contents/Java"),
+        ]
+
+        for path in possible_paths:
+            # Check for the jar file directly in the path
+            jar_path = path / "zap-2.16.0.jar"
+            if jar_path.exists():
+                logger.info(f"Found ZAP at: {jar_path}")
+                return jar_path
+
+            # Check for executable files
+            for exe in ["zap.bat", "zap.sh", "ZAP.exe"]:
+                full_path = path / exe
+                if full_path.exists():
+                    logger.info(f"Found ZAP at: {full_path}")
+                    return full_path
+
+        raise FileNotFoundError(
+            "ZAP installation not found. Install ZAP and ensure it's in PATH or set ZAP_HOME."
+        )
+
+    def _build_zap_command(self, zap_path: Path, java_opts: List[str]) -> List[str]:
+        """Construct platform-specific ZAP command."""
+        if zap_path.suffix == '.jar':
+            return ['java'] + java_opts + ['-jar', str(zap_path)] + self._zap_args()
+        elif zap_path.suffix in ('.bat', '.sh', '.exe'):
+            return [str(zap_path)] + self._zap_args()
+        else:
+            raise RuntimeError(f"Unsupported ZAP executable: {zap_path}")
+
+    def _zap_args(self) -> List[str]:
+        """Common ZAP command arguments."""
+        return [
+            '-daemon',
+            '-port', str(self.proxy_port),
+            '-host', self.proxy_host,
+            '-config', f'api.key={self.api_key}',
+            '-config', 'api.addrs.addr.name=.*',
+            '-config', 'api.addrs.addr.regex=true',
+            '-config', 'connection.timeoutInSecs=300',
+            '-silent',
+            '-nostdout'
+        ]
+
+    def _connect_to_zap_with_retry(self) -> bool:
+        """Attempt ZAP connection with exponential backoff."""
+        max_attempts = 15
+        base_delay = 3
+        self.zap = ZAPv2(
+            apikey=self.api_key,
+            proxies={'http': f'http://{self.proxy_host}:{self.proxy_port}',
+                     'https': f'http://{self.proxy_host}:{self.proxy_port}'}
+        )
+
+        for attempt in range(max_attempts):
+            try:
+                delay = base_delay * (2 ** attempt)
+                logger.info(f"Waiting {delay}s for ZAP startup (attempt {attempt+1}/{max_attempts})")
+                time.sleep(delay)
+                
+                # Test connection
+                self.zap.core.version
+                logger.info("Successfully connected to ZAP")
+                return True
+            except Exception as e:
+                if attempt == max_attempts - 1:
+                    logger.error(f"Final connection attempt failed: {e}")
+                    self._log_zap_output()
+                    return False
+                continue
+
+    def _log_zap_output(self):
+        """Log ZAP's output for debugging."""
+        if self.zap_log.exists():
+            try:
+                with open(self.zap_log, 'r') as f:
+                    logs = f.read(2048)  # Read first 2KB
+                    logger.debug(f"ZAP output:\n{logs}")
+            except Exception as e:
+                logger.error(f"Failed to read ZAP logs: {e}")
 
     def _stop_zap_daemon(self):
         """Stop the ZAP daemon and cleanup."""
@@ -363,5 +409,22 @@ class ZAPScanner:
         return ScanStatus()
 
 def create_scanner(base_path: Path) -> ZAPScanner:
-    """Create a configured ZAP scanner instance."""
+    """Create a configured ZAP scanner instance with Java check."""
+    # Verify Java installation
+    try:
+        subprocess.run(
+            ['java', '-version'],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+    except Exception as e:
+        raise RuntimeError(
+            "Java runtime not found. Install Java 11+ and ensure it's in PATH."
+        ) from e
+
+    # Ensure base_path is a Path object
+    if not isinstance(base_path, Path):
+        base_path = Path(base_path.root_path)  # Correct way to get path from Flask app
+
     return ZAPScanner(base_path)
