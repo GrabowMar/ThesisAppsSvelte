@@ -201,21 +201,21 @@
               data-app-num="{{ app.app_num }}">Rebuild</button>
 
             <!-- Monitoring -->
-            <a href="{{ url_for('view_logs', model=app.model, app_num=app.app_num) }}"
+            <a href="{{ url_for('main.view_logs', model=app.model, app_num=app.app_num) }}"
               class="action-btn text-center">Logs</a>
-            <a href="{{ url_for('performance_test', model=app.model, app_num=app.app_num) }}"
+            <a href="{{ url_for('performance.performance_test', model=app.model, app_num=app.app_num) }}"
               class="action-btn text-center">Performance</a>
-            <a href="{{ url_for('security_analysis', model=app.model, app_num=app.app_num) }}"
+            <a href="{{ url_for('analysis.security_analysis', model=app.model, app_num=app.app_num) }}"
               class="action-btn text-center">Backend</a>
-            <a href="{{ url_for('frontend_security_analysis', model=app.model, app_num=app.app_num) }}"
+            <a href="{{ url_for('analysis.frontend_security_analysis', model=app.model, app_num=app.app_num) }}"
               class="action-btn text-center">Frontend</a>
 
             <!-- Analysis Tools -->
-            <a href="{{ url_for('codacy_analysis', model=app.model, app_num=app.app_num) }}"
+            <a href="{{ url_for('codacy.codacy_analysis', model=app.model, app_num=app.app_num) }}"
               class="action-btn text-center">Codacy</a>
-            <a href="{{ url_for('zap_scan', model=app.model, app_num=app.app_num) }}"
+            <a href="{{ url_for('zap.zap_scan', model=app.model, app_num=app.app_num) }}"
               class="action-btn text-center">ZAP</a>
-            <a href="{{ url_for('gpt4all_analysis', model=app.model, app_num=app.app_num) }}"
+            <a href="{{ url_for('gpt4all.gpt4all_analysis', model=app.model, app_num=app.app_num) }}"
               class="action-btn text-center">AI Analysis</a>
           </div>
         </div>

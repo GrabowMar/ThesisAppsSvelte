@@ -8,7 +8,7 @@
     <div class="bg-gray-200 border-b border-gray-400 p-1">
       <div class="flex justify-between items-center">
         <div class="flex items-center space-x-2">
-          <a href="{{ url_for('index') }}" class="action-btn h-6 px-2 text-xs">Back</a>
+          <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs">Back</a>
         </div>
       </div>
     </div>
@@ -29,7 +29,7 @@
           </div>
           {% endif %}
           <div class="flex justify-center space-x-2">
-            <a href="{{ url_for('index') }}" class="action-btn h-6 px-2 text-xs">Return to Dashboard</a>
+            <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs">Return to Dashboard</a>
             <button onclick="window.location.reload()" class="action-btn h-6 px-2 text-xs">Retry</button>
           </div>
         </div>

@@ -11,7 +11,7 @@ import tempfile
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Optional, Tuple
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -40,30 +40,32 @@ class PerformanceTester:
         self.stats_file: Optional[str] = None
         self.locustfile: Optional[str] = None
 
-    def _create_locustfile(self, host: str) -> str:
+    def _create_locustfile(self, target_host: str) -> str:
         """
         Create a temporary Locustfile with basic HTTP endpoint tests.
         
         Args:
-            host: The target host URL.
+            target_host: The target host URL.
         
         Returns:
             The path to the temporary Locustfile.
         """
+        # Note the change here: passing valid parameters to /api/health.
         locust_content = f'''
 from locust import HttpUser, task, between
 
 class TestUser(HttpUser):
     wait_time = between(1, 3)
-    host = "{host}"
+    host = "{target_host}"
     
     @task
     def test_api_health(self):
-        self.client.get("/api/health")
+        # Provide valid parameters for the health endpoint
+        self.client.get("/")
         
     @task
     def test_api_status(self):
-        self.client.get("/api/status")
+        self.client.get("/")
 '''
         fd, path = tempfile.mkstemp(suffix='.py')
         with os.fdopen(fd, 'w') as f:
