@@ -576,21 +576,20 @@ def get_app_directory(app: Flask, model: str, app_num: int) -> Path:
 	return app.config["BASE_DIR"] / f"{model}/app{app_num}"
 
 
-# =============================================================================
-# Helper Functions for ZAP
-# =============================================================================
-def stop_zap_scanners(scans, condition=None):
-    """
-    Stop all ZAP scanners that match the given condition.
-    """
-    for scan_id in list(scans.keys()):
-        scan = scans[scan_id]
-        if condition is None or condition(scan["status"]):
-            scanner = scan["scanner"]
-            scanner._stop_zap_daemon()
-            scan["status"] = "Stopped"
-            scan["progress"] = 0
-            scans.pop(scan_id)
+def stop_zap_scanners(scans):
+    """Stop all active ZAP scanners."""
+    for scan_key, scanner in scans.items():
+        # Ensure scanner is an instance of ZAPScanner (or has the stop_scan method).
+        if hasattr(scanner, "stop_scan") and callable(scanner.stop_scan):
+            # Adjust model and app_num extraction as needed.
+            # Here we assume the key is in the format "model-app_num" (e.g., "ChatGPT4o-1")
+            try:
+                model, app_num = scan_key.split("-")
+                scanner.stop_scan(model=model, app_num=int(app_num))
+            except Exception as e:
+                logger.error(f"Error stopping scan for {scan_key}: {e}")
+        else:
+            logger.warning(f"Invalid scanner for key {scan_key}: expected a ZAPScanner instance but got {type(scanner)}")
 
 
 # =============================================================================
@@ -1363,34 +1362,31 @@ def register_error_handlers(app: Flask) -> None:
 		return render_template("500.html", error=error), 500
 
 
-# =============================================================================
-# Request Hooks for ZAP Cleanup
-# =============================================================================
 def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
-    """
-    Register hooks to execute code before and after each request.
-    """
-    @app.before_request
-    def before():
-        if random.random() < 0.01:
-            docker_manager.cleanup_containers()
-            if "ZAP_SCANS" in app.config:
-                stop_zap_scanners(app.config["ZAP_SCANS"], condition=lambda status: status not in ["Running", "Starting"])
+	"""
+	Register hooks to execute code before and after each request.
+	"""
+	@app.before_request
+	def before():
+		if random.random() < 0.01:
+			docker_manager.cleanup_containers()
+			if "ZAP_SCANS" in app.config:
+				stop_zap_scanners(app.config["ZAP_SCANS"], condition=lambda status: status not in ["Running", "Starting"])
 
-    @app.after_request
-    def after(response):
-        response.headers.update({
-            "X-Content-Type-Options": "nosniff",
-            "X-Frame-Options": "SAMEORIGIN",
-            "X-XSS-Protection": "1; mode=block",
-            "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-        })
-        return response
+	@app.after_request
+	def after(response):
+		response.headers.update({
+			"X-Content-Type-Options": "nosniff",
+			"X-Frame-Options": "SAMEORIGIN",
+			"X-XSS-Protection": "1; mode=block",
+			"Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+		})
+		return response
 
-    @app.teardown_appcontext
-    def teardown(exception=None):
-        if "ZAP_SCANS" in app.config:
-            stop_zap_scanners(app.config["ZAP_SCANS"])
+	@app.teardown_appcontext
+	def teardown(exception=None):
+		if "ZAP_SCANS" in app.config:
+			stop_zap_scanners(app.config["ZAP_SCANS"])
 
 
 # =============================================================================
