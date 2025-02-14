@@ -9,6 +9,7 @@ from selenium.webdriver.firefox.service import Service as FirefoxService
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import os
 
 # Global variables to hold our Selenium driver and the user-selected CSS selector.
 driver = None
@@ -21,7 +22,7 @@ def setup_driver():
     # Set up Firefox Developer Edition options.
     options = FirefoxOptions()
     # *** Adjust the path below to point to your Firefox Developer Edition binary ***
-    options.binary_location = "C:\Program Files\Firefox Developer Edition\firefox.exe"
+    options.binary_location = r"C:\Program Files\Firefox Developer Edition\firefox.exe"
     service = FirefoxService()  # Assumes geckodriver is in your PATH.
     driver = webdriver.Firefox(service=service, options=options)
     driver.get("https://chat.openai.com")
@@ -41,7 +42,7 @@ def send_message(message):
     """
     global driver, selected_textarea_selector
     try:
-        if selected_textarea_selector:
+        if (selected_textarea_selector):
             textarea = WebDriverWait(driver, 30).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, selected_textarea_selector))
             )
@@ -191,6 +192,15 @@ def on_save_code_block(filename):
             log_to_ui(f"Error saving code block: {e}")
     threading.Thread(target=worker, daemon=True).start()
 
+def on_send_app_template(filepath):
+    """Read a selected template file and send its content as a message."""
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+        send_message(content)
+    except Exception as e:
+        log_to_ui(f"Error sending template from {filepath}: {e}")
+
 # --- UI Setup ---
 
 def start_ui():
@@ -201,7 +211,7 @@ def start_ui():
     frame = tk.Frame(root)
     frame.pack(padx=10, pady=10)
 
-    # Buttons for actions:
+    # Existing action buttons...
     btn_select = tk.Button(frame, text="Select Text Area", width=25, command=lambda: threading.Thread(target=on_select_text_area, daemon=True).start())
     btn_select.grid(row=0, column=0, padx=5, pady=5)
 
@@ -223,11 +233,38 @@ def start_ui():
     btn_exit = tk.Button(frame, text="Exit", width=25, command=lambda: root.destroy())
     btn_exit.grid(row=6, column=0, padx=5, pady=5)
 
+    # --- New Template Selection UI ---
+    template_frame = tk.Frame(root)
+    template_frame.pack(padx=10, pady=10)
+
+    template_label = tk.Label(template_frame, text="Select App Template:")
+    template_label.grid(row=0, column=0, padx=5, pady=5)
+
+    # Determine the app_templates directory.
+    base_dir = os.path.dirname(__file__)
+    templates_dir = os.path.join(base_dir, "app_templates")
+    template_files = sorted([f for f in os.listdir(templates_dir) if f.endswith(".md")])
+    
+    template_var = tk.StringVar(template_frame)
+    if template_files:
+        template_var.set(template_files[0])
+    else:
+        template_var.set("")
+
+    template_menu = tk.OptionMenu(template_frame, template_var, *template_files)
+    template_menu.grid(row=0, column=1, padx=5, pady=5)
+
+    btn_send_template = tk.Button(template_frame, text="Send Selected Template", width=25,
+                                  command=lambda: threading.Thread(
+                                      target=on_send_app_template,
+                                      args=(os.path.join(templates_dir, template_var.get()),),
+                                      daemon=True).start())
+    btn_send_template.grid(row=0, column=2, padx=5, pady=5)
+
     # Log box (scrolled text)
-    log_box = scrolledtext.ScrolledText(root, width=70, height=15)
+    log_box = tk.scrolledtext.ScrolledText(root, width=70, height=15)
     log_box.pack(padx=10, pady=10)
 
-    # Start the Tkinter mainloop.
     root.mainloop()
 
 # --- Main ---
