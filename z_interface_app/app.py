@@ -47,7 +47,6 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 # =============================================================================
 from backend_security_analysis import BackendSecurityAnalyzer
 from frontend_security_analysis import FrontendSecurityAnalyzer
-from codacy_analysis import CodacyAnalyzer
 from gpt4all_analysis import GPT4AllAnalyzer, get_analysis_summary
 from performance_analysis import PerformanceTester
 from zap_scanner import ZAPScanner, create_scanner
@@ -514,7 +513,6 @@ main_bp = Blueprint("main", __name__)
 api_bp = Blueprint("api", __name__)
 analysis_bp = Blueprint("analysis", __name__)
 performance_bp = Blueprint("performance", __name__)
-codacy_bp = Blueprint("codacy", __name__)
 gpt4all_bp = Blueprint("gpt4all", __name__)
 zap_bp = Blueprint("zap", __name__)
 
@@ -767,7 +765,7 @@ def analyze_security_issues():
         data = request.get_json()
         if not data or "issues" not in data:
             raise BadRequest("No issues provided for analysis")
-        model = data.get("model", "claude-3-sonnet-20240229")
+        model = data.get("model", "default-model")
         issues = data["issues"]
         severity_groups = {"HIGH": [], "MEDIUM": [], "LOW": []}
         for issue in issues:
@@ -884,133 +882,6 @@ def performance_test(model: str, app_num: int):
         else:
             return jsonify({"status": "error", "error": info.get("error", "Unknown error")}), 500
     return render_template("performance_test.html", model=model, app_num=app_num)
-
-
-# ----- Codacy Analysis Routes -----
-@codacy_bp.route("/<string:model>/<int:app_num>")
-@error_handler
-def codacy_analysis(model: str, app_num: int):
-    try:
-        app_path = get_app_directory(current_app, model, app_num)
-        issues, raw_output = current_app.codacy_analyzer.analyze_app(model, app_num)
-        config_path = app_path / ".codacy.json"
-        if config_path.exists():
-            with open(config_path) as f:
-                config = json.load(f)
-        else:
-            config = {
-                "tools": {"python": True, "javascript": True, "typescript": True},
-                "exclude_paths": ["tests/**", "**/__pycache__/**", "node_modules/**"],
-            }
-        categories = sorted(set(issue.issue_type for issue in issues))
-        summary = {
-            "total_issues": len(issues),
-            "severity_counts": {
-                "HIGH": sum(1 for i in issues if i.severity == "HIGH"),
-                "MEDIUM": sum(1 for i in issues if i.severity == "MEDIUM"),
-                "LOW": sum(1 for i in issues if i.severity == "LOW"),
-            },
-            "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        }
-        return render_template(
-            "codacy_analysis.html",
-            model=model,
-            app_num=app_num,
-            issues=issues,
-            summary=summary,
-            categories=categories,
-            config=config,
-            raw_output=raw_output,
-            error=None,
-        )
-    except Exception as e:
-        current_app.logger.error(f"Codacy analysis failed: {e}")
-        return render_template(
-            "codacy_analysis.html",
-            model=model,
-            app_num=app_num,
-            issues=[],
-            summary=None,
-            categories=[],
-            config={},
-            raw_output="",
-            error=str(e),
-        )
-
-
-@codacy_bp.route("/config", methods=["POST"])
-@error_handler
-def update_codacy_config():
-    try:
-        data = request.get_json()
-        if not data:
-            raise BadRequest("No JSON data provided")
-        model = data.get("model")
-        app_num = data.get("app_num")
-        if not model or not app_num:
-            raise BadRequest("Model and app number required")
-        tools = data.get("tools", [])
-        excludes = data.get("excludes", [])
-        config = {"tools": {tool: {"enabled": True} for tool in tools}, "exclude_paths": excludes}
-        app_path = get_app_directory(current_app, model, app_num)
-        config_path = app_path / ".codacy.json"
-        with open(config_path, "w") as f:
-            json.dump(config, f, indent=2)
-        flash("Codacy configuration updated successfully", "success")
-        return jsonify({"status": "success"})
-    except BadRequest as e:
-        current_app.logger.warning(f"Bad request in Codacy config update: {e}")
-        return jsonify({"error": str(e)}), 400
-    except Exception as e:
-        current_app.logger.error(f"Failed to update Codacy config: {e}")
-        return jsonify({"error": str(e)}), 500
-
-
-@codacy_bp.route("/<string:model>/<int:app_num>/status")
-@error_handler
-def codacy_status(model: str, app_num: int):
-    try:
-        app_path = get_app_directory(current_app, model, app_num)
-        status_file = app_path / ".codacy_status"
-        if status_file.exists():
-            with open(status_file) as f:
-                status = json.load(f)
-        else:
-            status = {"last_run": None, "status": "not_run", "issues_count": 0}
-        return jsonify(status)
-    except Exception as e:
-        current_app.logger.error(f"Failed to get Codacy status: {e}")
-        return jsonify({"error": str(e)}), 500
-
-
-@codacy_bp.route("/<string:model>/<int:app_num>/analyze", methods=["POST"])
-@error_handler
-def trigger_codacy_analysis(model: str, app_num: int):
-    try:
-        app_path = get_app_directory(current_app, model, app_num)
-        status_file = app_path / ".codacy_status"
-        with open(status_file, "w") as f:
-            json.dump({"status": "running", "start_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")}, f)
-        def run_analysis():
-            try:
-                issues, _ = current_app.codacy_analyzer.analyze_app(model, app_num)
-                with open(status_file, "w") as f:
-                    json.dump(
-                        {"status": "completed", "last_run": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "issues_count": len(issues)},
-                        f,
-                    )
-            except Exception as e:
-                current_app.logger.error(f"Async Codacy analysis failed: {e}")
-                with open(status_file, "w") as f:
-                    json.dump(
-                        {"status": "failed", "error": str(e), "last_run": datetime.now().strftime("%Y-%m-%d %H:%M:%S")},
-                        f,
-                    )
-        threading.Thread(target=run_analysis).start()
-        return jsonify({"status": "started", "message": "Analysis started successfully"})
-    except Exception as e:
-        current_app.logger.error(f"Failed to trigger Codacy analysis: {e}")
-        return jsonify({"error": str(e)}), 500
 
 
 # ----- GPT4All Routes -----
@@ -1155,7 +1026,6 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     # Initialize analyzers and other services
     app.backend_security_analyzer = BackendSecurityAnalyzer(base_path)
     app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
-    app.codacy_analyzer = CodacyAnalyzer(base_path)
     app.gpt4all_analyzer = GPT4AllAnalyzer(base_path)
     app.performance_tester = PerformanceTester(base_path)
     app.zap_scanner = create_scanner(app_config.BASE_DIR)
@@ -1170,7 +1040,6 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     app.register_blueprint(api_bp, url_prefix="/api")
     app.register_blueprint(analysis_bp)
     app.register_blueprint(performance_bp, url_prefix="/performance")
-    app.register_blueprint(codacy_bp, url_prefix="/codacy")
     app.register_blueprint(gpt4all_bp)
     app.register_blueprint(zap_bp, url_prefix="/zap")
 
