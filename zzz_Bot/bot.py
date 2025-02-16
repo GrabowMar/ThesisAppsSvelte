@@ -9,6 +9,7 @@ import threading
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Dict
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, scrolledtext
 
@@ -22,9 +23,41 @@ CONFIG = {
                        "DeepSeek", "Gemini", "Grok", "Llama", "Mixtral", "Qwen"}
 }
 
-# -----------------------------------------------------------------------------
+# =============================================================================
+# PortManager: Calculates ports for each model and its apps
+# =============================================================================
+class PortManager:
+    BASE_BACKEND_PORT = 5001
+    BASE_FRONTEND_PORT = 5501
+    PORTS_PER_APP = 2
+    BUFFER_PORTS = 20
+    APPS_PER_MODEL = 20
+
+    @classmethod
+    def get_port_range(cls, model_idx: int) -> Dict[str, Dict[str, int]]:
+        total_needed = cls.APPS_PER_MODEL * cls.PORTS_PER_APP + cls.BUFFER_PORTS
+        return {
+            "backend": {
+                "start": cls.BASE_BACKEND_PORT + (model_idx * total_needed),
+                "end": cls.BASE_BACKEND_PORT + ((model_idx + 1) * total_needed) - cls.BUFFER_PORTS,
+            },
+            "frontend": {
+                "start": cls.BASE_FRONTEND_PORT + (model_idx * total_needed),
+                "end": cls.BASE_FRONTEND_PORT + ((model_idx + 1) * total_needed) - cls.BUFFER_PORTS,
+            },
+        }
+
+    @classmethod
+    def get_app_ports(cls, model_idx: int, app_num: int) -> Dict[str, int]:
+        rng = cls.get_port_range(model_idx)
+        return {
+            "backend": rng["backend"]["start"] + (app_num - 1) * cls.PORTS_PER_APP,
+            "frontend": rng["frontend"]["start"] + (app_num - 1) * cls.PORTS_PER_APP,
+        }
+
+# =============================================================================
 # Logger Setup
-# -----------------------------------------------------------------------------
+# =============================================================================
 logger = logging.getLogger("CodeGenAssistant")
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s', datefmt="%H:%M:%S")
@@ -33,14 +66,13 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 # =============================================================================
-# Natural Sort Helper: Using natsort if available; fallback if not.
+# Natural Sort Helper: Using natsort if available; fallback otherwise.
 # =============================================================================
 try:
     from natsort import natsorted
 except ImportError:
     def natural_sort_key(s: str):
-        return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s)
-]
+        return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s)]
     def natsorted(seq):
         return sorted(seq, key=natural_sort_key)
 
@@ -92,7 +124,7 @@ class AssistantUI(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
         self.title("Code Generation Assistant")
-        self.geometry("1200x850")
+        self.geometry("1200x900")
         self.configure(bg="white")
         self.db_manager = DatabaseManager()  # Initialize progress tracking DB
         self.pause_refresh = False
@@ -113,11 +145,13 @@ class AssistantUI(tk.Tk):
     def _create_widgets(self) -> None:
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(fill="both", expand=True)
+
         self._create_template_tab()
         self._create_generate_code_tab()
         self._create_replace_files_tab()
         self._create_progress_tab()
         self._create_status_tab()
+        self._create_ports_tab()  # NEW: Ports tab
         self._create_logging_frame()
 
     def _setup_logging_handler(self) -> None:
@@ -143,9 +177,9 @@ class AssistantUI(tk.Tk):
             self.template_var.set(presets[0])
         self.template_dropdown.pack(side="left", padx=5)
         ttk.Button(top_frame, text="Load Template", command=self.load_template).pack(side="left", padx=5)
-        # ttk.Button(top_frame, text="Save Template", command=self.save_template).pack(side="left", padx=5)
-        # ttk.Button(top_frame, text="New Template", command=self.new_template).pack(side="left", padx=5)
-        # ttk.Button(top_frame, text="Delete Template", command=self.delete_template).pack(side="left", padx=5)
+        ttk.Button(top_frame, text="Save Template", command=self.save_template).pack(side="left", padx=5)
+        ttk.Button(top_frame, text="New Template", command=self.new_template).pack(side="left", padx=5)
+        ttk.Button(top_frame, text="Delete Template", command=self.delete_template).pack(side="left", padx=5)
         ttk.Button(top_frame, text="Copy Template to Clipboard", command=self.copy_template_to_clipboard).pack(side="left", padx=5)
         self.template_text = tk.Text(self.template_tab, wrap="word", height=25)
         self.template_text.pack(fill="both", expand=True, padx=10, pady=5)
@@ -223,7 +257,7 @@ class AssistantUI(tk.Tk):
         self.log("Template copied to clipboard.")
 
     # -------------------------------------------------------------------------
-    # TAB 2: Generate Code (Auto & LLM Paste)
+    # TAB 2: Generate Code (Auto Generation & LLM Paste)
     # -------------------------------------------------------------------------
     def _create_generate_code_tab(self) -> None:
         self.generate_tab = ttk.Frame(self.notebook)
@@ -265,9 +299,8 @@ class AssistantUI(tk.Tk):
 
         task = "Generate Code"
         self.db_manager.log_progress(task, 0, "Started code generation")
-        self._update_progress_bar(self.gen_progress, 0)  # using a shared progress bar later if desired
+        self._update_progress_bar(self.gen_progress, 0)
 
-        # Simulate gradual progress update.
         steps = [("Generating app.py", 25),
                  ("Generating App.svelte", 50),
                  ("Generating requirements.txt", 75),
@@ -279,17 +312,12 @@ class AssistantUI(tk.Tk):
             self.db_manager.log_progress(task, prog, message)
             self.log(message)
 
-        # Generate file content based on the template.
         self.app_py_text.delete("1.0", tk.END)
         self.app_py_text.insert(tk.END, f"# Generated app.py code\n# Template: {self.template_var.get()}\n\n{template_content}")
-        
         self.app_svelte_text.delete("1.0", tk.END)
         self.app_svelte_text.insert(tk.END, f"<!-- Generated App.svelte code -->\n<!-- Template: {self.template_var.get()} -->\n\n{template_content}")
-        
         self.requirements_text.delete("1.0", tk.END)
         self.requirements_text.insert(tk.END, f"# Auto-generated requirements.txt\n# Template: {self.template_var.get()}\n\n{template_content}")
-        
-        # Create a simple package.json structure.
         pkg = {
             "name": "generated-app",
             "version": "1.0.0",
@@ -319,7 +347,6 @@ class AssistantUI(tk.Tk):
             self.log(f"Could not get clipboard content: {e}", error=True)
             return
 
-        # Define regex to extract sections.
         pattern = re.compile(r"===\s*(app\.py|App\.svelte|requirements\.txt|package\.json)\s*===\s*(.*?)\s*(?=^===|\Z)", re.DOTALL | re.MULTILINE)
         matches = pattern.findall(text)
         if not matches:
@@ -381,7 +408,6 @@ class AssistantUI(tk.Tk):
         if apps:
             self.app_var.set(apps[0])
         self.app_dropdown.grid(row=1, column=1, padx=5, pady=2, sticky="w")
-        # File replacement buttons.
         btn_frame = ttk.Frame(self.replace_tab)
         btn_frame.pack(padx=10, pady=5)
         ttk.Button(btn_frame, text="Replace app.py",
@@ -581,6 +607,67 @@ class AssistantUI(tk.Tk):
                         "Yes" if app_py_exists else "No",
                         "Yes" if app_svelte_exists else "No"
                     ))
+
+    # -------------------------------------------------------------------------
+    # TAB 6: Ports Display (NEW)
+    # -------------------------------------------------------------------------
+    def _create_ports_tab(self) -> None:
+        self.ports_tab = ttk.Frame(self.notebook)
+        self.notebook.add(self.ports_tab, text="Ports")
+        top_frame = ttk.Frame(self.ports_tab)
+        top_frame.pack(fill="x", padx=10, pady=5)
+        ttk.Button(top_frame, text="Refresh Ports", command=self.refresh_ports_table).pack(side="left", padx=5)
+        columns = ("model", "app_folder", "app_num", "backend", "frontend", "backend_range", "frontend_range")
+        self.ports_tree = ttk.Treeview(self.ports_tab, columns=columns, show="headings")
+        self.ports_tree.heading("model", text="Model")
+        self.ports_tree.heading("app_folder", text="App Folder")
+        self.ports_tree.heading("app_num", text="App #")
+        self.ports_tree.heading("backend", text="Backend Port")
+        self.ports_tree.heading("frontend", text="Frontend Port")
+        self.ports_tree.heading("backend_range", text="Backend Range")
+        self.ports_tree.heading("frontend_range", text="Frontend Range")
+        self.ports_tree.column("model", width=100)
+        self.ports_tree.column("app_folder", width=150)
+        self.ports_tree.column("app_num", width=70, anchor="center")
+        self.ports_tree.column("backend", width=100, anchor="center")
+        self.ports_tree.column("frontend", width=100, anchor="center")
+        self.ports_tree.column("backend_range", width=150, anchor="center")
+        self.ports_tree.column("frontend_range", width=150, anchor="center")
+        vsb = ttk.Scrollbar(self.ports_tab, orient="vertical", command=self.ports_tree.yview)
+        self.ports_tree.configure(yscrollcommand=vsb.set)
+        vsb.pack(side="right", fill="y")
+        self.ports_tree.pack(fill="both", expand=True, padx=10, pady=5)
+        self.refresh_ports_table()
+
+    def refresh_ports_table(self) -> None:
+        for row in self.ports_tree.get_children():
+            self.ports_tree.delete(row)
+        # Use natural sort for the allowed models.
+        sorted_models = natsorted(list(CONFIG["allowed_models"]))
+        for model in sorted_models:
+            model_idx = sorted_models.index(model)
+            rng = PortManager.get_port_range(model_idx)
+            backend_range_str = f"{rng['backend']['start']}-{rng['backend']['end']}"
+            frontend_range_str = f"{rng['frontend']['start']}-{rng['frontend']['end']}"
+            model_dir = Path('.') / model
+            if not model_dir.exists():
+                continue
+            # Use natural sort for the app directories.
+            for app_dir in natsorted([d for d in model_dir.iterdir() if d.is_dir()]):
+                if app_dir.name.lower().startswith("app"):
+                    match = re.search(r'(\d+)', app_dir.name)
+                    app_num = int(match.group(1)) if match else 1
+                    ports = PortManager.get_app_ports(model_idx, app_num)
+                    self.ports_tree.insert("", tk.END, values=(
+                        model,
+                        app_dir.name,
+                        app_num,
+                        ports["backend"],
+                        ports["frontend"],
+                        backend_range_str,
+                        frontend_range_str
+                    ))
+
 
     # -------------------------------------------------------------------------
     # Logging Frame at Bottom
