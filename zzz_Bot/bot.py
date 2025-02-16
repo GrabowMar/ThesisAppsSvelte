@@ -1,257 +1,234 @@
 #!/usr/bin/env python3
-import os
-import time
-import random
-import threading
-from queue import Queue
-from typing import Optional, Callable
-
 import tkinter as tk
-from tkinter import messagebox, scrolledtext
+from tkinter import ttk, filedialog, messagebox, scrolledtext
+from pathlib import Path
+import time
 
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import (
-    StaleElementReferenceException,
-    WebDriverException,
-    TimeoutException
-)
+# --- Configuration ---
+CONFIG = {
+    "presets_dir": Path("zzz_Bot/app_templates"),  # Folder with template files
+    "default_template_ext": ".md",
+    "allowed_models": {"ChatGPT4o", "ChatGPTo1", "ChatGPTo3", "ClaudeSonnet",
+                       "DeepSeek", "Gemini", "Grok", "Llama", "Mixtral", "Qwen"}
+}
 
-from selenium.webdriver.chrome.options import Options as ChromeOptions
 
-# Configuration
-REMOTE_DEBUGGING_PORT = 9222  # Port used for remote debugging
-USER_DATA_DIR = r"C:\temp\chrome_debug_profile"  # User data directory for the running Chrome instance
-DEFAULT_TIMEOUT = 30
-
-class ChatGPTAssistant:
+# --- Main Application ---
+class AssistantUI(tk.Tk):
     def __init__(self):
-        self.browser: Optional[webdriver.Chrome] = None
-        self.session_active = False
+        super().__init__()
+        self.title("Code Generation Assistant")
+        self.geometry("1000x700")
+        self._create_widgets()
 
-    def start_browser_session(self) -> None:
-        try:
-            # Connect to the existing Chrome session
-            options = ChromeOptions()
-            options.add_experimental_option("debuggerAddress", f"127.0.0.1:{REMOTE_DEBUGGING_PORT}")
-            self.browser = webdriver.Chrome(options=options)
+    def _create_widgets(self):
+        # Create a Notebook to separate the workflow into three steps.
+        self.notebook = ttk.Notebook(self)
+        self.notebook.pack(fill="both", expand=True)
 
-            # Navigate to ChatGPT (if not already there)
-            if "chat.openai.com" not in self.browser.current_url:
-                self.browser.get("https://chat.openai.com")
+        self._create_template_tab()
+        self._create_generate_code_tab()
+        self._create_replace_files_tab()
+        self._create_logging_frame()
 
-            WebDriverWait(self.browser, DEFAULT_TIMEOUT).until(
-                EC.presence_of_element_located((By.TAG_NAME, "body"))
-            )
+    # === TAB 1: Template Selection ===
+    def _create_template_tab(self):
+        self.template_tab = ttk.Frame(self.notebook)
+        self.notebook.add(self.template_tab, text="Template")
 
-            self.session_active = True
-            print("Connected to existing Chrome session.")
-        except Exception as e:
-            print(f"Failed to connect to Chrome session: {e}")
+        # Frame for template selection
+        sel_frame = ttk.Frame(self.template_tab)
+        sel_frame.pack(fill="x", padx=10, pady=5)
+        ttk.Label(sel_frame, text="Select Template:").pack(side="left")
 
-    def submit_prompt(self, message: str) -> bool:
-        if not self.session_active or not self.browser:
-            print("Session not active")
-            return False
+        self.template_var = tk.StringVar()
+        presets = self._get_presets()
+        self.template_dropdown = ttk.Combobox(sel_frame, textvariable=self.template_var,
+                                              values=presets, state="readonly", width=40)
+        if presets:
+            self.template_var.set(presets[0])
+        self.template_dropdown.pack(side="left", padx=5)
 
-        try:
-            # Locate the input field and type the message
-            input_field = WebDriverWait(self.browser, DEFAULT_TIMEOUT).until(
-                EC.element_to_be_clickable((By.ID, "prompt-textarea"))
-            )
-            input_field.click()
-            self._simulate_human_typing(input_field, message)
-            self._random_delay_after_typing()
-            return True
-        except Exception as e:
-            print(f"Failed to submit prompt: {e}")
-            return False
+        load_btn = ttk.Button(sel_frame, text="Load Template", command=self.load_template)
+        load_btn.pack(side="left", padx=5)
 
-    def _simulate_human_typing(self, element, text: str):
-        actions = ActionChains(self.browser)
-        for char in text:
-            delay = random.uniform(0.1, 0.3)  # Simulate typing delay
-            time.sleep(delay)
-            actions.send_keys(char)
-        actions.perform()
+        # Text area for template content
+        self.template_text = tk.Text(self.template_tab, wrap="word", height=20)
+        self.template_text.pack(fill="both", expand=True, padx=10, pady=5)
 
-    def _random_delay_after_typing(self):
-        time.sleep(random.uniform(0.5, 2.5))  # Random delay before submitting
+    # === TAB 2: Generate Code Files ===
+    def _create_generate_code_tab(self):
+        self.generate_tab = ttk.Frame(self.notebook)
+        self.notebook.add(self.generate_tab, text="Generate Code")
 
-    def submit_message(self) -> bool:
-        try:
-            # Locate and click the submit button
-            submit_button = WebDriverWait(self.browser, DEFAULT_TIMEOUT).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[@data-testid='send-button']"))
-            )
-            submit_button.click()
-            return True
-        except Exception as e:
-            print(f"Error submitting message: {e}")
-            return False
+        gen_btn = ttk.Button(self.generate_tab, text="Generate Code", command=self.generate_code)
+        gen_btn.pack(pady=5)
 
-    def shutdown(self) -> None:
-        try:
-            if self.browser:
-                self.browser.quit()
-                self.session_active = False
-                print("Browser session terminated")
-        except Exception as e:
-            print(f"Error during shutdown: {e}")
+        # Frame that holds two code areas side by side.
+        code_frame = ttk.Frame(self.generate_tab)
+        code_frame.pack(fill="both", expand=True, padx=10, pady=5)
 
-class AppInterface:
-    def __init__(self, assistant: ChatGPTAssistant):
-        self.assistant = assistant
-        self.root = tk.Tk()
-        self.log_display = None
-        self._setup_interface()
-        self._prepare_close_handling()
+        # Left: app.py
+        app_py_frame = ttk.LabelFrame(code_frame, text="app.py")
+        app_py_frame.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+        self.app_py_text = tk.Text(app_py_frame, wrap="none")
+        self.app_py_text.pack(fill="both", expand=True)
 
-    def _setup_interface(self) -> None:
-        self.root.title("ChatGPT Assistant")
-        self._create_log_section()
-        self._build_control_panel()
-        self._add_preset_selector()
+        # Right: App.svelte
+        app_svelte_frame = ttk.LabelFrame(code_frame, text="App.svelte")
+        app_svelte_frame.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+        self.app_svelte_text = tk.Text(app_svelte_frame, wrap="none")
+        self.app_svelte_text.pack(fill="both", expand=True)
 
-    def _build_control_panel(self) -> None:
-        panel = tk.Frame(self.root)
-        panel.pack(padx=10, pady=10)
-        actions = [
-            ("Start Conversation", self._queue_action(self.assistant.submit_prompt, "Hello World!")),
-            ("Use Template", self._queue_action(self._apply_preset)),
-            ("Insert Content", self._queue_action(self._insert_text_file)),
-            ("Continue Dialogue", self._queue_action(self.assistant.submit_prompt, "Please continue")),
-            ("Save Code", self._queue_action(self._save_code)),
-            ("End Session", self.root.destroy)
-        ]
-        for row, (label, action) in enumerate(actions):
-            tk.Button(panel, text=label, width=22, command=action)\
-              .grid(row=row, column=0, padx=5, pady=5)
+    # === TAB 3: Replace Files in Model Folders ===
+    def _create_replace_files_tab(self):
+        self.replace_tab = ttk.Frame(self.notebook)
+        self.notebook.add(self.replace_tab, text="Replace Files")
 
-    def _add_preset_selector(self) -> None:
-        selector_frame = tk.Frame(self.root)
-        selector_frame.pack(padx=10, pady=10)
-        available_presets = self._find_presets()
-        self.preset_choice = tk.StringVar()
-        if available_presets:
-            self.preset_choice.set(available_presets[0])
-        else:
-            self.preset_choice.set("No presets available")
-            available_presets = ["Create presets first"]
-        tk.Label(selector_frame, text="Dialogue Templates:")\
-          .grid(row=0, column=0, padx=5)
-        tk.OptionMenu(selector_frame, self.preset_choice, *available_presets)\
-          .grid(row=0, column=1, padx=5)
-        tk.Button(selector_frame, text="Load Template", 
-                  command=self._queue_action(self._load_preset))\
-          .grid(row=0, column=2, padx=5)
+        sel_frame = ttk.Frame(self.replace_tab)
+        sel_frame.pack(fill="x", padx=10, pady=5)
+        # Model selection
+        ttk.Label(sel_frame, text="Select Model:").grid(row=0, column=0, padx=5, pady=2, sticky="w")
+        self.model_var = tk.StringVar()
+        models = self._get_models()
+        self.model_dropdown = ttk.Combobox(sel_frame, textvariable=self.model_var,
+                                           values=models, state="readonly", width=30)
+        if models:
+            self.model_var.set(models[0])
+        self.model_dropdown.grid(row=0, column=1, padx=5, pady=2, sticky="w")
+        self.model_dropdown.bind("<<ComboboxSelected>>", self._update_app_dropdown)
 
-    def _create_log_section(self) -> None:
-        self.log_display = scrolledtext.ScrolledText(self.root, width=80, height=20)
-        self.log_display.pack(padx=10, pady=10)
+        # App folder selection
+        ttk.Label(sel_frame, text="Select App:").grid(row=1, column=0, padx=5, pady=2, sticky="w")
+        self.app_var = tk.StringVar()
+        apps = self._get_apps_for_model(self.model_var.get())
+        self.app_dropdown = ttk.Combobox(sel_frame, textvariable=self.app_var,
+                                         values=apps, state="readonly", width=30)
+        if apps:
+            self.app_var.set(apps[0])
+        self.app_dropdown.grid(row=1, column=1, padx=5, pady=2, sticky="w")
 
-    def _prepare_close_handling(self) -> None:
-        self.root.protocol("WM_DELETE_WINDOW", self._safe_shutdown)
+        # Replacement buttons
+        btn_frame = ttk.Frame(self.replace_tab)
+        btn_frame.pack(padx=10, pady=5)
+        replace_app_py_btn = ttk.Button(btn_frame, text="Replace app.py",
+                                        command=lambda: self.replace_file("app.py",
+                                                                           self.app_py_text.get("1.0", tk.END)))
+        replace_app_svelte_btn = ttk.Button(btn_frame, text="Replace App.svelte",
+                                            command=lambda: self.replace_file("App.svelte",
+                                                                               self.app_svelte_text.get("1.0", tk.END)))
+        replace_app_py_btn.grid(row=0, column=0, padx=5, pady=5)
+        replace_app_svelte_btn.grid(row=0, column=1, padx=5, pady=5)
 
-    def _safe_shutdown(self) -> None:
-        self.assistant.shutdown()
-        self.root.destroy()
+    # === Logging Frame ===
+    def _create_logging_frame(self):
+        log_frame = ttk.Frame(self)
+        log_frame.pack(fill="x", side="bottom")
+        ttk.Label(log_frame, text="Log:").pack(anchor="w", padx=5)
+        self.log_text = scrolledtext.ScrolledText(log_frame, height=8, state="disabled")
+        self.log_text.pack(fill="x", padx=5, pady=5)
 
-    def _queue_action(self, func: Callable, *args) -> Callable:
-        def wrapper():
-            try:
-                func(*args)
-            except Exception as e:
-                self._show_error(f"Task Error: {e}")
-        return wrapper
-
-    def _apply_preset(self) -> None:
-        template_path = os.path.join("zzz_Bot", "prompt_template.txt")
-        try:
-            with open(template_path, encoding="utf-8") as f:
-                content = f.read()
-            self.assistant.submit_prompt(content)
-        except FileNotFoundError:
-            self._show_error("Template file not found")
-
-    def _insert_text_file(self) -> None:
-        file_path = "text_content.txt"
-        try:
-            with open(file_path, encoding="utf-8") as f:
-                content = f.read()
-            self.assistant.submit_prompt(content)
-        except FileNotFoundError:
-            self._show_error("Content file not found")
-
-    def _load_preset(self) -> None:
-        preset_filename = self.preset_choice.get()
-        preset_path = os.path.join("dialogue_presets", preset_filename)
-        try:
-            with open(preset_path, encoding="utf-8") as f:
-                content = f.read()
-            self.assistant.submit_prompt(content)
-        except FileNotFoundError:
-            self._show_error(f"Template not found: {preset_path}")
-
-    def _find_presets(self) -> list:
-        presets_dir = "zzz_Bot/app_templates"
-        try:
-            if not os.path.exists(presets_dir):
-                os.makedirs(presets_dir, exist_ok=True)
-                self.update_status("Created templates directory")
-            return sorted([
-                f for f in os.listdir(presets_dir)
-                if os.path.isfile(os.path.join(presets_dir, f)) and f.endswith(".md")
-            ])
-        except Exception as e:
-            self._show_error(f"Template directory error: {e}")
-            return []
-
-    def _save_code(self) -> None:
-        if not self.assistant.browser:
-            self._show_error("No browser session available")
-            return
-        try:
-            time.sleep(1)  # small delay for page updates
-            code_elements = self.assistant.browser.find_elements(By.TAG_NAME, "pre")
-            if not code_elements:
-                self._show_error("No code blocks found")
-                return
-            recent_code = code_elements[-1].text
-            from tkinter import filedialog
-            file_path = filedialog.asksaveasfilename(title="Save Code", defaultextension=".txt")
-            if file_path:
-                with open(file_path, 'w', encoding='utf-8') as f:
-                    f.write(recent_code)
-                self.update_status(f"Code saved to {file_path}")
-        except Exception as e:
-            self._show_error(f"Error saving code: {e}")
-
-    def update_status(self, message: str) -> None:
+    def log(self, message: str, error: bool = False):
         timestamp = time.strftime("%H:%M:%S")
-        safe_message = f"[{timestamp}] {message}\n"
-        self.log_display.after(0, self._update_log_display, safe_message)
+        entry = f"[{timestamp}] {'ERROR' if error else 'INFO'}: {message}\n"
+        self.log_text.config(state="normal")
+        self.log_text.insert(tk.END, entry)
+        self.log_text.see(tk.END)
+        self.log_text.config(state="disabled")
 
-    def _update_log_display(self, message: str) -> None:
-        self.log_display.insert(tk.END, message)
-        self.log_display.see(tk.END)
+    # === Template Tab Methods ===
+    def _get_presets(self):
+        presets_dir = CONFIG["presets_dir"]
+        presets_dir.mkdir(exist_ok=True)
+        return [f.name for f in presets_dir.glob(f"*{CONFIG['default_template_ext']}")]
 
-    def _show_error(self, message: str) -> None:
-        self.update_status(message)
-        messagebox.showerror("Operation Failed", message)
+    def load_template(self):
+        preset_name = self.template_var.get()
+        template_path = CONFIG["presets_dir"] / preset_name
+        if template_path.exists():
+            content = template_path.read_text(encoding="utf-8")
+            self.template_text.delete("1.0", tk.END)
+            self.template_text.insert(tk.END, content)
+            self.log(f"Loaded template: {preset_name}")
+        else:
+            self.log("Template file not found", error=True)
 
-    def run(self) -> None:
-        self.root.mainloop()
+    # === Generate Code Tab Methods ===
+    def generate_code(self):
+        template_content = self.template_text.get("1.0", tk.END).strip()
+        if not template_content:
+            self.log("Template is empty. Please load a template first.", error=True)
+            return
+
+        # Here you can add your custom code-generation logic.
+        # For demo, we prepend a header (which could include substitutions, etc.)
+        app_py_code = (
+            f"# Generated app.py code\n"
+            f"# Template used: {self.template_var.get()}\n\n"
+            + template_content
+        )
+        app_svelte_code = (
+            f"<!-- Generated App.svelte code -->\n"
+            f"<!-- Template used: {self.template_var.get()} -->\n\n"
+            + template_content
+        )
+        self.app_py_text.delete("1.0", tk.END)
+        self.app_py_text.insert(tk.END, app_py_code)
+        self.app_svelte_text.delete("1.0", tk.END)
+        self.app_svelte_text.insert(tk.END, app_svelte_code)
+        self.log("Generated code for app.py and App.svelte")
+
+    # === Replace Files Tab Methods ===
+    def _get_models(self):
+        # Look for folders in the current directory matching allowed model names.
+        return sorted([d.name for d in Path('.').iterdir() if d.is_dir() and d.name in CONFIG["allowed_models"]])
+
+    def _get_apps_for_model(self, model: str):
+        model_dir = Path('.') / model
+        if model_dir.exists():
+            # Look for subdirectories starting with "app"
+            return sorted([d.name for d in model_dir.iterdir() if d.is_dir() and d.name.lower().startswith("app")])
+        return []
+
+    def _update_app_dropdown(self, event=None):
+        model = self.model_var.get()
+        apps = self._get_apps_for_model(model)
+        self.app_dropdown['values'] = apps
+        self.app_var.set(apps[0] if apps else "")
+
+    def replace_file(self, filename: str, new_content: str):
+        model = self.model_var.get()
+        app_folder = self.app_var.get()
+        if not model or not app_folder:
+            self.log("Model or App not selected", error=True)
+            return
+
+        target_dir = Path('.') / model / app_folder
+        if not target_dir.exists():
+            self.log(f"Target folder {target_dir} does not exist", error=True)
+            return
+
+        target_file = target_dir / filename
+        if target_file.exists():
+            confirm = messagebox.askyesno("Confirm Replacement",
+                                          f"Replace the content of {target_file}?")
+            if not confirm:
+                self.log("Replacement canceled")
+                return
+        else:
+            confirm = messagebox.askyesno("Confirm Creation",
+                                          f"{target_file} does not exist. Create new file?")
+            if not confirm:
+                self.log("File creation canceled")
+                return
+
+        try:
+            target_file.write_text(new_content, encoding="utf-8")
+            self.log(f"Replaced content of {target_file}")
+        except Exception as e:
+            self.log(f"Error replacing file content: {str(e)}", error=True)
+
 
 if __name__ == "__main__":
-    assistant = ChatGPTAssistant()
-    try:
-        assistant.start_browser_session()
-    except Exception as e:
-        print(f"Failed to start browser session: {e}")
-    interface = AppInterface(assistant)
-    interface.run()
+    app = AssistantUI()
+    app.mainloop()
