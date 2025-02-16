@@ -1,0 +1,13 @@
+[18:58:44] INFO: Loaded template: app_1_login.md
+[19:06:17] ERROR: Template is empty. Please load or create a template first.
+[19:06:20] INFO: Loaded template: app_1_login.md
+[19:06:22] INFO: Generate Code - 0%: Started code generation
+[19:06:23] INFO: Generate Code - 40%: Generating app.py
+[19:06:23] INFO: Generating app.py
+[19:06:23] INFO: Generate Code - 100%: Generating App.svelte
+[19:06:23] INFO: Generating App.svelte
+[19:06:23] INFO: Code generation completed.
+[19:22:43] INFO: Loaded template: app_1_login.md
+[19:22:49] INFO: Template copied to clipboard.
+[19:23:40] INFO: Loaded template: app_1_login.md
+[19:23:41] INFO: Template copied to clipboard.
