@@ -2,31 +2,60 @@
 import csv
 import json
 import logging
-import os
 import re
 import sqlite3
 import threading
 import time
-from datetime import datetime
 from pathlib import Path
 from typing import Dict
+
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox, scrolledtext
+from tkinter import ttk, filedialog, messagebox, scrolledtext, simpledialog
 
 # =============================================================================
-# Configuration
+# Application Configuration
 # =============================================================================
-CONFIG = {
+APP_CONFIG = {
     "presets_dir": Path("zzz_Bot/app_templates"),  # Folder with template files
     "default_template_ext": ".md",
-    "allowed_models": {"ChatGPT4o", "ChatGPTo1", "ChatGPTo3", "ClaudeSonnet",
-                       "DeepSeek", "Gemini", "Grok", "Llama", "Mixtral", "Qwen"}
+    "allowed_models": {
+        "ChatGPT4o", "ChatGPTo1", "ChatGPTo3", "ClaudeSonnet",
+        "DeepSeek", "Gemini", "Grok", "Llama", "Mixtral", "Qwen"
+    },
+    "db_path": "assistant.db"
 }
 
 # =============================================================================
-# PortManager: Calculates ports for each model and its apps
+# Natural Sort Helper
+# =============================================================================
+def _natural_sort_key(s: str):
+    """
+    Split string into list of ints and lower-case text for natural sorting,
+    so "app2" < "app10".
+    """
+    return [int(text) if text.isdigit() else text.lower()
+            for text in re.split(r'(\d+)', s)]
+
+try:
+    from natsort import natsorted
+except ImportError:
+    def natsorted(seq):
+        return sorted(seq, key=_natural_sort_key)
+
+# =============================================================================
+# Logging Setup
+# =============================================================================
+logger = logging.getLogger("CodeGenAssistant")
+logger.setLevel(logging.DEBUG)
+file_handler = logging.FileHandler("assistant.log")
+file_handler.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s', datefmt="%H:%M:%S"))
+logger.addHandler(file_handler)
+
+# =============================================================================
+# PortManager
 # =============================================================================
 class PortManager:
+    """Computes backend/frontend ports for each model's apps."""
     BASE_BACKEND_PORT = 5001
     BASE_FRONTEND_PORT = 5501
     PORTS_PER_APP = 2
@@ -34,56 +63,37 @@ class PortManager:
     APPS_PER_MODEL = 20
 
     @classmethod
-    def get_port_range(cls, model_idx: int) -> Dict[str, Dict[str, int]]:
+    def get_port_range(cls, model_index: int) -> Dict[str, Dict[str, int]]:
         total_needed = cls.APPS_PER_MODEL * cls.PORTS_PER_APP + cls.BUFFER_PORTS
         return {
             "backend": {
-                "start": cls.BASE_BACKEND_PORT + (model_idx * total_needed),
-                "end": cls.BASE_BACKEND_PORT + ((model_idx + 1) * total_needed) - cls.BUFFER_PORTS,
+                "start": cls.BASE_BACKEND_PORT + (model_index * total_needed),
+                "end": cls.BASE_BACKEND_PORT + ((model_index + 1) * total_needed) - cls.BUFFER_PORTS,
             },
             "frontend": {
-                "start": cls.BASE_FRONTEND_PORT + (model_idx * total_needed),
-                "end": cls.BASE_FRONTEND_PORT + ((model_idx + 1) * total_needed) - cls.BUFFER_PORTS,
+                "start": cls.BASE_FRONTEND_PORT + (model_index * total_needed),
+                "end": cls.BASE_FRONTEND_PORT + ((model_index + 1) * total_needed) - cls.BUFFER_PORTS,
             },
         }
 
     @classmethod
-    def get_app_ports(cls, model_idx: int, app_num: int) -> Dict[str, int]:
-        rng = cls.get_port_range(model_idx)
+    def get_app_ports(cls, model_index: int, app_number: int) -> Dict[str, int]:
+        rng = cls.get_port_range(model_index)
         return {
-            "backend": rng["backend"]["start"] + (app_num - 1) * cls.PORTS_PER_APP,
-            "frontend": rng["frontend"]["start"] + (app_num - 1) * cls.PORTS_PER_APP,
+            "backend": rng["backend"]["start"] + (app_number - 1) * cls.PORTS_PER_APP,
+            "frontend": rng["frontend"]["start"] + (app_number - 1) * cls.PORTS_PER_APP,
         }
 
 # =============================================================================
-# Logger Setup
+# DatabaseClient
 # =============================================================================
-logger = logging.getLogger("CodeGenAssistant")
-logger.setLevel(logging.DEBUG)
-formatter = logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s', datefmt="%H:%M:%S")
-file_handler = logging.FileHandler("assistant.log")
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
-
-# =============================================================================
-# Natural Sort Helper: Using natsort if available; fallback otherwise.
-# =============================================================================
-try:
-    from natsort import natsorted
-except ImportError:
-    def natural_sort_key(s: str):
-        return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s)]
-    def natsorted(seq):
-        return sorted(seq, key=natural_sort_key)
-
-# =============================================================================
-# Database Manager for Progress Tracking
-# =============================================================================
-class DatabaseManager:
-    def __init__(self, db_path: str = "progress_logs.db") -> None:
+class DatabaseClient:
+    """Handles all database interactions for progress logs and model/app status."""
+    def __init__(self, db_path: str) -> None:
         self.db_path = db_path
         self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
         self._create_tables()
+        self._create_model_app_table()
 
     def _create_tables(self) -> None:
         with self.conn:
@@ -97,6 +107,22 @@ class DatabaseManager:
                 );
             ''')
 
+    def _create_model_app_table(self) -> None:
+        with self.conn:
+            self.conn.execute('''
+                CREATE TABLE IF NOT EXISTS model_app_status (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    model TEXT NOT NULL,
+                    app TEXT NOT NULL,
+                    app_py INTEGER NOT NULL DEFAULT 0,
+                    app_svelte INTEGER NOT NULL DEFAULT 0,
+                    comment TEXT
+                );
+            ''')
+
+    # -------------------------
+    # Progress Logs
+    # -------------------------
     def log_progress(self, task: str, progress: int, message: str) -> None:
         with self.conn:
             self.conn.execute(
@@ -117,427 +143,475 @@ class DatabaseManager:
             self.conn.execute("DELETE FROM progress_logs")
         logger.info("Cleared all progress logs.")
 
+    # -------------------------
+    # Model & App Status
+    # -------------------------
+    def get_all_model_app_status(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT id, model, app, app_py, app_svelte, comment FROM model_app_status")
+        return cursor.fetchall()
+
+    def insert_model_app_status(self, model: str, app: str, app_py=False, app_svelte=False, comment=""):
+        with self.conn:
+            self.conn.execute('''
+                INSERT INTO model_app_status (model, app, app_py, app_svelte, comment)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (model, app, int(app_py), int(app_svelte), comment))
+
+    def update_model_app_status(self, row_id: int, model: str, app: str,
+                                  app_py: bool, app_svelte: bool, comment: str):
+        with self.conn:
+            self.conn.execute('''
+                UPDATE model_app_status
+                SET model = ?, app = ?, app_py = ?, app_svelte = ?, comment = ?
+                WHERE id = ?
+            ''', (model, app, int(app_py), int(app_svelte), comment, row_id))
+
+    def delete_model_app_status_by_id(self, row_id: int):
+        with self.conn:
+            self.conn.execute("DELETE FROM model_app_status WHERE id = ?", (row_id,))
+
 # =============================================================================
-# Main Assistant UI
+# Main GUI Application
 # =============================================================================
-class AssistantUI(tk.Tk):
+class AssistantApp(tk.Tk):
+    """Main application class containing all tabs and UI logic."""
     def __init__(self) -> None:
         super().__init__()
         self.title("Code Generation Assistant")
         self.geometry("1200x900")
         self.configure(bg="white")
-        self.db_manager = DatabaseManager()  # Initialize progress tracking DB
+
+        self.database = DatabaseClient(APP_CONFIG["db_path"])
         self.pause_refresh = False
-        self._create_menu()
-        self._create_widgets()
+
+        self._setup_menu()
+        self._setup_main_ui()
         self._setup_logging_handler()
 
-    def _create_menu(self) -> None:
+    # -------------------------------------------------------------------------
+    # MENU
+    # -------------------------------------------------------------------------
+    def _setup_menu(self) -> None:
         menubar = tk.Menu(self)
         file_menu = tk.Menu(menubar, tearoff=0)
         file_menu.add_command(label="Exit", command=self.quit)
         menubar.add_cascade(label="File", menu=file_menu)
+
         help_menu = tk.Menu(menubar, tearoff=0)
-        help_menu.add_command(label="About", command=lambda: messagebox.showinfo("About", "Code Generation Assistant\nVersion 1.0"))
+        help_menu.add_command(label="About", command=lambda: messagebox.showinfo(
+            "About", "Code Generation Assistant\nVersion 1.0"
+        ))
         menubar.add_cascade(label="Help", menu=help_menu)
+
         self.config(menu=menubar)
 
-    def _create_widgets(self) -> None:
-        self.notebook = ttk.Notebook(self)
-        self.notebook.pack(fill="both", expand=True)
+    # -------------------------------------------------------------------------
+    # MAIN UI
+    # -------------------------------------------------------------------------
+    def _setup_main_ui(self) -> None:
+        self.main_notebook = ttk.Notebook(self)
+        self.main_notebook.pack(fill="both", expand=True)
 
-        self._create_template_tab()
+        self._create_template_manager_tab()
         self._create_generate_code_tab()
-        self._create_replace_files_tab()
-        self._create_progress_tab()
-        self._create_status_tab()
-        self._create_ports_tab()  # NEW: Ports tab
-        self._create_logging_frame()
+        self._create_file_replace_tab()
+        self._create_progress_log_tab()
+        self._create_model_app_tab()  # With filtering & sorting
+        self._create_ports_info_tab() # With filtering & sorting
+
+        self._create_log_panel()
 
     def _setup_logging_handler(self) -> None:
         gui_handler = GuiLogHandler(self)
-        gui_handler.setFormatter(logging.Formatter('%(message)s'))
         logger.addHandler(gui_handler)
 
     # -------------------------------------------------------------------------
-    # TAB 1: Template Management
+    # TAB 1: Template Manager
     # -------------------------------------------------------------------------
-    def _create_template_tab(self) -> None:
-        self.template_tab = ttk.Frame(self.notebook)
-        self.notebook.add(self.template_tab, text="Template")
-        top_frame = ttk.Frame(self.template_tab)
+    def _create_template_manager_tab(self) -> None:
+        self.template_manager_tab = ttk.Frame(self.main_notebook)
+        self.main_notebook.add(self.template_manager_tab, text="Template Manager")
+
+        top_frame = ttk.Frame(self.template_manager_tab)
         top_frame.pack(fill="x", padx=10, pady=5)
+
         ttk.Label(top_frame, text="Select Template:").pack(side="left")
         self.template_var = tk.StringVar()
-        presets = self._get_presets()
+
+        presets = self._scan_template_presets()
         self.template_dropdown = ttk.Combobox(
             top_frame, textvariable=self.template_var,
-            values=presets, state="readonly", width=40)
+            values=presets, state="readonly", width=40
+        )
         if presets:
             self.template_var.set(presets[0])
         self.template_dropdown.pack(side="left", padx=5)
-        ttk.Button(top_frame, text="Load Template", command=self.load_template).pack(side="left", padx=5)
-        ttk.Button(top_frame, text="Save Template", command=self.save_template).pack(side="left", padx=5)
-        ttk.Button(top_frame, text="New Template", command=self.new_template).pack(side="left", padx=5)
-        ttk.Button(top_frame, text="Delete Template", command=self.delete_template).pack(side="left", padx=5)
-        ttk.Button(top_frame, text="Copy Template to Clipboard", command=self.copy_template_to_clipboard).pack(side="left", padx=5)
-        self.template_text = tk.Text(self.template_tab, wrap="word", height=25)
+
+        ttk.Button(top_frame, text="Load", command=self._load_template).pack(side="left", padx=5)
+        ttk.Button(top_frame, text="Save", command=self._save_template).pack(side="left", padx=5)
+        ttk.Button(top_frame, text="New", command=self._new_template).pack(side="left", padx=5)
+        ttk.Button(top_frame, text="Delete", command=self._delete_template).pack(side="left", padx=5)
+        ttk.Button(top_frame, text="Copy to Clipboard", command=self._copy_template_to_clipboard).pack(side="left", padx=5)
+
+        self.template_text = tk.Text(self.template_manager_tab, wrap="word", height=25)
         self.template_text.pack(fill="both", expand=True, padx=10, pady=5)
 
-    def _get_presets(self) -> list:
-        presets_dir = CONFIG["presets_dir"]
-        presets_dir.mkdir(exist_ok=True)
-        presets = [f.name for f in presets_dir.glob(f"*{CONFIG['default_template_ext']}")]
+    def _scan_template_presets(self) -> list:
+        APP_CONFIG["presets_dir"].mkdir(exist_ok=True)
+        presets = [f.name for f in APP_CONFIG["presets_dir"].glob(f"*{APP_CONFIG['default_template_ext']}")]
         return natsorted(presets)
 
-    def load_template(self) -> None:
+    def _load_template(self) -> None:
         preset_name = self.template_var.get()
-        template_path = CONFIG["presets_dir"] / preset_name
-        if template_path.exists():
+        path = APP_CONFIG["presets_dir"] / preset_name
+        if path.exists():
             try:
-                content = template_path.read_text(encoding="utf-8")
+                content = path.read_text(encoding="utf-8")
                 self.template_text.delete("1.0", tk.END)
                 self.template_text.insert(tk.END, content)
-                self.log(f"Loaded template: {preset_name}")
+                self._log(f"Loaded template: {preset_name}")
             except Exception as e:
-                self.log(f"Error loading template: {e}", error=True)
+                self._log(f"Error loading template: {e}", error=True)
         else:
-            self.log("Template file not found", error=True)
+            self._log("Template file not found", error=True)
 
-    def save_template(self) -> None:
+    def _save_template(self) -> None:
         preset_name = self.template_var.get()
-        template_path = CONFIG["presets_dir"] / preset_name
+        path = APP_CONFIG["presets_dir"] / preset_name
         try:
             content = self.template_text.get("1.0", tk.END).strip()
-            template_path.write_text(content, encoding="utf-8")
-            self.log(f"Template '{preset_name}' saved successfully.")
+            path.write_text(content, encoding="utf-8")
+            self._log(f"Template '{preset_name}' saved successfully.")
         except Exception as e:
-            self.log(f"Error saving template: {e}", error=True)
+            self._log(f"Error saving template: {e}", error=True)
 
-    def new_template(self) -> None:
+    def _new_template(self) -> None:
         new_name = filedialog.asksaveasfilename(
-            initialdir=CONFIG["presets_dir"],
-            defaultextension=CONFIG["default_template_ext"],
-            filetypes=[("Markdown Files", f"*{CONFIG['default_template_ext']}")],
+            initialdir=APP_CONFIG["presets_dir"],
+            defaultextension=APP_CONFIG["default_template_ext"],
+            filetypes=[("Markdown Files", f"*{APP_CONFIG['default_template_ext']}")],
             title="Create New Template"
         )
-        if new_name:
-            new_path = Path(new_name)
-            if new_path.exists():
-                messagebox.showwarning("Warning", "Template already exists.")
-                return
-            try:
-                new_path.write_text("", encoding="utf-8")
-                self.log(f"Created new template: {new_path.name}")
-                self.template_dropdown['values'] = self._get_presets()
-                self.template_var.set(new_path.name)
-                self.template_text.delete("1.0", tk.END)
-            except Exception as e:
-                self.log(f"Error creating new template: {e}", error=True)
+        if not new_name:
+            return
+        new_path = Path(new_name)
+        if new_path.exists():
+            messagebox.showwarning("Warning", "Template already exists.")
+            return
+        try:
+            new_path.write_text("", encoding="utf-8")
+            self._log(f"Created new template: {new_path.name}")
+            self.template_dropdown["values"] = self._scan_template_presets()
+            self.template_var.set(new_path.name)
+            self.template_text.delete("1.0", tk.END)
+        except Exception as e:
+            self._log(f"Error creating new template: {e}", error=True)
 
-    def delete_template(self) -> None:
+    def _delete_template(self) -> None:
         preset_name = self.template_var.get()
-        template_path = CONFIG["presets_dir"] / preset_name
-        if messagebox.askyesno("Confirm Deletion", f"Are you sure you want to delete template '{preset_name}'?"):
+        path = APP_CONFIG["presets_dir"] / preset_name
+        if not path.exists():
+            return
+        if messagebox.askyesno("Confirm Deletion", f"Delete '{preset_name}'?"):
             try:
-                template_path.unlink()
-                self.log(f"Deleted template: {preset_name}")
-                self.template_dropdown['values'] = self._get_presets()
-                presets = self._get_presets()
-                if presets:
-                    self.template_var.set(presets[0])
+                path.unlink()
+                self._log(f"Deleted template: {preset_name}")
+                updated = self._scan_template_presets()
+                self.template_dropdown["values"] = updated
+                self.template_var.set(updated[0] if updated else "")
                 self.template_text.delete("1.0", tk.END)
             except Exception as e:
-                self.log(f"Error deleting template: {e}", error=True)
+                self._log(f"Error deleting template: {e}", error=True)
 
-    def copy_template_to_clipboard(self) -> None:
+    def _copy_template_to_clipboard(self) -> None:
         content = self.template_text.get("1.0", tk.END)
         self.clipboard_clear()
         self.clipboard_append(content)
-        self.log("Template copied to clipboard.")
+        self._log("Template copied to clipboard.")
 
     # -------------------------------------------------------------------------
-    # TAB 2: Generate Code (Auto Generation & LLM Paste)
+    # TAB 2: Generate Code
     # -------------------------------------------------------------------------
     def _create_generate_code_tab(self) -> None:
-        self.generate_tab = ttk.Frame(self.notebook)
-        self.notebook.add(self.generate_tab, text="Generate Code")
-        top_frame = ttk.Frame(self.generate_tab)
+        self.generate_code_tab = ttk.Frame(self.main_notebook)
+        self.main_notebook.add(self.generate_code_tab, text="Generate Code")
+
+        top_frame = ttk.Frame(self.generate_code_tab)
         top_frame.pack(fill="x", padx=10, pady=5)
-        ttk.Button(top_frame, text="Generate Code", command=self._threaded(self.generate_code)).pack(side="left", padx=5)
-        ttk.Button(top_frame, text="Paste LLM Output", command=self.paste_llm_output).pack(side="left", padx=5)
-        ttk.Button(top_frame, text="Save Generated Files", command=self.save_generated_files).pack(side="left", padx=5)
-        # Notebook for generated file outputs.
-        self.generated_nb = ttk.Notebook(self.generate_tab)
-        self.generated_nb.pack(fill="both", expand=True, padx=10, pady=5)
-        # app.py tab
-        self.app_py_frame = ttk.Frame(self.generated_nb)
+
+        ttk.Button(top_frame, text="Generate Code", command=self._run_in_thread(self._generate_code)).pack(side="left", padx=5)
+        ttk.Button(top_frame, text="Paste LLM Output", command=self._paste_from_clipboard).pack(side="left", padx=5)
+        ttk.Button(top_frame, text="Save Generated Files", command=self._save_generated_code).pack(side="left", padx=5)
+
+        self.code_notebook = ttk.Notebook(self.generate_code_tab)
+        self.code_notebook.pack(fill="both", expand=True, padx=10, pady=5)
+
+        self.app_py_frame = ttk.Frame(self.code_notebook)
         self.app_py_text = tk.Text(self.app_py_frame, wrap="none")
         self.app_py_text.pack(fill="both", expand=True)
-        self.generated_nb.add(self.app_py_frame, text="app.py")
-        # App.svelte tab
-        self.app_svelte_frame = ttk.Frame(self.generated_nb)
+        self.code_notebook.add(self.app_py_frame, text="app.py")
+
+        self.app_svelte_frame = ttk.Frame(self.code_notebook)
         self.app_svelte_text = tk.Text(self.app_svelte_frame, wrap="none")
         self.app_svelte_text.pack(fill="both", expand=True)
-        self.generated_nb.add(self.app_svelte_frame, text="App.svelte")
-        # requirements.txt tab
-        self.requirements_frame = ttk.Frame(self.generated_nb)
+        self.code_notebook.add(self.app_svelte_frame, text="App.svelte")
+
+        self.requirements_frame = ttk.Frame(self.code_notebook)
         self.requirements_text = tk.Text(self.requirements_frame, wrap="none")
         self.requirements_text.pack(fill="both", expand=True)
-        self.generated_nb.add(self.requirements_frame, text="requirements.txt")
-        # package.json tab
-        self.package_json_frame = ttk.Frame(self.generated_nb)
+        self.code_notebook.add(self.requirements_frame, text="requirements.txt")
+
+        self.package_json_frame = ttk.Frame(self.code_notebook)
         self.package_json_text = tk.Text(self.package_json_frame, wrap="none")
         self.package_json_text.pack(fill="both", expand=True)
-        self.generated_nb.add(self.package_json_frame, text="package.json")
+        self.code_notebook.add(self.package_json_frame, text="package.json")
 
-    def generate_code(self) -> None:
+        self.gen_progress_bar = ttk.Progressbar(top_frame, orient="horizontal", mode="determinate", maximum=100)
+        self.gen_progress_bar.pack(side="left", fill="x", expand=True, padx=5)
+
+    def _generate_code(self) -> None:
         template_content = self.template_text.get("1.0", tk.END).strip()
         if not template_content:
-            self.log("Template is empty. Please load or create a template first.", error=True)
+            self._log("Template is empty. Please load or create a template first.", error=True)
             return
-
         task = "Generate Code"
-        self.db_manager.log_progress(task, 0, "Started code generation")
-        self._update_progress_bar(self.gen_progress, 0)
+        self.database.log_progress(task, 0, "Started code generation")
+        self._set_progress_bar(self.gen_progress_bar, 0)
 
-        steps = [("Generating app.py", 25),
-                 ("Generating App.svelte", 50),
-                 ("Generating requirements.txt", 75),
-                 ("Generating package.json", 100)]
-        for message, prog in steps:
-            for i in range(prog - 5, prog + 1, 5):
+        steps = [
+            ("Generating app.py", 25),
+            ("Generating App.svelte", 50),
+            ("Generating requirements.txt", 75),
+            ("Generating package.json", 100)
+        ]
+        for desc, prog in steps:
+            for val in range(prog - 5, prog + 1, 5):
                 time.sleep(0.05)
-                self._update_progress_bar(self.gen_progress, i)
-            self.db_manager.log_progress(task, prog, message)
-            self.log(message)
+                self._set_progress_bar(self.gen_progress_bar, val)
+            self.database.log_progress(task, prog, desc)
+            self._log(desc)
 
         self.app_py_text.delete("1.0", tk.END)
-        self.app_py_text.insert(tk.END, f"# Generated app.py code\n# Template: {self.template_var.get()}\n\n{template_content}")
+        self.app_py_text.insert(tk.END, f"# Generated app.py\n\n{template_content}")
         self.app_svelte_text.delete("1.0", tk.END)
-        self.app_svelte_text.insert(tk.END, f"<!-- Generated App.svelte code -->\n<!-- Template: {self.template_var.get()} -->\n\n{template_content}")
+        self.app_svelte_text.insert(tk.END, f"<!-- Generated App.svelte -->\n\n{template_content}")
         self.requirements_text.delete("1.0", tk.END)
-        self.requirements_text.insert(tk.END, f"# Auto-generated requirements.txt\n# Template: {self.template_var.get()}\n\n{template_content}")
+        self.requirements_text.insert(tk.END, f"# requirements.txt\n\n{template_content}")
         pkg = {
             "name": "generated-app",
             "version": "1.0.0",
-            "description": f"Generated from template {self.template_var.get()}",
+            "description": "Generated from template",
             "dependencies": {}
         }
         self.package_json_text.delete("1.0", tk.END)
         self.package_json_text.insert(tk.END, json.dumps(pkg, indent=2))
-        self.log("Code generation completed.")
 
-    def paste_llm_output(self) -> None:
-        """
-        Expects clipboard text in the following format:
-        
-        === app.py ===
-        <content>
-        === App.svelte ===
-        <content>
-        === requirements.txt ===
-        <content>
-        === package.json ===
-        <content>
-        """
+        self._log("Code generation completed.")
+
+    def _paste_from_clipboard(self) -> None:
         try:
             text = self.clipboard_get()
         except Exception as e:
-            self.log(f"Could not get clipboard content: {e}", error=True)
+            self._log(f"Could not get clipboard content: {e}", error=True)
             return
 
-        pattern = re.compile(r"===\s*(app\.py|App\.svelte|requirements\.txt|package\.json)\s*===\s*(.*?)\s*(?=^===|\Z)", re.DOTALL | re.MULTILINE)
-        matches = pattern.findall(text)
-        if not matches:
-            self.log("No valid LLM output sections found.", error=True)
-            return
+        current_index = self.code_notebook.index(self.code_notebook.select())
+        target_widget = [
+            self.app_py_text,
+            self.app_svelte_text,
+            self.requirements_text,
+            self.package_json_text
+        ][current_index]
 
-        for filename, content in matches:
-            content = content.strip()
-            if filename.lower() == "app.py":
-                self.app_py_text.delete("1.0", tk.END)
-                self.app_py_text.insert(tk.END, content)
-            elif filename.lower() == "app.svelte":
-                self.app_svelte_text.delete("1.0", tk.END)
-                self.app_svelte_text.insert(tk.END, content)
-            elif filename.lower() == "requirements.txt":
-                self.requirements_text.delete("1.0", tk.END)
-                self.requirements_text.insert(tk.END, content)
-            elif filename.lower() == "package.json":
-                self.package_json_text.delete("1.0", tk.END)
-                self.package_json_text.insert(tk.END, content)
-        self.log("LLM output pasted successfully.")
+        target_widget.delete("1.0", tk.END)
+        target_widget.insert(tk.END, text)
+        self._log("Clipboard content pasted successfully.")
 
-    def save_generated_files(self) -> None:
+    def _save_generated_code(self) -> None:
         output_dir = filedialog.askdirectory(title="Select Output Directory")
         if not output_dir:
             return
+        out_path = Path(output_dir)
         try:
-            out_path = Path(output_dir)
-            (out_path / "app.py").write_text(self.app_py_text.get("1.0", tk.END), encoding="utf-8")
-            (out_path / "App.svelte").write_text(self.app_svelte_text.get("1.0", tk.END), encoding="utf-8")
-            (out_path / "requirements.txt").write_text(self.requirements_text.get("1.0", tk.END), encoding="utf-8")
-            (out_path / "package.json").write_text(self.package_json_text.get("1.0", tk.END), encoding="utf-8")
-            self.log(f"Generated files saved to {output_dir}")
+            out_path.joinpath("app.py").write_text(self.app_py_text.get("1.0", tk.END), encoding="utf-8")
+            out_path.joinpath("App.svelte").write_text(self.app_svelte_text.get("1.0", tk.END), encoding="utf-8")
+            out_path.joinpath("requirements.txt").write_text(self.requirements_text.get("1.0", tk.END), encoding="utf-8")
+            out_path.joinpath("package.json").write_text(self.package_json_text.get("1.0", tk.END), encoding="utf-8")
+            self._log(f"Generated files saved to {output_dir}")
         except Exception as e:
-            self.log(f"Error saving generated files: {e}", error=True)
+            self._log(f"Error saving generated files: {e}", error=True)
 
     # -------------------------------------------------------------------------
-    # TAB 3: Replace Files in Model Folders
+    # TAB 3: Replace Files
     # -------------------------------------------------------------------------
-    def _create_replace_files_tab(self) -> None:
-        self.replace_tab = ttk.Frame(self.notebook)
-        self.notebook.add(self.replace_tab, text="Replace Files")
-        sel_frame = ttk.Frame(self.replace_tab)
+    def _create_file_replace_tab(self) -> None:
+        self.file_replace_tab = ttk.Frame(self.main_notebook)
+        self.main_notebook.add(self.file_replace_tab, text="Replace Files")
+
+        sel_frame = ttk.Frame(self.file_replace_tab)
         sel_frame.pack(fill="x", padx=10, pady=5)
+
         ttk.Label(sel_frame, text="Select Model:").grid(row=0, column=0, padx=5, pady=2, sticky="w")
-        self.model_var = tk.StringVar()
-        models = self._get_models()
-        self.model_dropdown = ttk.Combobox(sel_frame, textvariable=self.model_var,
-                                           values=models, state="readonly", width=30)
+        self.replace_model_var = tk.StringVar()
+        models = natsorted(
+            [d.name for d in Path('.').iterdir() if d.is_dir() and d.name in APP_CONFIG["allowed_models"]],
+            key=_natural_sort_key
+        )
+        self.replace_model_dropdown = ttk.Combobox(sel_frame, textvariable=self.replace_model_var,
+                                                   values=models, state="readonly", width=30)
         if models:
-            self.model_var.set(models[0])
-        self.model_dropdown.grid(row=0, column=1, padx=5, pady=2, sticky="w")
-        self.model_dropdown.bind("<<ComboboxSelected>>", self._update_app_dropdown)
+            self.replace_model_var.set(models[0])
+        self.replace_model_dropdown.grid(row=0, column=1, padx=5, pady=2, sticky="w")
+        self.replace_model_dropdown.bind("<<ComboboxSelected>>", self._on_replace_model_selected)
+
         ttk.Label(sel_frame, text="Select App:").grid(row=1, column=0, padx=5, pady=2, sticky="w")
-        self.app_var = tk.StringVar()
-        apps = self._get_apps_for_model(self.model_var.get())
-        self.app_dropdown = ttk.Combobox(sel_frame, textvariable=self.app_var,
-                                         values=apps, state="readonly", width=30)
+        self.replace_app_var = tk.StringVar()
+
+        if self.replace_model_var.get():
+            base_dir = Path('.') / self.replace_model_var.get()
+            apps = natsorted(
+                [d.name for d in base_dir.iterdir() if d.is_dir() and d.name.lower().startswith("app")],
+                key=_natural_sort_key
+            )
+        else:
+            apps = []
+
+        self.replace_app_dropdown = ttk.Combobox(sel_frame, textvariable=self.replace_app_var,
+                                                 values=apps, state="readonly", width=30)
         if apps:
-            self.app_var.set(apps[0])
-        self.app_dropdown.grid(row=1, column=1, padx=5, pady=2, sticky="w")
-        btn_frame = ttk.Frame(self.replace_tab)
+            self.replace_app_var.set(apps[0])
+        self.replace_app_dropdown.grid(row=1, column=1, padx=5, pady=2, sticky="w")
+
+        btn_frame = ttk.Frame(self.file_replace_tab)
         btn_frame.pack(padx=10, pady=5)
+
         ttk.Button(btn_frame, text="Replace app.py",
-                   command=self._threaded(lambda: self.replace_file("app.py", self.app_py_text.get("1.0", tk.END)))).grid(row=0, column=0, padx=5, pady=5)
+                   command=self._run_in_thread(lambda: self._replace_file_content("app.py", self.app_py_text.get("1.0", tk.END)))).grid(row=0, column=0, padx=5, pady=5)
         ttk.Button(btn_frame, text="Replace App.svelte",
-                   command=self._threaded(lambda: self.replace_file("App.svelte", self.app_svelte_text.get("1.0", tk.END)))).grid(row=0, column=1, padx=5, pady=5)
+                   command=self._run_in_thread(lambda: self._replace_file_content("App.svelte", self.app_svelte_text.get("1.0", tk.END)))).grid(row=0, column=1, padx=5, pady=5)
         ttk.Button(btn_frame, text="Replace requirements.txt",
-                   command=self._threaded(lambda: self.replace_file("requirements.txt", self.requirements_text.get("1.0", tk.END)))).grid(row=1, column=0, padx=5, pady=5)
+                   command=self._run_in_thread(lambda: self._replace_file_content("requirements.txt", self.requirements_text.get("1.0", tk.END)))).grid(row=1, column=0, padx=5, pady=5)
         ttk.Button(btn_frame, text="Replace package.json",
-                   command=self._threaded(lambda: self.replace_file("package.json", self.package_json_text.get("1.0", tk.END)))).grid(row=1, column=1, padx=5, pady=5)
-        ttk.Button(btn_frame, text="Replace All Files",
-                   command=self._threaded(self.replace_all_files)).grid(row=2, column=0, columnspan=2, padx=5, pady=5)
+                   command=self._run_in_thread(lambda: self._replace_file_content("package.json", self.package_json_text.get("1.0", tk.END)))).grid(row=1, column=1, padx=5, pady=5)
+        ttk.Button(btn_frame, text="Replace All",
+                   command=self._run_in_thread(self._replace_all_files)).grid(row=2, column=0, columnspan=2, padx=5, pady=5)
 
-    def _get_models(self) -> list:
-        return sorted([d.name for d in Path('.').iterdir() if d.is_dir() and d.name in CONFIG["allowed_models"]])
+    def _on_replace_model_selected(self, event=None) -> None:
+        model = self.replace_model_var.get()
+        base_dir = Path('.') / model
+        apps = natsorted(
+            [d.name for d in base_dir.iterdir() if d.is_dir() and d.name.lower().startswith("app")],
+            key=_natural_sort_key
+        )
+        self.replace_app_dropdown["values"] = apps
+        self.replace_app_var.set(apps[0] if apps else "")
 
-    def _get_apps_for_model(self, model: str) -> list:
-        model_dir = Path('.') / model
-        if model_dir.exists():
-            return natsorted([d.name for d in model_dir.iterdir() if d.is_dir() and d.name.lower().startswith("app")])
-        return []
-
-    def _update_app_dropdown(self, event=None) -> None:
-        model = self.model_var.get()
-        apps = self._get_apps_for_model(model)
-        self.app_dropdown['values'] = apps
-        self.app_var.set(apps[0] if apps else "")
-
-    def replace_file(self, filename: str, new_content: str) -> None:
+    def _replace_file_content(self, filename: str, new_content: str) -> None:
         task = f"Replace {filename}"
-        self.db_manager.log_progress(task, 0, "Starting file replacement")
-        model = self.model_var.get()
-        app_folder = self.app_var.get()
-        if not model or not app_folder:
-            self.log("Model or App not selected", error=True)
+        self.database.log_progress(task, 0, "Starting file replacement")
+        model = self.replace_model_var.get()
+        app_name = self.replace_app_var.get()
+        if not (model and app_name):
+            self._log("Model or App not selected", error=True)
             return
-
-        target_dir = Path('.') / model / app_folder
+        target_dir = Path('.') / model / app_name
         if not target_dir.exists():
-            self.log(f"Target folder {target_dir} does not exist", error=True)
+            self._log(f"Target folder {target_dir} does not exist", error=True)
             return
-
         target_file = target_dir / filename
-        if not messagebox.askyesno("Confirm Replacement",
-                                   f"Replace the content of {target_file} with the new content?"):
-            self.log("Replacement canceled")
+        if not messagebox.askyesno("Confirm Replacement", f"Replace the content of {target_file}?"):
+            self._log("Replacement canceled.")
             return
-
+        new_content = new_content.strip()
+        if not new_content:
+            self._log("No content provided for replacement.", error=True)
+            return
         try:
-            new_content = new_content.strip()
-            if not new_content:
-                self.log("No content provided for replacement.", error=True)
-                return
             target_file.write_text(new_content, encoding="utf-8")
-            self.db_manager.log_progress(task, 100, f"Replaced content of {target_file}")
-            self.log(f"Replaced content of {target_file}")
+            self.database.log_progress(task, 100, f"Replaced content of {target_file}")
+            self._log(f"Replaced content of {target_file}")
         except Exception as e:
-            self.log(f"Failed to replace file content: {e}", error=True)
-            self.db_manager.log_progress(task, 0, f"Error: {e}")
+            self._log(f"Failed to replace file content: {e}", error=True)
+            self.database.log_progress(task, 0, f"Error: {e}")
 
-    def replace_all_files(self) -> None:
-        self.replace_file("app.py", self.app_py_text.get("1.0", tk.END))
-        self.replace_file("App.svelte", self.app_svelte_text.get("1.0", tk.END))
-        self.replace_file("requirements.txt", self.requirements_text.get("1.0", tk.END))
-        self.replace_file("package.json", self.package_json_text.get("1.0", tk.END))
+    def _replace_all_files(self) -> None:
+        self._replace_file_content("app.py", self.app_py_text.get("1.0", tk.END))
+        self._replace_file_content("App.svelte", self.app_svelte_text.get("1.0", tk.END))
+        self._replace_file_content("requirements.txt", self.requirements_text.get("1.0", tk.END))
+        self._replace_file_content("package.json", self.package_json_text.get("1.0", tk.END))
 
     # -------------------------------------------------------------------------
-    # TAB 4: Progress Logs
+    # TAB 4: Progress Log
     # -------------------------------------------------------------------------
-    def _create_progress_tab(self) -> None:
-        self.progress_tab = ttk.Frame(self.notebook)
-        self.notebook.add(self.progress_tab, text="Progress Logs")
-        top_frame = ttk.Frame(self.progress_tab)
+    def _create_progress_log_tab(self) -> None:
+        self.progress_log_tab = ttk.Frame(self.main_notebook)
+        self.main_notebook.add(self.progress_log_tab, text="Progress Logs")
+
+        top_frame = ttk.Frame(self.progress_log_tab)
         top_frame.pack(fill="x", padx=10, pady=5)
-        ttk.Label(top_frame, text="Filter:").pack(side="left", padx=5)
-        self.progress_filter = tk.StringVar()
-        ttk.Entry(top_frame, textvariable=self.progress_filter).pack(side="left", padx=5)
-        ttk.Button(top_frame, text="Refresh", command=self.refresh_progress_logs).pack(side="left", padx=5)
-        ttk.Button(top_frame, text="Clear", command=self.clear_progress_logs).pack(side="left", padx=5)
-        ttk.Button(top_frame, text="Export CSV", command=self.export_progress_logs).pack(side="left", padx=5)
-        self.pause_btn = ttk.Button(top_frame, text="Pause", command=self.toggle_auto_refresh)
-        self.pause_btn.pack(side="left", padx=5)
-        columns = ("timestamp", "task", "progress", "message")
-        self.progress_tree = ttk.Treeview(self.progress_tab, columns=columns, show="headings")
-        self.progress_tree.heading("timestamp", text="Timestamp")
-        self.progress_tree.heading("task", text="Task")
-        self.progress_tree.heading("progress", text="Progress")
-        self.progress_tree.heading("message", text="Message")
-        self.progress_tree.column("timestamp", width=150)
-        self.progress_tree.column("task", width=150)
-        self.progress_tree.column("progress", width=80, anchor="center")
-        self.progress_tree.column("message", width=400)
-        vsb = ttk.Scrollbar(self.progress_tab, orient="vertical", command=self.progress_tree.yview)
-        self.progress_tree.configure(yscrollcommand=vsb.set)
-        vsb.pack(side="right", fill="y")
-        self.progress_tree.pack(fill="both", expand=True, padx=10, pady=5)
-        self.gen_progress = ttk.Progressbar(top_frame, orient="horizontal", mode="determinate", maximum=100)
-        self.gen_progress.pack(side="left", fill="x", expand=True, padx=5)
-        self._auto_refresh_progress()
 
-    def toggle_auto_refresh(self) -> None:
+        ttk.Label(top_frame, text="Filter:").pack(side="left", padx=5)
+        self.progress_search_var = tk.StringVar()
+        entry = tk.Entry(top_frame, textvariable=self.progress_search_var)
+        entry.pack(side="left", padx=5)
+        # Filter as user types
+        entry.bind("<KeyRelease>", lambda event: self._refresh_progress_logs())
+        ttk.Button(top_frame, text="Refresh", command=self._refresh_progress_logs).pack(side="left", padx=5)
+        ttk.Button(top_frame, text="Clear", command=self._clear_progress_logs).pack(side="left", padx=5)
+        ttk.Button(top_frame, text="Export CSV", command=self._export_progress_logs).pack(side="left", padx=5)
+
+        self.pause_btn = ttk.Button(top_frame, text="Pause", command=self._toggle_auto_refresh)
+        self.pause_btn.pack(side="left", padx=5)
+
+        columns = ("timestamp", "task", "progress", "message")
+        self.progress_table = ttk.Treeview(self.progress_log_tab, columns=columns, show="headings")
+        self.progress_table.heading("timestamp", text="Timestamp")
+        self.progress_table.heading("task", text="Task")
+        self.progress_table.heading("progress", text="Progress")
+        self.progress_table.heading("message", text="Message")
+        self.progress_table.column("timestamp", width=150)
+        self.progress_table.column("task", width=150)
+        self.progress_table.column("progress", width=80, anchor="center")
+        self.progress_table.column("message", width=400)
+        vsb = ttk.Scrollbar(self.progress_log_tab, orient="vertical", command=self.progress_table.yview)
+        self.progress_table.configure(yscrollcommand=vsb.set)
+        vsb.pack(side="right", fill="y")
+        self.progress_table.pack(fill="both", expand=True, padx=10, pady=5)
+
+        self._auto_refresh_progress_logs()
+
+    def _toggle_auto_refresh(self) -> None:
         self.pause_refresh = not self.pause_refresh
         self.pause_btn.config(text="Resume" if self.pause_refresh else "Pause")
 
-    def _auto_refresh_progress(self) -> None:
+    def _auto_refresh_progress_logs(self) -> None:
         if not self.pause_refresh:
-            self.refresh_progress_logs()
-        self.after(5000, self._auto_refresh_progress)
+            self._refresh_progress_logs()
+        self.after(5000, self._auto_refresh_progress_logs)
 
-    def refresh_progress_logs(self) -> None:
-        filter_text = self.progress_filter.get().lower()
-        for row in self.progress_tree.get_children():
-            self.progress_tree.delete(row)
-        logs = self.db_manager.get_recent_logs(limit=100)
-        for log_entry in logs:
-            timestamp = log_entry[4]
-            task = log_entry[1]
-            progress = log_entry[2]
-            message = log_entry[3]
-            if filter_text and filter_text not in task.lower() and filter_text not in message.lower():
+    def _refresh_progress_logs(self) -> None:
+        filter_text = self.progress_search_var.get().lower()
+        for row in self.progress_table.get_children():
+            self.progress_table.delete(row)
+        logs = self.database.get_recent_logs(limit=100)
+        for entry in logs:
+            timestamp = entry[4]
+            task = entry[1]
+            progress = entry[2]
+            message = entry[3]
+            # If filter text is not in task or message, skip
+            if filter_text and (filter_text not in task.lower() and filter_text not in message.lower()):
                 continue
-            self.progress_tree.insert("", tk.END, values=(timestamp, task, f"{progress}%", message))
+            self.progress_table.insert("", tk.END, values=(timestamp, task, f"{progress}%", message))
 
-    def clear_progress_logs(self) -> None:
-        if messagebox.askyesno("Confirm", "Are you sure you want to clear all progress logs?"):
-            self.db_manager.clear_logs()
-            self.refresh_progress_logs()
-            self.log("Progress logs cleared.")
+    def _clear_progress_logs(self) -> None:
+        if messagebox.askyesno("Confirm", "Clear all progress logs?"):
+            self.database.clear_logs()
+            self._refresh_progress_logs()
+            self._log("Progress logs cleared.")
 
-    def export_progress_logs(self) -> None:
+    def _export_progress_logs(self) -> None:
         export_path = filedialog.asksaveasfilename(
             defaultextension=".csv",
             filetypes=[("CSV files", "*.csv")],
@@ -545,141 +619,380 @@ class AssistantUI(tk.Tk):
         )
         if not export_path:
             return
-        logs = self.db_manager.get_recent_logs(limit=1000)
+        logs = self.database.get_recent_logs(limit=1000)
         try:
             with open(export_path, "w", newline="", encoding="utf-8") as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerow(["Timestamp", "Task", "Progress", "Message"])
-                for log_entry in logs:
-                    writer.writerow([log_entry[4], log_entry[1], f"{log_entry[2]}%", log_entry[3]])
-            self.log(f"Progress logs exported to {export_path}")
+                for entry in logs:
+                    writer.writerow([entry[4], entry[1], f"{entry[2]}%", entry[3]])
+            self._log(f"Progress logs exported to {export_path}")
         except Exception as e:
-            self.log(f"Export failed: {e}", error=True)
+            self._log(f"Export failed: {e}", error=True)
 
     # -------------------------------------------------------------------------
-    # TAB 5: Model & App Status
+    # TAB 5: Model & App Status (Auto-Discovered) with Filtering & Sorting
     # -------------------------------------------------------------------------
-    def _create_status_tab(self) -> None:
-        self.status_tab = ttk.Frame(self.notebook)
-        self.notebook.add(self.status_tab, text="Model & App Status")
-        top_frame = ttk.Frame(self.status_tab)
+    def _create_model_app_tab(self) -> None:
+        self.model_app_tab = ttk.Frame(self.main_notebook)
+        self.main_notebook.add(self.model_app_tab, text="Model & App Status")
+
+        self.model_app_sort_column = None
+        self.model_app_sort_reverse = False
+        self.model_app_data = []
+
+        top_frame = ttk.Frame(self.model_app_tab)
         top_frame.pack(fill="x", padx=10, pady=5)
-        ttk.Label(top_frame, text="Filter:").pack(side="left", padx=5)
-        self.status_filter = tk.StringVar()
-        ttk.Entry(top_frame, textvariable=self.status_filter).pack(side="left", padx=5)
-        ttk.Button(top_frame, text="Refresh", command=self.refresh_status_table).pack(side="left", padx=5)
-        columns = ("model", "app", "app_py", "app_svelte")
-        self.status_tree = ttk.Treeview(self.status_tab, columns=columns, show="headings")
-        self.status_tree.heading("model", text="Model")
-        self.status_tree.heading("app", text="App")
-        self.status_tree.heading("app_py", text="app.py Generated")
-        self.status_tree.heading("app_svelte", text="App.svelte Generated")
-        self.status_tree.column("model", width=100)
-        self.status_tree.column("app", width=100)
-        self.status_tree.column("app_py", width=150, anchor="center")
-        self.status_tree.column("app_svelte", width=150, anchor="center")
-        vsb = ttk.Scrollbar(self.status_tab, orient="vertical", command=self.status_tree.yview)
-        self.status_tree.configure(yscrollcommand=vsb.set)
+        ttk.Button(top_frame, text="Sync with Folders", command=self._run_in_thread(self._sync_folders_with_db)).pack(side="left", padx=5)
+
+        tk.Label(top_frame, text="Filter:").pack(side="left", padx=5)
+        self.model_app_filter_var = tk.StringVar()
+        entry = tk.Entry(top_frame, textvariable=self.model_app_filter_var)
+        entry.pack(side="left", padx=5)
+        # Filter as user types
+        entry.bind("<KeyRelease>", lambda event: self._refresh_model_app_table())
+
+        ttk.Button(top_frame, text="Refresh", command=self._refresh_model_app_table).pack(side="left", padx=5)
+
+        columns = ("id", "model", "app", "app_py", "app_svelte", "comment")
+        self.model_app_table = ttk.Treeview(self.model_app_tab, columns=columns, show="headings")
+        self.model_app_table.heading("id", text="ID", command=lambda: self._sort_model_app_table("id"))
+        self.model_app_table.heading("model", text="Model", command=lambda: self._sort_model_app_table("model"))
+        self.model_app_table.heading("app", text="App", command=lambda: self._sort_model_app_table("app"))
+        self.model_app_table.heading("app_py", text="app.py?", command=lambda: self._sort_model_app_table("app_py"))
+        self.model_app_table.heading("app_svelte", text="App.svelte?", command=lambda: self._sort_model_app_table("app_svelte"))
+        self.model_app_table.heading("comment", text="Comment", command=lambda: self._sort_model_app_table("comment"))
+
+        self.model_app_table.column("id", width=50)
+        self.model_app_table.column("model", width=100)
+        self.model_app_table.column("app", width=100)
+        self.model_app_table.column("app_py", width=80, anchor="center")
+        self.model_app_table.column("app_svelte", width=100, anchor="center")
+        self.model_app_table.column("comment", width=250)
+
+        vsb = ttk.Scrollbar(self.model_app_tab, orient="vertical", command=self.model_app_table.yview)
+        self.model_app_table.configure(yscrollcommand=vsb.set)
         vsb.pack(side="right", fill="y")
-        self.status_tree.pack(fill="both", expand=True, padx=10, pady=5)
-        self._auto_refresh_status_table()
+        self.model_app_table.pack(fill="both", expand=True, padx=10, pady=5)
+        self.model_app_table.bind("<Double-1>", self._on_model_app_table_double_click)
 
-    def _auto_refresh_status_table(self) -> None:
-        self.refresh_status_table()
-        self.after(10000, self._auto_refresh_status_table)
+        self._refresh_model_app_table()
 
-    def refresh_status_table(self) -> None:
-        filter_text = self.status_filter.get().lower()
-        for row in self.status_tree.get_children():
-            self.status_tree.delete(row)
-        for model_dir in sorted(Path('.').iterdir()):
-            if model_dir.is_dir() and model_dir.name in CONFIG["allowed_models"]:
-                app_dirs = natsorted([d for d in model_dir.iterdir() if d.is_dir() and d.name.lower().startswith("app")])
-                for app_dir in app_dirs:
-                    app_py_exists = (app_dir / "app.py").exists()
-                    app_svelte_exists = (app_dir / "App.svelte").exists()
-                    if filter_text:
-                        if filter_text not in model_dir.name.lower() and filter_text not in app_dir.name.lower():
-                            continue
-                    self.status_tree.insert("", tk.END, values=(
-                        model_dir.name,
-                        app_dir.name,
-                        "Yes" if app_py_exists else "No",
-                        "Yes" if app_svelte_exists else "No"
-                    ))
+    def _sync_folders_with_db(self) -> None:
+        """
+        Scan local folders for each allowed model and 'app*' subfolders.
+        Insert or update DB entries for them, remove any no longer on disk.
+        """
+        existing_rows = self.database.get_all_model_app_status()
+        existing_map = {}
+        for row in existing_rows:
+            row_id, model, app, app_py, app_svelte, comment = row
+            existing_map[(model, app)] = {"id": row_id, "comment": comment}
+
+        discovered = []
+        for model_name in APP_CONFIG["allowed_models"]:
+            model_dir = Path('.') / model_name
+            if model_dir.is_dir():
+                # NATURAL SORT for directory scanning
+                apps = sorted(
+                    [d for d in model_dir.iterdir() if d.is_dir() and d.name.lower().startswith("app")],
+                    key=lambda d: _natural_sort_key(d.name)
+                )
+                for subdir in apps:
+                    discovered.append((model_name, subdir.name))
+
+        discovered_set = set(discovered)
+
+        # Remove from DB if no longer on disk
+        for (model, app) in list(existing_map.keys()):
+            if (model, app) not in discovered_set:
+                self.database.delete_model_app_status_by_id(existing_map[(model, app)]["id"])
+
+        # Insert or update each discovered
+        for (model, app) in discovered:
+            app_path = Path('.') / model / app
+            has_app_py = (app_path / "app.py").exists()
+            has_svelte = (app_path / "App.svelte").exists()
+            if (model, app) in existing_map:
+                row_data = existing_map[(model, app)]
+                self.database.update_model_app_status(
+                    row_data["id"], model, app, has_app_py, has_svelte, row_data.get("comment", "")
+                )
+            else:
+                self.database.insert_model_app_status(model, app, has_app_py, has_svelte, "")
+
+        self._refresh_model_app_table()
+        self._log("Model/App data synced with folders.")
+
+    def _refresh_model_app_table(self) -> None:
+        self.model_app_data = []
+        rows = self.database.get_all_model_app_status()
+        for row in rows:
+            row_id, model, app, app_py, app_svelte, comment = row
+            self.model_app_data.append({
+                "id": row_id,
+                "model": model,
+                "app": app,
+                "app_py": "☑" if app_py else "☐",
+                "app_svelte": "☑" if app_svelte else "☐",
+                "comment": comment or ""
+            })
+
+        filtered = self._apply_model_app_filter(self.model_app_data)
+        if self.model_app_sort_column:
+            filtered = self._sort_model_app_data(filtered, self.model_app_sort_column, self.model_app_sort_reverse)
+        self._populate_model_app_table(filtered)
+
+    def _apply_model_app_filter(self, data):
+        ft = self.model_app_filter_var.get().strip().lower()
+        if not ft:
+            return data
+        return [
+            row for row in data
+            if (ft in str(row["id"]).lower()
+                or ft in row["model"].lower()
+                or ft in row["app"].lower()
+                or ft in row["app_py"].lower()
+                or ft in row["app_svelte"].lower()
+                or ft in row["comment"].lower())
+        ]
+
+    def _sort_model_app_table(self, col: str):
+        if self.model_app_sort_column == col:
+            self.model_app_sort_reverse = not self.model_app_sort_reverse
+        else:
+            self.model_app_sort_column = col
+            self.model_app_sort_reverse = False
+        self._refresh_model_app_table()
+
+    def _sort_model_app_data(self, data, col: str, reverse: bool):
+        """
+        Use natural sort for text columns like 'app',
+        numeric sort for 'id' if needed, and checkboxes for 'app_py','app_svelte'.
+        """
+        def sort_key(row):
+            if col == "id":
+                # numeric
+                return int(row["id"])
+            elif col in ("app_py", "app_svelte"):
+                # checkboxes
+                return 0 if row[col] == "☐" else 1
+            else:
+                # everything else -> natural sort
+                return _natural_sort_key(row[col])
+        return sorted(data, key=sort_key, reverse=reverse)
+
+    def _populate_model_app_table(self, data):
+        for row in self.model_app_table.get_children():
+            self.model_app_table.delete(row)
+        for row in data:
+            self.model_app_table.insert("", tk.END, values=(
+                row["id"],
+                row["model"],
+                row["app"],
+                row["app_py"],
+                row["app_svelte"],
+                row["comment"]
+            ))
+
+    def _on_model_app_table_double_click(self, event) -> None:
+        item_id = self.model_app_table.identify_row(event.y)
+        col_id = self.model_app_table.identify_column(event.x)
+        if not item_id:
+            return
+
+        values = list(self.model_app_table.item(item_id, "values"))
+        row_id, model, app, app_py_disp, app_svelte_disp, comment = values
+
+        if col_id == "#4":  # Toggle app_py?
+            new_val = "☑" if app_py_disp == "☐" else "☐"
+            values[3] = new_val
+            self.database.update_model_app_status(
+                row_id, model, app,
+                (new_val == "☑"), (app_svelte_disp == "☑"), comment
+            )
+        elif col_id == "#5":  # Toggle app_svelte?
+            new_val = "☑" if app_svelte_disp == "☐" else "☐"
+            values[4] = new_val
+            self.database.update_model_app_status(
+                row_id, model, app,
+                (app_py_disp == "☑"), (new_val == "☑"), comment
+            )
+        elif col_id == "#6":  # Edit comment
+            new_comment = simpledialog.askstring("Edit Comment", "Enter comment:", initialvalue=comment)
+            if new_comment is not None:
+                values[5] = new_comment
+                self.database.update_model_app_status(
+                    row_id, model, app,
+                    (app_py_disp == "☑"), (app_svelte_disp == "☑"), new_comment
+                )
+
+        self.model_app_table.item(item_id, values=values)
 
     # -------------------------------------------------------------------------
-    # TAB 6: Ports Display (NEW)
+    # TAB 6: Ports Info with Filtering & Sorting
     # -------------------------------------------------------------------------
-    def _create_ports_tab(self) -> None:
-        self.ports_tab = ttk.Frame(self.notebook)
-        self.notebook.add(self.ports_tab, text="Ports")
-        top_frame = ttk.Frame(self.ports_tab)
+    def _create_ports_info_tab(self) -> None:
+        self.ports_info_tab = ttk.Frame(self.main_notebook)
+        self.main_notebook.add(self.ports_info_tab, text="Ports")
+
+        self.ports_sort_column = None
+        self.ports_sort_reverse = False
+        self.ports_data = []
+
+        top_frame = ttk.Frame(self.ports_info_tab)
         top_frame.pack(fill="x", padx=10, pady=5)
-        ttk.Button(top_frame, text="Refresh Ports", command=self.refresh_ports_table).pack(side="left", padx=5)
+        ttk.Button(top_frame, text="Refresh Ports", command=self._refresh_ports_table).pack(side="left", padx=5)
+
+        tk.Label(top_frame, text="Filter:").pack(side="left", padx=5)
+        self.ports_filter_var = tk.StringVar()
+        entry = tk.Entry(top_frame, textvariable=self.ports_filter_var)
+        entry.pack(side="left", padx=5)
+        # Filter as user types
+        entry.bind("<KeyRelease>", lambda event: self._refresh_ports_table())
+
+        ttk.Button(top_frame, text="Apply Filter", command=self._refresh_ports_table).pack(side="left", padx=5)
+
         columns = ("model", "app_folder", "app_num", "backend", "frontend", "backend_range", "frontend_range")
-        self.ports_tree = ttk.Treeview(self.ports_tab, columns=columns, show="headings")
-        self.ports_tree.heading("model", text="Model")
-        self.ports_tree.heading("app_folder", text="App Folder")
-        self.ports_tree.heading("app_num", text="App #")
-        self.ports_tree.heading("backend", text="Backend Port")
-        self.ports_tree.heading("frontend", text="Frontend Port")
-        self.ports_tree.heading("backend_range", text="Backend Range")
-        self.ports_tree.heading("frontend_range", text="Frontend Range")
-        self.ports_tree.column("model", width=100)
-        self.ports_tree.column("app_folder", width=150)
-        self.ports_tree.column("app_num", width=70, anchor="center")
-        self.ports_tree.column("backend", width=100, anchor="center")
-        self.ports_tree.column("frontend", width=100, anchor="center")
-        self.ports_tree.column("backend_range", width=150, anchor="center")
-        self.ports_tree.column("frontend_range", width=150, anchor="center")
-        vsb = ttk.Scrollbar(self.ports_tab, orient="vertical", command=self.ports_tree.yview)
-        self.ports_tree.configure(yscrollcommand=vsb.set)
-        vsb.pack(side="right", fill="y")
-        self.ports_tree.pack(fill="both", expand=True, padx=10, pady=5)
-        self.refresh_ports_table()
+        self.ports_table = ttk.Treeview(self.ports_info_tab, columns=columns, show="headings")
 
-    def refresh_ports_table(self) -> None:
-        for row in self.ports_tree.get_children():
-            self.ports_tree.delete(row)
-        # Use natural sort for the allowed models.
-        sorted_models = natsorted(list(CONFIG["allowed_models"]))
-        for model in sorted_models:
-            model_idx = sorted_models.index(model)
-            rng = PortManager.get_port_range(model_idx)
+        self.ports_table.heading("model", text="Model", command=lambda: self._sort_ports_table("model"))
+        self.ports_table.heading("app_folder", text="App Folder", command=lambda: self._sort_ports_table("app_folder"))
+        self.ports_table.heading("app_num", text="App #", command=lambda: self._sort_ports_table("app_num"))
+        self.ports_table.heading("backend", text="Backend Port", command=lambda: self._sort_ports_table("backend"))
+        self.ports_table.heading("frontend", text="Frontend Port", command=lambda: self._sort_ports_table("frontend"))
+        self.ports_table.heading("backend_range", text="Backend Range", command=lambda: self._sort_ports_table("backend_range"))
+        self.ports_table.heading("frontend_range", text="Frontend Range", command=lambda: self._sort_ports_table("frontend_range"))
+
+        self.ports_table.column("model", width=100)
+        self.ports_table.column("app_folder", width=150)
+        self.ports_table.column("app_num", width=70, anchor="center")
+        self.ports_table.column("backend", width=100, anchor="center")
+        self.ports_table.column("frontend", width=100, anchor="center")
+        self.ports_table.column("backend_range", width=150, anchor="center")
+        self.ports_table.column("frontend_range", width=150, anchor="center")
+
+        vsb = ttk.Scrollbar(self.ports_info_tab, orient="vertical", command=self.ports_table.yview)
+        self.ports_table.configure(yscrollcommand=vsb.set)
+        vsb.pack(side="right", fill="y")
+        self.ports_table.pack(fill="both", expand=True, padx=10, pady=5)
+        self.ports_table.bind("<Double-1>", self._on_ports_table_double_click)
+
+        self._refresh_ports_table()
+
+    def _refresh_ports_table(self) -> None:
+        self.ports_data.clear()
+
+        sorted_models = natsorted(list(APP_CONFIG["allowed_models"]), key=_natural_sort_key)
+        for i, model in enumerate(sorted_models):
+            model_dir = Path('.') / model
+            if not model_dir.is_dir():
+                continue
+
+            rng = PortManager.get_port_range(i)
             backend_range_str = f"{rng['backend']['start']}-{rng['backend']['end']}"
             frontend_range_str = f"{rng['frontend']['start']}-{rng['frontend']['end']}"
-            model_dir = Path('.') / model
-            if not model_dir.exists():
-                continue
-            # Use natural sort for the app directories.
-            for app_dir in natsorted([d for d in model_dir.iterdir() if d.is_dir()]):
-                if app_dir.name.lower().startswith("app"):
-                    match = re.search(r'(\d+)', app_dir.name)
-                    app_num = int(match.group(1)) if match else 1
-                    ports = PortManager.get_app_ports(model_idx, app_num)
-                    self.ports_tree.insert("", tk.END, values=(
-                        model,
-                        app_dir.name,
-                        app_num,
-                        ports["backend"],
-                        ports["frontend"],
-                        backend_range_str,
-                        frontend_range_str
-                    ))
 
+            # NATURAL SORT for app folders
+            apps = sorted(
+                [d for d in model_dir.iterdir() if d.is_dir() and d.name.lower().startswith("app")],
+                key=lambda d: _natural_sort_key(d.name)
+            )
+            for app_dir in apps:
+                match = re.search(r'(\d+)', app_dir.name)
+                app_num = int(match.group(1)) if match else 1
+                ports = PortManager.get_app_ports(i, app_num)
+                self.ports_data.append({
+                    "model": model,
+                    "app_folder": app_dir.name,
+                    "app_num": app_num,
+                    "backend": ports["backend"],
+                    "frontend": ports["frontend"],
+                    "backend_range": backend_range_str,
+                    "frontend_range": frontend_range_str
+                })
+
+        filtered = self._apply_ports_filter(self.ports_data)
+        if self.ports_sort_column:
+            filtered = self._sort_ports_data(filtered, self.ports_sort_column, self.ports_sort_reverse)
+        self._populate_ports_table(filtered)
+
+    def _apply_ports_filter(self, data):
+        ft = self.ports_filter_var.get().strip().lower()
+        if not ft:
+            return data
+        result = []
+        for row in data:
+            if (ft in row["model"].lower() or
+                ft in row["app_folder"].lower() or
+                ft in str(row["app_num"]).lower() or
+                ft in str(row["backend"]).lower() or
+                ft in str(row["frontend"]).lower() or
+                ft in row["backend_range"].lower() or
+                ft in row["frontend_range"].lower()):
+                result.append(row)
+        return result
+
+    def _sort_ports_table(self, col: str):
+        if self.ports_sort_column == col:
+            self.ports_sort_reverse = not self.ports_sort_reverse
+        else:
+            self.ports_sort_column = col
+            self.ports_sort_reverse = False
+        self._refresh_ports_table()
+
+    def _sort_ports_data(self, data, col: str, reverse: bool):
+        """
+        Use numeric sort for columns like app_num, backend, frontend;
+        use natural sort for text columns (model, app_folder, etc.).
+        """
+        def sort_key(row):
+            if col in ("app_num", "backend", "frontend"):
+                return int(row[col])
+            else:
+                return _natural_sort_key(str(row[col]))
+        return sorted(data, key=sort_key, reverse=reverse)
+
+    def _populate_ports_table(self, data):
+        for row in self.ports_table.get_children():
+            self.ports_table.delete(row)
+        for row in data:
+            self.ports_table.insert("", tk.END, values=(
+                row["model"],
+                row["app_folder"],
+                row["app_num"],
+                row["backend"],
+                row["frontend"],
+                row["backend_range"],
+                row["frontend_range"]
+            ))
+
+    def _on_ports_table_double_click(self, event) -> None:
+        item_id = self.ports_table.identify_row(event.y)
+        if not item_id:
+            return
+        vals = self.ports_table.item(item_id, "values")
+        backend_port = vals[3]
+        frontend_port = vals[4]
+        text_to_copy = f"(frontend {frontend_port} and backend {backend_port})"
+        self.clipboard_clear()
+        self.clipboard_append(text_to_copy)
+        self._log(f"Copied port numbers: {text_to_copy}")
 
     # -------------------------------------------------------------------------
-    # Logging Frame at Bottom
+    # LOG PANEL
     # -------------------------------------------------------------------------
-    def _create_logging_frame(self) -> None:
+    def _create_log_panel(self) -> None:
         log_frame = ttk.Frame(self)
         log_frame.pack(fill="x", side="bottom")
         ttk.Label(log_frame, text="Log:").pack(anchor="w", padx=5)
         self.log_text = scrolledtext.ScrolledText(log_frame, height=8, state="disabled")
         self.log_text.pack(fill="x", padx=5, pady=5)
 
-    def log(self, message: str, error: bool = False) -> None:
+    # -------------------------------------------------------------------------
+    # Utility / Logging
+    # -------------------------------------------------------------------------
+    def _log(self, message: str, error: bool = False) -> None:
         timestamp = time.strftime("%H:%M:%S")
         level = "ERROR" if error else "INFO"
         entry = f"[{timestamp}] {level}: {message}\n"
@@ -687,45 +1000,46 @@ class AssistantUI(tk.Tk):
         self.log_text.insert(tk.END, entry)
         self.log_text.see(tk.END)
         self.log_text.config(state="disabled")
+
         if error:
             logger.error(message)
         else:
             logger.info(message)
 
-    # -------------------------------------------------------------------------
-    # Utility Methods
-    # -------------------------------------------------------------------------
-    def _update_progress_bar(self, progress_bar: ttk.Progressbar, value: int) -> None:
-        progress_bar['value'] = value
+    def _set_progress_bar(self, bar: ttk.Progressbar, value: int) -> None:
+        bar["value"] = value
         self.update_idletasks()
 
-    def _threaded(self, func):
+    def _run_in_thread(self, func):
         def wrapper(*args, **kwargs):
-            threading.Thread(target=self._run_safe, args=(func, *args), kwargs=kwargs, daemon=True).start()
+            threading.Thread(target=self._safe_run, args=(func, *args), kwargs=kwargs, daemon=True).start()
         return wrapper
 
-    def _run_safe(self, func, *args, **kwargs):
+    def _safe_run(self, func, *args, **kwargs):
         try:
             func(*args, **kwargs)
         except Exception as e:
-            self.log(f"Error in {func.__name__}: {e}", error=True)
+            self._log(f"Error in {func.__name__}: {e}", error=True)
             messagebox.showerror("Error", str(e))
 
 # =============================================================================
-# Custom Logging Handler for GUI Log Output
+# GUI Logging Handler
 # =============================================================================
 class GuiLogHandler(logging.Handler):
-    def __init__(self, ui: AssistantUI) -> None:
+    def __init__(self, app: AssistantApp) -> None:
         super().__init__()
-        self.ui = ui
+        self.app = app
 
     def emit(self, record: logging.LogRecord) -> None:
         msg = self.format(record)
-        self.ui.log_text.config(state="normal")
-        self.ui.log_text.insert(tk.END, msg + "\n")
-        self.ui.log_text.see(tk.END)
-        self.ui.log_text.config(state="disabled")
+        self.app.log_text.config(state="normal")
+        self.app.log_text.insert(tk.END, msg + "\n")
+        self.app.log_text.see(tk.END)
+        self.app.log_text.config(state="disabled")
 
+# =============================================================================
+# Main Entry
+# =============================================================================
 if __name__ == "__main__":
-    app = AssistantUI()
+    app = AssistantApp()
     app.mainloop()
