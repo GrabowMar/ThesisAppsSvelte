@@ -7,6 +7,7 @@
 2. Try to keep all changes within **app.py** , **App.jsx** and **App.css** files.
 3. Try to write feature complete production ready app, with comments, fails states, etc.
 4. **Note:** Multipage routing is possible within these files. On the backend, you can define multiple routes (e.g., `/login`, `/register`, `/dashboard`, etc.) in **app.py**. On the frontend, client-side routing can be managed within **App.jsx** using conditional rendering or a routing library, all within the single-file constraint.
+5. Mounting Logic: The App.jsx file must include mounting logic. This means it should import ReactDOM from react-dom/client and use it to attach the main App component to the DOM element with the id "root".
 ## Project Description
 
 **File Storage System**  
@@ -38,7 +39,6 @@ app/
 ├── frontend/
 │   ├── src/
 │   │   ├── App.jsx      # ALL frontend logic (with potential multipage routing)
-│   │   ├── main.jsx         # (optional)
 │   │   └── App.css         # (optional)
 │   ├── Dockerfile          # (optional)
 │   ├── package.json        # (generated if needed)

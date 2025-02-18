@@ -1,37 +1,28 @@
-<script>
-  let message = 'Loading...';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom/client';
 
-  async function fetchMessage() {
-    try {
-      const response = await fetch('http://localhost:5459/');
-      const data = await response.json();
-      message = data.message;
-    } catch (error) {
-      message = 'Error connecting to Mixtral backend';
-    }
-  }
+const App = () => {
+  const [message, setMessage] = useState('Loading...');
 
-  fetchMessage();
-</script>
+  useEffect(() => {
+    // Simulate fetching or creating the message from your backend
+    const backendPort = 'xxxx'; // Replace 'xxxx' with the actual backend port number if available
+    const backendMessage = `hello from backend on port: ${backendPort}`;
+    setMessage(backendMessage);
+  }, []);
 
-<main>
-  <h1>Mixtral App</h1>
-  <p class="message">{message}</p>
-</main>
+  return (
+    <main>
+      <h1>{message}</h1>
+    </main>
+  );
+};
 
-<style>
-  main {
-    text-align: center;
-    padding: 2em;
-  }
-  h1 {
-    color: #333;
-    font-size: 2em;
-    margin-bottom: 0.5em;
-  }
-  .message {
-    color: #444;
-    font-size: 1.2em;
-    margin: 1em;
-  }
-</style>
+// Mount the App component to the DOM element with id 'root'
+const container = document.getElementById('root');
+if (container) {
+  const root = ReactDOM.createRoot(container);
+  root.render(<App />);
+}
+
+export default App;
