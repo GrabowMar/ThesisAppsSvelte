@@ -65,25 +65,14 @@
         </div>
       </div>
 
-      <!-- Progress Bar (visible during scan) -->
-      <div id="scanProgress" class="hidden space-y-2">
-        <!-- Progress Bar -->
-        <div class="border border-gray-400 bg-white p-2">
-          <div class="text-xs font-bold mb-1">Scan Progress</div>
-          <div class="w-full bg-gray-200 rounded-full h-2">
-            <div class="bg-blue-600 rounded-full h-2 transition-all duration-500" style="width: 0%" id="progressBar"></div>
-          </div>
+      <!-- Progress Log -->
+      <div class="border border-gray-400 bg-white">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
+          <h2 class="font-bold text-xs">Progress Log</h2>
+          <button id="clearLog" class="text-xs text-gray-600 hover:text-gray-900">Clear</button>
         </div>
-        
-        <!-- Progress Log -->
-        <div class="border border-gray-400 bg-white">
-          <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
-            <h2 class="font-bold text-xs">Progress Log</h2>
-            <button id="clearLog" class="text-xs text-gray-600 hover:text-gray-900">Clear</button>
-          </div>
-          <div class="p-2">
-            <pre id="progressLog" class="text-xs font-mono bg-gray-50 p-2 border border-gray-300 h-48 overflow-auto"></pre>
-          </div>
+        <div class="p-2">
+          <pre id="progressLog" class="text-xs font-mono bg-gray-50 p-2 border border-gray-300 h-48 overflow-auto"></pre>
         </div>
       </div>
 
@@ -233,7 +222,6 @@
         </div>
       </div>
       
-
       <!-- Scan Policy -->
       <div class="border border-gray-400 bg-white">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
@@ -309,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
         stopScanBtn.classList.remove('hidden');
         scanProgress.classList.remove('hidden');
         
-        const response = await fetch('/api/zap/scan/{{ model }}/{{ app_num }}', {
+        const response = await fetch('/zap/scan/{{ model }}/{{ app_num }}', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -339,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (stopScanBtn) {
     stopScanBtn.addEventListener('click', async function() {
       try {
-        const response = await fetch('/api/zap/scan/{{ model }}/{{ app_num }}/stop', {
+        const response = await fetch('/zap/scan/{{ model }}/{{ app_num }}/stop', {
           method: 'POST'
         });
         
@@ -358,7 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   async function pollProgress() {
     try {
-      const response = await fetch('/api/zap/scan/{{ model }}/{{ app_num }}/status');
+      const response = await fetch('/zap/scan/{{ model }}/{{ app_num }}/status');
       if (!response.ok) throw new Error('Failed to get status');
       
       const data = await response.json();

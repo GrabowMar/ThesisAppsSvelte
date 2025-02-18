@@ -1,20 +1,19 @@
-"""
-ZAP Scanner with internal state management.
-Provides security scanning functionality independent of Flask config.
-"""
-
 import json
 import logging
 import os
 import time
 import subprocess
+import socket
 from dataclasses import dataclass, asdict
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
+from contextlib import contextmanager
 
 from zapv2 import ZAPv2
 
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 @dataclass
@@ -43,156 +42,91 @@ class ScanStatus:
 
 class ZAPScanner:
     def __init__(self, base_path: Path):
-        self.base_path = base_path
+        """Initialize ZAP Scanner with improved configuration."""
+        self.base_path = Path(base_path)
         self.zap: Optional[ZAPv2] = None
         self.daemon_process: Optional[subprocess.Popen] = None
         
         # Configuration
-        self.api_key = "5tjkc409k4oaacd69qob5p6uri"
+        self.api_key = os.getenv('ZAP_API_KEY', '5tjkc409k4oaacd69qob5p6uri')
         self.proxy_host = "127.0.0.1"
         self.proxy_port = self._find_free_port()
-        self.zap_log = self.base_path / "zap.log"  # Log file for ZAP output
+        self.zap_log = self.base_path / "zap.log"
         
         # Store scans in memory
         self._scans: Dict[str, Dict] = {}
         
-    def _find_free_port(self, start_port: int = 8080, max_port: int = 8090) -> int:
-        """Find an available port between start_port and max_port."""
-        import socket
+        # Ensure base directory exists
+        self.base_path.mkdir(parents=True, exist_ok=True)
+
+    @contextmanager
+    def _port_check(self, port: int):
+        """Context manager for checking port availability."""
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            sock.bind(('127.0.0.1', port))
+            sock.listen(1)
+            yield sock
+        finally:
+            sock.close()
         
+    def _find_free_port(self, start_port: int = 8090, max_port: int = 8099) -> int:
+        """Find an available port with improved error handling."""
         for port in range(start_port, max_port + 1):
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-                try:
-                    sock.bind(('127.0.0.1', port))
-                    sock.listen(1)
-                    sock.close()
+            try:
+                with self._port_check(port):
                     logger.info(f"Found free port: {port}")
                     return port
-                except OSError:
-                    continue
-        
+            except OSError:
+                continue
         raise RuntimeError(f"No free ports found between {start_port} and {max_port}")
-        
-    def _test_network_access(self) -> bool:
-        """Test if we can bind to the port after cleaning up any existing ZAP processes."""
-        import socket
-        
-        logger.info(f"Testing network access on port {self.proxy_port}")
-        
-        # Cleanup any existing ZAP processes
-        self._cleanup_existing_zap()
-        
-        # Test if we can bind to the port
-        try:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-                sock.bind(('127.0.0.1', self.proxy_port))
-                sock.listen(1)
-                logger.info("Successfully bound to port")
-        except Exception as e:
-            logger.error(f"Cannot bind to port {self.proxy_port}: {e}")
-            return False
-            
-        return True
-
-    def _cleanup_existing_zap(self):
-        """Kill any existing ZAP processes."""
-        try:
-            if os.name == 'nt':  # Windows: try to kill both java.exe and zap.exe
-                subprocess.run(['taskkill', '/f', '/im', 'java.exe'], capture_output=True)
-                subprocess.run(['taskkill', '/f', '/im', 'zap.exe'], capture_output=True)
-            else:  # Linux/Mac
-                os.system('pkill -f zap.jar')
-            time.sleep(2)  # Wait for processes to die
-        except Exception as e:
-            logger.warning(f"Error during ZAP cleanup: {e}")
-
-    def _start_zap_daemon(self) -> bool:
-        """Start ZAP daemon process with improved error handling."""
-        try:
-            logger.info("Starting ZAP daemon...")
-            zap_path = self._find_zap_installation()
-            
-            # Configure JVM options
-            java_opts = [
-                '-Xmx512m',
-                '-Djava.net.preferIPv4Stack=true',  # Force IPv4
-                '-DZAP.port.retry=true',  # Allow port retry
-            ]
-
-            cmd = self._build_zap_command(zap_path, java_opts)
-            
-            logger.debug(f"ZAP command: {cmd}")  # Log the full command
-
-            # Start process with error capture
-            with open(self.zap_log, 'w') as log_file:
-                self.daemon_process = subprocess.Popen(
-                    cmd,
-                    stdout=log_file,
-                    stderr=subprocess.STDOUT,
-                    creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
-                )
-
-            # Verify process startup
-            time.sleep(5)  # Increased startup delay
-            if self.daemon_process.poll() is not None:
-                error_msg = (
-                    f"ZAP failed to start. Exit code: {self.daemon_process.returncode}\n"
-                    f"Check {self.zap_log} for details."
-                )
-                logger.error(error_msg)
-                self._log_zap_output()  # Log ZAP output before raising
-                raise RuntimeError(error_msg)
-
-            # Connection retry with backoff
-            return self._connect_to_zap_with_retry()
-            
-        except Exception as e:
-            logger.error(f"ZAP startup failed: {e}")
-            self._log_zap_output()
-            return False
 
     def _find_zap_installation(self) -> Path:
-        """Locate ZAP installation with additional checks."""
+        """Locate ZAP installation with improved path handling."""
+        zap_home = os.getenv("ZAP_HOME")
         possible_paths = [
             self.base_path / "ZAP_2.14.0",
             self.base_path,
-            Path(os.getenv("ZAP_HOME", "")),
-            Path("C:/Program Files/ZAP/Zed Attack Proxy"),
-            Path("C:/Program Files (x86)/ZAP/Zed Attack Proxy"),
+            Path(zap_home) if zap_home else None,
+            Path("C:/Program Files/OWASP/Zed Attack Proxy"),
+            Path("C:/Program Files (x86)/OWASP/Zed Attack Proxy"),
+            Path("C:/Program Files/ZAP/Zed Attack Proxy"),  # Added your installation path
             Path("/usr/share/zaproxy"),
             Path("/Applications/OWASP ZAP.app/Contents/Java"),
         ]
 
-        for path in possible_paths:
-            # Check for the jar file directly in the path
-            jar_path = path / "zap-2.16.0.jar"
-            if jar_path.exists():
-                logger.info(f"Found ZAP at: {jar_path}")
-                return jar_path
-
-            # Check for executable files
-            for exe in ["zap.bat", "zap.sh", "ZAP.exe"]:
-                full_path = path / exe
-                if full_path.exists():
-                    logger.info(f"Found ZAP at: {full_path}")
-                    return full_path
+        logger.debug(f"Searching for ZAP installation in paths: {possible_paths}")
+        
+        for path in filter(None, possible_paths):
+            if not path.exists():
+                continue
+                
+            # Check for JAR file
+            jar_files = list(path.glob("zap*.jar"))
+            if jar_files:
+                logger.info(f"Found ZAP JAR at: {jar_files[0]}")
+                return jar_files[0]
+                
+            # Check for executables
+            for exe in ["zap.bat", "zap.sh", "zap.exe"]:
+                exe_path = path / exe
+                if exe_path.exists():
+                    logger.info(f"Found ZAP executable at: {exe_path}")
+                    return exe_path
 
         raise FileNotFoundError(
-            "ZAP installation not found. Install ZAP and ensure it's in PATH or set ZAP_HOME."
+            "ZAP installation not found. Please install ZAP and set ZAP_HOME environment variable."
         )
 
-    def _build_zap_command(self, zap_path: Path, java_opts: List[str]) -> List[str]:
-        """Construct platform-specific ZAP command."""
-        if zap_path.suffix == '.jar':
-            return ['java'] + java_opts + ['-jar', str(zap_path)] + self._zap_args()
-        elif zap_path.suffix in ('.bat', '.sh', '.exe'):
-            return [str(zap_path)] + self._zap_args()
-        else:
-            raise RuntimeError(f"Unsupported ZAP executable: {zap_path}")
+    def _build_zap_command(self, zap_path: Path) -> List[str]:
+        """Build ZAP command with improved JVM options."""
+        java_opts = [
+            '-Xmx1G',
+            f'-Djava.io.tmpdir={self.base_path / "tmp"}',
+            '-Djava.net.preferIPv4Stack=true',
+        ]
 
-    def _zap_args(self) -> List[str]:
-        """Common ZAP command arguments."""
-        return [
+        zap_args = [
             '-daemon',
             '-port', str(self.proxy_port),
             '-host', self.proxy_host,
@@ -200,88 +134,101 @@ class ZAPScanner:
             '-config', 'api.addrs.addr.name=.*',
             '-config', 'api.addrs.addr.regex=true',
             '-config', 'connection.timeoutInSecs=300',
-            '-silent',
-            '-nostdout'
         ]
 
-    def _connect_to_zap_with_retry(self) -> bool:
-        """Attempt ZAP connection with exponential backoff."""
-        max_attempts = 15
-        base_delay = 3
-        self.zap = ZAPv2(
-            apikey=self.api_key,
-            proxies={'http': f'http://{self.proxy_host}:{self.proxy_port}',
-                     'https': f'http://{self.proxy_host}:{self.proxy_port}'}
-        )
+        if zap_path.suffix == '.jar':
+            return ['java'] + java_opts + ['-jar', str(zap_path)] + zap_args
+        return [str(zap_path)] + zap_args
 
-        for attempt in range(max_attempts):
-            try:
-                delay = base_delay * (2 ** attempt)
-                logger.info(f"Waiting {delay}s for ZAP startup (attempt {attempt+1}/{max_attempts})")
-                time.sleep(delay)
-                
-                # Test connection
-                self.zap.core.version
-                logger.info("Successfully connected to ZAP")
-                return True
-            except Exception as e:
-                if attempt == max_attempts - 1:
-                    logger.error(f"Final connection attempt failed: {e}")
-                    self._log_zap_output()
-                    return False
-                continue
-
-    def _log_zap_output(self):
-        """Log ZAP's output for debugging."""
-        if self.zap_log.exists():
-            try:
-                with open(self.zap_log, 'r') as f:
-                    logs = f.read(2048)  # Read first 2KB
-                    logger.debug(f"ZAP output:\n{logs}")
-            except Exception as e:
-                logger.error(f"Failed to read ZAP logs: {e}")
-
-    def _stop_zap_daemon(self):
-        """Stop the ZAP daemon and cleanup."""
+    def _start_zap_daemon(self) -> bool:
+        """Start ZAP daemon with improved error handling."""
         try:
-            if self.zap:
+            # Clean up any existing processes first
+            self._cleanup_existing_zap()
+            
+            # Create temp directory if needed
+            tmp_dir = self.base_path / "tmp"
+            tmp_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Find and verify ZAP installation
+            zap_path = self._find_zap_installation()
+            if not zap_path.exists():
+                raise FileNotFoundError(f"ZAP not found at {zap_path}")
+            
+            # Build and log command
+            cmd = self._build_zap_command(zap_path)
+            logger.info(f"Starting ZAP with command: {' '.join(cmd)}")
+            
+            # Start ZAP process
+            self.daemon_process = subprocess.Popen(
+                cmd,
+                stdout=open(self.zap_log, 'w'),
+                stderr=subprocess.STDOUT,
+                creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
+            )
+            
+            # Wait for process to start
+            time.sleep(10)  # Initial wait for process to start
+            
+            if self.daemon_process.poll() is not None:
+                with open(self.zap_log, 'r') as f:
+                    error_log = f.read()
+                raise RuntimeError(f"ZAP failed to start. Exit code: {self.daemon_process.returncode}\nLog:\n{error_log}")
+            
+            # Initialize ZAP client with retry
+            retry_count = 0
+            while retry_count < 5:
                 try:
-                    self.zap.core.shutdown()
+                    self.zap = ZAPv2(
+                        apikey=self.api_key,
+                        proxies={
+                            'http': f'http://{self.proxy_host}:{self.proxy_port}',
+                            'https': f'http://{self.proxy_host}:{self.proxy_port}'
+                        }
+                    )
+                    # Test connection
+                    version = self.zap.core.version
+                    logger.info(f"Successfully connected to ZAP {version}")
+                    return True
                 except Exception as e:
-                    logger.warning(f"Could not shutdown ZAP gracefully: {e}")
-                self.zap = None
-                
+                    logger.warning(f"Connection attempt {retry_count + 1} failed: {e}")
+                    retry_count += 1
+                    time.sleep(5)
+            
+            raise RuntimeError("Failed to connect to ZAP after 5 attempts")
+            
+        except Exception as e:
+            logger.error(f"Failed to start ZAP: {str(e)}")
+            self._cleanup_existing_zap()
+            raise RuntimeError(f"Failed to start ZAP: {str(e)}")
+
+    def _cleanup_existing_zap(self):
+        """Clean up existing ZAP processes with improved detection."""
+        try:
             if self.daemon_process:
+                logger.info("Terminating existing ZAP process...")
+                self.daemon_process.terminate()
                 try:
-                    self.daemon_process.terminate()
                     self.daemon_process.wait(timeout=10)
                 except subprocess.TimeoutExpired:
-                    logger.warning("ZAP process did not terminate, forcing kill")
+                    logger.warning("ZAP process didn't terminate, forcing kill")
                     self.daemon_process.kill()
                     self.daemon_process.wait()
-                except Exception as e:
-                    logger.error(f"Error killing ZAP process: {e}")
-                    
-            # Force cleanup if process is still running
-            if os.name == 'nt':  # Windows
-                subprocess.run(['taskkill', '/f', '/im', 'java.exe'], capture_output=True)
-                subprocess.run(['taskkill', '/f', '/im', 'zap.exe'], capture_output=True)
-            else:  # Linux/Mac
-                os.system('pkill -f zap.jar')
-        
-        except Exception as e:
-            logger.error(f"Error during ZAP cleanup: {e}")
 
-    def _get_scan_key(self, model: str, app_num: int) -> str:
-        """Generate unique scan key."""
-        return f"{model}-{app_num}"
-    
-    def _get_results_path(self, model: str, app_num: int) -> Path:
-        """Get path for storing scan results."""
-        return self.base_path / f"{model}/app{app_num}/.zap_results.json"
-    
+            # Kill any remaining ZAP processes
+            if os.name == 'nt':
+                for process in ['java.exe', 'zap.exe']:
+                    subprocess.run(['taskkill', '/f', '/im', process], capture_output=True, check=False)
+            else:
+                subprocess.run(['pkill', '-f', 'zap.jar'], capture_output=True, check=False)
+                
+            time.sleep(2)  # Wait for cleanup
+            
+        except Exception as e:
+            logger.warning(f"Error during cleanup: {e}")
+
     def scan_target(self, target_url: str, scan_policy: Optional[str] = None) -> Tuple[List[ZapVulnerability], Dict]:
-        """Run a scan against a target URL."""
+        """Run a scan against a target URL with improved error handling."""
         vulnerabilities = []
         summary = {
             "start_time": datetime.now().isoformat(),
@@ -290,44 +237,53 @@ class ZAPScanner:
         }
         
         try:
+            logger.info(f"Starting scan of target: {target_url}")
             if not self._start_zap_daemon():
                 return [], {"status": "failed", "error": "Failed to start ZAP"}
 
-            logger.info(f"Scanning target: {target_url}")
-            
             # Spider scan
             logger.info("Starting spider scan...")
             spider_id = self.zap.spider.scan(target_url)
             while int(self.zap.spider.status(spider_id)) < 100:
-                logger.info(f"Spider progress: {self.zap.spider.status(spider_id)}%")
+                progress = int(self.zap.spider.status(spider_id))
+                logger.info(f"Spider progress: {progress}%")
                 time.sleep(2)
             
-            # Active scan
+            # Active scan using positional parameters:
+            # Parameters: url, recurse, inScopeOnly, scanPolicyName, method, postData
             logger.info("Starting active scan...")
-            scan_id = self.zap.ascan.scan(
-                url=target_url,
-                scanpolicyname=scan_policy
-            )
+            recurse = "true"
+            in_scope_only = "false"
+            policy = scan_policy if scan_policy else ""
+            method = ""
+            post_data = ""
+            scan_id = self.zap.ascan.scan(target_url, recurse, in_scope_only, policy, method, post_data)
+            
             while int(self.zap.ascan.status(scan_id)) < 100:
-                logger.info(f"Active scan progress: {self.zap.ascan.status(scan_id)}%")
+                progress = int(self.zap.ascan.status(scan_id))
+                logger.info(f"Active scan progress: {progress}%")
                 time.sleep(5)
             
             # Process alerts
             alerts = self.zap.core.alerts()
             for alert in alerts:
-                vuln = ZapVulnerability(
-                    url=alert.get('url', ''),
-                    name=alert.get('alert', ''),
-                    alert=alert.get('alert', ''),
-                    risk=alert.get('risk', ''),
-                    confidence=alert.get('confidence', ''),
-                    description=alert.get('description', ''),
-                    solution=alert.get('solution', ''),
-                    reference=alert.get('reference', ''),
-                    evidence=alert.get('evidence', ''),
-                    cwe_id=alert.get('cweid', '')
-                )
-                vulnerabilities.append(vuln)
+                try:
+                    vuln = ZapVulnerability(
+                        url=alert.get('url', ''),
+                        name=alert.get('name', alert.get('alert', '')),
+                        alert=alert.get('alert', ''),
+                        risk=alert.get('risk', ''),
+                        confidence=alert.get('confidence', ''),
+                        description=alert.get('description', ''),
+                        solution=alert.get('solution', ''),
+                        reference=alert.get('reference', ''),
+                        evidence=alert.get('evidence', ''),
+                        cwe_id=alert.get('cweid', '')
+                    )
+                    vulnerabilities.append(vuln)
+                except Exception as e:
+                    logger.error(f"Error processing alert: {e}")
+                    continue
 
             summary.update({
                 "status": "success",
@@ -336,7 +292,8 @@ class ZAPScanner:
                 "risk_counts": {
                     "High": len([v for v in vulnerabilities if v.risk == "High"]),
                     "Medium": len([v for v in vulnerabilities if v.risk == "Medium"]),
-                    "Low": len([v for v in vulnerabilities if v.risk == "Low"])
+                    "Low": len([v for v in vulnerabilities if v.risk == "Low"]),
+                    "Info": len([v for v in vulnerabilities if v.risk == "Info"])
                 }
             })
             
@@ -348,11 +305,11 @@ class ZAPScanner:
             return [], summary
             
         finally:
-            self._stop_zap_daemon()
+            self._cleanup_existing_zap()
 
     def start_scan(self, model: str, app_num: int, scan_options: Dict) -> bool:
-        """Start a new scan for a specific app."""
-        scan_key = self._get_scan_key(model, app_num)
+        """Start a new scan with improved error handling."""
+        scan_key = f"{model}-{app_num}"
         scan_status = ScanStatus()
         self._scans[scan_key] = {
             "status": scan_status,
@@ -364,10 +321,13 @@ class ZAPScanner:
             frontend_port = 5501 + ((app_num - 1) * 2)
             target_url = f"http://localhost:{frontend_port}"
             
+            scan_status.status = "Starting"
             vulnerabilities, summary = self.scan_target(target_url, scan_options.get("scanPolicy"))
             
             # Save results
-            results_path = self._get_results_path(model, app_num)
+            results_path = self.base_path / f"{model}/app{app_num}/.zap_results.json"
+            results_path.parent.mkdir(parents=True, exist_ok=True)
+            
             with open(results_path, "w") as f:
                 json.dump({
                     "alerts": [asdict(v) for v in vulnerabilities],
@@ -375,56 +335,34 @@ class ZAPScanner:
                     "scan_time": datetime.now().isoformat()
                 }, f, indent=2)
             
-            # Update status
             scan_status.status = "Complete"
             scan_status.progress = 100
             scan_status.high_count = summary["risk_counts"]["High"]
             scan_status.medium_count = summary["risk_counts"]["Medium"]
             scan_status.low_count = summary["risk_counts"]["Low"]
+            scan_status.info_count = summary["risk_counts"]["Info"]
             
             return True
             
         except Exception as e:
-            logger.error(f"Scan failed: {e}")
-            scan_status.status = f"Failed: {str(e)}"
+            error_msg = f"Scan failed: {str(e)}"
+            logger.error(error_msg)
+            scan_status.status = f"Failed: {error_msg}"
             return False
-
-    def stop_scan(self, model: str, app_num: int) -> bool:
-        """Stop an ongoing scan."""
-        scan_key = self._get_scan_key(model, app_num)
-        try:
-            self._stop_zap_daemon()
-            if scan_key in self._scans:
-                self._scans[scan_key]["status"].status = "Stopped"
-            return True
-        except Exception as e:
-            logger.error(f"Failed to stop scan: {e}")
-            return False
-
-    def get_status(self, model: str, app_num: int) -> ScanStatus:
-        """Get current scan status."""
-        scan_key = self._get_scan_key(model, app_num)
-        if scan_key in self._scans:
-            return self._scans[scan_key]["status"]
-        return ScanStatus()
 
 def create_scanner(base_path: Path) -> ZAPScanner:
-    """Create a configured ZAP scanner instance with Java check."""
-    # Verify Java installation
+    """Create a ZAP scanner with improved initialization checks."""
     try:
-        subprocess.run(
-            ['java', '-version'],
-            check=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
+        # Verify Java installation
+        java_version = subprocess.check_output(
+            ['java', '-version'], 
+            stderr=subprocess.STDOUT,
+            text=True
         )
+        logger.info(f"Found Java: {java_version.splitlines()[0]}")
     except Exception as e:
         raise RuntimeError(
             "Java runtime not found. Install Java 11+ and ensure it's in PATH."
         ) from e
-
-    # Ensure base_path is a Path object
-    if not isinstance(base_path, Path):
-        base_path = Path(base_path.root_path)  # Correct way to get path from Flask app
 
     return ZAPScanner(base_path)
