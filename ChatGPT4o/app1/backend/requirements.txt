@@ -1,4 +1,0 @@
-Flask
-Flask-Login
-flask_sqlalchemy
-Werkzeug
