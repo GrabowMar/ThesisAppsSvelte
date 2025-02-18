@@ -345,6 +345,11 @@ class AssistantApp(tk.Tk):
         self.app_py_text.pack(fill="both", expand=True)
         self.code_notebook.add(self.app_py_frame, text="app.py")
 
+        self.app_css_frame = ttk.Frame(self.code_notebook)
+        self.app_css_text = tk.Text(self.app_css_frame, wrap="none")
+        self.app_css_text.pack(fill="both", expand=True)
+        self.code_notebook.add(self.app_css_frame, text="App.css")
+
         self.app_react_frame = ttk.Frame(self.code_notebook)
         self.app_react_text = tk.Text(self.app_react_frame, wrap="none")
         self.app_react_text.pack(fill="both", expand=True)
@@ -360,8 +365,6 @@ class AssistantApp(tk.Tk):
         self.package_json_text.pack(fill="both", expand=True)
         self.code_notebook.add(self.package_json_frame, text="package.json")
 
-        self.gen_progress_bar = ttk.Progressbar(top_frame, orient="horizontal", mode="determinate", maximum=100)
-        self.gen_progress_bar.pack(side="left", fill="x", expand=True, padx=5)
 
     def _paste_from_clipboard(self) -> None:
         try:
@@ -495,6 +498,7 @@ class AssistantApp(tk.Tk):
         self._replace_file_content("App.jsx", self.app_react_text.get("1.0", tk.END))
         self._replace_file_content("requirements.txt", self.requirements_text.get("1.0", tk.END))
         self._replace_file_content("package.json", self.package_json_text.get("1.0", tk.END))
+        self._replace_file_content("App.css", self.package_json_text.get("1.0", tk.END))
 
     # -------------------------------------------------------------------------
     # TAB 4: Progress Log
