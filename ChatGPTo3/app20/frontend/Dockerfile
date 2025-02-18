@@ -13,15 +13,14 @@ RUN npm install --verbose && \
     du -h node_modules/ && \
     find node_modules/ -type f | wc -l
 
-# Copy the remaining application files (adjust file names/paths as needed for your project)
+# Copy the remaining application files
 COPY vite.config.js .
 COPY index.html .
-COPY src src/
+COPY src/ src/
 
-# Expose the application port (adjust the port if needed)
+# Expose the application port (make sure Vite is configured to bind to 0.0.0.0)
 EXPOSE 5659
 ENV PORT=5659
-
 
 # Start the React development server
 CMD ["npm", "run", "dev"]

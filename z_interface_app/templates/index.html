@@ -203,7 +203,7 @@
             <!-- Monitoring -->
             <a href="{{ url_for('main.view_logs', model=app.model, app_num=app.app_num) }}"
               class="action-btn text-center">Logs</a>
-            <a href="{{ url_for('performance.performance_test', model=app.model, app_num=app.app_num) }}"
+            <a href="{{ url_for('performance.performance_test', model=app.model, port=app.frontend_port) }}"
               class="action-btn text-center">Performance</a>
             <a href="{{ url_for('analysis.security_analysis', model=app.model, app_num=app.app_num) }}"
               class="action-btn text-center">Backend</a>

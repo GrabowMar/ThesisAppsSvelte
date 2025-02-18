@@ -1,0 +1,82 @@
+[12:19:28] INFO: Inserted new research note.
+[12:19:42] INFO: Model/App data synced with folders.
+[12:19:57] INFO: Loaded template: app_2_chat.md
+[12:19:58] INFO: Template copied to clipboard.
+[12:20:07] INFO: Copied port numbers: (frontend 5503 and backend 5003)
+[12:24:47] INFO: Replace app.py - 0%: Starting file replacement
+[12:24:48] INFO: Replace app.py - 100%: Replaced content of ChatGPT4o\app2\backend\app.py
+[12:24:48] INFO: Replaced content of ChatGPT4o\app2\backend\app.py
+[12:24:48] INFO: Replace App.jsx - 0%: Starting file replacement
+[12:24:49] INFO: Replace App.jsx - 100%: Replaced content of ChatGPT4o\app2\frontend\src\App.jsx
+[12:24:49] INFO: Replaced content of ChatGPT4o\app2\frontend\src\App.jsx
+[12:24:49] INFO: Replace requirements.txt - 0%: Starting file replacement
+[12:24:49] INFO: Replace requirements.txt - 100%: Replaced content of ChatGPT4o\app2\backend\requirements.txt
+[12:24:49] INFO: Replaced content of ChatGPT4o\app2\backend\requirements.txt
+[12:24:49] INFO: Replace package.json - 0%: Starting file replacement
+[12:24:49] INFO: Replace package.json - 100%: Replaced content of ChatGPT4o\app2\frontend\package.json
+[12:24:49] INFO: Replaced content of ChatGPT4o\app2\frontend\package.json
+[12:24:49] INFO: Replace App.css - 0%: Starting file replacement
+[12:24:49] INFO: Replace App.css - 100%: Replaced content of ChatGPT4o\app2\frontend\src\App.css
+[12:24:49] INFO: Replaced content of ChatGPT4o\app2\frontend\src\App.css
+[12:24:49] INFO: Replace vite.config.js - 0%: Starting file replacement
+[12:24:50] INFO: Replace vite.config.js - 100%: Replaced content of ChatGPT4o\app2\frontend\vite.config.js
+[12:24:50] INFO: Replaced content of ChatGPT4o\app2\frontend\vite.config.js
+[12:27:13] INFO: Inserted new research note.
+[12:27:45] INFO: Inserted new research note.
+[12:28:07] INFO: Loaded template: app_3_feedback.md
+[12:28:08] INFO: Template copied to clipboard.
+[12:28:41] INFO: Copied port numbers: (frontend 5505 and backend 5005)
+[12:31:57] INFO: Replace app.py - 0%: Starting file replacement
+[12:31:58] INFO: Replace app.py - 100%: Replaced content of ChatGPT4o\app3\backend\app.py
+[12:31:58] INFO: Replaced content of ChatGPT4o\app3\backend\app.py
+[12:31:58] INFO: Replace App.jsx - 0%: Starting file replacement
+[12:31:58] INFO: Replace App.jsx - 100%: Replaced content of ChatGPT4o\app3\frontend\src\App.jsx
+[12:31:58] INFO: Replaced content of ChatGPT4o\app3\frontend\src\App.jsx
+[12:31:58] INFO: Replace requirements.txt - 0%: Starting file replacement
+[12:31:59] INFO: Replace requirements.txt - 100%: Replaced content of ChatGPT4o\app3\backend\requirements.txt
+[12:31:59] INFO: Replaced content of ChatGPT4o\app3\backend\requirements.txt
+[12:31:59] INFO: Replace package.json - 0%: Starting file replacement
+[12:31:59] INFO: Replace package.json - 100%: Replaced content of ChatGPT4o\app3\frontend\package.json
+[12:31:59] INFO: Replaced content of ChatGPT4o\app3\frontend\package.json
+[12:31:59] INFO: Replace App.css - 0%: Starting file replacement
+[12:31:59] INFO: Replace App.css - 100%: Replaced content of ChatGPT4o\app3\frontend\src\App.css
+[12:31:59] INFO: Replaced content of ChatGPT4o\app3\frontend\src\App.css
+[12:31:59] INFO: Replace vite.config.js - 0%: Starting file replacement
+[12:32:00] INFO: Replace vite.config.js - 100%: Replaced content of ChatGPT4o\app3\frontend\vite.config.js
+[12:32:00] INFO: Replaced content of ChatGPT4o\app3\frontend\vite.config.js
+[12:32:54] INFO: Updated research note 2.
+[12:35:04] INFO: Loaded template: app_4_blog.md
+[12:35:13] INFO: Template copied to clipboard.
+[12:35:13] INFO: Template copied to clipboard.
+[12:35:13] INFO: Template copied to clipboard.
+[12:35:26] INFO: Copied port numbers: (frontend 5507 and backend 5007)
+[12:40:40] INFO: Replace app.py - 0%: Starting file replacement
+[12:40:41] INFO: Replacement canceled.
+[12:40:41] INFO: Replace App.jsx - 0%: Starting file replacement
+[12:40:43] INFO: Replacement canceled.
+[12:40:43] INFO: Replace requirements.txt - 0%: Starting file replacement
+[12:40:43] INFO: Replacement canceled.
+[12:40:43] INFO: Replace package.json - 0%: Starting file replacement
+[12:40:43] INFO: Replacement canceled.
+[12:40:43] INFO: Replace App.css - 0%: Starting file replacement
+[12:40:44] INFO: Replacement canceled.
+[12:40:44] INFO: Replace vite.config.js - 0%: Starting file replacement
+[12:40:44] INFO: Replacement canceled.
+[12:40:48] INFO: Replace app.py - 0%: Starting file replacement
+[12:40:48] INFO: Replace app.py - 100%: Replaced content of ChatGPT4o\app4\backend\app.py
+[12:40:48] INFO: Replaced content of ChatGPT4o\app4\backend\app.py
+[12:40:48] INFO: Replace App.jsx - 0%: Starting file replacement
+[12:40:49] INFO: Replace App.jsx - 100%: Replaced content of ChatGPT4o\app4\frontend\src\App.jsx
+[12:40:49] INFO: Replaced content of ChatGPT4o\app4\frontend\src\App.jsx
+[12:40:49] INFO: Replace requirements.txt - 0%: Starting file replacement
+[12:40:49] INFO: Replace requirements.txt - 100%: Replaced content of ChatGPT4o\app4\backend\requirements.txt
+[12:40:49] INFO: Replaced content of ChatGPT4o\app4\backend\requirements.txt
+[12:40:49] INFO: Replace package.json - 0%: Starting file replacement
+[12:40:49] INFO: Replace package.json - 100%: Replaced content of ChatGPT4o\app4\frontend\package.json
+[12:40:49] INFO: Replaced content of ChatGPT4o\app4\frontend\package.json
+[12:40:49] INFO: Replace App.css - 0%: Starting file replacement
+[12:40:49] INFO: Replace App.css - 100%: Replaced content of ChatGPT4o\app4\frontend\src\App.css
+[12:40:49] INFO: Replaced content of ChatGPT4o\app4\frontend\src\App.css
+[12:40:49] INFO: Replace vite.config.js - 0%: Starting file replacement
+[12:40:49] INFO: Replace vite.config.js - 100%: Replaced content of ChatGPT4o\app4\frontend\vite.config.js
+[12:40:49] INFO: Replaced content of ChatGPT4o\app4\frontend\vite.config.js

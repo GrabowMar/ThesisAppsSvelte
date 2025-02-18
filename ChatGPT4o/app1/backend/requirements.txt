@@ -1,4 +1,2 @@
-Flask
-Flask-Bcrypt
-Flask-CORS
-Flask-SQLAlchemy
+flask
+flask-cors

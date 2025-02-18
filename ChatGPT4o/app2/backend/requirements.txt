@@ -1,4 +1,2 @@
-Flask
-Flask-SocketIO
-Flask-CORS
-eventlet
+flask
+flask-cors

@@ -147,7 +147,7 @@ class GPT4AllAnalyzer:
     async def analyze_directory(
         self, 
         directory: Path,
-        file_patterns: List[str] = ["*.py", "*.js", "*.ts", "*.react"],
+        file_patterns: List[str] = ["*.py", "*.js", "*.ts", "*.svelte"],
         analysis_type: str = "security"
     ) -> Tuple[List[AIAnalysisIssue], Dict[str, str]]:
         """

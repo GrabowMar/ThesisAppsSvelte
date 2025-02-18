@@ -41,8 +41,8 @@
                     <div class="text-xs font-bold">{{ model }}</div>
                 </div>
                 <div class="border border-gray-300 p-2">
-                    <div class="text-xs text-gray-600">App Number</div>
-                    <div class="text-xs font-bold">{{ app_num }}</div>
+                    <div class="text-xs text-gray-600">Port</div>
+                    <div class="text-xs font-bold">{{ port }}</div>
                 </div>
                 <div class="border border-gray-300 p-2">
                     <div class="text-xs text-gray-600">Last Run</div>
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('testStatus').textContent = 'Running...';
             appendToLog('Starting performance test...');
             
-            // Make API request to current URL
+            // Make API request to the current URL
             const response = await fetch(window.location.href, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

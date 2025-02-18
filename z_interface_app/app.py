@@ -855,17 +855,24 @@ def analyze_single_file():
 
 
 # ----- Performance Testing Routes -----
-@performance_bp.route("/<string:model>/<int:app_num>", methods=["GET", "POST"])
+
+performance_bp = Blueprint("performance", __name__)
+
+@performance_bp.route("/<string:model>/<int:port>", methods=["GET", "POST"])
 @error_handler
-def performance_test(model: str, app_num: int):
-    tester = PerformanceTester(AppConfig.from_env().BASE_DIR)
+def performance_test(model: str, port: int):
+    tester = PerformanceTester(current_app.config["BASE_DIR"])
     if request.method == "POST":
         data = request.get_json()
         num_users = int(data.get("num_users", 10))
         duration = int(data.get("duration", 30))
         spawn_rate = int(data.get("spawn_rate", 1))
         result, info = tester.run_test(
-            model=model, app_num=app_num, num_users=num_users, duration=duration, spawn_rate=spawn_rate
+            model=model,
+            port=port,
+            num_users=num_users,
+            duration=duration,
+            spawn_rate=spawn_rate
         )
         if result:
             return jsonify({
@@ -877,11 +884,13 @@ def performance_test(model: str, app_num: int):
                     "duration": result.duration,
                     "start_time": result.start_time,
                     "end_time": result.end_time,
-                },
+                }
             })
         else:
             return jsonify({"status": "error", "error": info.get("error", "Unknown error")}), 500
-    return render_template("performance_test.html", model=model, app_num=app_num)
+    # For GET requests, render the performance test page.
+    return render_template("performance_test.html", model=model, port=port)
+
 
 
 # ----- GPT4All Routes -----

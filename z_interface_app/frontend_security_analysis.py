@@ -57,9 +57,10 @@ class FrontendSecurityAnalyzer:
         if not directory.exists():
             return False, []
         source_files = []
+        # Updated to check for React-specific file extensions
         for root, _, files in os.walk(directory):
             for file in files:
-                if file.endswith(('.js', '.ts', '.react')):
+                if file.endswith(('.js', '.jsx', '.ts', '.tsx')):
                     source_files.append(os.path.join(root, file))
         return bool(source_files), source_files
 
@@ -117,10 +118,11 @@ class FrontendSecurityAnalyzer:
     def _run_eslint(self, app_path: Path) -> Tuple[List[FrontendSecurityIssue], str]:
         """Run ESLint with react plugin for code analysis."""
         try:
+            # Updated the extensions to include .jsx and .tsx for React projects.
             command = [
                 cmd_name("npx"), "eslint",
                 "--plugin", "react",
-                "--ext", ".js,.react",
+                "--ext", ".js,.jsx,.ts,.tsx",
                 "--format", "json",
                 "src/"
             ]
