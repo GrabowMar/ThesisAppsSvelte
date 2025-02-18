@@ -340,6 +340,7 @@ class AssistantApp(tk.Tk):
         self.code_notebook = ttk.Notebook(self.generate_code_tab)
         self.code_notebook.pack(fill="both", expand=True, padx=10, pady=5)
 
+        # Existing tabs...
         self.app_py_frame = ttk.Frame(self.code_notebook)
         self.app_py_text = tk.Text(self.app_py_frame, wrap="none")
         self.app_py_text.pack(fill="both", expand=True)
@@ -364,6 +365,12 @@ class AssistantApp(tk.Tk):
         self.package_json_text = tk.Text(self.package_json_frame, wrap="none")
         self.package_json_text.pack(fill="both", expand=True)
         self.code_notebook.add(self.package_json_frame, text="package.json")
+
+        # New tab for vite.config.js
+        self.vite_config_frame = ttk.Frame(self.code_notebook)
+        self.vite_config_text = tk.Text(self.vite_config_frame, wrap="none")
+        self.vite_config_text.pack(fill="both", expand=True)
+        self.code_notebook.add(self.vite_config_frame, text="vite.config.js")
 
 
     def _paste_from_clipboard(self) -> None:
@@ -394,7 +401,7 @@ class AssistantApp(tk.Tk):
 
         sel_frame = ttk.Frame(self.file_replace_tab)
         sel_frame.pack(fill="x", padx=10, pady=5)
-
+        
         ttk.Label(sel_frame, text="Select Model:").grid(row=0, column=0, padx=5, pady=2, sticky="w")
         self.replace_model_var = tk.StringVar()
         models = natsorted(
@@ -430,18 +437,21 @@ class AssistantApp(tk.Tk):
         btn_frame.pack(padx=10, pady=5)
 
         ttk.Button(btn_frame, text="Replace app.py",
-                   command=self._run_in_thread(lambda: self._replace_file_content("app.py", self.app_py_text.get("1.0", tk.END)))).grid(row=0, column=0, padx=5, pady=5)
+                command=self._run_in_thread(lambda: self._replace_file_content("app.py", self.app_py_text.get("1.0", tk.END)))).grid(row=0, column=0, padx=5, pady=5)
         ttk.Button(btn_frame, text="Replace App.jsx",
-                   command=self._run_in_thread(lambda: self._replace_file_content("App.jsx", self.app_react_text.get("1.0", tk.END)))).grid(row=0, column=1, padx=5, pady=5)
+                command=self._run_in_thread(lambda: self._replace_file_content("App.jsx", self.app_react_text.get("1.0", tk.END)))).grid(row=0, column=1, padx=5, pady=5)
         ttk.Button(btn_frame, text="Replace requirements.txt",
-                   command=self._run_in_thread(lambda: self._replace_file_content("requirements.txt", self.requirements_text.get("1.0", tk.END)))).grid(row=1, column=0, padx=5, pady=5)
+                command=self._run_in_thread(lambda: self._replace_file_content("requirements.txt", self.requirements_text.get("1.0", tk.END)))).grid(row=1, column=0, padx=5, pady=5)
         ttk.Button(btn_frame, text="Replace package.json",
-                   command=self._run_in_thread(lambda: self._replace_file_content("package.json", self.package_json_text.get("1.0", tk.END)))).grid(row=1, column=1, padx=5, pady=5)
+                command=self._run_in_thread(lambda: self._replace_file_content("package.json", self.package_json_text.get("1.0", tk.END)))).grid(row=1, column=1, padx=5, pady=5)
         ttk.Button(btn_frame, text="Replace App.css",
-                   command=self._run_in_thread(lambda: self._replace_file_content("App.css", self.package_json_text.get("1.0", tk.END)))).grid(row=2, column=1, padx=5, pady=5)
+                command=self._run_in_thread(lambda: self._replace_file_content("App.css", self.app_css_text.get("1.0", tk.END)))).grid(row=2, column=1, padx=5, pady=5)
         ttk.Button(btn_frame, text="Replace All",
-                   command=self._run_in_thread(self._replace_all_files)).grid(row=2, column=0, padx=5, pady=5)
-
+                command=self._run_in_thread(self._replace_all_files)).grid(row=2, column=0, padx=5, pady=5)
+        # New button for vite.config.js
+        ttk.Button(btn_frame, text="Replace vite.config.js",
+                command=self._run_in_thread(lambda: self._replace_file_content("vite.config.js", self.vite_config_text.get("1.0", tk.END)))).grid(row=3, column=0, padx=5, pady=5)
+                
     def _on_replace_model_selected(self, event=None) -> None:
         model = self.replace_model_var.get()
         base_dir = Path('.') / model
@@ -462,11 +472,12 @@ class AssistantApp(tk.Tk):
             self._log("Model or App not selected", error=True)
             return
 
+        # Determine target subfolder based on filename
         if filename in ("app.py", "requirements.txt"):
             subfolder = "backend"
-        elif filename == "App.jsx" or filename == "App.css":
+        elif filename in ("App.jsx", "App.css"):
             subfolder = "frontend/src"
-        elif filename == "package.json":
+        elif filename in ("package.json", "vite.config.js"):  # Added vite.config.js here
             subfolder = "frontend"
         else:
             subfolder = ""
@@ -498,7 +509,8 @@ class AssistantApp(tk.Tk):
         self._replace_file_content("App.jsx", self.app_react_text.get("1.0", tk.END))
         self._replace_file_content("requirements.txt", self.requirements_text.get("1.0", tk.END))
         self._replace_file_content("package.json", self.package_json_text.get("1.0", tk.END))
-        self._replace_file_content("App.css", self.package_json_text.get("1.0", tk.END))
+        self._replace_file_content("App.css", self.app_css_text.get("1.0", tk.END))  # Fixed: use app_css_text
+        self._replace_file_content("vite.config.js", self.vite_config_text.get("1.0", tk.END))  # New file
 
     # -------------------------------------------------------------------------
     # TAB 4: Progress Log
@@ -921,7 +933,7 @@ class AssistantApp(tk.Tk):
         self.research_tab = ttk.Frame(self.main_notebook)
         self.main_notebook.add(self.research_tab, text="Research Notes")
 
-        # Reference selectors: Model, App, and Note Type
+        # Reference selectors: Model, App, and Category
         ref_frame = ttk.Frame(self.research_tab)
         ref_frame.pack(fill="x", padx=10, pady=5)
         ttk.Label(ref_frame, text="Model:").pack(side="left", padx=5)
@@ -947,9 +959,17 @@ class AssistantApp(tk.Tk):
             self.research_app_var.set(apps[0])
         self.research_app_dropdown.pack(side="left", padx=5)
 
-        ttk.Label(ref_frame, text="Type:").pack(side="left", padx=5)
+        ttk.Label(ref_frame, text="Category:").pack(side="left", padx=5)
         self.research_type_var = tk.StringVar()
-        note_types = ["Problem", "Required Further Input", "Wrong Files Generated", "Other"]
+        # Updated note types with extra categories for fix status:
+        note_types = [
+            "Open Issue",
+            "Issue Resolved (Manual)",
+            "Issue Resolved (LLM)",
+            "Required Further Input",
+            "Wrong Files Generated",
+            "Other"
+        ]
         self.research_type_dropdown = ttk.Combobox(ref_frame, textvariable=self.research_type_var,
                                                    values=note_types, state="readonly", width=25)
         self.research_type_var.set(note_types[0])
@@ -964,7 +984,8 @@ class AssistantApp(tk.Tk):
         self.research_table.heading("timestamp", text="Timestamp")
         self.research_table.heading("model", text="Model")
         self.research_table.heading("app", text="App")
-        self.research_table.heading("note_type", text="Type")
+        # Change header from "Type" to "Category"
+        self.research_table.heading("note_type", text="Category")
         self.research_table.heading("summary", text="Summary")
         self.research_table.column("id", width=50, anchor="center")
         self.research_table.column("timestamp", width=150)
@@ -1036,12 +1057,13 @@ class AssistantApp(tk.Tk):
     def _new_research_note(self) -> None:
         self.research_table.selection_remove(self.research_table.selection())
         self.research_note_text.delete("1.0", tk.END)
-        # Optionally, reset the reference selectors to default
+        # Optionally, reset the reference selectors to default values
         models = natsorted(list(APP_CONFIG["allowed_models"]), key=_natural_sort_key)
         if models:
             self.research_model_var.set(models[0])
             self._on_research_model_selected(None)
-        self.research_type_var.set("Problem")
+        # Set default category to "Open Issue"
+        self.research_type_var.set("Open Issue")
 
     def _save_research_note(self) -> None:
         note_text = self.research_note_text.get("1.0", tk.END).strip()
