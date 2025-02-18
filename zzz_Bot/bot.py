@@ -249,9 +249,9 @@ class AssistantApp(tk.Tk):
         self.template_dropdown.pack(side="left", padx=5)
 
         ttk.Button(top_frame, text="Load", command=self._load_template).pack(side="left", padx=5)
-        ttk.Button(top_frame, text="Save", command=self._save_template).pack(side="left", padx=5)
-        ttk.Button(top_frame, text="New", command=self._new_template).pack(side="left", padx=5)
-        ttk.Button(top_frame, text="Delete", command=self._delete_template).pack(side="left", padx=5)
+        # ttk.Button(top_frame, text="Save", command=self._save_template).pack(side="left", padx=5)
+        # ttk.Button(top_frame, text="New", command=self._new_template).pack(side="left", padx=5)
+        # ttk.Button(top_frame, text="Delete", command=self._delete_template).pack(side="left", padx=5)
         ttk.Button(top_frame, text="Copy to Clipboard", command=self._copy_template_to_clipboard).pack(side="left", padx=5)
 
         self.template_text = tk.Text(self.template_manager_tab, wrap="word", height=25)
@@ -340,9 +340,9 @@ class AssistantApp(tk.Tk):
         top_frame = ttk.Frame(self.generate_code_tab)
         top_frame.pack(fill="x", padx=10, pady=5)
 
-        ttk.Button(top_frame, text="Generate Code", command=self._run_in_thread(self._generate_code)).pack(side="left", padx=5)
+        # ttk.Button(top_frame, text="Generate Code", command=self._run_in_thread(self._generate_code)).pack(side="left", padx=5)
         ttk.Button(top_frame, text="Paste LLM Output", command=self._paste_from_clipboard).pack(side="left", padx=5)
-        ttk.Button(top_frame, text="Save Generated Files", command=self._save_generated_code).pack(side="left", padx=5)
+        # ttk.Button(top_frame, text="Save Generated Files", command=self._save_generated_code).pack(side="left", padx=5)
 
         self.code_notebook = ttk.Notebook(self.generate_code_tab)
         self.code_notebook.pack(fill="both", expand=True, padx=10, pady=5)
@@ -512,10 +512,12 @@ class AssistantApp(tk.Tk):
         self.database.log_progress(task, 0, "Starting file replacement")
         model = self.replace_model_var.get()
         app_name = self.replace_app_var.get()
+        backend = "backend"
+        frontend = "frontend"
         if not (model and app_name):
             self._log("Model or App not selected", error=True)
             return
-        target_dir = Path('.') / model / app_name
+        target_dir = Path('.') / model / app_name /backend if filename == "app.py" else frontend
         if not target_dir.exists():
             self._log(f"Target folder {target_dir} does not exist", error=True)
             return
