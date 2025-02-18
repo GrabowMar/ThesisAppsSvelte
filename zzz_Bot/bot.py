@@ -434,8 +434,10 @@ class AssistantApp(tk.Tk):
                    command=self._run_in_thread(lambda: self._replace_file_content("requirements.txt", self.requirements_text.get("1.0", tk.END)))).grid(row=1, column=0, padx=5, pady=5)
         ttk.Button(btn_frame, text="Replace package.json",
                    command=self._run_in_thread(lambda: self._replace_file_content("package.json", self.package_json_text.get("1.0", tk.END)))).grid(row=1, column=1, padx=5, pady=5)
+        ttk.Button(btn_frame, text="Replace App.css",
+                   command=self._run_in_thread(lambda: self._replace_file_content("App.css", self.package_json_text.get("1.0", tk.END)))).grid(row=2, column=1, padx=5, pady=5)
         ttk.Button(btn_frame, text="Replace All",
-                   command=self._run_in_thread(self._replace_all_files)).grid(row=2, column=0, columnspan=2, padx=5, pady=5)
+                   command=self._run_in_thread(self._replace_all_files)).grid(row=2, column=0, padx=5, pady=5)
 
     def _on_replace_model_selected(self, event=None) -> None:
         model = self.replace_model_var.get()
@@ -459,7 +461,7 @@ class AssistantApp(tk.Tk):
 
         if filename in ("app.py", "requirements.txt"):
             subfolder = "backend"
-        elif filename == "App.jsx":
+        elif filename == "App.jsx" or filename == "App.css":
             subfolder = "frontend/src"
         elif filename == "package.json":
             subfolder = "frontend"
