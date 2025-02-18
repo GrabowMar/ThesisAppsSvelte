@@ -1,37 +1,85 @@
 <script>
-  let message = 'Loading...';
+  import { onMount } from "svelte";
+  import { io } from "socket.io-client";
+  import { writable } from "svelte/store";
 
-  async function fetchMessage() {
-    try {
-      const response = await fetch('http://localhost:5003/');
-      const data = await response.json();
-      message = data.message;
-    } catch (error) {
-      message = 'Error connecting to ChatGPT4o backend';
+  let username = "";
+  let room = "";
+  let message = "";
+  let messages = writable([]);
+  let socket;
+  let page = "login";
+
+  function connectSocket() {
+    socket = io("http://localhost:5003");
+
+    socket.on("message", (data) => {
+      messages.update((msgs) => [...msgs, data]);
+    });
+  }
+
+  async function loginUser(user, pass) {
+    const res = await fetch("http://localhost:5003/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: user, password: pass })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      username = user;
+      page = "chat";
+      connectSocket();
+    } else {
+      alert(data.error);
     }
   }
 
-  fetchMessage();
+  function joinChatRoom() {
+    if (room) {
+      socket.emit("join", { username, room });
+    }
+  }
+
+  function sendMessage() {
+    if (message.trim() !== "") {
+      socket.emit("message", { username, room, message });
+      message = "";
+    }
+  }
 </script>
 
 <main>
-  <h1>ChatGPT4o App</h1>
-  <p class="message">{message}</p>
+  {#if page === "login"}
+    <div>
+      <h2>Login</h2>
+      <input type="text" placeholder="Username" bind:value={username} />
+      <input type="password" placeholder="Password" bind:value={password} />
+      <button on:click={() => loginUser(username, password)}>Login</button>
+    </div>
+  {:else}
+    <div>
+      <h2>Chat Room</h2>
+      <input type="text" placeholder="Room" bind:value={room} />
+      <button on:click={joinChatRoom}>Join</button>
+
+      <div>
+        {#each $messages as msg}
+          <p><strong>{msg.user}:</strong> {msg.message}</p>
+        {/each}
+      </div>
+
+      <input type="text" placeholder="Message" bind:value={message} on:keypress={(e) => e.key === 'Enter' && sendMessage()} />
+      <button on:click={sendMessage}>Send</button>
+    </div>
+  {/if}
 </main>
 
 <style>
   main {
-    text-align: center;
-    padding: 2em;
+    padding: 20px;
   }
-  h1 {
-    color: #333;
-    font-size: 2em;
-    margin-bottom: 0.5em;
-  }
-  .message {
-    color: #444;
-    font-size: 1.2em;
-    margin: 1em;
+  input, button {
+    display: block;
+    margin: 10px 0;
   }
 </style>

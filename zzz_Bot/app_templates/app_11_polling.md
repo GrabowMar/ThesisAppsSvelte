@@ -46,35 +46,6 @@ app/
 └── docker-compose.yml      # (optional)
 ```
 
-### Core Files Structure
-
-#### Backend (app.py)
-
-```python
-# In app.py, you can define multiple routes to support different pages and API endpoints.
-
-if __name__ == '__main__':
-    # Replace 'XXXX' with the desired backend port.
-    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
-```
-
-#### Frontend (App.svelte)
-
-```svelte
-<script>
-  // Implement client-side routing here using conditional rendering
-  // or by integrating a routing library, all within this single file.
-</script>
-
-<main>
-  <!-- Render different views based on routing logic -->
-</main>
-
-<style>
-  /* Styles */
-</style>
-```
-
 ## Response Protocol
 
 ### Protocol Steps
@@ -87,17 +58,17 @@ if __name__ == '__main__':
 2. **Backend Generation Prompt**
    - Request complete **app.py** code generation.
    - Must include all specified backend features.
-   - Must list required pip dependencies.
+   - Must list required pip dependencies in form of requirements.txt.
    - Wait for user confirmation before proceeding.
    - Aim for best practices and professionalism.
-   - **Example format:** "Generate the Flask backend code with the specified features:"
+
 
 3. **Frontend Generation Prompt**
    - Request complete **App.svelte** code generation.
    - Must include all specified frontend features.
-   - Must list required npm dependencies.
+   - Must list required npm dependencies in form of package.json (and vite.config.js if necessary)
    - Aim for best practices and professionalism.
-   - **Example format:** "Generate the Svelte frontend code with the specified features:"
+
 
 **Very important:** Your app should be feature rich and production ready.
 ```

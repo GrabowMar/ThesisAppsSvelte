@@ -1,2 +1,4 @@
-flask
-flask-cors
+Flask
+Flask-Login
+flask_sqlalchemy
+Werkzeug

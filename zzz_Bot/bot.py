@@ -88,12 +88,16 @@ class PortManager:
 # DatabaseClient
 # =============================================================================
 class DatabaseClient:
-    """Handles all database interactions for progress logs and model/app status."""
+    """
+    Handles all database interactions for progress logs, model/app status, and research notes.
+    Note: The research_notes table now includes model, app, and note_type.
+    """
     def __init__(self, db_path: str) -> None:
         self.db_path = db_path
         self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
         self._create_tables()
         self._create_model_app_table()
+        self._create_research_table()
 
     def _create_tables(self) -> None:
         with self.conn:
@@ -117,6 +121,19 @@ class DatabaseClient:
                     app_py INTEGER NOT NULL DEFAULT 0,
                     app_svelte INTEGER NOT NULL DEFAULT 0,
                     comment TEXT
+                );
+            ''')
+
+    def _create_research_table(self) -> None:
+        with self.conn:
+            self.conn.execute('''
+                CREATE TABLE IF NOT EXISTS research_notes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    model TEXT,
+                    app TEXT,
+                    note_type TEXT,
+                    note TEXT NOT NULL,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
                 );
             ''')
 
@@ -171,6 +188,34 @@ class DatabaseClient:
         with self.conn:
             self.conn.execute("DELETE FROM model_app_status WHERE id = ?", (row_id,))
 
+    # -------------------------
+    # Research Notes
+    # -------------------------
+    def insert_research_note(self, model: str, app: str, note_type: str, note: str) -> None:
+        with self.conn:
+            self.conn.execute(
+                "INSERT INTO research_notes (model, app, note_type, note) VALUES (?, ?, ?, ?)",
+                (model, app, note_type, note)
+            )
+
+    def update_research_note(self, row_id: int, model: str, app: str, note_type: str, note: str) -> None:
+        with self.conn:
+            self.conn.execute(
+                "UPDATE research_notes SET model = ?, app = ?, note_type = ?, note = ?, timestamp = CURRENT_TIMESTAMP WHERE id = ?",
+                (model, app, note_type, note, row_id)
+            )
+
+    def delete_research_note_by_id(self, row_id: int) -> None:
+        with self.conn:
+            self.conn.execute("DELETE FROM research_notes WHERE id = ?", (row_id,))
+
+    def get_research_notes(self, limit: int = 100):
+        cursor = self.conn.cursor()
+        cursor.execute(
+            "SELECT id, model, app, note_type, note, timestamp FROM research_notes ORDER BY timestamp DESC LIMIT ?",
+            (limit,))
+        return cursor.fetchall()
+
 # =============================================================================
 # Main GUI Application
 # =============================================================================
@@ -213,12 +258,13 @@ class AssistantApp(tk.Tk):
         self.main_notebook = ttk.Notebook(self)
         self.main_notebook.pack(fill="both", expand=True)
 
-        self._create_template_manager_tab()
-        self._create_generate_code_tab()
-        self._create_file_replace_tab()
-        self._create_progress_log_tab()
-        self._create_model_app_tab()  # With filtering & sorting
-        self._create_ports_info_tab() # With filtering & sorting
+        self._create_template_manager_tab()  # Tab 1: Template Manager
+        self._create_ports_info_tab()          # Tab 2: Ports
+        self._create_generate_code_tab()       # Tab 3: Generate Code
+        self._create_file_replace_tab()        # Tab 4: Replace Files
+        self._create_model_app_tab()           # Tab 5: Model & App Status
+        self._create_research_tab()            # Tab 6: Research Notes
+        self._create_progress_log_tab()        # Tab 7: Progress Notes
 
         self._create_log_panel()
 
@@ -249,9 +295,6 @@ class AssistantApp(tk.Tk):
         self.template_dropdown.pack(side="left", padx=5)
 
         ttk.Button(top_frame, text="Load", command=self._load_template).pack(side="left", padx=5)
-        # ttk.Button(top_frame, text="Save", command=self._save_template).pack(side="left", padx=5)
-        # ttk.Button(top_frame, text="New", command=self._new_template).pack(side="left", padx=5)
-        # ttk.Button(top_frame, text="Delete", command=self._delete_template).pack(side="left", padx=5)
         ttk.Button(top_frame, text="Copy to Clipboard", command=self._copy_template_to_clipboard).pack(side="left", padx=5)
 
         self.template_text = tk.Text(self.template_manager_tab, wrap="word", height=25)
@@ -276,54 +319,6 @@ class AssistantApp(tk.Tk):
         else:
             self._log("Template file not found", error=True)
 
-    def _save_template(self) -> None:
-        preset_name = self.template_var.get()
-        path = APP_CONFIG["presets_dir"] / preset_name
-        try:
-            content = self.template_text.get("1.0", tk.END).strip()
-            path.write_text(content, encoding="utf-8")
-            self._log(f"Template '{preset_name}' saved successfully.")
-        except Exception as e:
-            self._log(f"Error saving template: {e}", error=True)
-
-    def _new_template(self) -> None:
-        new_name = filedialog.asksaveasfilename(
-            initialdir=APP_CONFIG["presets_dir"],
-            defaultextension=APP_CONFIG["default_template_ext"],
-            filetypes=[("Markdown Files", f"*{APP_CONFIG['default_template_ext']}")],
-            title="Create New Template"
-        )
-        if not new_name:
-            return
-        new_path = Path(new_name)
-        if new_path.exists():
-            messagebox.showwarning("Warning", "Template already exists.")
-            return
-        try:
-            new_path.write_text("", encoding="utf-8")
-            self._log(f"Created new template: {new_path.name}")
-            self.template_dropdown["values"] = self._scan_template_presets()
-            self.template_var.set(new_path.name)
-            self.template_text.delete("1.0", tk.END)
-        except Exception as e:
-            self._log(f"Error creating new template: {e}", error=True)
-
-    def _delete_template(self) -> None:
-        preset_name = self.template_var.get()
-        path = APP_CONFIG["presets_dir"] / preset_name
-        if not path.exists():
-            return
-        if messagebox.askyesno("Confirm Deletion", f"Delete '{preset_name}'?"):
-            try:
-                path.unlink()
-                self._log(f"Deleted template: {preset_name}")
-                updated = self._scan_template_presets()
-                self.template_dropdown["values"] = updated
-                self.template_var.set(updated[0] if updated else "")
-                self.template_text.delete("1.0", tk.END)
-            except Exception as e:
-                self._log(f"Error deleting template: {e}", error=True)
-
     def _copy_template_to_clipboard(self) -> None:
         content = self.template_text.get("1.0", tk.END)
         self.clipboard_clear()
@@ -340,9 +335,7 @@ class AssistantApp(tk.Tk):
         top_frame = ttk.Frame(self.generate_code_tab)
         top_frame.pack(fill="x", padx=10, pady=5)
 
-        # ttk.Button(top_frame, text="Generate Code", command=self._run_in_thread(self._generate_code)).pack(side="left", padx=5)
         ttk.Button(top_frame, text="Paste LLM Output", command=self._paste_from_clipboard).pack(side="left", padx=5)
-        # ttk.Button(top_frame, text="Save Generated Files", command=self._save_generated_code).pack(side="left", padx=5)
 
         self.code_notebook = ttk.Notebook(self.generate_code_tab)
         self.code_notebook.pack(fill="both", expand=True, padx=10, pady=5)
@@ -370,45 +363,6 @@ class AssistantApp(tk.Tk):
         self.gen_progress_bar = ttk.Progressbar(top_frame, orient="horizontal", mode="determinate", maximum=100)
         self.gen_progress_bar.pack(side="left", fill="x", expand=True, padx=5)
 
-    def _generate_code(self) -> None:
-        template_content = self.template_text.get("1.0", tk.END).strip()
-        if not template_content:
-            self._log("Template is empty. Please load or create a template first.", error=True)
-            return
-        task = "Generate Code"
-        self.database.log_progress(task, 0, "Started code generation")
-        self._set_progress_bar(self.gen_progress_bar, 0)
-
-        steps = [
-            ("Generating app.py", 25),
-            ("Generating App.svelte", 50),
-            ("Generating requirements.txt", 75),
-            ("Generating package.json", 100)
-        ]
-        for desc, prog in steps:
-            for val in range(prog - 5, prog + 1, 5):
-                time.sleep(0.05)
-                self._set_progress_bar(self.gen_progress_bar, val)
-            self.database.log_progress(task, prog, desc)
-            self._log(desc)
-
-        self.app_py_text.delete("1.0", tk.END)
-        self.app_py_text.insert(tk.END, f"# Generated app.py\n\n{template_content}")
-        self.app_svelte_text.delete("1.0", tk.END)
-        self.app_svelte_text.insert(tk.END, f"<!-- Generated App.svelte -->\n\n{template_content}")
-        self.requirements_text.delete("1.0", tk.END)
-        self.requirements_text.insert(tk.END, f"# requirements.txt\n\n{template_content}")
-        pkg = {
-            "name": "generated-app",
-            "version": "1.0.0",
-            "description": "Generated from template",
-            "dependencies": {}
-        }
-        self.package_json_text.delete("1.0", tk.END)
-        self.package_json_text.insert(tk.END, json.dumps(pkg, indent=2))
-
-        self._log("Code generation completed.")
-
     def _paste_from_clipboard(self) -> None:
         try:
             text = self.clipboard_get()
@@ -427,20 +381,6 @@ class AssistantApp(tk.Tk):
         target_widget.delete("1.0", tk.END)
         target_widget.insert(tk.END, text)
         self._log("Clipboard content pasted successfully.")
-
-    def _save_generated_code(self) -> None:
-        output_dir = filedialog.askdirectory(title="Select Output Directory")
-        if not output_dir:
-            return
-        out_path = Path(output_dir)
-        try:
-            out_path.joinpath("app.py").write_text(self.app_py_text.get("1.0", tk.END), encoding="utf-8")
-            out_path.joinpath("App.svelte").write_text(self.app_svelte_text.get("1.0", tk.END), encoding="utf-8")
-            out_path.joinpath("requirements.txt").write_text(self.requirements_text.get("1.0", tk.END), encoding="utf-8")
-            out_path.joinpath("package.json").write_text(self.package_json_text.get("1.0", tk.END), encoding="utf-8")
-            self._log(f"Generated files saved to {output_dir}")
-        except Exception as e:
-            self._log(f"Error saving generated files: {e}", error=True)
 
     # -------------------------------------------------------------------------
     # TAB 3: Replace Files
@@ -517,8 +457,6 @@ class AssistantApp(tk.Tk):
             self._log("Model or App not selected", error=True)
             return
 
-        # Decide subfolder based on the filename.
-        # You can tweak these rules as you wish:
         if filename in ("app.py", "requirements.txt"):
             subfolder = "backend"
         elif filename == "App.svelte":
@@ -526,12 +464,10 @@ class AssistantApp(tk.Tk):
         elif filename == "package.json":
             subfolder = "frontend"
         else:
-            subfolder = ""  # No extra subfolder by default
+            subfolder = ""
 
-        # Build the final target directory
         target_dir = Path('.') / model / app_name / subfolder
         if not target_dir.exists():
-            # Optional: create the subfolder if it doesn't exist
             target_dir.mkdir(parents=True, exist_ok=True)
 
         target_file = target_dir / filename
@@ -551,7 +487,6 @@ class AssistantApp(tk.Tk):
         except Exception as e:
             self._log(f"Failed to replace file content: {e}", error=True)
             self.database.log_progress(task, 0, f"Error: {e}")
-
 
     def _replace_all_files(self) -> None:
         self._replace_file_content("app.py", self.app_py_text.get("1.0", tk.END))
@@ -573,7 +508,6 @@ class AssistantApp(tk.Tk):
         self.progress_search_var = tk.StringVar()
         entry = tk.Entry(top_frame, textvariable=self.progress_search_var)
         entry.pack(side="left", padx=5)
-        # Filter as user types
         entry.bind("<KeyRelease>", lambda event: self._refresh_progress_logs())
         ttk.Button(top_frame, text="Refresh", command=self._refresh_progress_logs).pack(side="left", padx=5)
         ttk.Button(top_frame, text="Clear", command=self._clear_progress_logs).pack(side="left", padx=5)
@@ -618,7 +552,6 @@ class AssistantApp(tk.Tk):
             task = entry[1]
             progress = entry[2]
             message = entry[3]
-            # If filter text is not in task or message, skip
             if filter_text and (filter_text not in task.lower() and filter_text not in message.lower()):
                 continue
             self.progress_table.insert("", tk.END, values=(timestamp, task, f"{progress}%", message))
@@ -667,7 +600,6 @@ class AssistantApp(tk.Tk):
         self.model_app_filter_var = tk.StringVar()
         entry = tk.Entry(top_frame, textvariable=self.model_app_filter_var)
         entry.pack(side="left", padx=5)
-        # Filter as user types
         entry.bind("<KeyRelease>", lambda event: self._refresh_model_app_table())
 
         ttk.Button(top_frame, text="Refresh", command=self._refresh_model_app_table).pack(side="left", padx=5)
@@ -697,10 +629,6 @@ class AssistantApp(tk.Tk):
         self._refresh_model_app_table()
 
     def _sync_folders_with_db(self) -> None:
-        """
-        Scan local folders for each allowed model and 'app*' subfolders.
-        Insert or update DB entries for them, remove any no longer on disk.
-        """
         existing_rows = self.database.get_all_model_app_status()
         existing_map = {}
         for row in existing_rows:
@@ -711,7 +639,6 @@ class AssistantApp(tk.Tk):
         for model_name in APP_CONFIG["allowed_models"]:
             model_dir = Path('.') / model_name
             if model_dir.is_dir():
-                # NATURAL SORT for directory scanning
                 apps = sorted(
                     [d for d in model_dir.iterdir() if d.is_dir() and d.name.lower().startswith("app")],
                     key=lambda d: _natural_sort_key(d.name)
@@ -721,12 +648,10 @@ class AssistantApp(tk.Tk):
 
         discovered_set = set(discovered)
 
-        # Remove from DB if no longer on disk
         for (model, app) in list(existing_map.keys()):
             if (model, app) not in discovered_set:
                 self.database.delete_model_app_status_by_id(existing_map[(model, app)]["id"])
 
-        # Insert or update each discovered
         for (model, app) in discovered:
             app_path = Path('.') / model / app
             has_app_py = (app_path / "app.py").exists()
@@ -784,19 +709,12 @@ class AssistantApp(tk.Tk):
         self._refresh_model_app_table()
 
     def _sort_model_app_data(self, data, col: str, reverse: bool):
-        """
-        Use natural sort for text columns like 'app',
-        numeric sort for 'id' if needed, and checkboxes for 'app_py','app_svelte'.
-        """
         def sort_key(row):
             if col == "id":
-                # numeric
                 return int(row["id"])
             elif col in ("app_py", "app_svelte"):
-                # checkboxes
                 return 0 if row[col] == "☐" else 1
             else:
-                # everything else -> natural sort
                 return _natural_sort_key(row[col])
         return sorted(data, key=sort_key, reverse=reverse)
 
@@ -822,21 +740,21 @@ class AssistantApp(tk.Tk):
         values = list(self.model_app_table.item(item_id, "values"))
         row_id, model, app, app_py_disp, app_svelte_disp, comment = values
 
-        if col_id == "#4":  # Toggle app_py?
+        if col_id == "#4":
             new_val = "☑" if app_py_disp == "☐" else "☐"
             values[3] = new_val
             self.database.update_model_app_status(
                 row_id, model, app,
                 (new_val == "☑"), (app_svelte_disp == "☑"), comment
             )
-        elif col_id == "#5":  # Toggle app_svelte?
+        elif col_id == "#5":
             new_val = "☑" if app_svelte_disp == "☐" else "☐"
             values[4] = new_val
             self.database.update_model_app_status(
                 row_id, model, app,
                 (app_py_disp == "☑"), (new_val == "☑"), comment
             )
-        elif col_id == "#6":  # Edit comment
+        elif col_id == "#6":
             new_comment = simpledialog.askstring("Edit Comment", "Enter comment:", initialvalue=comment)
             if new_comment is not None:
                 values[5] = new_comment
@@ -866,9 +784,7 @@ class AssistantApp(tk.Tk):
         self.ports_filter_var = tk.StringVar()
         entry = tk.Entry(top_frame, textvariable=self.ports_filter_var)
         entry.pack(side="left", padx=5)
-        # Filter as user types
         entry.bind("<KeyRelease>", lambda event: self._refresh_ports_table())
-
         ttk.Button(top_frame, text="Apply Filter", command=self._refresh_ports_table).pack(side="left", padx=5)
 
         columns = ("model", "app_folder", "app_num", "backend", "frontend", "backend_range", "frontend_range")
@@ -911,7 +827,6 @@ class AssistantApp(tk.Tk):
             backend_range_str = f"{rng['backend']['start']}-{rng['backend']['end']}"
             frontend_range_str = f"{rng['frontend']['start']}-{rng['frontend']['end']}"
 
-            # NATURAL SORT for app folders
             apps = sorted(
                 [d for d in model_dir.iterdir() if d.is_dir() and d.name.lower().startswith("app")],
                 key=lambda d: _natural_sort_key(d.name)
@@ -960,10 +875,6 @@ class AssistantApp(tk.Tk):
         self._refresh_ports_table()
 
     def _sort_ports_data(self, data, col: str, reverse: bool):
-        """
-        Use numeric sort for columns like app_num, backend, frontend;
-        use natural sort for text columns (model, app_folder, etc.).
-        """
         def sort_key(row):
             if col in ("app_num", "backend", "frontend"):
                 return int(row[col])
@@ -996,6 +907,165 @@ class AssistantApp(tk.Tk):
         self.clipboard_clear()
         self.clipboard_append(text_to_copy)
         self._log(f"Copied port numbers: {text_to_copy}")
+
+    # -------------------------------------------------------------------------
+    # TAB 7: Research Notes
+    # -------------------------------------------------------------------------
+    def _create_research_tab(self) -> None:
+        self.research_tab = ttk.Frame(self.main_notebook)
+        self.main_notebook.add(self.research_tab, text="Research Notes")
+
+        # Reference selectors: Model, App, and Note Type
+        ref_frame = ttk.Frame(self.research_tab)
+        ref_frame.pack(fill="x", padx=10, pady=5)
+        ttk.Label(ref_frame, text="Model:").pack(side="left", padx=5)
+        self.research_model_var = tk.StringVar()
+        models = natsorted(list(APP_CONFIG["allowed_models"]), key=_natural_sort_key)
+        self.research_model_dropdown = ttk.Combobox(ref_frame, textvariable=self.research_model_var,
+                                                    values=models, state="readonly", width=20)
+        if models:
+            self.research_model_var.set(models[0])
+        self.research_model_dropdown.pack(side="left", padx=5)
+        self.research_model_dropdown.bind("<<ComboboxSelected>>", self._on_research_model_selected)
+
+        ttk.Label(ref_frame, text="App:").pack(side="left", padx=5)
+        self.research_app_var = tk.StringVar()
+        if self.research_model_var.get():
+            base_dir = Path('.') / self.research_model_var.get()
+            apps = natsorted([d.name for d in base_dir.iterdir() if d.is_dir() and d.name.lower().startswith("app")], key=_natural_sort_key)
+        else:
+            apps = []
+        self.research_app_dropdown = ttk.Combobox(ref_frame, textvariable=self.research_app_var,
+                                                  values=apps, state="readonly", width=20)
+        if apps:
+            self.research_app_var.set(apps[0])
+        self.research_app_dropdown.pack(side="left", padx=5)
+
+        ttk.Label(ref_frame, text="Type:").pack(side="left", padx=5)
+        self.research_type_var = tk.StringVar()
+        note_types = ["Problem", "Required Further Input", "Wrong Files Generated", "Other"]
+        self.research_type_dropdown = ttk.Combobox(ref_frame, textvariable=self.research_type_var,
+                                                   values=note_types, state="readonly", width=25)
+        self.research_type_var.set(note_types[0])
+        self.research_type_dropdown.pack(side="left", padx=5)
+
+        # Research notes table
+        table_frame = ttk.Frame(self.research_tab)
+        table_frame.pack(fill="both", expand=True, padx=10, pady=5)
+        columns = ("id", "timestamp", "model", "app", "note_type", "summary")
+        self.research_table = ttk.Treeview(table_frame, columns=columns, show="headings")
+        self.research_table.heading("id", text="ID")
+        self.research_table.heading("timestamp", text="Timestamp")
+        self.research_table.heading("model", text="Model")
+        self.research_table.heading("app", text="App")
+        self.research_table.heading("note_type", text="Type")
+        self.research_table.heading("summary", text="Summary")
+        self.research_table.column("id", width=50, anchor="center")
+        self.research_table.column("timestamp", width=150)
+        self.research_table.column("model", width=100)
+        self.research_table.column("app", width=100)
+        self.research_table.column("note_type", width=150)
+        self.research_table.column("summary", width=400)
+        vsb = ttk.Scrollbar(table_frame, orient="vertical", command=self.research_table.yview)
+        self.research_table.configure(yscrollcommand=vsb.set)
+        vsb.pack(side="right", fill="y")
+        self.research_table.pack(fill="both", expand=True)
+        self.research_table.bind("<<TreeviewSelect>>", self._on_research_note_select)
+
+        # Text area for note details
+        self.research_note_text = tk.Text(self.research_tab, height=10, wrap="word")
+        self.research_note_text.pack(fill="both", expand=True, padx=10, pady=5)
+
+        # Buttons for note actions
+        btn_frame = ttk.Frame(self.research_tab)
+        btn_frame.pack(fill="x", padx=10, pady=5)
+        ttk.Button(btn_frame, text="New Note", command=self._new_research_note).pack(side="left", padx=5)
+        ttk.Button(btn_frame, text="Save Note", command=self._save_research_note).pack(side="left", padx=5)
+        ttk.Button(btn_frame, text="Delete Note", command=self._delete_research_note).pack(side="left", padx=5)
+
+        self._refresh_research_notes()
+
+    def _on_research_model_selected(self, event) -> None:
+        # When a new model is selected, update the App dropdown.
+        model = self.research_model_var.get()
+        base_dir = Path('.') / model
+        apps = natsorted([d.name for d in base_dir.iterdir() if d.is_dir() and d.name.lower().startswith("app")], key=_natural_sort_key)
+        self.research_app_dropdown["values"] = apps
+        if apps:
+            self.research_app_var.set(apps[0])
+        else:
+            self.research_app_var.set("")
+
+    def _refresh_research_notes(self) -> None:
+        for row in self.research_table.get_children():
+            self.research_table.delete(row)
+        notes = self.database.get_research_notes(limit=100)
+        self.research_notes_map = {}
+        for note in notes:
+            # note: (id, model, app, note_type, note, timestamp)
+            note_id, model, app, note_type, note_text, timestamp = note
+            self.research_notes_map[note_id] = {
+                "model": model,
+                "app": app,
+                "note_type": note_type,
+                "note": note_text
+            }
+            summary = note_text.strip().replace("\n", " ")
+            summary = summary if len(summary) <= 50 else summary[:47] + "..."
+            self.research_table.insert("", tk.END, values=(note_id, timestamp, model, app, note_type, summary))
+
+    def _on_research_note_select(self, event) -> None:
+        selected = self.research_table.selection()
+        if selected:
+            note_id = self.research_table.item(selected[0])["values"][0]
+            note_data = self.research_notes_map.get(note_id, {})
+            self.research_note_text.delete("1.0", tk.END)
+            self.research_note_text.insert(tk.END, note_data.get("note", ""))
+            # Also update the reference selectors
+            self.research_model_var.set(note_data.get("model", ""))
+            self._on_research_model_selected(None)  # Refresh apps for selected model
+            self.research_app_var.set(note_data.get("app", ""))
+            self.research_type_var.set(note_data.get("note_type", ""))
+
+    def _new_research_note(self) -> None:
+        self.research_table.selection_remove(self.research_table.selection())
+        self.research_note_text.delete("1.0", tk.END)
+        # Optionally, reset the reference selectors to default
+        models = natsorted(list(APP_CONFIG["allowed_models"]), key=_natural_sort_key)
+        if models:
+            self.research_model_var.set(models[0])
+            self._on_research_model_selected(None)
+        self.research_type_var.set("Problem")
+
+    def _save_research_note(self) -> None:
+        note_text = self.research_note_text.get("1.0", tk.END).strip()
+        if not note_text:
+            self._log("Cannot save empty note", error=True)
+            return
+        model = self.research_model_var.get()
+        app = self.research_app_var.get()
+        note_type = self.research_type_var.get()
+        selected = self.research_table.selection()
+        if selected:
+            note_id = self.research_table.item(selected[0])["values"][0]
+            self.database.update_research_note(note_id, model, app, note_type, note_text)
+            self._log(f"Updated research note {note_id}.")
+        else:
+            self.database.insert_research_note(model, app, note_type, note_text)
+            self._log("Inserted new research note.")
+        self._refresh_research_notes()
+
+    def _delete_research_note(self) -> None:
+        selected = self.research_table.selection()
+        if not selected:
+            self._log("No research note selected.", error=True)
+            return
+        note_id = self.research_table.item(selected[0])["values"][0]
+        if messagebox.askyesno("Confirm Delete", "Delete selected research note?"):
+            self.database.delete_research_note_by_id(note_id)
+            self._log(f"Deleted research note {note_id}.")
+            self._refresh_research_notes()
+            self.research_note_text.delete("1.0", tk.END)
 
     # -------------------------------------------------------------------------
     # LOG PANEL
