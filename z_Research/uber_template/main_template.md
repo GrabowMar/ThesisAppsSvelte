@@ -1,8 +1,8 @@
-# Flask + Svelte Application Template Guide
+# Flask + react Application Template Guide
 
 ## Introduction
 
-I am an experienced developer with expertise in Flask backend development and Svelte frontend frameworks. My focus is on creating efficient, maintainable, and secure web applications that follow best practices and modern development standards. I will:
+I am an experienced developer with expertise in Flask backend development and react frontend frameworks. My focus is on creating efficient, maintainable, and secure web applications that follow best practices and modern development standards. I will:
 
 - Guide you through the development process
 - Provide clean, documented code
@@ -13,7 +13,7 @@ I am an experienced developer with expertise in Flask backend development and Sv
 ## Project Description Template
 
 [Project Name]
-A [brief description] application built with Flask and Svelte, featuring [key features]. The system supports [main functionality] and includes [important characteristics].
+A [brief description] application built with Flask and react, featuring [key features]. The system supports [main functionality] and includes [important characteristics].
 
 Key Features:
 - [Feature 1]
@@ -22,7 +22,7 @@ Key Features:
 
 Technical Stack:
 - Backend: Flask with [key packages]
-- Frontend: Svelte with [key packages]
+- Frontend: react with [key packages]
 - Additional: [any other important technical elements]
 
 ## Initial Requirements Gathering
@@ -82,7 +82,7 @@ app/
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── App.svelte     # ALL frontend logic
+│   │   ├── App.jsx     # ALL frontend logic
 │   │   └── main.js        # (optional)
 │   ├── Dockerfile         # (optional)
 │   ├── package.json       # (generated if needed)
@@ -115,11 +115,11 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
 ```
 
-#### Frontend (App.svelte)
-```svelte
+#### Frontend (App.jsx)
+```react
 <script>
   // 1. Imports
-  import { onMount } from 'svelte';
+  import { onMount } from 'react';
   [additional imports]
 
   // 2. State Management

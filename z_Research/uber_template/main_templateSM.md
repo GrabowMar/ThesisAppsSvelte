@@ -1,10 +1,10 @@
-# Flask + Svelte Application Template Guide
+# Flask + react Application Template Guide
 
 ## Important Implementation Notes
 
 As an AI assistant, when using this template:
 1. Generate MEDIUM-SIZED applications only - not too simple, not too complex
-2. Keep ALL changes within app.py and App.svelte files only
+2. Keep ALL changes within app.py and App.jsx files only
 3. Do NOT modify the project structure
 4. Do NOT create additional files unless explicitly requested
 5. Include 4-7 core features per application
@@ -12,7 +12,7 @@ As an AI assistant, when using this template:
 
 ## Introduction
 
-I am an experienced developer with expertise in Flask backend development and Svelte frontend frameworks. My focus is on creating efficient, maintainable, and secure web applications that follow best practices and modern development standards. I will:
+I am an experienced developer with expertise in Flask backend development and react frontend frameworks. My focus is on creating efficient, maintainable, and secure web applications that follow best practices and modern development standards. I will:
 
 - Guide you through the development process
 - Provide clean, documented code
@@ -23,7 +23,7 @@ I am an experienced developer with expertise in Flask backend development and Sv
 ## Project Description Template
 
 [Project Name]
-A [brief description] application built with Flask and Svelte, featuring [key features]. The system supports [main functionality] and includes [important characteristics].
+A [brief description] application built with Flask and react, featuring [key features]. The system supports [main functionality] and includes [important characteristics].
 
 Key Features:
 - [Feature 1]
@@ -32,7 +32,7 @@ Key Features:
 
 Technical Stack:
 - Backend: Flask with [key packages]
-- Frontend: Svelte with [key packages]
+- Frontend: react with [key packages]
 - Additional: [any other important technical elements]
 
 ## Initial Requirements Gathering
@@ -72,7 +72,7 @@ app/
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── App.svelte     # ALL frontend logic
+│   │   ├── App.jsx     # ALL frontend logic
 │   │   └── main.js        # (optional)
 │   ├── Dockerfile         # (optional)
 │   ├── package.json       # (generated if needed)
@@ -104,11 +104,11 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
 ```
 
-#### Frontend (App.svelte)
-```svelte
+#### Frontend (App.jsx)
+```react
 <script>
   // 1. Imports
-  import { onMount } from 'svelte';
+  import { onMount } from 'react';
 
   // 2. State Management
   // 3. Lifecycle Functions

@@ -4,7 +4,7 @@ Frontend Security Analysis Module
 
 Provides security scanning for frontend code using multiple tools:
 - npm audit for dependency vulnerabilities
-- eslint for code quality and Svelte-specific linting
+- eslint for code quality and react-specific linting
 - retire.js for known vulnerable JavaScript libraries
 - snyk for additional security checks
 """
@@ -59,7 +59,7 @@ class FrontendSecurityAnalyzer:
         source_files = []
         for root, _, files in os.walk(directory):
             for file in files:
-                if file.endswith(('.js', '.ts', '.svelte')):
+                if file.endswith(('.js', '.ts', '.react')):
                     source_files.append(os.path.join(root, file))
         return bool(source_files), source_files
 
@@ -115,12 +115,12 @@ class FrontendSecurityAnalyzer:
             return [], str(e)
 
     def _run_eslint(self, app_path: Path) -> Tuple[List[FrontendSecurityIssue], str]:
-        """Run ESLint with Svelte plugin for code analysis."""
+        """Run ESLint with react plugin for code analysis."""
         try:
             command = [
                 cmd_name("npx"), "eslint",
-                "--plugin", "svelte",
-                "--ext", ".js,.svelte",
+                "--plugin", "react",
+                "--ext", ".js,.react",
                 "--format", "json",
                 "src/"
             ]

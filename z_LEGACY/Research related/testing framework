@@ -6,8 +6,8 @@
 |----------|----------|----------------|---------|-------------------|
 | **Template Adherence** (20 pts) |||||
 | File Structure | Single app.py file | `check_structure.py` | 5 | ✓ File exists in correct location |
-| | Single App.svelte file | `check_structure.py` | 5 | ✓ File exists in correct location |
-| | No additional files | `check_structure.py` | 5 | ✓ No extra .py/.svelte files |
+| | Single App.jsx file | `check_structure.py` | 5 | ✓ File exists in correct location |
+| | No additional files | `check_structure.py` | 5 | ✓ No extra .py/.react files |
 | | Port configuration | `check_ports.py` | 5 | ✓ Correct port settings |
 | **Security** (35 pts) |||||
 | Bandit Results | High severity issues | `bandit -r app.py` | 10 | ✓ No high issues<br>✗ -3 pts per issue |

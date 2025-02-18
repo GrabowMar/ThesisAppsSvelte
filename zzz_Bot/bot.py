@@ -119,7 +119,7 @@ class DatabaseClient:
                     model TEXT NOT NULL,
                     app TEXT NOT NULL,
                     app_py INTEGER NOT NULL DEFAULT 0,
-                    app_svelte INTEGER NOT NULL DEFAULT 0,
+                    app_react INTEGER NOT NULL DEFAULT 0,
                     comment TEXT
                 );
             ''')
@@ -165,24 +165,24 @@ class DatabaseClient:
     # -------------------------
     def get_all_model_app_status(self):
         cursor = self.conn.cursor()
-        cursor.execute("SELECT id, model, app, app_py, app_svelte, comment FROM model_app_status")
+        cursor.execute("SELECT id, model, app, app_py, app_react, comment FROM model_app_status")
         return cursor.fetchall()
 
-    def insert_model_app_status(self, model: str, app: str, app_py=False, app_svelte=False, comment=""):
+    def insert_model_app_status(self, model: str, app: str, app_py=False, app_react=False, comment=""):
         with self.conn:
             self.conn.execute('''
-                INSERT INTO model_app_status (model, app, app_py, app_svelte, comment)
+                INSERT INTO model_app_status (model, app, app_py, app_react, comment)
                 VALUES (?, ?, ?, ?, ?)
-            ''', (model, app, int(app_py), int(app_svelte), comment))
+            ''', (model, app, int(app_py), int(app_react), comment))
 
     def update_model_app_status(self, row_id: int, model: str, app: str,
-                                  app_py: bool, app_svelte: bool, comment: str):
+                                  app_py: bool, app_react: bool, comment: str):
         with self.conn:
             self.conn.execute('''
                 UPDATE model_app_status
-                SET model = ?, app = ?, app_py = ?, app_svelte = ?, comment = ?
+                SET model = ?, app = ?, app_py = ?, app_react = ?, comment = ?
                 WHERE id = ?
-            ''', (model, app, int(app_py), int(app_svelte), comment, row_id))
+            ''', (model, app, int(app_py), int(app_react), comment, row_id))
 
     def delete_model_app_status_by_id(self, row_id: int):
         with self.conn:
@@ -345,10 +345,10 @@ class AssistantApp(tk.Tk):
         self.app_py_text.pack(fill="both", expand=True)
         self.code_notebook.add(self.app_py_frame, text="app.py")
 
-        self.app_svelte_frame = ttk.Frame(self.code_notebook)
-        self.app_svelte_text = tk.Text(self.app_svelte_frame, wrap="none")
-        self.app_svelte_text.pack(fill="both", expand=True)
-        self.code_notebook.add(self.app_svelte_frame, text="App.svelte")
+        self.app_react_frame = ttk.Frame(self.code_notebook)
+        self.app_react_text = tk.Text(self.app_react_frame, wrap="none")
+        self.app_react_text.pack(fill="both", expand=True)
+        self.code_notebook.add(self.app_react_frame, text="App.jsx")
 
         self.requirements_frame = ttk.Frame(self.code_notebook)
         self.requirements_text = tk.Text(self.requirements_frame, wrap="none")
@@ -373,7 +373,7 @@ class AssistantApp(tk.Tk):
         current_index = self.code_notebook.index(self.code_notebook.select())
         target_widget = [
             self.app_py_text,
-            self.app_svelte_text,
+            self.app_react_text,
             self.requirements_text,
             self.package_json_text
         ][current_index]
@@ -428,8 +428,8 @@ class AssistantApp(tk.Tk):
 
         ttk.Button(btn_frame, text="Replace app.py",
                    command=self._run_in_thread(lambda: self._replace_file_content("app.py", self.app_py_text.get("1.0", tk.END)))).grid(row=0, column=0, padx=5, pady=5)
-        ttk.Button(btn_frame, text="Replace App.svelte",
-                   command=self._run_in_thread(lambda: self._replace_file_content("App.svelte", self.app_svelte_text.get("1.0", tk.END)))).grid(row=0, column=1, padx=5, pady=5)
+        ttk.Button(btn_frame, text="Replace App.jsx",
+                   command=self._run_in_thread(lambda: self._replace_file_content("App.jsx", self.app_react_text.get("1.0", tk.END)))).grid(row=0, column=1, padx=5, pady=5)
         ttk.Button(btn_frame, text="Replace requirements.txt",
                    command=self._run_in_thread(lambda: self._replace_file_content("requirements.txt", self.requirements_text.get("1.0", tk.END)))).grid(row=1, column=0, padx=5, pady=5)
         ttk.Button(btn_frame, text="Replace package.json",
@@ -459,7 +459,7 @@ class AssistantApp(tk.Tk):
 
         if filename in ("app.py", "requirements.txt"):
             subfolder = "backend"
-        elif filename == "App.svelte":
+        elif filename == "App.jsx":
             subfolder = "frontend/src"
         elif filename == "package.json":
             subfolder = "frontend"
@@ -490,7 +490,7 @@ class AssistantApp(tk.Tk):
 
     def _replace_all_files(self) -> None:
         self._replace_file_content("app.py", self.app_py_text.get("1.0", tk.END))
-        self._replace_file_content("App.svelte", self.app_svelte_text.get("1.0", tk.END))
+        self._replace_file_content("App.jsx", self.app_react_text.get("1.0", tk.END))
         self._replace_file_content("requirements.txt", self.requirements_text.get("1.0", tk.END))
         self._replace_file_content("package.json", self.package_json_text.get("1.0", tk.END))
 
@@ -604,20 +604,20 @@ class AssistantApp(tk.Tk):
 
         ttk.Button(top_frame, text="Refresh", command=self._refresh_model_app_table).pack(side="left", padx=5)
 
-        columns = ("id", "model", "app", "app_py", "app_svelte", "comment")
+        columns = ("id", "model", "app", "app_py", "app_react", "comment")
         self.model_app_table = ttk.Treeview(self.model_app_tab, columns=columns, show="headings")
         self.model_app_table.heading("id", text="ID", command=lambda: self._sort_model_app_table("id"))
         self.model_app_table.heading("model", text="Model", command=lambda: self._sort_model_app_table("model"))
         self.model_app_table.heading("app", text="App", command=lambda: self._sort_model_app_table("app"))
         self.model_app_table.heading("app_py", text="app.py?", command=lambda: self._sort_model_app_table("app_py"))
-        self.model_app_table.heading("app_svelte", text="App.svelte?", command=lambda: self._sort_model_app_table("app_svelte"))
+        self.model_app_table.heading("app_react", text="App.jsx?", command=lambda: self._sort_model_app_table("app_react"))
         self.model_app_table.heading("comment", text="Comment", command=lambda: self._sort_model_app_table("comment"))
 
         self.model_app_table.column("id", width=50)
         self.model_app_table.column("model", width=100)
         self.model_app_table.column("app", width=100)
         self.model_app_table.column("app_py", width=80, anchor="center")
-        self.model_app_table.column("app_svelte", width=100, anchor="center")
+        self.model_app_table.column("app_react", width=100, anchor="center")
         self.model_app_table.column("comment", width=250)
 
         vsb = ttk.Scrollbar(self.model_app_tab, orient="vertical", command=self.model_app_table.yview)
@@ -632,7 +632,7 @@ class AssistantApp(tk.Tk):
         existing_rows = self.database.get_all_model_app_status()
         existing_map = {}
         for row in existing_rows:
-            row_id, model, app, app_py, app_svelte, comment = row
+            row_id, model, app, app_py, app_react, comment = row
             existing_map[(model, app)] = {"id": row_id, "comment": comment}
 
         discovered = []
@@ -655,14 +655,14 @@ class AssistantApp(tk.Tk):
         for (model, app) in discovered:
             app_path = Path('.') / model / app
             has_app_py = (app_path / "app.py").exists()
-            has_svelte = (app_path / "App.svelte").exists()
+            has_react = (app_path / "App.jsx").exists()
             if (model, app) in existing_map:
                 row_data = existing_map[(model, app)]
                 self.database.update_model_app_status(
-                    row_data["id"], model, app, has_app_py, has_svelte, row_data.get("comment", "")
+                    row_data["id"], model, app, has_app_py, has_react, row_data.get("comment", "")
                 )
             else:
-                self.database.insert_model_app_status(model, app, has_app_py, has_svelte, "")
+                self.database.insert_model_app_status(model, app, has_app_py, has_react, "")
 
         self._refresh_model_app_table()
         self._log("Model/App data synced with folders.")
@@ -671,13 +671,13 @@ class AssistantApp(tk.Tk):
         self.model_app_data = []
         rows = self.database.get_all_model_app_status()
         for row in rows:
-            row_id, model, app, app_py, app_svelte, comment = row
+            row_id, model, app, app_py, app_react, comment = row
             self.model_app_data.append({
                 "id": row_id,
                 "model": model,
                 "app": app,
                 "app_py": "☑" if app_py else "☐",
-                "app_svelte": "☑" if app_svelte else "☐",
+                "app_react": "☑" if app_react else "☐",
                 "comment": comment or ""
             })
 
@@ -696,7 +696,7 @@ class AssistantApp(tk.Tk):
                 or ft in row["model"].lower()
                 or ft in row["app"].lower()
                 or ft in row["app_py"].lower()
-                or ft in row["app_svelte"].lower()
+                or ft in row["app_react"].lower()
                 or ft in row["comment"].lower())
         ]
 
@@ -712,7 +712,7 @@ class AssistantApp(tk.Tk):
         def sort_key(row):
             if col == "id":
                 return int(row["id"])
-            elif col in ("app_py", "app_svelte"):
+            elif col in ("app_py", "app_react"):
                 return 0 if row[col] == "☐" else 1
             else:
                 return _natural_sort_key(row[col])
@@ -727,7 +727,7 @@ class AssistantApp(tk.Tk):
                 row["model"],
                 row["app"],
                 row["app_py"],
-                row["app_svelte"],
+                row["app_react"],
                 row["comment"]
             ))
 
@@ -738,17 +738,17 @@ class AssistantApp(tk.Tk):
             return
 
         values = list(self.model_app_table.item(item_id, "values"))
-        row_id, model, app, app_py_disp, app_svelte_disp, comment = values
+        row_id, model, app, app_py_disp, app_react_disp, comment = values
 
         if col_id == "#4":
             new_val = "☑" if app_py_disp == "☐" else "☐"
             values[3] = new_val
             self.database.update_model_app_status(
                 row_id, model, app,
-                (new_val == "☑"), (app_svelte_disp == "☑"), comment
+                (new_val == "☑"), (app_react_disp == "☑"), comment
             )
         elif col_id == "#5":
-            new_val = "☑" if app_svelte_disp == "☐" else "☐"
+            new_val = "☑" if app_react_disp == "☐" else "☐"
             values[4] = new_val
             self.database.update_model_app_status(
                 row_id, model, app,
@@ -760,7 +760,7 @@ class AssistantApp(tk.Tk):
                 values[5] = new_comment
                 self.database.update_model_app_status(
                     row_id, model, app,
-                    (app_py_disp == "☑"), (app_svelte_disp == "☑"), new_comment
+                    (app_py_disp == "☑"), (app_react_disp == "☑"), new_comment
                 )
 
         self.model_app_table.item(item_id, values=values)

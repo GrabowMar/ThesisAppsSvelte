@@ -40,7 +40,7 @@ flask-cors
     # Frontend templates
     "frontend/package.json.template" = @'
 {
-  "name": "svelte-{model_name_lower}-app",
+  "name": "react-{model_name_lower}-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -50,8 +50,8 @@ flask-cors
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^3.0.1",
-    "svelte": "^4.2.8",
+    "@reactjs/vite-plugin-react": "^3.0.1",
+    "react": "^4.2.8",
     "vite": "^5.0.8"
   }
 }
@@ -63,8 +63,8 @@ flask-cors
     "dev": "npm run dev"
   },
   "imports": {
-    "@sveltejs/vite-plugin-svelte": "npm:@sveltejs/vite-plugin-svelte@^3.0.1",
-    "svelte": "npm:svelte@^4.2.8",
+    "@reactjs/vite-plugin-react": "npm:@reactjs/vite-plugin-react@^3.0.1",
+    "react": "npm:react@^4.2.8",
     "vite": "npm:vite@^5.0.8"
   }
 }
@@ -72,10 +72,10 @@ flask-cors
 
     "frontend/vite.config.js.template" = @'
 import { defineConfig } from 'vite'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
+import { react } from '@reactjs/vite-plugin-react'
 
 export default defineConfig({
-  plugins: [svelte()],
+  plugins: [react()],
   server: {
     host: true,
     port: {port},
@@ -84,7 +84,7 @@ export default defineConfig({
 })
 '@
 
-    "frontend/src/App.svelte.template" = @'
+    "frontend/src/App.jsx.template" = @'
 <script>
   let message = 'Loading...';
 
@@ -125,7 +125,7 @@ export default defineConfig({
 '@
 
     "frontend/src/main.js" = @'
-import App from './App.svelte'
+import App from './App.jsx'
 
 const app = new App({
   target: document.getElementById('app')
@@ -140,7 +140,7 @@ export default app
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{model_name} Svelte App</title>
+    <title>{model_name} react App</title>
   </head>
   <body>
     <div id="app"></div>

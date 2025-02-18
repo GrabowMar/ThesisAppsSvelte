@@ -891,7 +891,7 @@ def analyze_gpt4all(analysis_type: str):
     try:
         data = request.get_json()
         directory = Path(data.get("directory", current_app.config["BASE_DIR"]))
-        file_patterns = data.get("file_patterns", ["*.py", "*.js", "*.ts", "*.svelte"])
+        file_patterns = data.get("file_patterns", ["*.py", "*.js", "*.ts", "*.react"])
         analyzer = GPT4AllAnalyzer(directory)
         issues, summary = asyncio.run(analyzer.analyze_directory(
             directory=directory, file_patterns=file_patterns, analysis_type=analysis_type
