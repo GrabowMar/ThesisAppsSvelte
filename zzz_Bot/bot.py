@@ -510,25 +510,40 @@ class AssistantApp(tk.Tk):
     def _replace_file_content(self, filename: str, new_content: str) -> None:
         task = f"Replace {filename}"
         self.database.log_progress(task, 0, "Starting file replacement")
+
         model = self.replace_model_var.get()
         app_name = self.replace_app_var.get()
-        backend = "backend"
-        frontend = "frontend"
-        if not (model and app_name):
+        if not model or not app_name:
             self._log("Model or App not selected", error=True)
             return
-        target_dir = Path('.') / model / app_name /backend if filename == "app.py" else frontend
+
+        # Decide subfolder based on the filename.
+        # You can tweak these rules as you wish:
+        if filename in ("app.py", "requirements.txt"):
+            subfolder = "backend"
+        elif filename == "App.svelte":
+            subfolder = "frontend/src"
+        elif filename == "package.json":
+            subfolder = "frontend"
+        else:
+            subfolder = ""  # No extra subfolder by default
+
+        # Build the final target directory
+        target_dir = Path('.') / model / app_name / subfolder
         if not target_dir.exists():
-            self._log(f"Target folder {target_dir} does not exist", error=True)
-            return
+            # Optional: create the subfolder if it doesn't exist
+            target_dir.mkdir(parents=True, exist_ok=True)
+
         target_file = target_dir / filename
         if not messagebox.askyesno("Confirm Replacement", f"Replace the content of {target_file}?"):
             self._log("Replacement canceled.")
             return
+
         new_content = new_content.strip()
         if not new_content:
             self._log("No content provided for replacement.", error=True)
             return
+
         try:
             target_file.write_text(new_content, encoding="utf-8")
             self.database.log_progress(task, 100, f"Replaced content of {target_file}")
@@ -536,6 +551,7 @@ class AssistantApp(tk.Tk):
         except Exception as e:
             self._log(f"Failed to replace file content: {e}", error=True)
             self.database.log_progress(task, 0, f"Error: {e}")
+
 
     def _replace_all_files(self) -> None:
         self._replace_file_content("app.py", self.app_py_text.get("1.0", tk.END))

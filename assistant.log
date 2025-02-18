@@ -92,3 +92,61 @@
 [07:06:11] INFO: Replace app.py - 0%: Starting file replacement
 [07:06:14] INFO: Replace app.py - 100%: Replaced content of ChatGPT4o\app1\app.py
 [07:06:14] INFO: Replaced content of ChatGPT4o\app1\app.py
+[07:07:18] ERROR: Could not get clipboard content: CLIPBOARD selection doesn't exist or form "STRING" not defined
+[07:07:22] INFO: Loaded template: app_1_login.md
+[07:07:23] INFO: Template copied to clipboard.
+[07:07:25] INFO: Clipboard content pasted successfully.
+[07:07:27] INFO: Replace app.py - 0%: Starting file replacement
+[07:07:28] INFO: Replace app.py - 100%: Replaced content of ChatGPT4o\app1\backend\app.py
+[07:07:28] INFO: Replaced content of ChatGPT4o\app1\backend\app.py
+[07:09:04] INFO: Loaded template: app_1_login.md
+[07:09:12] INFO: Copied port numbers: (frontend 5501 and backend 5001)
+[07:13:13] INFO: Replace app.py - 0%: Starting file replacement
+[07:13:14] INFO: Replace app.py - 100%: Replaced content of ChatGPT4o\app1\backend\app.py
+[07:13:14] INFO: Replaced content of ChatGPT4o\app1\backend\app.py
+[07:13:14] INFO: Replace App.svelte - 0%: Starting file replacement
+[07:13:14] ERROR: Error in _replace_all_files: 'str' object has no attribute 'exists'
+[07:13:34] INFO: Replace App.svelte - 0%: Starting file replacement
+[07:13:34] ERROR: Error in <lambda>: 'str' object has no attribute 'exists'
+[07:13:49] INFO: Replace package.json - 0%: Starting file replacement
+[07:13:49] ERROR: Error in <lambda>: 'str' object has no attribute 'exists'
+[07:17:31] INFO: Loaded template: app_1_login.md
+[07:17:32] INFO: Template copied to clipboard.
+[07:17:36] INFO: Clipboard content pasted successfully.
+[07:17:38] INFO: Replace App.svelte - 0%: Starting file replacement
+[07:17:41] INFO: Replace App.svelte - 100%: Replaced content of ChatGPT4o\app1\frontend\App.svelte
+[07:17:41] INFO: Replaced content of ChatGPT4o\app1\frontend\App.svelte
+[07:20:03] INFO: Loaded template: app_1_login.md
+[07:20:03] INFO: Template copied to clipboard.
+[07:20:14] INFO: Replace package.json - 0%: Starting file replacement
+[07:20:15] ERROR: No content provided for replacement.
+[07:20:29] INFO: Replace requirements.txt - 0%: Starting file replacement
+[07:20:30] ERROR: No content provided for replacement.
+[07:21:17] INFO: Clipboard content pasted successfully.
+[07:21:18] INFO: Clipboard content pasted successfully.
+[07:21:19] INFO: Clipboard content pasted successfully.
+[07:21:20] INFO: Clipboard content pasted successfully.
+[07:21:22] INFO: Replace app.py - 0%: Starting file replacement
+[07:21:23] INFO: Replace app.py - 100%: Replaced content of ChatGPT4o\app1\backend\app.py
+[07:21:23] INFO: Replaced content of ChatGPT4o\app1\backend\app.py
+[07:21:24] INFO: Replace App.svelte - 0%: Starting file replacement
+[07:21:24] INFO: Replace App.svelte - 100%: Replaced content of ChatGPT4o\app1\backend\App.svelte
+[07:21:24] INFO: Replaced content of ChatGPT4o\app1\backend\App.svelte
+[07:21:25] INFO: Replace requirements.txt - 0%: Starting file replacement
+[07:21:26] INFO: Replace requirements.txt - 100%: Replaced content of ChatGPT4o\app1\backend\requirements.txt
+[07:21:26] INFO: Replaced content of ChatGPT4o\app1\backend\requirements.txt
+[07:21:26] INFO: Replace package.json - 0%: Starting file replacement
+[07:21:27] INFO: Replace package.json - 100%: Replaced content of ChatGPT4o\app1\backend\package.json
+[07:21:27] INFO: Replaced content of ChatGPT4o\app1\backend\package.json
+[07:23:01] INFO: Replace App.svelte - 0%: Starting file replacement
+[07:23:02] INFO: Replace App.svelte - 100%: Replaced content of ChatGPT4o\app1\backend\App.svelte
+[07:23:02] INFO: Replaced content of ChatGPT4o\app1\backend\App.svelte
+[07:23:57] INFO: Replace app.py - 0%: Starting file replacement
+[07:23:59] INFO: Replace app.py - 100%: Replaced content of ChatGPT4o\app1\backend\app.py
+[07:23:59] INFO: Replaced content of ChatGPT4o\app1\backend\app.py
+[07:24:02] INFO: Replace requirements.txt - 0%: Starting file replacement
+[07:24:03] INFO: Replace requirements.txt - 100%: Replaced content of ChatGPT4o\app1\backend\requirements.txt
+[07:24:03] INFO: Replaced content of ChatGPT4o\app1\backend\requirements.txt
+[07:24:05] INFO: Replace package.json - 0%: Starting file replacement
+[07:24:06] INFO: Replace package.json - 100%: Replaced content of ChatGPT4o\app1\backend\package.json
+[07:24:06] INFO: Replaced content of ChatGPT4o\app1\backend\package.json
