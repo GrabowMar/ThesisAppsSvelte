@@ -46,7 +46,7 @@ class PortManager:
 class ProjectConfig:
     def __init__(self, model_name: str, model_index: int):
         self.model_name = model_name
-        self.base_dir = f"C:/Users/grabowmar/Desktop/ThesisAppsreact/{model_name}"
+        self.base_dir = f"C:/Users/grabowmar/Desktop/ThesisAppsSvelte/{model_name}"
         self.app_prefix = "app"
         self.total_apps = 20
         # Get port ranges from PortManager
@@ -208,12 +208,6 @@ def new_frontend_setup(frontend_dir: str, port: int, deno_base_image: str, backe
     with open(os.path.join(frontend_dir, "package.json"), "w") as f:
         f.write(package_json)
 
-    # # deno.json
-    # with open("z_code_templates/frontend/deno.json.template", "r") as t:
-    #     deno_json = t.read()
-    # with open(os.path.join(frontend_dir, "deno.json"), "w") as f:
-    #     f.write(deno_json)
-
     # vite.config.js
     with open("z_code_templates/frontend/vite.config.js.template", "r") as t:
         vite_config = t.read()
@@ -228,6 +222,12 @@ def new_frontend_setup(frontend_dir: str, port: int, deno_base_image: str, backe
     app_react = app_react.replace("{backend_port}", str(backend_port))
     with open(os.path.join(frontend_dir, "src", "App.jsx"), "w") as f:
         f.write(app_react)
+
+    # App.css
+    shutil.copy(
+        "z_code_templates/frontend/src/App.css",
+        os.path.join(frontend_dir, "src", "App.css")
+    )
 
     # main.js
     shutil.copy(

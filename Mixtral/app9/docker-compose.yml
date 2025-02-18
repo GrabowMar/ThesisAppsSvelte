@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: mixtral_backend_5437
+        ports:
+            - "5437:5437"
+        volumes:
+            - ./backend:/app
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: mixtral_frontend_5937
+        ports:
+            - "5937:5937"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=5937
+        restart: always
+        depends_on:
+            - backend
+

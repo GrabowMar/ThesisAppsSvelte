@@ -3,7 +3,7 @@
 ## Important Implementation Notes
 
 1. Generate web app with properly implemented key features mentioned below.
-2. Try to keep all changes within **app.py** and **App.jsx** files.
+2. Try to keep all changes within **app.py** , **App.jsx** and **App.css** files.
 3. Try to write feature complete production ready app, with comments, fails states, etc.
 4. **Note:** Multipage routing is possible within these files. On the backend, you can define multiple routes (e.g., `/login`, `/register`, `/dashboard`, etc.) in **app.py**. On the frontend, client-side routing can be managed within **App.jsx** using conditional rendering or a routing library, all within the single-file constraint.
 
@@ -44,7 +44,8 @@ app/
 ├── frontend/
 │   ├── src/
 │   │   ├── App.jsx      # ALL frontend logic (with potential multipage routing)
-│   │   └── main.js         # (optional)
+│   │   ├── main.jsx         # (optional)
+│   │   └── App.css         # (optional)
 │   ├── Dockerfile          # (optional)
 │   ├── package.json        # (generated if needed)
 │   └── vite.config.js      # (required for port config)
@@ -74,6 +75,7 @@ app/
    - Must include all specified frontend features.
    - Must list required npm dependencies in form of package.json (and vite.config.js if necessary)
    - Aim for best practices and professionalism.
+   - Request complete **App.css** code generation.
 
 
 **Very important:** Your app should be feature rich and production ready. Remember you write whole app not only module or feature.
