@@ -227,6 +227,7 @@ class ZAPScanner:
         except Exception as e:
             logger.warning(f"Error during cleanup: {e}")
 
+
     def scan_target(self, target_url: str, scan_policy: Optional[str] = None) -> Tuple[List[ZapVulnerability], Dict]:
         """Run a scan against a target URL with improved error handling."""
         vulnerabilities = []
@@ -254,7 +255,12 @@ class ZAPScanner:
             logger.info("Starting active scan...")
             recurse = "true"
             in_scope_only = "false"
-            policy = scan_policy if scan_policy else ""
+            # If the scan_policy is "Light Scan" or "Full Scan", fallback to empty string
+            if scan_policy in ["Light Scan", "Full Scan"]:
+                logger.warning(f"Scan policy '{scan_policy}' not recognized. Falling back to default scan policy.")
+                policy = ""
+            else:
+                policy = scan_policy if scan_policy else ""
             method = ""
             post_data = ""
             scan_id = self.zap.ascan.scan(target_url, recurse, in_scope_only, policy, method, post_data)
@@ -306,6 +312,7 @@ class ZAPScanner:
             
         finally:
             self._cleanup_existing_zap()
+
 
     def start_scan(self, model: str, app_num: int, scan_options: Dict) -> bool:
         """Start a new scan with improved error handling."""
