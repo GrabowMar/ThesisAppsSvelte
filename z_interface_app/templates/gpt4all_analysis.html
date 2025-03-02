@@ -1,6 +1,10 @@
 {% extends "base.html" %}
-
 {% block content %}
+<!-- Expose summary to JS if available -->
+<script>
+  window.summary = {{ summary|tojson|safe }};
+</script>
+
 <div class="flex min-h-screen bg-gray-100">
   <!-- Main Content -->
   <div class="flex-1 flex flex-col overflow-hidden">
@@ -40,21 +44,27 @@
 
     <!-- Analysis Grid -->
     <div class="p-2 grid grid-cols-4 gap-2">
-      <div class="border border-gray-400 bg-white p-2">
+      <div class="border border-gray-400 bg-white p-2" data-type="total">
         <div class="text-xs text-gray-600">Total Issues</div>
         <div class="text-xs font-bold">{{ summary.total_issues if summary else 0 }}</div>
       </div>
-      <div class="border border-gray-400 bg-white p-2">
+      <div class="border border-gray-400 bg-white p-2" data-type="HIGH">
         <div class="text-xs text-red-800">High Severity</div>
-        <div class="text-xs font-bold text-red-700">{{ summary.severity_counts.HIGH if summary else 0 }}</div>
+        <div class="text-xs font-bold text-red-700">
+          {{ summary.severity_counts.HIGH if summary and summary.get('severity_counts') else 0 }}
+        </div>
       </div>
-      <div class="border border-gray-400 bg-white p-2">
+      <div class="border border-gray-400 bg-white p-2" data-type="MEDIUM">
         <div class="text-xs text-yellow-800">Medium Severity</div>
-        <div class="text-xs font-bold text-yellow-700">{{ summary.severity_counts.MEDIUM if summary else 0 }}</div>
+        <div class="text-xs font-bold text-yellow-700">
+          {{ summary.severity_counts.MEDIUM if summary and summary.get('severity_counts') else 0 }}
+        </div>
       </div>
-      <div class="border border-gray-400 bg-white p-2">
+      <div class="border border-gray-400 bg-white p-2" data-type="LOW">
         <div class="text-xs text-blue-800">Low Severity</div>
-        <div class="text-xs font-bold text-blue-700">{{ summary.severity_counts.LOW if summary else 0 }}</div>
+        <div class="text-xs font-bold text-blue-700">
+          {{ summary.severity_counts.LOW if summary and summary.get('severity_counts') else 0 }}
+        </div>
       </div>
     </div>
 
@@ -66,7 +76,7 @@
           <div class="text-xs" id="progressStatus">Starting...</div>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2">
-          <div class="bg-blue-600 rounded-full h-2 transition-all duration-500" style="width: 0%" id="progressBar"></div>
+          <div id="progressBar" class="bg-blue-600 rounded-full h-2 transition-all duration-500" style="width: 0%"></div>
         </div>
       </div>
     </div>
@@ -152,12 +162,12 @@
           </div>
           <div class="flex justify-between">
             <span class="text-gray-600">Last Analysis:</span>
-            <span class="font-bold">{{ summary.scan_time if summary else 'Never' }}</span>
+            <span class="font-bold">{{ summary.scan_time if summary and summary.scan_time else 'Never' }}</span>
           </div>
         </div>
       </div>
 
-      <!-- Model Info -->
+      <!-- Model Information -->
       <div class="border border-gray-400 bg-white">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
           <h2 class="font-bold text-xs">Model Information</h2>
@@ -193,7 +203,7 @@
           <div class="space-y-1">
             <div class="flex justify-between">
               <span class="text-gray-600">Files Analyzed:</span>
-              <span class="font-bold">{{ summary.files_affected }}</span>
+              <span class="font-bold">{{ summary.files_affected if summary.files_affected is not none else 0 }}</span>
             </div>
             <div class="flex justify-between">
               <span class="text-gray-600">Analysis Duration:</span>
@@ -222,15 +232,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const startBtn = document.getElementById('startAnalysis');
-  const progressBar = document.getElementById('progressBar');
-  const progressDiv = document.getElementById('analysisProgress');
-  const progressStatus = document.getElementById('progressStatus');
-  const searchInput = document.getElementById('searchIssues');
-  const severityFilter = document.getElementById('severityFilter');
-  const fileFilter = document.getElementById('fileFilter');
-  
-  // Expand/Collapse functionality
+  // Expand/collapse functionality.
   document.querySelectorAll('.expand-btn').forEach(btn => {
     btn.addEventListener('click', function() {
       const details = this.closest('div').nextElementSibling.querySelector('.issue-details');
@@ -239,60 +241,44 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Filter functionality
+  // Filtering functionality.
   function applyFilters() {
-    const searchTerm = searchInput.value.toLowerCase();
-    const selectedSeverity = severityFilter.value;
-    const selectedFile = fileFilter.value;
-
+    const searchTerm = document.getElementById('searchIssues').value.toLowerCase();
+    const selectedSeverity = document.getElementById('severityFilter').value;
+    const selectedFile = document.getElementById('fileFilter').value;
     document.querySelectorAll('#issueList > div').forEach(issue => {
       const severityMatch = selectedSeverity === 'all' || issue.dataset.severity === selectedSeverity;
       const fileMatch = selectedFile === 'all' || issue.dataset.file === selectedFile;
       const searchMatch = !searchTerm || issue.dataset.searchable.toLowerCase().includes(searchTerm);
-      
       issue.style.display = (severityMatch && fileMatch && searchMatch) ? 'block' : 'none';
     });
   }
-
-  // Add filter event listeners
-  [severityFilter, fileFilter].forEach(filter => {
-    filter?.addEventListener('change', applyFilters);
+  document.getElementById('searchIssues').addEventListener('input', function() {
+    clearTimeout(this.timeout);
+    this.timeout = setTimeout(applyFilters, 300);
   });
+  document.getElementById('severityFilter').addEventListener('change', applyFilters);
+  document.getElementById('fileFilter').addEventListener('change', applyFilters);
 
-  if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      clearTimeout(searchInput.timeout);
-      searchInput.timeout = setTimeout(applyFilters, 300);
-    });
-  }
+  // Analysis functionality.
+  const startBtn = document.getElementById('startAnalysis');
+  const progressBar = document.getElementById('progressBar');
+  const progressStatus = document.getElementById('progressStatus');
+  const analysisProgress = document.getElementById('analysisProgress');
 
-  // Analysis functionality
   if (startBtn) {
     startBtn.addEventListener('click', async function() {
       try {
-        const pathParts = window.location.pathname.split('/');
-        const model = pathParts[pathParts.length - 2];
-        const appNum = pathParts[pathParts.length - 1];
-        
-        if (!model || !appNum) {
-          throw new Error('Invalid model or app number');
-        }
-
         startBtn.disabled = true;
-        progressDiv.classList.remove('hidden');
+        analysisProgress.classList.remove('hidden');
         progressBar.style.width = '0%';
         progressStatus.textContent = 'Starting local analysis...';
 
         const analysisType = document.getElementById('analysisType').value;
-
-        const response = await fetch(`/api/analyze-gpt4all/${model}/${appNum}`, {
+        const response = await fetch(`/api/analyze-gpt4all/{{ model }}/{{ app_num }}`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            analysis_type: analysisType
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ analysis_type: analysisType })
         });
 
         if (!response.ok) {
@@ -300,7 +286,6 @@ document.addEventListener('DOMContentLoaded', function() {
           throw new Error(errorData.error || 'Analysis failed');
         }
 
-        // Poll for progress
         let progress = 0;
         const progressInterval = setInterval(() => {
           progress += 5;
@@ -314,12 +299,9 @@ document.addEventListener('DOMContentLoaded', function() {
         clearInterval(progressInterval);
         progressBar.style.width = '100%';
         progressStatus.textContent = 'Analysis complete!';
-
-        // Reload page to show results
         setTimeout(() => {
           window.location.reload();
         }, 1000);
-
       } catch (error) {
         console.error('Analysis error:', error);
         progressStatus.textContent = error.message || 'Analysis failed';
@@ -332,49 +314,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Calculate and display analysis duration
+  // Update analysis duration if available.
   function updateAnalysisDuration() {
     const durationElement = document.getElementById('analysisDuration');
-    if (durationElement && window.summary?.start_time && window.summary?.end_time) {
+    if (durationElement && window.summary && window.summary.start_time && window.summary.end_time) {
       const start = new Date(window.summary.start_time);
       const end = new Date(window.summary.end_time);
-      const duration = Math.round((end - start) / 1000);
-      durationElement.textContent = `${duration}s`;
+      durationElement.textContent = `${Math.round((end - start) / 1000)}s`;
     }
   }
-
   updateAnalysisDuration();
-
-  // Update issue count badge
-  function updateIssueCounts() {
-    const visibleIssues = document.querySelectorAll('#issueList > div:not([style*="display: none"])');
-    const totalCount = visibleIssues.length;
-    
-    const countsByType = {
-      HIGH: 0,
-      MEDIUM: 0,
-      LOW: 0
-    };
-
-    visibleIssues.forEach(issue => {
-      const severity = issue.dataset.severity;
-      if (severity in countsByType) {
-        countsByType[severity]++;
-      }
-    });
-
-    // Update the counts in the grid
-    document.querySelector('[data-type="total"]').textContent = totalCount;
-    Object.entries(countsByType).forEach(([severity, count]) => {
-      document.querySelector(`[data-type="${severity}"]`).textContent = count;
-    });
-  }
-
-  // Add listeners to update counts when filters change
-  [searchInput, severityFilter, fileFilter].forEach(element => {
-    element?.addEventListener('input', updateIssueCounts);
-    element?.addEventListener('change', updateIssueCounts);
-  });
 });
 </script>
 {% endblock %}

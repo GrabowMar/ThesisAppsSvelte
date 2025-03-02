@@ -1,30 +1,23 @@
-"""
-gpt4all_analysis.py - GPT4All-powered Local Code Analysis Module
-
-Analyzes code using a local GPT4All API server with the Phi-3 Mini Instruct model for:
-- Security vulnerabilities 
-- Code quality issues
-- Feature recommendations
-- Best practices
-"""
-
+import os
 import json
 import logging
-import os
 import asyncio
-import aiohttp
 from dataclasses import dataclass
-from pathlib import Path
-from typing import List, Dict, Tuple, Optional
 from datetime import datetime
+from pathlib import Path
+from typing import List, Dict, Optional, Tuple
 
-# Configure logging
+import aiohttp
+
+# Set up module-level logger
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class AIAnalysisIssue:
-    """Represents an issue found by AI analysis."""
+class AnalysisIssue:
+    """
+    Represents a single issue discovered by GPT4All analysis.
+    """
     filename: str
     line_number: int
     issue_text: str
@@ -39,198 +32,208 @@ class AIAnalysisIssue:
 
 
 class GPT4AllAnalyzer:
-    """Handles code analysis using a local GPT4All API server."""
-    
+    """
+    Analyzes code using a local GPT4All API server.
+    Supports security, features, and quality analysis.
+    """
+
+    @staticmethod
+    def adjust_path(p: Path) -> Path:
+        """
+        If the path contains "z_interface_app" (case-insensitive), remove that component.
+        """
+        parts = list(p.resolve().parts)
+        # Remove any part that matches "z_interface_app" (case-insensitive)
+        adjusted_parts = [part for part in parts if part.lower() != "z_interface_app"]
+        adjusted = Path(*adjusted_parts)
+        if adjusted != p:
+            logger.info(f"Adjusted base path from {p} to {adjusted}")
+        return adjusted
+
     def __init__(self, base_path: Path):
-        """Initialize the analyzer with the base path and API settings."""
-        self.base_path = base_path
+        """
+        Initialize the analyzer with a base path and API settings.
+        The base path is adjusted to remove any "z_interface_app" folder.
+        """
+        self.base_path = self.adjust_path(base_path)
         self.api_url = os.getenv("GPT4ALL_API_URL", "http://localhost:4891/v1")
         self.model_name = "deepseek-r1-distill-qwen-7b"
-        self.MAX_TOKENS = 4096
-        # Analysis prompts with structured output requirements for different analysis types.
-        self.analysis_prompts = {
+        self.max_tokens = 4096
+
+        # Define prompt templates for each analysis type
+        self.prompts: Dict[str, str] = {
             "security": (
-                "Analyze this code for security vulnerabilities. Focus on:\n"
-                "1. Input validation\n"
-                "2. Authentication/authorization\n"
-                "3. Data exposure\n"
-                "4. Cryptographic issues\n"
-                "5. Configuration security\n"
-                "Return JSON: {issues: [{filename, line_number, issue_text, severity, confidence, issue_type, line_range, code, suggested_fix}]}"
+                "Analyze the following code for security vulnerabilities. "
+                "Focus on input validation, authentication/authorization, data exposure, "
+                "cryptographic issues, and configuration security. "
+                "Return JSON: {\"issues\": [{\"filename\": ..., \"line_number\": ..., "
+                "\"issue_text\": ..., \"severity\": ..., \"confidence\": ..., \"issue_type\": ..., "
+                "\"line_range\": ..., \"code\": ..., \"suggested_fix\": ..., \"explanation\": ...}]}"
             ),
             "features": (
-                "Analyze this code and suggest improvements. Focus on:\n"
-                "1. Performance optimizations\n"
-                "2. Error handling\n"
-                "3. Logging improvements\n"
-                "4. Testing coverage\n"
-                "5. Code organization\n"
-                "Return JSON: {suggestions: [{title, description, priority, effort_level, code_example}]}"
+                "Analyze the following code and suggest feature improvements. "
+                "Focus on performance optimizations, error handling, logging, testing coverage, "
+                "and code organization. "
+                "Return JSON: {\"suggestions\": [{\"title\": ..., \"description\": ..., "
+                "\"priority\": ..., \"effort_level\": ..., \"code_example\": ...}]}"
             ),
             "quality": (
-                "Review this code for quality and best practices. Focus on:\n"
-                "1. Code structure\n"
-                "2. Variable naming\n"
-                "3. Function design\n"
-                "4. Documentation\n"
-                "5. Maintainability\n"
-                "Return JSON: {issues: [{area, description, severity, suggestion, code_example}]}"
-            )
+                "Review the following code for quality and best practices. "
+                "Focus on code structure, naming conventions, function design, documentation, "
+                "and maintainability. "
+                "Return JSON: {\"issues\": [{\"area\": ..., \"description\": ..., "
+                "\"severity\": ..., \"suggestion\": ..., \"code_example\": ...}]}"
+            ),
         }
 
-    async def _make_api_request(self, messages: List[Dict]) -> Optional[str]:
+    async def _api_request(self, prompt: str) -> Optional[str]:
         """
-        Make an API request to the local GPT4All API server with the provided messages.
-        
-        Returns the content of the response message if successful.
+        Sends a request to the GPT4All API with the given prompt.
+        Returns the text response or None if an error occurs.
         """
+        payload = {
+            "model": self.model_name,
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": self.max_tokens,
+        }
         try:
             async with aiohttp.ClientSession() as session:
-                payload = {
-                    "model": self.model_name,
-                    "messages": messages,
-                    "max_tokens": self.MAX_TOKENS,
-                }
-                async with session.post(f"{self.api_url}/chat/completions", json=payload) as response:
-                    if response.status != 200:
-                        error_text = await response.text()
-                        raise Exception(f"API request failed: {error_text}")
-                    data = await response.json()
-                    return data['choices'][0]['message']['content']
+                async with session.post(f"{self.api_url}/chat/completions", json=payload) as resp:
+                    if resp.status != 200:
+                        error_text = await resp.text()
+                        logger.error(f"GPT4All API request failed: {error_text}")
+                        return None
+                    data = await resp.json()
+                    return data["choices"][0]["message"]["content"]
         except Exception as e:
-            logger.error(f"GPT4All API request failed: {str(e)}")
+            logger.exception(f"Exception during GPT4All API request: {e}")
             return None
 
-    async def analyze_file(self, file_path: Path, analysis_type: str = "security") -> Tuple[List[Dict], str]:
+    async def analyze_file(self, file_path: Path, analysis_type: str = "security") -> Tuple[Dict, str]:
         """
-        Analyze a single file using GPT4All.
-
-        Args:
-            file_path: Path to the file to be analyzed.
-            analysis_type: Type of analysis to run (e.g., "security").
-
-        Returns:
-            A tuple containing the parsed JSON analysis result (as a dictionary)
-            and a status message.
+        Analyzes a single file using the specified analysis type.
+        Returns (parsed JSON result as a dictionary, status message).
         """
+        if not file_path.exists():
+            return {}, f"File not found: {file_path}"
+
         try:
-            if not file_path.exists():
-                return [], f"File not found: {file_path}"
-
-            with open(file_path, 'r', encoding='utf-8') as f:
-                code = f.read()
-
-            # Trim code if it exceeds the maximum allowed length.
-            if len(code) > self.MAX_TOKENS * 4:
-                code = code[:self.MAX_TOKENS * 4] + "\n... (truncated)"
-
-            messages = [{
-                "role": "user",
-                "content": f"{self.analysis_prompts[analysis_type]}\n\nCode:\n{code}"
-            }]
-
-            response_text = await self._make_api_request(messages)
-            if not response_text:
-                return [], "Analysis failed: No response from API"
-
-            try:
-                analysis_result = json.loads(response_text)
-                return analysis_result, "Analysis completed successfully"
-            except json.JSONDecodeError:
-                logger.error("Failed to parse JSON response from GPT4All")
-                return [], "Analysis failed: Invalid JSON response"
-
+            code = file_path.read_text(encoding="utf-8")
         except Exception as e:
-            logger.error(f"Analysis failed for {file_path}: {str(e)}")
-            return [], f"Analysis failed: {str(e)}"
+            logger.error(f"Error reading file {file_path}: {e}")
+            return {}, f"Error reading file: {e}"
+
+        max_length = self.max_tokens * 4
+        if len(code) > max_length:
+            code = code[:max_length] + "\n... (truncated)"
+            logger.info(f"File {file_path} truncated for analysis.")
+
+        prompt = f"{self.prompts.get(analysis_type, self.prompts['security'])}\n\nCode:\n{code}"
+        response = await self._api_request(prompt)
+        if response is None:
+            return {}, "Analysis failed: No response from API"
+
+        try:
+            result = json.loads(response)
+            return result, "Analysis completed successfully"
+        except json.JSONDecodeError:
+            logger.error("Failed to parse JSON response from GPT4All")
+            return {}, "Analysis failed: Invalid JSON response"
 
     async def analyze_directory(
-        self, 
-        directory: Path,
-        file_patterns: List[str] = ["*.py", "*.js", "*.ts", "*.svelte"],
+        self,
+        directory: Path = Path("C:/Users/grabowmar/Desktop/ThesisAppsSvelte"),
+        file_patterns: Optional[List[str]] = None,
         analysis_type: str = "security"
-    ) -> Tuple[List[AIAnalysisIssue], Dict[str, str]]:
+    ) -> Tuple[List[AnalysisIssue], Dict]:
         """
-        Analyze all files in a directory matching the provided patterns using GPT4All.
-
-        Expected directory structure:
-            <base_path>/<model>/app<app_num>/<...>
+        Recursively analyzes all files within the directory (and subfolders) that
+        match any of the provided file patterns.
 
         Returns:
-            A tuple containing:
-              - A list of AIAnalysisIssue objects.
-              - A dictionary summarizing the analysis (e.g., counts, timings).
-
-        Raises:
-            ValueError: If no matching files are found.
+          - A list of AnalysisIssue objects.
+          - A summary dictionary with statistics.
         """
-        try:
-            all_issues = []
-            analysis_summary = {
-                "total_files": 0,
-                "processed_files": 0,
-                "error_files": 0,
-                "start_time": datetime.now().isoformat(),
-                "end_time": None,
-                "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0}
-            }
+        file_patterns = file_patterns if file_patterns is not None else ["*.py", "*.js", "*.ts", "*.svelte"]
+        all_issues: List[AnalysisIssue] = []
+        summary = {
+            "total_files": 0,
+            "processed_files": 0,
+            "error_files": 0,
+            "start_time": datetime.now().isoformat(),
+            "end_time": None,
+            "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
+        }
 
-            # Gather files matching the given patterns.
-            files_to_analyze = []
-            for pattern in file_patterns:
-                files_to_analyze.extend(directory.rglob(pattern))
-            analysis_summary["total_files"] = len(files_to_analyze)
+        # Traverse all subdirectories using os.walk.
+        files_to_analyze = []
+        for root, _, files in os.walk(directory):
+            for file_name in files:
+                for pattern in file_patterns:
+                    if Path(file_name).match(pattern):
+                        files_to_analyze.append(Path(root) / file_name)
+                        break
 
-            # Process files sequentially to avoid overwhelming the local API.
-            for file_path in files_to_analyze:
-                results, _ = await self.analyze_file(file_path, analysis_type)
-                analysis_summary["processed_files"] += 1
+        summary["total_files"] = len(files_to_analyze)
+        if not files_to_analyze:
+            raise ValueError(f"No files found in directory {directory}")
 
-                if "issues" in results:
-                    file_issues = [
-                        AIAnalysisIssue(
-                            filename=str(file_path.relative_to(directory)),
-                            line_number=issue.get("line_number", 0),
-                            issue_text=issue.get("issue_text", "No description"),
-                            severity=issue.get("severity", "MEDIUM"),
-                            confidence=issue.get("confidence", "MEDIUM"),
-                            issue_type=issue.get("issue_type", "unknown"),
-                            line_range=[issue.get("line_number", 0)],
-                            code=issue.get("code", ""),
-                            suggested_fix=issue.get("suggested_fix"),
-                            explanation=issue.get("explanation")
-                        )
-                        for issue in results["issues"]
-                    ]
-                    all_issues.extend(file_issues)
-                    for issue in file_issues:
-                        analysis_summary["severity_counts"][issue.severity] += 1
+        # Analyze each file sequentially.
+        for file_path in files_to_analyze:
+            result, status = await self.analyze_file(file_path, analysis_type)
+            summary["processed_files"] += 1
 
-            analysis_summary["end_time"] = datetime.now().isoformat()
-            return all_issues, analysis_summary
+            try:
+                rel_path = file_path.relative_to(directory)
+            except ValueError:
+                rel_path = file_path
 
-        except Exception as e:
-            logger.error(f"Directory analysis failed: {str(e)}")
-            return [], {"error": str(e)}
+            # Remove "z_interface_app" from the relative path if present.
+            if rel_path.parts and rel_path.parts[0].lower() == "z_interface_app":
+                rel_path = Path(*rel_path.parts[1:])
+
+            if "issues" in result and isinstance(result["issues"], list):
+                for issue in result["issues"]:
+                    issue_obj = AnalysisIssue(
+                        filename=str(rel_path),
+                        line_number=issue.get("line_number", 0),
+                        issue_text=issue.get("issue_text", "No description provided"),
+                        severity=issue.get("severity", "MEDIUM").upper(),
+                        confidence=issue.get("confidence", "MEDIUM"),
+                        issue_type=issue.get("issue_type", "unknown"),
+                        line_range=issue.get("line_range", [issue.get("line_number", 0)]),
+                        code=issue.get("code", ""),
+                        suggested_fix=issue.get("suggested_fix"),
+                        explanation=issue.get("explanation")
+                    )
+                    all_issues.append(issue_obj)
+                    sev = issue_obj.severity.upper()
+                    summary["severity_counts"][sev] = summary["severity_counts"].get(sev, 0) + 1
+            else:
+                logger.warning(f"No issues found in {file_path}: {status}")
+
+        summary["end_time"] = datetime.now().isoformat()
+        return all_issues, summary
 
 
-def get_analysis_summary(issues: List[AIAnalysisIssue]) -> dict:
+def get_analysis_summary(issues: List[AnalysisIssue]) -> Dict:
     """
-    Generate a detailed summary of AI analysis issues.
-
-    Returns a dictionary with total issues, severity counts, number of affected files,
-    issue types breakdown, and the scan time.
+    Generates a summary dictionary based on a list of AnalysisIssue objects.
     """
     summary = {
         "total_issues": len(issues),
         "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
-        "files_affected": len({issue.filename for issue in issues}),
+        "files_affected": 0,
         "issue_types": {},
         "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
-
+    affected_files = set()
     for issue in issues:
-        summary["severity_counts"][issue.severity] += 1
-        summary["issue_types"][issue.issue_type] = summary["issue_types"].get(issue.issue_type, 0) + 1
+        affected_files.add(issue.filename)
+        sev = issue.severity.upper()
+        summary["severity_counts"][sev] = summary["severity_counts"].get(sev, 0) + 1
+        itype = issue.issue_type
+        summary["issue_types"][itype] = summary["issue_types"].get(itype, 0) + 1
 
+    summary["files_affected"] = len(affected_files)
     return summary

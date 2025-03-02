@@ -93,7 +93,7 @@ class DockerStatus:
         return asdict(self)
 
 
-# List of supported AI models with their colors.
+# Supported AI models with their display colors.
 AI_MODELS: List[AIModel] = [
     AIModel("ChatGPT4o", "#10a37f"),
     AIModel("ChatGPTo1", "#0ea47f"),
@@ -112,6 +112,7 @@ AI_MODELS: List[AIModel] = [
 # =============================================================================
 class StatusEndpointFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
+        # Filter out routine container status messages from the logs.
         if not hasattr(record, "args") or len(record.args) < 3:
             return True
         msg = record.args[2] if isinstance(record.args[2], str) else ""
@@ -128,7 +129,6 @@ class LoggingService:
         logging.getLogger("werkzeug").addFilter(StatusEndpointFilter())
         logging.getLogger("zap_scanner").setLevel(logging.INFO)
         logging.getLogger("owasp_zap").setLevel(logging.WARNING)
-
 
 # =============================================================================
 # Port Management
@@ -161,7 +161,6 @@ class PortManager:
             "backend": rng["backend"]["start"] + (app_num - 1) * cls.PORTS_PER_APP,
             "frontend": rng["frontend"]["start"] + (app_num - 1) * cls.PORTS_PER_APP,
         }
-
 
 # =============================================================================
 # Docker Management
@@ -233,7 +232,6 @@ class DockerManager:
         except Exception as e:
             self.logger.error(f"Container cleanup failed: {e}")
 
-
 # =============================================================================
 # System Health Monitoring
 # =============================================================================
@@ -285,7 +283,6 @@ class SystemHealthMonitor:
             logging.error(f"Health check failed: {e}")
             return False
 
-
 # =============================================================================
 # Utility Functions & Decorators
 # =============================================================================
@@ -330,7 +327,7 @@ def get_app_info(model_name: str, app_num: int) -> Dict[str, Any]:
 
 
 def get_apps_for_model(model_name: str) -> List[Dict[str, Any]]:
-    base_path = Path(f"{model_name}")
+    base_path = Path(model_name)
     if not base_path.exists():
         return []
     apps = []
@@ -487,15 +484,13 @@ def stop_zap_scanners(scans: Dict[str, Any]) -> None:
                 f"Invalid scanner for key {scan_key}: expected a ZAPScanner instance but got {type(scanner)}"
             )
 
-
-
 # =============================================================================
 # ZAP Scanner Integration
 # =============================================================================
 class ScanManager:
     """Manages ZAP scans and their states."""
     def __init__(self):
-        self.scans = {}
+        self.scans: Dict[str, Dict[str, Any]] = {}
         self._lock = threading.Lock()
 
     def create_scan(self, model: str, app_num: int, options: dict) -> str:
@@ -509,12 +504,12 @@ class ScanManager:
                 "start_time": datetime.now().isoformat(),
                 "options": options,
                 "model": model,
-                "app_num": app_num
+                "app_num": app_num,
             }
         return scan_id
 
     def get_scan(self, model: str, app_num: int) -> Optional[dict]:
-        """Get the latest scan for a model/app combination."""
+        """Get the latest scan for a given model/app combination."""
         with self._lock:
             matching_scans = [
                 (sid, scan) for sid, scan in self.scans.items()
@@ -540,8 +535,9 @@ class ScanManager:
                 current_time - int(sid.split("-")[-1]) < 3600
             }
 
+
 def get_scan_manager():
-    """Get or create scan manager."""
+    """Retrieve or initialize the scan manager."""
     if not hasattr(current_app, 'scan_manager'):
         current_app.scan_manager = ScanManager()
     return current_app.scan_manager
@@ -555,14 +551,12 @@ class CustomJSONEncoder(json.JSONEncoder):
             return obj.__dict__
         return super().default(obj)
 
-
 # =============================================================================
 # Dummy AI Service Integration Function
 # =============================================================================
 def call_ai_service(model: str, prompt: str) -> str:
-    # Replace this stub with your actual AI service integration
+    # Replace with actual integration logic
     return "AI analysis result"
-
 
 # =============================================================================
 # Blueprints for Routes
@@ -620,7 +614,6 @@ def handle_docker_action_route(action: str, model: str, app_num: int):
     flash(f"{'Success' if success else 'Error'}: {message}", "success" if success else "error")
     return redirect(url_for("main.index"))
 
-
 # ----- API Routes -----
 @api_bp.route("/container/<string:model>/<int:app_num>/status")
 @error_handler
@@ -663,17 +656,14 @@ def get_model_info():
         for idx, model in enumerate(AI_MODELS)
     ])
 
-
 # ----- ZAP Routes -----
 @zap_bp.route("/<string:model>/<int:app_num>")
 @error_handler
 def zap_scan(model: str, app_num: int):
-    """Display ZAP scan page."""
     base_dir: Path = current_app.config["BASE_DIR"]
     results_file = base_dir / f"{model}/app{app_num}/.zap_results.json"
     alerts = []
     error_msg = None
-    
     if results_file.exists():
         try:
             with open(results_file) as f:
@@ -682,88 +672,54 @@ def zap_scan(model: str, app_num: int):
         except Exception as e:
             error_msg = f"Failed to load previous results: {e}"
             logger.error(error_msg)
-    
-    return render_template(
-        "zap_scan.html",
-        model=model,
-        app_num=app_num,
-        alerts=alerts,
-        error=error_msg
-    )
+    return render_template("zap_scan.html", model=model, app_num=app_num, alerts=alerts, error=error_msg)
+
 
 @zap_bp.route("/scan/<string:model>/<int:app_num>", methods=["POST"])
 @error_handler
 def start_zap_scan(model: str, app_num: int):
-    """Start a new ZAP scan."""
     data = request.get_json()
     base_dir: Path = current_app.config["BASE_DIR"]
     scan_manager = get_scan_manager()
-    
-    # Check for existing running scan
     existing_scan = scan_manager.get_scan(model, app_num)
     if existing_scan and existing_scan["status"] not in ("Complete", "Failed", "Stopped"):
         return jsonify({"error": "A scan is already running"}), 409
-
-    # Create new scan
     scan_id = scan_manager.create_scan(model, app_num, data)
-    
     def run_scan():
         try:
             scanner = create_scanner(base_dir)
             scan_manager.update_scan(scan_id, scanner=scanner)
-            
             frontend_port = 5501 + ((app_num - 1) * 2)
             target_url = f"http://localhost:{frontend_port}"
-            
-            vulnerabilities, summary = scanner.scan_target(
-                target_url,
-                scan_policy=data.get("scanPolicy")
-            )
-            
-            # Save results
+            vulnerabilities, summary = scanner.scan_target(target_url, scan_policy=data.get("scanPolicy"))
             results_file = base_dir / f"{model}/app{app_num}/.zap_results.json"
             results_file.parent.mkdir(parents=True, exist_ok=True)
-            
             with open(results_file, "w") as f:
                 json.dump({
                     "alerts": [asdict(v) for v in vulnerabilities],
                     "summary": summary,
                     "scan_time": datetime.now().isoformat(),
                 }, f, indent=2)
-            
-            scan_manager.update_scan(
-                scan_id,
-                status="Complete",
-                progress=100
-            )
-            
+            scan_manager.update_scan(scan_id, status="Complete", progress=100)
         except Exception as e:
             logger.error(f"Scan error: {e}")
-            scan_manager.update_scan(
-                scan_id,
-                status=f"Failed: {str(e)}",
-                progress=0
-            )
+            scan_manager.update_scan(scan_id, status=f"Failed: {e}", progress=0)
         finally:
             scanner._cleanup_existing_zap()
             scan_manager.cleanup_old_scans()
-    
     threading.Thread(target=run_scan, daemon=True).start()
     return jsonify({"status": "started", "scan_id": scan_id})
+
 
 @zap_bp.route("/scan/<string:model>/<int:app_num>/status")
 @error_handler
 def zap_scan_status(model: str, app_num: int):
-    """Get current scan status."""
     scan_manager = get_scan_manager()
     scan = scan_manager.get_scan(model, app_num)
-    
     if not scan:
         return jsonify({"status": "Not Started", "progress": 0})
-    
     results_file = current_app.config["BASE_DIR"] / f"{model}/app{app_num}/.zap_results.json"
     counts = {"high": 0, "medium": 0, "low": 0, "info": 0}
-    
     if results_file.exists():
         try:
             with open(results_file) as f:
@@ -774,7 +730,6 @@ def zap_scan_status(model: str, app_num: int):
                         counts[risk] += 1
         except Exception as e:
             logger.error(f"Error reading results file: {e}")
-    
     return jsonify({
         "status": scan["status"],
         "progress": scan["progress"],
@@ -784,32 +739,25 @@ def zap_scan_status(model: str, app_num: int):
         "info_count": counts["info"],
     })
 
+
 @zap_bp.route("/scan/<string:model>/<int:app_num>/stop", methods=["POST"])
 @error_handler
 def stop_zap_scan(model: str, app_num: int):
-    """Stop a running scan."""
     scan_manager = get_scan_manager()
     scan = scan_manager.get_scan(model, app_num)
-    
     if not scan:
         return jsonify({"error": "No running scan found"}), 404
-    
     if scan["status"] in ("Complete", "Failed", "Stopped"):
         return jsonify({"error": "Scan is not running"}), 400
-    
     try:
         if scan["scanner"]:
             scan["scanner"]._cleanup_existing_zap()
-        scan_manager.update_scan(
-            next(sid for sid, s in scan_manager.scans.items() if s == scan),
-            status="Stopped",
-            progress=0
-        )
+        scan_manager.update_scan(next(sid for sid, s in scan_manager.scans.items() if s == scan),
+                                 status="Stopped", progress=0)
         return jsonify({"status": "stopped"})
     except Exception as e:
         logger.error(f"Failed to stop scan: {e}")
         return jsonify({"error": str(e)}), 500
-
 
 # ----- Analysis Routes -----
 @analysis_bp.route("/backend-security/<string:model>/<int:app_num>")
@@ -939,11 +887,7 @@ def analyze_single_file():
         logger.error(f"Error analyzing file: {e}")
         return jsonify({"error": "File analysis failed"}), 500
 
-
 # ----- Performance Testing Routes -----
-
-performance_bp = Blueprint("performance", __name__)
-
 @performance_bp.route("/<string:model>/<int:port>", methods=["GET", "POST"])
 @error_handler
 def performance_test(model: str, port: int):
@@ -974,10 +918,7 @@ def performance_test(model: str, port: int):
             })
         else:
             return jsonify({"status": "error", "error": info.get("error", "Unknown error")}), 500
-    # For GET requests, render the performance test page.
     return render_template("performance_test.html", model=model, port=port)
-
-
 
 # ----- GPT4All Routes -----
 @gpt4all_bp.route("/analyze-gpt4all/<string:analysis_type>", methods=["POST"])
@@ -1054,7 +995,6 @@ def gpt4all_analysis():
             error=str(e),
         )
 
-
 # =============================================================================
 # Error Handlers & Request Hooks
 # =============================================================================
@@ -1103,7 +1043,6 @@ def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
         if "ZAP_SCANS" in app.config:
             stop_zap_scanners(app.config["ZAP_SCANS"])
 
-
 # =============================================================================
 # Flask App Factory
 # =============================================================================
@@ -1118,7 +1057,7 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     base_path = app_config.BASE_DIR.parent
     logger.info(f"Initializing analyzers with base path: {base_path}")
 
-    # Initialize analyzers and other services
+    # Initialize analyzers and other services.
     app.backend_security_analyzer = BackendSecurityAnalyzer(base_path)
     app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
     app.gpt4all_analyzer = GPT4AllAnalyzer(base_path)
@@ -1130,7 +1069,7 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
 
     app.wsgi_app = ProxyFix(app.wsgi_app)
 
-    # Register blueprints
+    # Register blueprints.
     app.register_blueprint(main_bp)
     app.register_blueprint(api_bp, url_prefix="/api")
     app.register_blueprint(analysis_bp)
@@ -1141,7 +1080,6 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     register_error_handlers(app)
     register_request_hooks(app, docker_manager)
     return app
-
 
 # =============================================================================
 # Main Entry Point
@@ -1160,7 +1098,6 @@ if __name__ == "__main__":
     except Exception as e:
         logger.critical(f"Failed to start: {e}")
         raise e
-
 
 # =============================================================================
 # Optional: Database Manager for Storing Scan Data
