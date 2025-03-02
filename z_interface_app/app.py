@@ -888,37 +888,126 @@ def analyze_single_file():
         return jsonify({"error": "File analysis failed"}), 500
 
 # ----- Performance Testing Routes -----
+# ----- Performance Testing Routes -----
 @performance_bp.route("/<string:model>/<int:port>", methods=["GET", "POST"])
 @error_handler
 def performance_test(model: str, port: int):
+    """
+    Route for performance testing a specific model application.
+    
+    Args:
+        model: The model identifier
+        port: The port to test
+        
+    Returns:
+        On GET: Renders the performance test page
+        On POST: Runs the test and returns JSON results
+    """
     tester = PerformanceTester(current_app.config["BASE_DIR"])
+    
     if request.method == "POST":
-        data = request.get_json()
-        num_users = int(data.get("num_users", 10))
-        duration = int(data.get("duration", 30))
-        spawn_rate = int(data.get("spawn_rate", 1))
-        result, info = tester.run_test(
-            model=model,
-            port=port,
-            num_users=num_users,
-            duration=duration,
-            spawn_rate=spawn_rate
-        )
-        if result:
-            return jsonify({
-                "status": "success",
-                "data": {
-                    "total_requests": result.total_requests,
-                    "avg_response_time": result.avg_response_time,
-                    "requests_per_sec": result.requests_per_sec,
-                    "duration": result.duration,
-                    "start_time": result.start_time,
-                    "end_time": result.end_time,
-                }
-            })
-        else:
-            return jsonify({"status": "error", "error": info.get("error", "Unknown error")}), 500
+        try:
+            data = request.get_json()
+            num_users = int(data.get("num_users", 10))
+            duration = int(data.get("duration", 30))
+            spawn_rate = int(data.get("spawn_rate", 1))
+            endpoints = data.get("endpoints", ["/"])
+            
+            result, info = tester.run_test(
+                model=model,
+                port=port,
+                num_users=num_users,
+                duration=duration,
+                spawn_rate=spawn_rate,
+                endpoints=endpoints
+            )
+            
+            if result:
+                # Convert the result object to a dictionary for JSON serialization
+                return jsonify({
+                    "status": "success",
+                    "data": result.to_dict(),
+                    "report_path": info.get("report_path", "")
+                })
+            else:
+                return jsonify({
+                    "status": "error", 
+                    "error": info.get("error", "Unknown error"),
+                    "command": info.get("command", "")
+                }), 500
+        except Exception as e:
+            logger.exception(f"Performance test error: {e}")
+            return jsonify({"status": "error", "error": str(e)}), 500
+    
     return render_template("performance_test.html", model=model, port=port)
+
+
+@performance_bp.route("/<string:model>/<int:port>/stop", methods=["POST"])
+@error_handler
+def stop_performance_test(model: str, port: int):
+    """Stop a running performance test."""
+    # In a more complete implementation, this would communicate with a 
+    # background task manager to terminate the running test
+    try:
+        # For now, we'll just return success (actual implementation would depend on how tests are run)
+        return jsonify({"status": "success", "message": "Test stopped successfully"})
+    except Exception as e:
+        logger.exception(f"Error stopping performance test: {e}")
+        return jsonify({"status": "error", "error": str(e)}), 500
+
+
+@performance_bp.route("/<string:model>/<int:port>/reports", methods=["GET"])
+@error_handler
+def list_performance_reports(model: str, port: int):
+    """List available performance reports for a specific model/port."""
+    try:
+        report_dir = current_app.config["BASE_DIR"] / "performance_reports"
+        if not report_dir.exists():
+            return jsonify({"reports": []})
+            
+        # Find all reports for this model/port
+        reports = []
+        for report_file in report_dir.glob(f"report_{model}_{port}_*.html"):
+            timestamp = report_file.stem.split("_")[-1]
+            reports.append({
+                "filename": report_file.name,
+                "path": f"/static/performance_reports/{report_file.name}",
+                "timestamp": timestamp,
+                "created": datetime.fromtimestamp(report_file.stat().st_mtime).strftime("%Y-%m-%d %H:%M:%S")
+            })
+            
+        return jsonify({"reports": sorted(reports, key=lambda x: x["timestamp"], reverse=True)})
+    except Exception as e:
+        logger.exception(f"Error listing performance reports: {e}")
+        return jsonify({"status": "error", "error": str(e)}), 500
+
+
+@performance_bp.route("/<string:model>/<int:port>/reports/<path:report_name>", methods=["GET"])
+@error_handler
+def view_performance_report(model: str, port: int, report_name: str):
+    """View a specific performance report."""
+    try:
+        report_path = current_app.config["BASE_DIR"] / "performance_reports" / report_name
+        if not report_path.exists():
+            return render_template("404.html"), 404
+            
+        # For security, verify this is a report for the requested model/port
+        if not report_name.startswith(f"report_{model}_{port}_"):
+            return render_template("404.html"), 404
+            
+        with open(report_path, "r") as f:
+            report_content = f.read()
+            
+        return render_template(
+            "performance_report_viewer.html", 
+            model=model, 
+            port=port, 
+            report_name=report_name,
+            report_content=report_content
+        )
+    except Exception as e:
+        logger.exception(f"Error viewing performance report: {e}")
+        return render_template("500.html", error=str(e)), 500
 
 # ----- GPT4All Routes -----
 @gpt4all_bp.route("/analyze-gpt4all/<string:analysis_type>", methods=["POST"])

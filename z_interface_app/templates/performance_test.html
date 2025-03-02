@@ -6,8 +6,9 @@
     <div class="bg-gray-200 border border-gray-400 p-1">
         <div class="flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <a href="{{ url_for('main.index') }}" class="action-btn">Back</a>
-                <button id="runTest" class="action-btn">Run Test</button>
+                <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs">Back</a>
+                <button id="runTest" class="action-btn h-6 px-2 text-xs">Run Test</button>
+                <button id="stopTest" class="action-btn h-6 px-2 text-xs hidden">Stop Test</button>
             </div>
             <div class="flex items-center space-x-2">
                 <div class="flex items-center space-x-1">
@@ -35,7 +36,7 @@
             <h2 class="font-bold text-sm">Test Information</h2>
         </div>
         <div class="p-2">
-            <div class="grid grid-cols-4 gap-2">
+            <div class="grid grid-cols-5 gap-2">
                 <div class="border border-gray-300 p-2">
                     <div class="text-xs text-gray-600">Model</div>
                     <div class="text-xs font-bold">{{ model }}</div>
@@ -52,11 +53,17 @@
                     <div class="text-xs text-gray-600">Status</div>
                     <div class="text-xs font-bold" id="testStatus">Not Started</div>
                 </div>
+                <div class="border border-gray-300 p-2">
+                    <div class="text-xs text-gray-600">Progress</div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                        <div id="progressBar" class="bg-blue-600 rounded-full h-2 transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Results Section -->
+    <!-- Summary Statistics -->
     <div class="border border-gray-400 bg-white">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
             <h2 class="font-bold text-sm">Test Results</h2>
@@ -68,25 +75,114 @@
                     <div class="text-xs font-bold" id="totalRequests">-</div>
                 </div>
                 <div class="border border-gray-300 p-2">
-                    <div class="text-xs text-gray-600">Average Response Time</div>
-                    <div class="text-xs font-bold" id="avgResponseTime">-</div>
+                    <div class="text-xs text-gray-600">Failures</div>
+                    <div class="text-xs font-bold" id="totalFailures">-</div>
                 </div>
                 <div class="border border-gray-300 p-2">
                     <div class="text-xs text-gray-600">Requests Per Second</div>
                     <div class="text-xs font-bold" id="requestsPerSec">-</div>
                 </div>
             </div>
+            
+            <div class="grid grid-cols-4 gap-2 mt-2">
+                <div class="border border-gray-300 p-2">
+                    <div class="text-xs text-gray-600">Avg Response Time</div>
+                    <div class="text-xs font-bold" id="avgResponseTime">-</div>
+                </div>
+                <div class="border border-gray-300 p-2">
+                    <div class="text-xs text-gray-600">Median Response Time</div>
+                    <div class="text-xs font-bold" id="medianResponseTime">-</div>
+                </div>
+                <div class="border border-gray-300 p-2">
+                    <div class="text-xs text-gray-600">95th Percentile</div>
+                    <div class="text-xs font-bold" id="percentile95">-</div>
+                </div>
+                <div class="border border-gray-300 p-2">
+                    <div class="text-xs text-gray-600">99th Percentile</div>
+                    <div class="text-xs font-bold" id="percentile99">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Endpoints Tab Section -->
+    <div class="border border-gray-400 bg-white">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+            <h2 class="font-bold text-sm">Endpoint Details</h2>
+        </div>
+        <div class="p-2">
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="border border-gray-300 px-2 py-1 text-xs text-left">Endpoint</th>
+                            <th class="border border-gray-300 px-2 py-1 text-xs text-left">Method</th>
+                            <th class="border border-gray-300 px-2 py-1 text-xs text-right">Requests</th>
+                            <th class="border border-gray-300 px-2 py-1 text-xs text-right">Failures</th>
+                            <th class="border border-gray-300 px-2 py-1 text-xs text-right">Median (ms)</th>
+                            <th class="border border-gray-300 px-2 py-1 text-xs text-right">Average (ms)</th>
+                            <th class="border border-gray-300 px-2 py-1 text-xs text-right">Min (ms)</th>
+                            <th class="border border-gray-300 px-2 py-1 text-xs text-right">Max (ms)</th>
+                            <th class="border border-gray-300 px-2 py-1 text-xs text-right">RPS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="endpointTableBody">
+                        <tr>
+                            <td colspan="9" class="border border-gray-300 px-2 py-1 text-xs text-center">No data available</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Error Details (hidden by default) -->
+    <div id="errorSection" class="border border-gray-400 bg-white hidden">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+            <h2 class="font-bold text-sm">Error Details</h2>
+        </div>
+        <div class="p-2">
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="border border-gray-300 px-2 py-1 text-xs text-left">Error Type</th>
+                            <th class="border border-gray-300 px-2 py-1 text-xs text-right">Count</th>
+                            <th class="border border-gray-300 px-2 py-1 text-xs text-left">Endpoint</th>
+                            <th class="border border-gray-300 px-2 py-1 text-xs text-left">Method</th>
+                            <th class="border border-gray-300 px-2 py-1 text-xs text-left">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="errorTableBody">
+                        <tr>
+                            <td colspan="5" class="border border-gray-300 px-2 py-1 text-xs text-center">No errors reported</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <!-- Output Section -->
-    <div class="border border-gray-400 bg-white">
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
-            <h2 class="font-bold text-sm">Test Output</h2>
-            <button id="clearOutput" class="text-xs text-gray-600 hover:text-gray-900">Clear</button>
+    <!-- Response Time Distribution (for visualization) -->
+    <div id="visualizationSection" class="border border-gray-400 bg-white hidden">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+            <h2 class="font-bold text-sm">Response Time Distribution</h2>
         </div>
         <div class="p-2">
-            <!-- Preformatted output log with wrapping enabled -->
+            <div id="responseTimeChart" class="w-full h-64 bg-gray-50 border border-gray-300 p-2"></div>
+        </div>
+    </div>
+
+    <!-- Output Log Section -->
+    <div class="border border-gray-400 bg-white">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
+            <h2 class="font-bold text-sm">Test Log</h2>
+            <div class="flex space-x-2">
+                <button id="downloadReport" class="action-btn h-6 px-2 text-xs hidden">Download Report</button>
+                <button id="clearLog" class="action-btn h-6 px-2 text-xs">Clear Log</button>
+            </div>
+        </div>
+        <div class="p-2">
             <pre id="outputLog" class="text-xs font-mono bg-gray-50 p-2 border border-gray-300 h-48 overflow-auto whitespace-pre-wrap"></pre>
         </div>
     </div>
@@ -95,8 +191,13 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const runTestBtn = document.getElementById('runTest');
-    const clearOutputBtn = document.getElementById('clearOutput');
+    const stopTestBtn = document.getElementById('stopTest');
+    const clearLogBtn = document.getElementById('clearLog');
+    const downloadReportBtn = document.getElementById('downloadReport');
     const outputLog = document.getElementById('outputLog');
+    const progressBar = document.getElementById('progressBar');
+    let reportPath = '';
+    let testRunning = false;
     
     function appendToLog(message) {
         const timestamp = new Date().toLocaleTimeString();
@@ -104,12 +205,92 @@ document.addEventListener('DOMContentLoaded', function() {
         outputLog.scrollTop = outputLog.scrollHeight;
     }
     
-    function updateResults(data) {
-        document.getElementById('totalRequests').textContent = data.total_requests;
-        document.getElementById('avgResponseTime').textContent = `${data.avg_response_time.toFixed(2)} ms`;
-        document.getElementById('requestsPerSec').textContent = data.requests_per_sec.toFixed(2);
-        document.getElementById('lastRun').textContent = data.start_time;
+    function updateStatistics(data) {
+        // Basic statistics
+        document.getElementById('totalRequests').textContent = data.total_requests || 0;
+        document.getElementById('totalFailures').textContent = data.total_failures || 0;
+        document.getElementById('requestsPerSec').textContent = data.requests_per_sec ? data.requests_per_sec.toFixed(2) : 0;
+        document.getElementById('avgResponseTime').textContent = data.avg_response_time ? data.avg_response_time.toFixed(2) + ' ms' : '-';
+        document.getElementById('medianResponseTime').textContent = data.median_response_time ? data.median_response_time.toFixed(2) + ' ms' : '-';
+        document.getElementById('percentile95').textContent = data.percentile_95 ? data.percentile_95.toFixed(2) + ' ms' : '-';
+        document.getElementById('percentile99').textContent = data.percentile_99 ? data.percentile_99.toFixed(2) + ' ms' : '-';
+        document.getElementById('lastRun').textContent = data.start_time || 'Never';
         document.getElementById('testStatus').textContent = 'Completed';
+        
+        // Update endpoint table
+        const endpointTable = document.getElementById('endpointTableBody');
+        endpointTable.innerHTML = '';
+        
+        if (data.endpoints && data.endpoints.length > 0) {
+            data.endpoints.forEach(endpoint => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="border border-gray-300 px-2 py-1 text-xs">${endpoint.name}</td>
+                    <td class="border border-gray-300 px-2 py-1 text-xs">${endpoint.method}</td>
+                    <td class="border border-gray-300 px-2 py-1 text-xs text-right">${endpoint.num_requests}</td>
+                    <td class="border border-gray-300 px-2 py-1 text-xs text-right">${endpoint.num_failures}</td>
+                    <td class="border border-gray-300 px-2 py-1 text-xs text-right">${endpoint.median_response_time.toFixed(2)}</td>
+                    <td class="border border-gray-300 px-2 py-1 text-xs text-right">${endpoint.avg_response_time.toFixed(2)}</td>
+                    <td class="border border-gray-300 px-2 py-1 text-xs text-right">${endpoint.min_response_time.toFixed(2)}</td>
+                    <td class="border border-gray-300 px-2 py-1 text-xs text-right">${endpoint.max_response_time.toFixed(2)}</td>
+                    <td class="border border-gray-300 px-2 py-1 text-xs text-right">${endpoint.current_rps.toFixed(2)}</td>
+                `;
+                endpointTable.appendChild(row);
+            });
+        } else {
+            endpointTable.innerHTML = `<tr><td colspan="9" class="border border-gray-300 px-2 py-1 text-xs text-center">No endpoint data available</td></tr>`;
+        }
+        
+        // Update error table if errors exist
+        const errorSection = document.getElementById('errorSection');
+        const errorTable = document.getElementById('errorTableBody');
+        
+        if (data.errors && data.errors.length > 0) {
+            errorSection.classList.remove('hidden');
+            errorTable.innerHTML = '';
+            
+            data.errors.forEach(error => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="border border-gray-300 px-2 py-1 text-xs text-red-600">${error.error_type}</td>
+                    <td class="border border-gray-300 px-2 py-1 text-xs text-right">${error.count}</td>
+                    <td class="border border-gray-300 px-2 py-1 text-xs">${error.endpoint}</td>
+                    <td class="border border-gray-300 px-2 py-1 text-xs">${error.method}</td>
+                    <td class="border border-gray-300 px-2 py-1 text-xs">${error.description}</td>
+                `;
+                errorTable.appendChild(row);
+            });
+        } else {
+            errorSection.classList.add('hidden');
+        }
+        
+        // Show visualization section if data is available
+        const visualizationSection = document.getElementById('visualizationSection');
+        if (data.endpoints && data.endpoints.length > 0) {
+            visualizationSection.classList.remove('hidden');
+            // Basic bar chart could be implemented here with more complex JS
+        } else {
+            visualizationSection.classList.add('hidden');
+        }
+    }
+    
+    function updateProgress(percentage) {
+        progressBar.style.width = `${percentage}%`;
+    }
+    
+    function simulateProgress(duration) {
+        let elapsed = 0;
+        const interval = 1000; // Update every second
+        const timer = setInterval(() => {
+            elapsed += interval;
+            const percentage = Math.min(Math.floor((elapsed / (duration * 1000)) * 100), 95);
+            updateProgress(percentage);
+            
+            if (elapsed >= duration * 1000 || !testRunning) {
+                clearInterval(timer);
+            }
+        }, interval);
+        return timer;
     }
     
     runTestBtn.addEventListener('click', async function() {
@@ -118,9 +299,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const spawnRate = document.getElementById('spawnRate').value;
         
         try {
+            testRunning = true;
             runTestBtn.disabled = true;
+            stopTestBtn.classList.remove('hidden');
             document.getElementById('testStatus').textContent = 'Running...';
-            appendToLog('Starting performance test...');
+            appendToLog(`Starting performance test with ${numUsers} users, ${duration}s duration, and ${spawnRate} spawn rate`);
+            
+            // Reset progress bar
+            updateProgress(0);
+            
+            // Start progress simulation
+            const progressTimer = simulateProgress(parseInt(duration));
             
             // Make API request to the current URL
             const response = await fetch(window.location.href, {
@@ -129,28 +318,70 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify({
                     num_users: parseInt(numUsers),
                     duration: parseInt(duration),
-                    spawn_rate: parseInt(spawnRate)
+                    spawn_rate: parseInt(spawnRate),
+                    endpoints: ["/", "/api/status"] // Add more endpoints as needed
                 })
             });
             
+            testRunning = false;
             const result = await response.json();
             
             if (result.status === 'success') {
-                updateResults(result.data);
+                updateProgress(100);
+                updateStatistics(result.data);
                 appendToLog('Test completed successfully');
+                
+                // If a report path is available, enable the download button
+                if (result.report_path) {
+                    reportPath = result.report_path;
+                    downloadReportBtn.classList.remove('hidden');
+                }
             } else {
                 throw new Error(result.error || 'Test failed');
             }
         } catch (error) {
+            testRunning = false;
+            updateProgress(0);
             document.getElementById('testStatus').textContent = 'Failed';
             appendToLog(`Error: ${error.message}`);
         } finally {
             runTestBtn.disabled = false;
+            stopTestBtn.classList.add('hidden');
         }
     });
     
-    clearOutputBtn.addEventListener('click', function() {
+    stopTestBtn.addEventListener('click', async function() {
+        try {
+            testRunning = false;
+            appendToLog('Attempting to stop the test...');
+            
+            // Send request to stop the test
+            const response = await fetch(`${window.location.href}/stop`, {
+                method: 'POST'
+            });
+            
+            if (response.ok) {
+                appendToLog('Test stopped successfully');
+                document.getElementById('testStatus').textContent = 'Stopped';
+            } else {
+                appendToLog('Failed to stop test');
+            }
+        } catch (error) {
+            appendToLog(`Error stopping test: ${error.message}`);
+        } finally {
+            runTestBtn.disabled = false;
+            stopTestBtn.classList.add('hidden');
+        }
+    });
+    
+    clearLogBtn.addEventListener('click', function() {
         outputLog.textContent = '';
+    });
+    
+    downloadReportBtn.addEventListener('click', function() {
+        if (reportPath) {
+            window.open(reportPath, '_blank');
+        }
     });
 });
 </script>

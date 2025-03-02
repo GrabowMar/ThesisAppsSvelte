@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-2">
+    <!-- Toolbar -->
+    <div class="bg-gray-200 border border-gray-400 p-1">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <a href="{{ url_for('performance.performance_test', model=model, port=port) }}" class="action-btn h-6 px-2 text-xs">Back to Test Page</a>
+                <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs">Dashboard</a>
+            </div>
+            <div>
+                <span class="text-xs font-bold">{{ report_name }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Content -->
+    <div class="border border-gray-400 bg-white">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+            <h2 class="font-bold text-sm">Performance Report</h2>
+        </div>
+        <div class="p-2">
+            <iframe id="reportFrame" class="w-full h-screen border-0" srcdoc="{{ report_content|safe }}"></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Adjust iframe height to fit content
+    const iframe = document.getElementById('reportFrame');
+    
+    iframe.addEventListener('load', function() {
+        // Try to set the height based on content
+        try {
+            const frameContent = iframe.contentDocument || iframe.contentWindow.document;
+            const height = frameContent.body.scrollHeight;
+            iframe.style.height = (height + 50) + 'px';
+        } catch(e) {
+            console.error('Error adjusting iframe height:', e);
+        }
+    });
+});
+</script>
+{% endblock %}
