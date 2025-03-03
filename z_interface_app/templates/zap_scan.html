@@ -2,9 +2,9 @@
 
 {% block content %}
 <div class="flex min-h-screen bg-gray-100">
-  <!-- Main Content -->
+  <!-- Main Content Area -->
   <div class="flex-1 flex flex-col overflow-hidden">
-    <!-- Top Bar -->
+    <!-- Top Navigation Bar -->
     <div class="bg-gray-200 border-b border-gray-400 p-1">
       <div class="flex justify-between items-center">
         <div class="flex items-center space-x-2">
@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <!-- Status Grid -->
+    <!-- Status Cards -->
     <div class="p-2 grid grid-cols-5 gap-2">
       <div class="border border-gray-400 bg-white p-2">
         <div class="text-xs text-gray-600">Scan Status</div>
@@ -55,16 +55,15 @@
       </div>
     </div>
 
-    <!-- Results Area -->
+    <!-- Scan Progress and Logs -->
     <div class="p-2 flex-1 overflow-auto space-y-2">
       <!-- Progress Bar -->
       <div id="scanProgress" class="hidden border border-gray-400 bg-white p-2">
         <div class="text-xs font-bold mb-1">Scan Progress</div>
         <div class="w-full bg-gray-200 rounded-full h-2">
-          <div class="bg-blue-600 rounded-full h-2 transition-all duration-500" style="width: 0%" id="progressBar"></div>
+          <div id="progressBar" class="bg-blue-600 rounded-full h-2 transition-all duration-500" style="width: 0%"></div>
         </div>
       </div>
-
       <!-- Progress Log -->
       <div class="border border-gray-400 bg-white">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
@@ -80,64 +79,64 @@
       <div id="alertsList" class="space-y-2">
         {% if alerts %}
           {% for alert in alerts %}
-          <div class="border border-gray-400 bg-white alert-item" 
-               data-risk="{{ alert.risk }}" 
-               data-confidence="{{ alert.confidence }}"
-               data-searchable="{{ alert.name }} {{ alert.description }} {{ alert.url }}">
-            <div class="p-2">
-              <div class="flex items-center space-x-2 mb-1">
-                <span class="text-xs px-2 py-0.5 border
-                  {% if alert.risk == 'High' %}
-                    bg-red-100 text-red-800 border-red-700
-                  {% elif alert.risk == 'Medium' %}
-                    bg-yellow-100 text-yellow-800 border-yellow-700
-                  {% elif alert.risk == 'Low' %}
-                    bg-blue-100 text-blue-800 border-blue-700
-                  {% else %}
-                    bg-gray-100 text-gray-800 border-gray-700
-                  {% endif %}">
-                  {{ alert.risk }}
-                </span>
-                <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400">{{ alert.confidence }}</span>
-                {% if alert.cwe_id %}
-                <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400">CWE-{{ alert.cwe_id }}</span>
-                {% endif %}
-                <button class="ml-auto action-btn h-6 px-2 text-xs expand-btn">Expand</button>
-              </div>
-              <div class="space-y-2">
-                <div>
-                  <div class="text-xs font-bold">{{ alert.name }}</div>
-                  <div class="text-xs text-gray-600">{{ alert.url }}</div>
+            <div class="border border-gray-400 bg-white alert-item" 
+                 data-risk="{{ alert.risk }}" 
+                 data-confidence="{{ alert.confidence }}"
+                 data-searchable="{{ alert.name }} {{ alert.description }} {{ alert.url }}">
+              <div class="p-2">
+                <div class="flex items-center space-x-2 mb-1">
+                  <span class="text-xs px-2 py-0.5 border
+                    {% if alert.risk == 'High' %}
+                      bg-red-100 text-red-800 border-red-700
+                    {% elif alert.risk == 'Medium' %}
+                      bg-yellow-100 text-yellow-800 border-yellow-700
+                    {% elif alert.risk == 'Low' %}
+                      bg-blue-100 text-blue-800 border-blue-700
+                    {% else %}
+                      bg-gray-100 text-gray-800 border-gray-700
+                    {% endif %}">
+                    {{ alert.risk }}
+                  </span>
+                  <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400">{{ alert.confidence }}</span>
+                  {% if alert.cwe_id %}
+                    <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400">CWE-{{ alert.cwe_id }}</span>
+                  {% endif %}
+                  <button class="ml-auto action-btn h-6 px-2 text-xs expand-btn">Expand</button>
                 </div>
-                <div class="alert-details hidden space-y-2">
-                  {% if alert.description %}
-                  <div class="text-xs bg-gray-50 p-2 border border-gray-300">
-                    <div class="font-bold">Description:</div>
-                    <div class="whitespace-pre-wrap">{{ alert.description }}</div>
+                <div class="space-y-2">
+                  <div>
+                    <div class="text-xs font-bold">{{ alert.name }}</div>
+                    <div class="text-xs text-gray-600">{{ alert.url }}</div>
                   </div>
-                  {% endif %}
-                  {% if alert.solution %}
-                  <div class="text-xs bg-gray-50 p-2 border border-gray-300">
-                    <div class="font-bold">Solution:</div>
-                    <div class="whitespace-pre-wrap">{{ alert.solution }}</div>
+                  <div class="alert-details hidden space-y-2">
+                    {% if alert.description %}
+                      <div class="text-xs bg-gray-50 p-2 border border-gray-300">
+                        <div class="font-bold">Description:</div>
+                        <div class="whitespace-pre-wrap">{{ alert.description }}</div>
+                      </div>
+                    {% endif %}
+                    {% if alert.solution %}
+                      <div class="text-xs bg-gray-50 p-2 border border-gray-300">
+                        <div class="font-bold">Solution:</div>
+                        <div class="whitespace-pre-wrap">{{ alert.solution }}</div>
+                      </div>
+                    {% endif %}
+                    {% if alert.evidence %}
+                      <div class="text-xs font-mono bg-gray-800 text-white p-2 overflow-x-auto">
+                        <div class="font-bold text-gray-400 mb-1">Evidence:</div>
+                        <code>{{ alert.evidence }}</code>
+                      </div>
+                    {% endif %}
+                    {% if alert.reference %}
+                      <div class="text-xs bg-gray-50 p-2 border border-gray-300">
+                        <div class="font-bold">Reference:</div>
+                        <div class="whitespace-pre-wrap">{{ alert.reference }}</div>
+                      </div>
+                    {% endif %}
                   </div>
-                  {% endif %}
-                  {% if alert.evidence %}
-                  <div class="text-xs font-mono bg-gray-800 text-white p-2 overflow-x-auto">
-                    <div class="font-bold text-gray-400 mb-1">Evidence:</div>
-                    <code>{{ alert.evidence }}</code>
-                  </div>
-                  {% endif %}
-                  {% if alert.reference %}
-                  <div class="text-xs bg-gray-50 p-2 border border-gray-300">
-                    <div class="font-bold">Reference:</div>
-                    <div class="whitespace-pre-wrap">{{ alert.reference }}</div>
-                  </div>
-                  {% endif %}
                 </div>
               </div>
             </div>
-          </div>
           {% endfor %}
         {% else %}
           <div class="border border-gray-400 bg-white p-4 text-center">
@@ -159,7 +158,7 @@
   <!-- Right Sidebar -->
   <aside class="w-64 bg-gray-200 border-l border-gray-400 flex flex-col">
     <div class="p-2 space-y-2 flex-1 overflow-auto">
-      <!-- Scan Info -->
+      <!-- Scan Information -->
       <div class="border border-gray-400 bg-white">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
           <h2 class="font-bold text-xs">Scan Information</h2>
@@ -215,14 +214,13 @@
         </div>
       </div>
       
-      <!-- Scan Policy -->
+      <!-- Scan Policy Selector -->
       <div class="border border-gray-400 bg-white">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
           <h2 class="font-bold text-xs">Scan Policy</h2>
         </div>
         <div class="p-2">
           <select id="scanPolicy" class="w-full h-6 px-2 text-xs border border-gray-300">
-            <!-- These values must match the policies defined in your ZAP instance -->
             <option value="Default Policy">Default Policy</option>
             <option value="SQL Injection and XSS">SQL Injection and XSS</option>
           </select>
@@ -232,8 +230,10 @@
   </aside>
 </div>
 
+<!-- JavaScript Section -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // Element references
   const startScanBtn = document.getElementById('startScan');
   const stopScanBtn = document.getElementById('stopScan');
   const searchInput = document.getElementById('searchIssues');
@@ -241,7 +241,18 @@ document.addEventListener('DOMContentLoaded', function() {
   const confidenceFilter = document.getElementById('confidenceFilter');
   const progressBar = document.getElementById('progressBar');
   const scanProgress = document.getElementById('scanProgress');
+  const targetUrlElem = document.getElementById('targetUrl');
+  const lastScanTimeElem = document.getElementById('lastScanTime');
+
+  // Utility: Update target URL display based on app number
+  function updateTargetUrl() {
+    const port = 5501 + ((parseInt("{{ app_num }}") - 1) * 2);
+    if (targetUrlElem) {
+      targetUrlElem.textContent = `http://localhost:${port}`;
+    }
+  }
   
+  // Filter alerts based on search term, risk, and confidence
   function applyFilters() {
     const searchTerm = searchInput.value.toLowerCase();
     const selectedRisk = riskFilter.value;
@@ -256,18 +267,17 @@ document.addEventListener('DOMContentLoaded', function() {
       alert.style.display = (riskMatch && confidenceMatch && searchMatch) ? 'block' : 'none';
     });
   }
-  
-  [searchInput, riskFilter, confidenceFilter].forEach(element => {
-    element?.addEventListener('change', applyFilters);
-  });
-  
+
+  // Debounce filter input
   if (searchInput) {
     searchInput.addEventListener('input', () => {
       clearTimeout(searchInput.timeout);
       searchInput.timeout = setTimeout(applyFilters, 300);
     });
   }
-  
+  [riskFilter, confidenceFilter].forEach(el => el?.addEventListener('change', applyFilters));
+
+  // Toggle alert details display
   document.querySelectorAll('.expand-btn').forEach(btn => {
     btn.addEventListener('click', function() {
       const details = this.closest('div').nextElementSibling.querySelector('.alert-details');
@@ -275,53 +285,49 @@ document.addEventListener('DOMContentLoaded', function() {
       this.textContent = details.classList.contains('hidden') ? 'Expand' : 'Collapse';
     });
   });
-  
-  if (startScanBtn) {
-    startScanBtn.addEventListener('click', async function() {
-      try {
-        startScanBtn.disabled = true;
-        stopScanBtn.classList.remove('hidden');
-        scanProgress.classList.remove('hidden');
-        const response = await fetch('/zap/scan/{{ model }}/{{ app_num }}', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            spiderDepth: document.getElementById('spiderDepth').value,
-            threadCount: document.getElementById('threadCount').value,
-            useAjaxSpider: document.getElementById('ajaxSpider').checked,
-            usePassiveScan: document.getElementById('passiveScan').checked,
-            useActiveScan: document.getElementById('activeScan').checked,
-            scanPolicy: document.getElementById('scanPolicy').value
-          })
-        });
-        if (!response.ok) throw new Error('Failed to start scan');
-        pollProgress();
-      } catch (error) {
-        console.error('Scan error:', error);
-        alert('Failed to start scan: ' + error.message);
-      }
-    });
-  }
-  
-  if (stopScanBtn) {
-    stopScanBtn.addEventListener('click', async function() {
-      try {
-        const response = await fetch('/zap/scan/{{ model }}/{{ app_num }}/stop', {
-          method: 'POST'
-        });
-        if (!response.ok) throw new Error('Failed to stop scan');
-        stopScanBtn.classList.add('hidden');
-        startScanBtn.disabled = false;
-        document.getElementById('scanStatus').textContent = 'Stopped';
-      } catch (error) {
-        console.error('Stop error:', error);
-        alert('Failed to stop scan: ' + error.message);
-      }
-    });
-  }
-  
+
+  // Start scan handler
+  startScanBtn.addEventListener('click', async function() {
+    try {
+      startScanBtn.disabled = true;
+      stopScanBtn.classList.remove('hidden');
+      scanProgress.classList.remove('hidden');
+      const response = await fetch('/zap/scan/{{ model }}/{{ app_num }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          spiderDepth: document.getElementById('spiderDepth').value,
+          threadCount: document.getElementById('threadCount').value,
+          useAjaxSpider: document.getElementById('ajaxSpider').checked,
+          usePassiveScan: document.getElementById('passiveScan').checked,
+          useActiveScan: document.getElementById('activeScan').checked,
+          scanPolicy: document.getElementById('scanPolicy').value
+        })
+      });
+      if (!response.ok) throw new Error('Failed to start scan');
+      pollProgress();
+    } catch (error) {
+      console.error('Scan error:', error);
+      alert('Failed to start scan: ' + error.message);
+      startScanBtn.disabled = false;
+    }
+  });
+
+  // Stop scan handler
+  stopScanBtn.addEventListener('click', async function() {
+    try {
+      const response = await fetch('/zap/scan/{{ model }}/{{ app_num }}/stop', { method: 'POST' });
+      if (!response.ok) throw new Error('Failed to stop scan');
+      stopScanBtn.classList.add('hidden');
+      startScanBtn.disabled = false;
+      document.getElementById('scanStatus').textContent = 'Stopped';
+    } catch (error) {
+      console.error('Stop error:', error);
+      alert('Failed to stop scan: ' + error.message);
+    }
+  });
+
+  // Poll scan progress and update UI
   async function pollProgress() {
     try {
       const response = await fetch('/zap/scan/{{ model }}/{{ app_num }}/status');
@@ -336,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (data.status === 'Complete') {
         stopScanBtn.classList.add('hidden');
         startScanBtn.disabled = false;
-        document.getElementById('lastScanTime').textContent = new Date().toLocaleString();
+        lastScanTimeElem.textContent = new Date().toLocaleString();
         window.location.reload();
       } else {
         setTimeout(pollProgress, 2000);
@@ -347,12 +353,8 @@ document.addEventListener('DOMContentLoaded', function() {
       startScanBtn.disabled = false;
     }
   }
-  
-  const targetUrl = document.getElementById('targetUrl');
-  if (targetUrl) {
-    const port = 5501 + ((parseInt("{{ app_num }}") - 1) * 2);
-    targetUrl.textContent = `http://localhost:${port}`;
-  }
+
+  updateTargetUrl();
 });
 </script>
 {% endblock %}
