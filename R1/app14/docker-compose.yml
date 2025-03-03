@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: r1_backend_5587
+        ports:
+            - "5587:5587"
+        volumes:
+            - ./backend:/app
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: r1_frontend_6087
+        ports:
+            - "6087:6087"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=6087
+        restart: always
+        depends_on:
+            - backend
+

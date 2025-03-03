@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: gemini_backend_5425
+        ports:
+            - "5425:5425"
+        volumes:
+            - ./backend:/app
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: gemini_frontend_5925
+        ports:
+            - "5925:5925"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=5925
+        restart: always
+        depends_on:
+            - backend
+

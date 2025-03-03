@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: o3_backend_5671
+        ports:
+            - "5671:5671"
+        volumes:
+            - ./backend:/app
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: o3_frontend_6171
+        ports:
+            - "6171:6171"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=6171
+        restart: always
+        depends_on:
+            - backend
+

@@ -11,19 +11,19 @@ class PortManager:
     BASE_FRONTEND_PORT = 5501  # Moved frontend ports to 5500+ range
     PORTS_PER_APP = 2  # Each app needs 2 ports (backend + frontend)
     BUFFER_PORTS = 20  # Buffer between models to allow for future expansion
-    APPS_PER_MODEL = 20
+    APPS_PER_MODEL = 30
 
+    # Updated model list based on your requirements
     MODEL_COLORS = {
-        "ChatGPT4o": "#10a37f",
-        "ChatGPTo1": "#0ea47f",
-        "ChatGPTo3": "#0ca57f",
-        "ClaudeSonnet": "#7b2bf9",
         "Llama": "#f97316",
+        "Mistral": "#9333ea",  # Updated from Mixtral to Mistral
+        "DeepSeek": "#fa8c16",
+        "GPT4o": "#10a37f",    # Updated from ChatGPT4o to GPT4o
+        "Claude": "#7b2bf9",   # Updated from ClaudeSonnet to Claude
         "Gemini": "#1a73e8",
         "Grok": "#ff4d4f",
-        "Mixtral": "#9333ea",
-        "DeepSeek": "#fa8c16",
-        "Qwen": "#fa541c",
+        "R1": "#fa541c",       # New model, using Qwen's color
+        "O3": "#0ca57f"        # Updated from ChatGPTo3 to O3
     }
 
     @classmethod
@@ -229,7 +229,6 @@ def new_frontend_setup(frontend_dir: str, port: int, deno_base_image: str, backe
         os.path.join(frontend_dir, "src", "App.css")
     )
 
-
     # index.html
     with open("z_code_templates/frontend/index.html.template", "r") as t:
         index_html = t.read()
@@ -254,6 +253,7 @@ def new_docker_compose(project_dir: str, backend_port: int, frontend_port: int, 
     compose_content = compose_content.replace("{frontend_port}", str(frontend_port))
     with open(os.path.join(project_dir, "docker-compose.yml"), "w") as f:
         f.write(compose_content)
+        
 if __name__ == "__main__":
     manager = MultiModelManager()
     manager.create_all()

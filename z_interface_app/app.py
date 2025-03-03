@@ -95,18 +95,16 @@ class DockerStatus:
 
 # Supported AI models with their display colors.
 AI_MODELS: List[AIModel] = [
-    AIModel("ChatGPT4o", "#10a37f"),
-    AIModel("ChatGPTo1", "#0ea47f"),
-    AIModel("ChatGPTo3", "#0ca57f"),
-    AIModel("ClaudeSonnet", "#7b2bf9"),
-    AIModel("CodeLlama", "#f97316"),
+    AIModel("Llama", "#f97316"),
+    AIModel("Mistral", "#9333ea"),
+    AIModel("DeepSeek", "#ff5555"),
+    AIModel("GPT4o", "#10a37f"),
+    AIModel("Claude", "#7b2bf9"),
     AIModel("Gemini", "#1a73e8"),
     AIModel("Grok", "#ff4d4f"),
-    AIModel("Mixtral", "#9333ea"),
-    AIModel("DeepSeek", "#ff5555"),
-    AIModel("Qwen", "#fa541c"),
+    AIModel("R1", "#fa541c"),
+    AIModel("O3", "#0ca57f")
 ]
-
 # =============================================================================
 # Logging Configuration
 # =============================================================================
@@ -138,7 +136,7 @@ class PortManager:
     BASE_FRONTEND_PORT = 5501
     PORTS_PER_APP = 2
     BUFFER_PORTS = 20
-    APPS_PER_MODEL = 20
+    APPS_PER_MODEL = 30
 
     @classmethod
     def get_port_range(cls, model_idx: int) -> Dict[str, Dict[str, int]]:

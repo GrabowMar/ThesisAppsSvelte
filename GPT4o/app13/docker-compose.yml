@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: gpt4o_backend_5265
+        ports:
+            - "5265:5265"
+        volumes:
+            - ./backend:/app
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: gpt4o_frontend_5765
+        ports:
+            - "5765:5765"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=5765
+        restart: always
+        depends_on:
+            - backend
+
