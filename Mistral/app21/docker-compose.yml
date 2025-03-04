@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: mistral_backend_5121
+        ports:
+            - "5121:5121"
+        volumes:
+            - ./backend:/app
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: mistral_frontend_5621
+        ports:
+            - "5621:5621"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        environment:
+            - PORT=5621
+        restart: always
+        depends_on:
+            - backend
+

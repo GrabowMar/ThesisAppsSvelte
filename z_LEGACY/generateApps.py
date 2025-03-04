@@ -48,7 +48,7 @@ class ProjectConfig:
         self.model_name = model_name
         self.base_dir = f"C:/Users/grabowmar/Desktop/ThesisAppsSvelte/{model_name}"
         self.app_prefix = "app"
-        self.total_apps = 20
+        self.total_apps = 30
         # Get port ranges from PortManager
         self.backend_base, self.frontend_base = PortManager.calculate_port_range(model_index)
         self.python_base_image = "python:3.14-slim"
