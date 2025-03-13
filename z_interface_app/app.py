@@ -1041,6 +1041,12 @@ def gpt4all_analysis():
             raise ValueError(f"Directory not found: {directory}")
         analyzer = GPT4AllAnalyzer(directory)
         issues, summary = asyncio.run(analyzer.analyze_directory(directory=directory, analysis_type=analysis_type))
+        
+        # Ensure summary has the expected structure
+        if isinstance(summary, dict) and "issue_types" not in summary:
+            # Create a default structure if missing
+            summary = get_analysis_summary(issues)
+            
         return render_template(
             "gpt4all_analysis.html",
             model=model,

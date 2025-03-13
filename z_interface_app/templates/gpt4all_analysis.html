@@ -13,12 +13,7 @@
       <div class="flex justify-between items-center">
         <div class="flex items-center space-x-2">
           <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs">Back</a>
-          <button id="startAnalysis" class="action-btn h-6 px-2 text-xs">Start Analysis</button>
-          <select id="analysisType" class="h-6 px-2 text-xs border border-gray-300">
-            <option value="security">Security Analysis</option>
-            <option value="features">Feature Analysis</option>
-            <option value="quality">Code Quality</option>
-          </select>
+          <button id="toggleForm" class="action-btn h-6 px-2 text-xs">Show Requirements Form</button>
         </div>
         <div class="flex items-center space-x-2">
           <input type="text" id="searchIssues" placeholder="Search issues..." class="h-6 px-2 text-xs border border-gray-300">
@@ -42,30 +37,35 @@
       </div>
     </div>
 
-    <!-- Analysis Grid -->
-    <div class="p-2 grid grid-cols-4 gap-2">
-      <div class="border border-gray-400 bg-white p-2" data-type="total">
-        <div class="text-xs text-gray-600">Total Issues</div>
-        <div class="text-xs font-bold">{{ summary.total_issues if summary else 0 }}</div>
-      </div>
-      <div class="border border-gray-400 bg-white p-2" data-type="HIGH">
-        <div class="text-xs text-red-800">High Severity</div>
-        <div class="text-xs font-bold text-red-700">
-          {{ summary.severity_counts.HIGH if summary and summary.get('severity_counts') else 0 }}
+    <!-- Requirements Input Form -->
+    <div id="requirementsFormContainer" class="p-2 hidden">
+      <form id="requirementsForm" method="POST" action="{{ url_for('gpt4all.gpt4all_analysis') }}">
+        <div class="border border-gray-400 bg-white p-2">
+          <label for="requirements" class="block text-xs font-bold mb-2">Requirements List (one per line)</label>
+          <textarea id="requirements" name="requirements" rows="6" class="w-full p-2 text-xs border border-gray-300">{% if requirements %}{{ '\n'.join(requirements) }}{% else %}1. The application must handle errors gracefully
+2. The application must sanitize user inputs
+3. The application must implement proper authentication
+4. The application must have adequate test coverage
+5. The application must follow secure coding practices{% endif %}</textarea>
+          
+          <input type="hidden" name="model" value="{{ model }}">
+          <input type="hidden" name="app_num" value="{{ app_num }}">
+          <input type="hidden" name="type" value="requirements">
+          
+          <div class="mt-2 flex justify-between items-center">
+            <button type="submit" class="action-btn bg-blue-600 text-white hover:bg-blue-700">
+              <span id="submitBtnText">Analyze Requirements</span>
+              <span id="loadingIndicator" class="hidden ml-1">
+                <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </span>
+            </button>
+            <button type="button" id="cancelForm" class="action-btn">Cancel</button>
+          </div>
         </div>
-      </div>
-      <div class="border border-gray-400 bg-white p-2" data-type="MEDIUM">
-        <div class="text-xs text-yellow-800">Medium Severity</div>
-        <div class="text-xs font-bold text-yellow-700">
-          {{ summary.severity_counts.MEDIUM if summary and summary.get('severity_counts') else 0 }}
-        </div>
-      </div>
-      <div class="border border-gray-400 bg-white p-2" data-type="LOW">
-        <div class="text-xs text-blue-800">Low Severity</div>
-        <div class="text-xs font-bold text-blue-700">
-          {{ summary.severity_counts.LOW if summary and summary.get('severity_counts') else 0 }}
-        </div>
-      </div>
+      </form>
     </div>
 
     <!-- Analysis Progress -->
@@ -81,6 +81,75 @@
       </div>
     </div>
 
+    <!-- Analysis Grid -->
+    <div class="p-2 grid grid-cols-4 gap-2">
+      <div class="border border-gray-400 bg-white p-2" data-type="met">
+        <div class="text-xs text-green-800">Met Conditions</div>
+        <div class="text-xs font-bold text-green-700">
+          {{ summary.met_conditions.total if summary and summary.get('met_conditions') else 0 }}
+        </div>
+        <div class="mt-1 text-xs">
+          <span class="text-gray-600">Frontend: </span>
+          <span class="font-bold text-green-700">{{ summary.met_conditions.frontend if summary and summary.get('met_conditions') else 0 }}</span>
+        </div>
+        <div class="text-xs">
+          <span class="text-gray-600">Backend: </span>
+          <span class="font-bold text-green-700">{{ summary.met_conditions.backend if summary and summary.get('met_conditions') else 0 }}</span>
+        </div>
+      </div>
+      
+      <div class="border border-gray-400 bg-white p-2" data-type="unmet">
+        <div class="text-xs text-red-800">Unmet Conditions</div>
+        <div class="text-xs font-bold text-red-700">
+          {{ summary.unmet_conditions.total if summary and summary.get('unmet_conditions') else 0 }}
+        </div>
+        <div class="mt-1 text-xs">
+          <span class="text-gray-600">Frontend: </span>
+          <span class="font-bold text-red-700">{{ summary.unmet_conditions.frontend if summary and summary.get('unmet_conditions') else 0 }}</span>
+        </div>
+        <div class="text-xs">
+          <span class="text-gray-600">Backend: </span>
+          <span class="font-bold text-red-700">{{ summary.unmet_conditions.backend if summary and summary.get('unmet_conditions') else 0 }}</span>
+        </div>
+      </div>
+      
+      <div class="border border-gray-400 bg-white p-2" data-type="frontend">
+        <div class="text-xs text-blue-800">Frontend Files</div>
+        <div class="text-xs font-bold text-blue-700">
+          {{ summary.frontend_files if summary else 0 }}
+        </div>
+        <div class="mt-1 text-xs">
+          <span class="text-gray-600">Analyzed: </span>
+          <span class="font-bold">{{ summary.frontend_files if summary else 0 }}</span>
+        </div>
+      </div>
+      
+      <div class="border border-gray-400 bg-white p-2" data-type="backend">
+        <div class="text-xs text-purple-800">Backend Files</div>
+        <div class="text-xs font-bold text-purple-700">
+          {{ summary.backend_files if summary else 0 }}
+        </div>
+        <div class="mt-1 text-xs">
+          <span class="text-gray-600">Analyzed: </span>
+          <span class="font-bold">{{ summary.backend_files if summary else 0 }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Requirements List Display -->
+    {% if requirements %}
+    <div class="p-2">
+      <div class="border border-gray-400 bg-white p-2">
+        <h2 class="text-xs font-bold mb-2">Current Requirements</h2>
+        <ul class="text-xs list-disc pl-4">
+          {% for req in requirements %}
+          <li>{{ req }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% endif %}
+
     <!-- Issue List -->
     <div class="p-2 flex-1 overflow-auto space-y-2">
       {% if issues %}
@@ -95,12 +164,13 @@
                 {{ issue.severity }}
               </span>
               <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400">{{ issue.confidence }}</span>
+              <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400">{{ issue.issue_type }}</span>
               <button class="ml-auto action-btn h-6 px-2 text-xs expand-btn">Expand</button>
             </div>
             <div class="space-y-2">
               <div>
-                <div class="text-xs font-bold">{{ issue.issue_type }}</div>
-                <div class="text-xs text-gray-600">{{ issue.issue_text }}</div>
+                <div class="text-xs font-bold">{{ issue.issue_text }}</div>
+                <div class="text-xs text-gray-600">{{ issue.filename }}</div>
               </div>
               <div class="issue-details hidden space-y-2">
                 <div class="text-xs font-mono text-gray-600">
@@ -135,7 +205,7 @@
         </div>
         {% else %}
         <div class="inline-block border border-gray-700 bg-gray-50 p-2">
-          <p class="text-xs font-bold text-gray-700">No issues found. Start an analysis to begin.</p>
+          <p class="text-xs font-bold text-gray-700">No requirements issues found. Start an analysis to begin.</p>
         </div>
         {% endif %}
       </div>
@@ -162,7 +232,7 @@
           </div>
           <div class="flex justify-between">
             <span class="text-gray-600">Last Analysis:</span>
-            <span class="font-bold">{{ summary.scan_time if summary and summary.scan_time else 'Never' }}</span>
+            <span class="font-bold">{{ summary.scan_time if summary else 'Never' }}</span>
           </div>
         </div>
       </div>
@@ -174,20 +244,51 @@
         </div>
         <div class="p-2 space-y-2">
           <div class="text-xs">
-            <div class="font-bold mb-1">DeepSeek-R1-Distill-Qwen-7B</div>
+            <div class="font-bold mb-1">{{ model_info.name }}</div>
             <div class="space-y-1">
               <div class="flex justify-between">
                 <span class="text-gray-600">RAM Required:</span>
-                <span>8 GB</span>
+                <span>{{ model_info.ram_required }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">Parameters:</span>
-                <span>7 billion</span>
+                <span>{{ model_info.parameters }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">Type:</span>
-                <span>deepseek</span>
+                <span>{{ model_info.type }}</span>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Requirements Summary -->
+      <div class="border border-gray-400 bg-white">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+          <h2 class="font-bold text-xs">Requirements Summary</h2>
+        </div>
+        <div class="p-2 text-xs">
+          <div class="space-y-1">
+            <div class="flex justify-between">
+              <span class="text-gray-600">Total Requirements:</span>
+              <span class="font-bold">{{ summary.total_requirements if summary and summary.get('total_requirements') else 0 }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Met Frontend:</span>
+              <span class="font-bold text-green-700">{{ summary.met_conditions.frontend if summary and summary.get('met_conditions') else 0 }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Met Backend:</span>
+              <span class="font-bold text-green-700">{{ summary.met_conditions.backend if summary and summary.get('met_conditions') else 0 }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Unmet Frontend:</span>
+              <span class="font-bold text-red-700">{{ summary.unmet_conditions.frontend if summary and summary.get('unmet_conditions') else 0 }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Unmet Backend:</span>
+              <span class="font-bold text-red-700">{{ summary.unmet_conditions.backend if summary and summary.get('unmet_conditions') else 0 }}</span>
             </div>
           </div>
         </div>
@@ -203,20 +304,26 @@
           <div class="space-y-1">
             <div class="flex justify-between">
               <span class="text-gray-600">Files Analyzed:</span>
-              <span class="font-bold">{{ summary.files_affected if summary.files_affected is not none else 0 }}</span>
+              <span class="font-bold">{{ (summary.frontend_files|default(0)) + (summary.backend_files|default(0)) }}</span>
             </div>
             <div class="flex justify-between">
               <span class="text-gray-600">Analysis Duration:</span>
               <span class="font-bold" id="analysisDuration">-</span>
             </div>
             <div class="border-t border-gray-200 pt-1 mt-1">
-              <div class="font-bold mb-1">Issue Types:</div>
-              {% for type, count in summary.issue_types.items() %}
-              <div class="flex justify-between">
-                <span>{{ type }}</span>
-                <span class="font-bold">{{ count }}</span>
-              </div>
-              {% endfor %}
+              {% if summary.issue_types %}
+                <div class="font-bold mb-1">Issue Types:</div>
+                {% for type, count in summary.issue_types.items() %}
+                <div class="flex justify-between">
+                  <span>{{ type }}</span>
+                  <span class="font-bold">{{ count }}</span>
+                </div>
+                {% endfor %}
+              {% else %}
+                <div class="text-center text-gray-600">
+                  No issue type data available
+                </div>
+              {% endif %}
             </div>
           </div>
           {% else %}
@@ -232,6 +339,63 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // Form toggle functionality
+  const formContainer = document.getElementById('requirementsFormContainer');
+  const toggleFormBtn = document.getElementById('toggleForm');
+  const cancelFormBtn = document.getElementById('cancelForm');
+  
+  if (toggleFormBtn) {
+    toggleFormBtn.addEventListener('click', function() {
+      formContainer.classList.toggle('hidden');
+      this.textContent = formContainer.classList.contains('hidden') ? 
+        'Show Requirements Form' : 'Hide Requirements Form';
+    });
+  }
+  
+  if (cancelFormBtn) {
+    cancelFormBtn.addEventListener('click', function() {
+      formContainer.classList.add('hidden');
+      toggleFormBtn.textContent = 'Show Requirements Form';
+    });
+  }
+
+  // Add loading indicator when form is submitted
+  const requirementsForm = document.getElementById('requirementsForm');
+  const submitBtnText = document.getElementById('submitBtnText');
+  const loadingIndicator = document.getElementById('loadingIndicator');
+  const progressBar = document.getElementById('progressBar');
+  const analysisProgress = document.getElementById('analysisProgress');
+  
+  if (requirementsForm) {
+    requirementsForm.addEventListener('submit', function() {
+      // Show loading state
+      if (submitBtnText) submitBtnText.textContent = 'Analyzing...';
+      if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+      
+      // Show progress bar
+      if (analysisProgress) analysisProgress.classList.remove('hidden');
+      
+      // Simulate progress (since we don't have real-time updates)
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 1;
+        if (progress <= 95 && progressBar) {
+          progressBar.style.width = progress + '%';
+        } else {
+          clearInterval(interval);
+        }
+      }, 500);
+      
+      // Disable form to prevent double submission
+      this.querySelectorAll('button, input, textarea, select').forEach(el => {
+        el.disabled = true;
+      });
+      
+      // Let the form submit proceed
+      return true;
+    });
+  }
+
   // Expand/collapse functionality.
   document.querySelectorAll('.expand-btn').forEach(btn => {
     btn.addEventListener('click', function() {
@@ -260,60 +424,6 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('severityFilter').addEventListener('change', applyFilters);
   document.getElementById('fileFilter').addEventListener('change', applyFilters);
 
-  // Analysis functionality.
-  const startBtn = document.getElementById('startAnalysis');
-  const progressBar = document.getElementById('progressBar');
-  const progressStatus = document.getElementById('progressStatus');
-  const analysisProgress = document.getElementById('analysisProgress');
-
-  if (startBtn) {
-    startBtn.addEventListener('click', async function() {
-      try {
-        startBtn.disabled = true;
-        analysisProgress.classList.remove('hidden');
-        progressBar.style.width = '0%';
-        progressStatus.textContent = 'Starting local analysis...';
-
-        const analysisType = document.getElementById('analysisType').value;
-        const response = await fetch(`/api/analyze-gpt4all/{{ model }}/{{ app_num }}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ analysis_type: analysisType })
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Analysis failed');
-        }
-
-        let progress = 0;
-        const progressInterval = setInterval(() => {
-          progress += 5;
-          if (progress <= 95) {
-            progressBar.style.width = `${progress}%`;
-            progressStatus.textContent = `Analyzing... ${progress}%`;
-          }
-        }, 1000);
-
-        const result = await response.json();
-        clearInterval(progressInterval);
-        progressBar.style.width = '100%';
-        progressStatus.textContent = 'Analysis complete!';
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      } catch (error) {
-        console.error('Analysis error:', error);
-        progressStatus.textContent = error.message || 'Analysis failed';
-        progressBar.style.width = '100%';
-        progressBar.classList.remove('bg-blue-600');
-        progressBar.classList.add('bg-red-600');
-      } finally {
-        startBtn.disabled = false;
-      }
-    });
-  }
-
   // Update analysis duration if available.
   function updateAnalysisDuration() {
     const durationElement = document.getElementById('analysisDuration');
@@ -321,9 +431,19 @@ document.addEventListener('DOMContentLoaded', function() {
       const start = new Date(window.summary.start_time);
       const end = new Date(window.summary.end_time);
       durationElement.textContent = `${Math.round((end - start) / 1000)}s`;
+    } else if (durationElement) {
+      durationElement.textContent = 'N/A';
     }
   }
   updateAnalysisDuration();
+  
+  // Show form if no issues are found
+  if (document.querySelectorAll('#issueList > div').length === 0 && formContainer) {
+    formContainer.classList.remove('hidden');
+    if (toggleFormBtn) {
+      toggleFormBtn.textContent = 'Hide Requirements Form';
+    }
+  }
 });
 </script>
 {% endblock %}

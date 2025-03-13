@@ -1,17 +1,31 @@
+"""
+Enhanced GPT4All Code Analysis Module
+
+This module provides code analysis capabilities using a local GPT4All API server.
+It specializes in analyzing code against predefined requirements and provides a
+detailed breakdown of which requirements are met by frontend and backend code.
+"""
+
 import os
 import json
 import logging
 import asyncio
 import time
+import re
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple, Any, Set, Union
+from functools import wraps
 
 import aiohttp
+from flask import request, render_template, url_for, Blueprint, current_app, jsonify, redirect
 
 # Set up module-level logger
 logger = logging.getLogger(__name__)
+
+# Blueprint for routes
+gpt4all_bp = Blueprint("gpt4all", __name__)
 
 
 @dataclass
@@ -22,7 +36,7 @@ class AnalysisIssue:
     filename: str
     line_number: int
     issue_text: str
-    severity: str  # HIGH, MEDIUM, LOW
+    severity: str  # HIGH, MEDIUM, LOW, INFO
     confidence: str  # HIGH, MEDIUM, LOW
     issue_type: str
     line_range: List[int]
@@ -45,33 +59,38 @@ class AnalysisConfig:
     request_timeout: int = 60
     max_retries: int = 3
     retry_delay: int = 2
-    concurrent_requests: int = 5
+    concurrent_requests: int = 2  # Reduced to avoid overwhelming server
+
+
+# Error handler decorator
+def error_handler(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error in {f.__name__}: {e}")
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                return jsonify({"error": str(e)}), 500
+            return render_template("500.html", error=str(e)), 500
+    return wrapped
 
 
 class GPT4AllAnalyzer:
     """
     Analyzes code using a local GPT4All API server.
-    Supports security, features, and quality analysis.
+    Supports requirements analysis for frontend and backend code.
     """
 
     @staticmethod
     def adjust_path(p: Path) -> Path:
         """
         Correctly adjusts paths containing "z_interface_app" directory.
-        If the path contains a "z_interface_app" parent directory, it's removed
-        while preserving the rest of the path structure.
-        
-        Args:
-            p: Path to adjust
-            
-        Returns:
-            Adjusted Path object
         """
         if not p:
             return Path.cwd()
             
         try:
-            # Convert to absolute path
             abs_path = p.resolve()
             parts = list(abs_path.parts)
             
@@ -82,14 +101,13 @@ class GPT4AllAnalyzer:
                     z_app_index = i
                     break
                     
-            # If we found z_interface_app, reconstruct the path without it
+            # If found, reconstruct the path without it
             if z_app_index >= 0:
                 new_parts = parts[:z_app_index] + parts[z_app_index+1:]
                 adjusted = Path(*new_parts)
                 logger.info(f"Adjusted path from {abs_path} to {adjusted}")
                 return adjusted
             
-            # No adjustment needed
             return abs_path
                 
         except Exception as e:
@@ -99,10 +117,6 @@ class GPT4AllAnalyzer:
     def __init__(self, base_path: Union[Path, str]):
         """
         Initialize the analyzer with a base path and API settings.
-        The base path is adjusted to remove any "z_interface_app" folder.
-        
-        Args:
-            base_path: Base directory for code analysis
         """
         # Convert string to Path if needed
         if isinstance(base_path, str):
@@ -119,8 +133,8 @@ class GPT4AllAnalyzer:
                 self.base_path = Path.cwd() / self.base_path
                 logger.info(f"Using current directory + base path: {self.base_path}")
 
-        # Define prompt templates for each analysis type
-        self.prompts: Dict[str, str] = {
+        # Define prompt templates
+        self.prompts = {
             "security": (
                 "Analyze the following code for security vulnerabilities. "
                 "Focus on input validation, authentication/authorization, data exposure, "
@@ -133,28 +147,41 @@ class GPT4AllAnalyzer:
                 "Analyze the following code and suggest feature improvements. "
                 "Focus on performance optimizations, error handling, logging, testing coverage, "
                 "and code organization. "
-                "Return JSON: {\"suggestions\": [{\"title\": ..., \"description\": ..., "
-                "\"priority\": ..., \"effort_level\": ..., \"code_example\": ...}]}"
+                "Return JSON: {\"issues\": [{\"filename\": ..., \"line_number\": ..., "
+                "\"issue_text\": ..., \"severity\": ..., \"confidence\": ..., \"issue_type\": ..., "
+                "\"line_range\": ..., \"code\": ..., \"suggested_fix\": ..., \"explanation\": ...}]}"
             ),
             "quality": (
                 "Review the following code for quality and best practices. "
                 "Focus on code structure, naming conventions, function design, documentation, "
                 "and maintainability. "
-                "Return JSON: {\"issues\": [{\"area\": ..., \"description\": ..., "
-                "\"severity\": ..., \"suggestion\": ..., \"code_example\": ...}]}"
+                "Return JSON: {\"issues\": [{\"filename\": ..., \"line_number\": ..., "
+                "\"issue_text\": ..., \"severity\": ..., \"confidence\": ..., \"issue_type\": ..., "
+                "\"line_range\": ..., \"code\": ..., \"suggested_fix\": ..., \"explanation\": ...}]}"
             ),
+            "requirements": (
+                "Analyze the following code against these requirements:\n"
+                "{requirements}\n\n"
+                "For each requirement, determine if the code meets the requirement.\n"
+                "Return a JSON object with an 'issues' array. Each issue should have these fields:\n"
+                "- filename: the file being analyzed\n"
+                "- line_number: relevant line number or -1 if N/A\n"
+                "- issue_text: description of the requirement\n"
+                "- severity: 'INFO' for met requirements, 'HIGH' for unmet\n"
+                "- confidence: 'HIGH', 'MEDIUM', or 'LOW'\n"
+                "- issue_type: 'requirement_check'\n"
+                "- line_range: array of relevant line numbers\n"
+                "- code: relevant code or empty string\n"
+                "- suggested_fix: suggestions for improvement\n"
+                "- explanation: detailed explanation\n\n"
+                "Example format: {\"issues\": [{\"filename\": \"app.py\", \"line_number\": 10, ...}]}"
+            )
         }
 
     async def _api_request(self, prompt: str) -> Optional[str]:
         """
         Sends a request to the GPT4All API with the given prompt.
         Includes retry logic for transient failures.
-        
-        Args:
-            prompt: The prompt to send to the API
-            
-        Returns:
-            Text response or None if all retries failed
         """
         for attempt in range(self.config.max_retries):
             try:
@@ -164,126 +191,112 @@ class GPT4AllAnalyzer:
                             "model": self.config.model_name,
                             "messages": [{"role": "user", "content": prompt}],
                             "max_tokens": self.config.max_tokens,
+                            "temperature": 0.1,  # Lower temperature for more deterministic responses
                         }
-                        logger.debug(f"Sending request to GPT4All API at {self.config.api_url}")
+                        logger.info(f"Sending request to GPT4All API at {self.config.api_url}")
                         
-                        async with session.post(
-                            f"{self.config.api_url}/chat/completions", 
-                            json=payload,
-                            timeout=aiohttp.ClientTimeout(total=self.config.request_timeout)
-                        ) as resp:
-                            if resp.status != 200:
-                                error_text = await resp.text()
-                                logger.error(f"GPT4All API request failed with status {resp.status}: {error_text}")
-                                # Retry on certain status codes (e.g., 429, 500, 502, 503, 504)
-                                if resp.status in {429, 500, 502, 503, 504}:
-                                    wait_time = self.config.retry_delay * (attempt + 1)
-                                    logger.warning(f"Retrying in {wait_time}s (attempt {attempt+1}/{self.config.max_retries})")
-                                    await asyncio.sleep(wait_time)
-                                    continue
-                                return None
-                                
-                            data = await resp.json()
-                            if not data.get("choices"):
-                                logger.error(f"Unexpected API response format: {data}")
-                                return None
-                                
-                            return data["choices"][0]["message"]["content"]
+                        try:
+                            async with session.post(
+                                f"{self.config.api_url}/chat/completions", 
+                                json=payload,
+                                timeout=aiohttp.ClientTimeout(total=self.config.request_timeout)
+                            ) as resp:
+                                if resp.status != 200:
+                                    error_text = await resp.text()
+                                    logger.error(f"GPT4All API request failed with status {resp.status}: {error_text}")
+                                    if resp.status in {429, 500, 502, 503, 504}:
+                                        wait_time = self.config.retry_delay * (attempt + 1)
+                                        logger.warning(f"Retrying in {wait_time}s (attempt {attempt+1}/{self.config.max_retries})")
+                                        await asyncio.sleep(wait_time)
+                                        continue
+                                    return None
+                                    
+                                data = await resp.json()
+                                if not data.get("choices"):
+                                    logger.error(f"Unexpected API response format: {data}")
+                                    return None
+                                    
+                                return data["choices"][0]["message"]["content"]
+                        except aiohttp.ClientError as e:
+                            logger.error(f"Connection error: {e}")
+                            await asyncio.sleep(self.config.retry_delay)
+                            continue
+                            
             except asyncio.TimeoutError:
                 logger.error(f"Request timed out (attempt {attempt+1}/{self.config.max_retries})")
-                # Retry with exponential backoff
-                wait_time = self.config.retry_delay * (2 ** attempt)
-                await asyncio.sleep(wait_time)
+                await asyncio.sleep(self.config.retry_delay)
             except Exception as e:
-                logger.exception(f"Exception during GPT4All API request (attempt {attempt+1}/{self.config.max_retries}): {e}")
-                # Retry with exponential backoff
-                wait_time = self.config.retry_delay * (2 ** attempt)
-                await asyncio.sleep(wait_time)
+                logger.exception(f"API request error: {e}")
+                await asyncio.sleep(self.config.retry_delay)
                 
         logger.error(f"All {self.config.max_retries} attempts failed")
         return None
 
-    async def analyze_file(self, file_path: Path, analysis_type: str = "security") -> Tuple[Dict[str, Any], str]:
+    def _extract_json_from_markdown(self, text: str) -> str:
         """
-        Analyzes a single file using the specified analysis type.
+        Extract JSON from markdown code blocks or return the original text.
+        """
+        json_block_markers = [
+            ('```json', '```'),
+            ('```', '```'),
+            ('{', '}')
+        ]
         
-        Args:
-            file_path: Path to the file to analyze
-            analysis_type: Type of analysis to perform ("security", "features", or "quality")
-            
-        Returns:
-            Tuple of (parsed JSON result as a dictionary, status message)
-        """
-        if not file_path.exists():
-            logger.error(f"File not found: {file_path}")
-            return {}, f"File not found: {file_path}"
-
-        try:
-            # Try different encodings if UTF-8 fails
-            encodings = ['utf-8', 'latin-1', 'cp1252']
-            code = None
-            
-            for encoding in encodings:
+        for start_marker, end_marker in json_block_markers:
+            if start_marker in text and end_marker in text:
                 try:
-                    code = file_path.read_text(encoding=encoding)
-                    break
-                except UnicodeDecodeError:
+                    start_idx = text.find(start_marker) + len(start_marker)
+                    end_idx = text.rfind(end_marker)
+                    
+                    if start_idx < end_idx:
+                        json_content = text[start_idx:end_idx].strip()
+                        # Verify it's valid JSON
+                        json.loads(json_content)
+                        return json_content
+                except (ValueError, json.JSONDecodeError):
                     continue
-            
-            if code is None:
-                logger.error(f"Failed to read file with any encoding: {file_path}")
-                return {}, f"Error reading file: Unable to detect encoding"
-                
-        except Exception as e:
-            logger.error(f"Error reading file {file_path}: {e}")
-            return {}, f"Error reading file: {str(e)}"
-
-        # Calculate a reasonable token limit based on file size
-        # Aim for approximately 1 token per 4 characters
-        max_length = min(self.config.max_tokens * 3, 24000)  # Hard cap at 24K
-        if len(code) > max_length:
-            truncated_length = max_length - 100  # Leave room for truncation message
-            code = code[:truncated_length] + "\n\n... (file truncated due to length constraints)"
-            logger.info(f"File {file_path} truncated from {len(code)} to {truncated_length} characters")
-
-        # Get the appropriate prompt for the analysis type
-        prompt_template = self.prompts.get(analysis_type)
-        if not prompt_template:
-            logger.warning(f"Unknown analysis type: {analysis_type}, using security analysis")
-            prompt_template = self.prompts['security']
-            
-        # Add file metadata to help with analysis
-        file_info = f"File: {file_path.name}\nLanguage: {self._detect_language(file_path)}\n\n"
-        prompt = f"{prompt_template}\n\n{file_info}Code:\n```\n{code}\n```"
         
-        # Send request to API
-        logger.info(f"Analyzing file: {file_path}")
-        response = await self._api_request(prompt)
+        # Try regex patterns if the above doesn't work
+        pattern_options = [
+            r'```json\s*([\s\S]*?)\s*```',
+            r'```\s*([\s\S]*?)\s*```',
+            r'({[\s\S]*})'
+        ]
         
-        if response is None:
-            return {}, "Analysis failed: No response from API"
+        for pattern in pattern_options:
+            match = re.search(pattern, text)
+            if match:
+                potential_json = match.group(1)
+                try:
+                    json.loads(potential_json)
+                    return potential_json
+                except json.JSONDecodeError:
+                    continue
+        
+        return text
 
-        # Try to parse the JSON response
-        try:
-            # First try to extract JSON if it's wrapped in markdown code blocks
-            json_str = self._extract_json_from_markdown(response)
-            result = json.loads(json_str)
-            return result, "Analysis completed successfully"
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse JSON response from GPT4All: {e}\nResponse: {response[:500]}...")
-            # As a fallback, try to create a simple issue from the text response
-            fallback_result = self._create_fallback_result(response, file_path)
-            return fallback_result, "Analysis completed with parsing issues"
+    def _create_fallback_result(self, text: str, file_path: Path) -> Dict[str, Any]:
+        """
+        Create a fallback result dictionary when JSON parsing fails.
+        """
+        return {
+            "issues": [{
+                "filename": file_path.name,
+                "line_number": 0,
+                "issue_text": "Analysis response could not be parsed as JSON",
+                "severity": "MEDIUM",
+                "confidence": "LOW",
+                "issue_type": "parser_error",
+                "line_range": [0],
+                "code": "",
+                "suggested_fix": "Please review the full text analysis manually",
+                "explanation": text[:500] + ("..." if len(text) > 500 else "")
+            }]
+        }
 
     def _detect_language(self, file_path: Path) -> str:
         """
         Detect the programming language based on file extension.
-        
-        Args:
-            file_path: Path to the file
-            
-        Returns:
-            Programming language name
         """
         ext = file_path.suffix.lower()
         
@@ -316,197 +329,12 @@ class GPT4AllAnalyzer:
         
         return language_map.get(ext, 'Unknown')
 
-    def _extract_json_from_markdown(self, text: str) -> str:
-        """
-        Extract JSON from markdown code blocks or return the original text.
-        
-        Args:
-            text: Potentially markdown-formatted text with JSON
-            
-        Returns:
-            Extracted JSON string
-        """
-        # Check for JSON code blocks
-        json_block_markers = [
-            ('```json', '```'),
-            ('```', '```'),
-            ('{', '}')
-        ]
-        
-        for start_marker, end_marker in json_block_markers:
-            if start_marker in text and end_marker in text:
-                try:
-                    start_idx = text.find(start_marker) + len(start_marker)
-                    end_idx = text.rfind(end_marker)
-                    
-                    if start_idx < end_idx:
-                        json_content = text[start_idx:end_idx].strip()
-                        # Verify it's valid JSON
-                        json.loads(json_content)
-                        return json_content
-                except (ValueError, json.JSONDecodeError):
-                    continue
-        
-        # Return original text if no JSON blocks found
-        return text
-
-    def _create_fallback_result(self, text: str, file_path: Path) -> Dict[str, Any]:
-        """
-        Create a fallback result dictionary when JSON parsing fails.
-        
-        Args:
-            text: The text response from the API
-            file_path: Path to the analyzed file
-            
-        Returns:
-            A dictionary with a single issue
-        """
-        return {
-            "issues": [{
-                "filename": file_path.name,
-                "line_number": 0,
-                "issue_text": "Analysis response could not be parsed as JSON",
-                "severity": "MEDIUM",
-                "confidence": "LOW",
-                "issue_type": "parser_error",
-                "line_range": [0],
-                "code": "",
-                "suggested_fix": "Please review the full text analysis manually",
-                "explanation": text[:500] + ("..." if len(text) > 500 else "")
-            }]
-        }
-
-    async def analyze_directory(
-        self,
-        directory: Optional[Path] = None,
-        file_patterns: Optional[List[str]] = None,
-        analysis_type: str = "security",
-        max_files: int = 100,
-        progress_callback = None
-    ) -> Tuple[List[AnalysisIssue], Dict[str, Any]]:
-        """
-        Recursively analyzes files within the directory that match the provided patterns.
-        
-        Args:
-            directory: Directory to analyze (defaults to base_path)
-            file_patterns: List of file patterns to include (defaults to common code files)
-            analysis_type: Type of analysis to perform
-            max_files: Maximum number of files to analyze
-            progress_callback: Optional callback for progress updates
-            
-        Returns:
-            Tuple of (list of issues, summary dictionary)
-        """
-        # Use base_path if directory not specified
-        directory = directory or self.base_path
-        
-        # Apply path adjustment to the directory
-        directory = self.adjust_path(directory)
-        
-        # Default file patterns cover common code file extensions
-        file_patterns = file_patterns or ["*.py", "*.js", "*.jsx", "*.ts", "*.tsx", "*.html", "*.svelte", "*.vue"]
-        
-        all_issues: List[AnalysisIssue] = []
-        affected_files: Set[str] = set()
-        
-        summary = {
-            "total_files": 0,
-            "processed_files": 0,
-            "error_files": 0,
-            "start_time": datetime.now().isoformat(),
-            "end_time": None,
-            "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
-            "analysis_type": analysis_type
-        }
-
-        # Find all files to analyze
-        files_to_analyze = []
-        
-        try:
-            # Ensure directory exists
-            if not directory.exists():
-                logger.error(f"Directory does not exist: {directory}")
-                raise ValueError(f"Directory does not exist: {directory}")
-                
-            # Traverse directory and collect files
-            for root, _, files in os.walk(directory):
-                for file_name in files:
-                    file_path = Path(root) / file_name
-                    
-                    # Check if file matches any pattern
-                    if any(file_path.match(pattern) for pattern in file_patterns):
-                        try:
-                            # Skip files that are too large or binary
-                            if self._should_skip_file(file_path):
-                                continue
-                                
-                            files_to_analyze.append(file_path)
-                            if len(files_to_analyze) >= max_files:
-                                logger.warning(f"Reached maximum file limit ({max_files})")
-                                break
-                        except Exception as e:
-                            logger.error(f"Error checking file {file_path}: {e}")
-                
-                if len(files_to_analyze) >= max_files:
-                    break
-        except Exception as e:
-            logger.error(f"Error traversing directory {directory}: {e}")
-            raise ValueError(f"Error traversing directory: {e}")
-
-        # Update total files count
-        summary["total_files"] = len(files_to_analyze)
-        
-        if not files_to_analyze:
-            logger.warning(f"No matching files found in directory {directory}")
-            raise ValueError(f"No files matching patterns {file_patterns} found in {directory}")
-
-        # Process files with bounded concurrency
-        tasks = []
-        for file_path in files_to_analyze:
-            task = asyncio.create_task(self._process_file(
-                file_path, directory, analysis_type, all_issues, summary, affected_files
-            ))
-            tasks.append(task)
-            
-            # Update progress if callback provided
-            if progress_callback and callable(progress_callback):
-                completion_percentage = (summary["processed_files"] / max(1, summary["total_files"])) * 100
-                progress_callback(completion_percentage, summary["processed_files"], summary["total_files"])
-
-        # Wait for all tasks to complete
-        await asyncio.gather(*tasks)
-        
-        # Set end time and calculate duration
-        end_time = datetime.now()
-        summary["end_time"] = end_time.isoformat()
-        summary["duration_seconds"] = (end_time - datetime.fromisoformat(summary["start_time"])).total_seconds()
-        summary["files_affected"] = len(affected_files)
-        
-        # Sort issues by severity
-        sorted_issues = sorted(
-            all_issues,
-            key=lambda x: (
-                {"HIGH": 0, "MEDIUM": 1, "LOW": 2}.get(x.severity, 3),
-                {"HIGH": 0, "MEDIUM": 1, "LOW": 2}.get(x.confidence, 3),
-                x.filename,
-                x.line_number
-            )
-        )
-        
-        return sorted_issues, summary
-
     def _should_skip_file(self, file_path: Path) -> bool:
         """
         Check if a file should be skipped (too large, binary, etc.).
-        
-        Args:
-            file_path: Path to the file
-            
-        Returns:
-            True if the file should be skipped, False otherwise
         """
-        # Skip files over 1MB
-        if file_path.stat().st_size > 1024 * 1024:
+        # Skip files over 500KB
+        if file_path.stat().st_size > 500 * 1024:
             logger.info(f"Skipping large file: {file_path} ({file_path.stat().st_size / 1024:.1f} KB)")
             return True
             
@@ -530,153 +358,541 @@ class GPT4AllAnalyzer:
             
         return False
 
-    async def _process_file(
-        self, 
-        file_path: Path, 
-        base_dir: Path, 
-        analysis_type: str,
-        all_issues: List[AnalysisIssue],
-        summary: Dict[str, Any],
-        affected_files: Set[str]
-    ) -> None:
+    async def analyze_file(self, file_path: Path, analysis_type: str = "security", requirements: List[str] = None) -> Tuple[Dict[str, Any], str]:
         """
-        Process a single file and update the shared issues and summary data.
-        
-        Args:
-            file_path: Path to the file to analyze
-            base_dir: Base directory for creating relative paths
-            analysis_type: Type of analysis to perform
-            all_issues: List to append issues to
-            summary: Summary dictionary to update
-            affected_files: Set of affected files to update
+        Analyzes a single file using the specified analysis type.
         """
+        if not file_path.exists():
+            logger.error(f"File not found: {file_path}")
+            return {}, f"File not found: {file_path}"
+
         try:
-            result, status = await self.analyze_file(file_path, analysis_type)
+            # Try different encodings if UTF-8 fails
+            encodings = ['utf-8', 'latin-1', 'cp1252']
+            code = None
             
-            # Get relative path for display - without losing the directory structure
-            try:
-                # Compute relative path that maintains structure
-                rel_path = file_path.relative_to(base_dir)
-            except ValueError:
-                # If not relative to base_dir, use the full path
-                rel_path = file_path
+            for encoding in encodings:
+                try:
+                    code = file_path.read_text(encoding=encoding)
+                    break
+                except UnicodeDecodeError:
+                    continue
+            
+            if code is None:
+                logger.error(f"Failed to read file with any encoding: {file_path}")
+                return {}, f"Error reading file: Unable to detect encoding"
                 
-            # Convert issues to AnalysisIssue objects
-            issues_key = "issues"
-            if analysis_type == "features":
-                issues_key = "suggestions"
-                
-            if issues_key in result and isinstance(result[issues_key], list):
-                for issue in result[issues_key]:
-                    try:
-                        issue_obj = AnalysisIssue(
-                            filename=str(rel_path),
-                            line_number=issue.get("line_number", 0),
-                            issue_text=issue.get("issue_text", 
-                                               issue.get("description", "No description provided")),
-                            severity=issue.get("severity", "MEDIUM").upper(),
-                            confidence=issue.get("confidence", "MEDIUM"),
-                            issue_type=issue.get("issue_type", 
-                                               issue.get("title", "unknown")),
-                            line_range=issue.get("line_range", [issue.get("line_number", 0)]),
-                            code=issue.get("code", issue.get("code_example", "")),
-                            suggested_fix=issue.get("suggested_fix", 
-                                                  issue.get("suggestion", None)),
-                            explanation=issue.get("explanation", None)
-                        )
-                        all_issues.append(issue_obj)
-                        affected_files.add(str(rel_path))
-                        
-                        # Update severity counts
-                        sev = issue_obj.severity.upper()
-                        if sev in summary["severity_counts"]:
-                            summary["severity_counts"][sev] += 1
-                        else:
-                            summary["severity_counts"][sev] = 1
-                    except Exception as e:
-                        logger.error(f"Error processing issue for {file_path}: {e}")
-                        continue
-            else:
-                logger.debug(f"No {issues_key} found in {file_path}: {status}")
         except Exception as e:
-            logger.error(f"Error analyzing file {file_path}: {e}")
-            summary["error_files"] += 1
-        finally:
-            summary["processed_files"] += 1
+            logger.error(f"Error reading file {file_path}: {e}")
+            return {}, f"Error reading file: {str(e)}"
+
+        # Truncate if needed
+        max_length = min(self.config.max_tokens * 3, 24000)
+        if len(code) > max_length:
+            truncated_length = max_length - 100
+            code = code[:truncated_length] + "\n\n... (file truncated due to length constraints)"
+            logger.info(f"File {file_path} truncated from {len(code)} to {truncated_length} characters")
+
+        # Get the prompt template
+        prompt_template = self.prompts.get(analysis_type)
+        if not prompt_template:
+            logger.warning(f"Unknown analysis type: {analysis_type}, using security analysis")
+            prompt_template = self.prompts['security']
+        
+        # Format the prompt with requirements if needed
+        if analysis_type == "requirements" and requirements:
+            requirements_text = "\n".join(f"{i+1}. {req}" for i, req in enumerate(requirements))
+            prompt_template = prompt_template.format(requirements=requirements_text)
+            
+        # Add file metadata to help with analysis
+        file_info = f"File: {file_path.name}\nLanguage: {self._detect_language(file_path)}\n\n"
+        prompt = f"{prompt_template}\n\n{file_info}Code:\n```\n{code}\n```"
+        
+        # Send request to API
+        logger.info(f"Analyzing file: {file_path}")
+        response = await self._api_request(prompt)
+        
+        if response is None:
+            return {}, "Analysis failed: No response from API"
+
+        # Try to parse the JSON response
+        try:
+            json_str = self._extract_json_from_markdown(response)
+            result = json.loads(json_str)
+            return result, "Analysis completed successfully"
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse JSON response: {e}")
+            fallback_result = self._create_fallback_result(response, file_path)
+            return fallback_result, "Analysis completed with parsing issues"
+
+    async def analyze_directory(
+        self,
+        directory: Optional[Path] = None,
+        file_patterns: Optional[List[str]] = None,
+        analysis_type: str = "security",
+        requirements: Optional[List[str]] = None
+    ) -> Tuple[List[AnalysisIssue], Dict[str, Any]]:
+        """
+        Analyze files in directory against requirements or for security/quality issues.
+        
+        This is a unified method that supports both the original security analysis
+        and the requirements analysis functionality.
+        """
+        # Default parameters
+        directory = directory or self.base_path
+        directory = self.adjust_path(directory)
+        file_patterns = file_patterns or ["*.py", "*.js", "*.jsx", "*.ts", "*.tsx", "*.html", "*.svelte", "*.vue"]
+        
+        # Initialize counters and collections
+        all_issues = []
+        frontend_files = []
+        backend_files = []
+        frontend_met = 0
+        frontend_unmet = 0
+        backend_met = 0
+        backend_unmet = 0
+        
+        # Find all files to analyze
+        for root, _, files in os.walk(directory):
+            for file_name in files:
+                file_path = Path(root) / file_name
+                
+                # Skip files that should be skipped
+                if self._should_skip_file(file_path):
+                    continue
+                
+                # Check if file matches patterns
+                if any(file_path.match(pattern) for pattern in file_patterns):
+                    # Categorize as frontend or backend
+                    if file_name.endswith(('.js', '.jsx', '.ts', '.tsx', '.html', '.css', '.vue', '.svelte')):
+                        if not any(skip in str(file_path) for skip in ['/node_modules/', '/.git/']):
+                            frontend_files.append(file_path)
+                    elif file_name.endswith('.py'):
+                        if not any(skip in str(file_path) for skip in ['__pycache__', '/.git/']):
+                            backend_files.append(file_path)
+        
+        # Limit files to analyze to avoid overwhelming
+        frontend_files = frontend_files[:5]  # Limit to 5 frontend files
+        backend_files = backend_files[:5]  # Limit to 5 backend files
+        
+        # Set up summary structure
+        summary = {
+            "total_issues": 0,
+            "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0, "INFO": 0},
+            "files_affected": 0,
+            "issue_types": {},
+            "tool_counts": {"GPT4All": 0},
+            "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "start_time": datetime.now().isoformat(),
+            "frontend_files": len(frontend_files),
+            "backend_files": len(backend_files),
+            "met_conditions": {
+                "total": 0,
+                "frontend": 0,
+                "backend": 0
+            },
+            "unmet_conditions": {
+                "total": 0,
+                "frontend": 0,
+                "backend": 0
+            }
+        }
+        
+        # Process frontend files
+        for file_path in frontend_files:
+            try:
+                result, _ = await self.analyze_file(
+                    file_path, 
+                    analysis_type=analysis_type,
+                    requirements=requirements
+                )
+                
+                if "issues" in result and isinstance(result["issues"], list):
+                    for issue in result["issues"]:
+                        # Determine if requirement is met (if doing requirements analysis)
+                        is_met = False
+                        if analysis_type == "requirements":
+                            severity = issue.get("severity", "").upper()
+                            is_met = severity in ["INFO", "LOW"] or "met" in issue.get("issue_text", "").lower()
+                            
+                            if is_met:
+                                frontend_met += 1
+                            else:
+                                frontend_unmet += 1
+                        
+                        # Convert numeric confidence to string format if needed
+                        confidence = issue.get("confidence", "MEDIUM")
+                        if isinstance(confidence, (int, float)):
+                            if confidence >= 90:
+                                confidence = "HIGH"
+                            elif confidence >= 70:
+                                confidence = "MEDIUM"
+                            else:
+                                confidence = "LOW"
+                        
+                        # Create issue object
+                        issue_type = issue.get("issue_type", "unknown")
+                        if analysis_type == "requirements":
+                            issue_type = f"Frontend: {'MET' if is_met else 'UNMET'}"
+                            
+                        all_issues.append(AnalysisIssue(
+                            filename=os.path.relpath(file_path, directory),
+                            line_number=issue.get("line_number", 0),
+                            issue_text=issue.get("issue_text", "Unknown issue"),
+                            severity=issue.get("severity", "MEDIUM"),
+                            confidence=str(confidence),
+                            issue_type=issue_type,
+                            line_range=issue.get("line_range", [issue.get("line_number", 0)]),
+                            code=issue.get("code", ""),
+                            tool="GPT4All",
+                            suggested_fix=issue.get("suggested_fix", ""),
+                            explanation=issue.get("explanation", "")
+                        ))
+            except Exception as e:
+                logger.error(f"Error analyzing frontend file {file_path}: {e}")
+        
+        # Process backend files
+        for file_path in backend_files:
+            try:
+                result, _ = await self.analyze_file(
+                    file_path, 
+                    analysis_type=analysis_type,
+                    requirements=requirements
+                )
+                
+                if "issues" in result and isinstance(result["issues"], list):
+                    for issue in result["issues"]:
+                        # Determine if requirement is met (if doing requirements analysis)
+                        is_met = False
+                        if analysis_type == "requirements":
+                            severity = issue.get("severity", "").upper()
+                            is_met = severity in ["INFO", "LOW"] or "met" in issue.get("issue_text", "").lower()
+                            
+                            if is_met:
+                                backend_met += 1
+                            else:
+                                backend_unmet += 1
+                        
+                        # Convert numeric confidence to string format if needed
+                        confidence = issue.get("confidence", "MEDIUM")
+                        if isinstance(confidence, (int, float)):
+                            if confidence >= 90:
+                                confidence = "HIGH"
+                            elif confidence >= 70:
+                                confidence = "MEDIUM"
+                            else:
+                                confidence = "LOW"
+                        
+                        # Create issue object
+                        issue_type = issue.get("issue_type", "unknown")
+                        if analysis_type == "requirements":
+                            issue_type = f"Backend: {'MET' if is_met else 'UNMET'}"
+                            
+                        all_issues.append(AnalysisIssue(
+                            filename=os.path.relpath(file_path, directory),
+                            line_number=issue.get("line_number", 0),
+                            issue_text=issue.get("issue_text", "Unknown issue"),
+                            severity=issue.get("severity", "MEDIUM"),
+                            confidence=str(confidence),
+                            issue_type=issue_type,
+                            line_range=issue.get("line_range", [issue.get("line_number", 0)]),
+                            code=issue.get("code", ""),
+                            tool="GPT4All",
+                            suggested_fix=issue.get("suggested_fix", ""),
+                            explanation=issue.get("explanation", "")
+                        ))
+            except Exception as e:
+                logger.error(f"Error analyzing backend file {file_path}: {e}")
+                
+        # Update summary
+        end_time = datetime.now()
+        summary["end_time"] = end_time.isoformat()
+        summary["duration_seconds"] = (end_time - datetime.fromisoformat(summary["start_time"])).total_seconds()
+        summary["total_issues"] = len(all_issues)
+        summary["files_affected"] = len(set(issue.filename for issue in all_issues))
+        
+        # Update met/unmet conditions if doing requirements analysis
+        if analysis_type == "requirements":
+            summary["requirements"] = requirements or []
+            summary["total_requirements"] = len(requirements or [])
+            summary["met_conditions"] = {
+                "total": frontend_met + backend_met,
+                "frontend": frontend_met,
+                "backend": backend_met
+            }
+            summary["unmet_conditions"] = {
+                "total": frontend_unmet + backend_unmet,
+                "frontend": frontend_unmet,
+                "backend": backend_unmet
+            }
+            
+        # Count by severity and issue type
+        for issue in all_issues:
+            # Count severity
+            severity = issue.severity.upper()
+            if severity in summary["severity_counts"]:
+                summary["severity_counts"][severity] += 1
+            
+            # Count issue type
+            issue_type = issue.issue_type
+            summary["issue_types"][issue_type] = summary["issue_types"].get(issue_type, 0) + 1
+        
+        # Increment GPT4All tool count
+        summary["tool_counts"]["GPT4All"] = len(all_issues)
+        
+        # Sort issues by severity
+        sorted_issues = sorted(
+            all_issues,
+            key=lambda x: (
+                {"HIGH": 0, "MEDIUM": 1, "LOW": 2, "INFO": 3}.get(x.severity.upper(), 4),
+                {"HIGH": 0, "MEDIUM": 1, "LOW": 2}.get(x.confidence.upper(), 3),
+                x.filename,
+                x.line_number
+            )
+        )
+        
+        return sorted_issues, summary
+
+
+# ---------------------------------------------------------------------------- #
+# Flask route for showing the form                                             #
+# ---------------------------------------------------------------------------- #
+@gpt4all_bp.route("/gpt4all-analysis", methods=["GET"])
+@error_handler
+def gpt4all_analysis_form():
+    """Display the analysis form."""
+    model = request.args.get("model")
+    app_num = request.args.get("app_num")
+    analysis_type = request.args.get("type", "requirements")
+    
+    if not model or not app_num:
+        return render_template("500.html", error="Model and app number are required"), 400
+        
+    directory = get_app_directory(current_app, model, app_num)
+    if not directory.exists():
+        return render_template("500.html", error=f"Directory not found: {directory}"), 404
+    
+    # Set up empty summary with proper structure
+    summary = {
+        "total_issues": 0,
+        "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0, "INFO": 0},
+        "files_affected": 0,
+        "issue_types": {},
+        "tool_counts": {"GPT4All": 0},
+        "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "frontend_files": 0,
+        "backend_files": 0,
+        "met_conditions": {"total": 0, "frontend": 0, "backend": 0},
+        "unmet_conditions": {"total": 0, "frontend": 0, "backend": 0}
+    }
+    
+    return render_template(
+        "gpt4all_analysis.html",
+        model=model,
+        app_num=app_num,
+        directory=str(directory),
+        analysis_type=analysis_type,
+        requirements=[],
+        issues=[],
+        summary=summary,
+        model_info={
+            "name": "DeepSeek-R1-Distill-Qwen-7B",
+            "ram_required": "8 GB",
+            "parameters": "7 billion",
+            "type": "deepseek",
+        },
+        error="Enter requirements and submit to analyze code"
+    )
+
+
+# ---------------------------------------------------------------------------- #
+# Flask route for performing analysis when form is submitted                   #
+# ---------------------------------------------------------------------------- #
+@gpt4all_bp.route("/gpt4all-analysis", methods=["POST"])
+@error_handler
+def gpt4all_analysis():
+    """Automatically run analysis when requirements form is submitted."""
+    try:
+        model = request.form.get("model")
+        app_num = request.form.get("app_num")
+        analysis_type = request.form.get("type", "requirements")
+        
+        # Get requirements from form
+        requirements_text = request.form.get("requirements", "")
+        requirements = [r.strip() for r in requirements_text.strip().splitlines() if r.strip()]
+        
+        if not model or not app_num:
+            raise ValueError("Model and app number are required")
+            
+        directory = get_app_directory(current_app, model, app_num)
+        if not directory.exists():
+            raise ValueError(f"Directory not found: {directory}")
+        
+        # Run analysis immediately if requirements provided
+        if requirements:
+            # Initialize analyzer
+            analyzer = GPT4AllAnalyzer(directory)
+            
+            # Run analysis (using asyncio.run to handle the async function)
+            issues, summary = asyncio.run(analyzer.analyze_directory(
+                directory=directory, 
+                analysis_type=analysis_type,
+                requirements=requirements
+            ))
+            
+            # Return results
+            return render_template(
+                "gpt4all_analysis.html",
+                model=model,
+                app_num=app_num,
+                directory=str(directory),
+                analysis_type=analysis_type,
+                requirements=requirements,
+                issues=issues,
+                summary=summary,
+                model_info={
+                    "name": "DeepSeek-R1-Distill-Qwen-7B",
+                    "ram_required": "8 GB",
+                    "parameters": "7 billion",
+                    "type": "deepseek",
+                },
+                error=None if issues else "No issues found in analysis"
+            )
+        else:
+            # No requirements specified
+            return render_template(
+                "gpt4all_analysis.html",
+                model=model,
+                app_num=app_num,
+                directory=str(directory),
+                analysis_type=analysis_type,
+                requirements=[],
+                issues=[],
+                summary={
+                    "total_issues": 0,
+                    "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0, "INFO": 0},
+                    "files_affected": 0,
+                    "issue_types": {},
+                    "tool_counts": {"GPT4All": 0},
+                    "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "frontend_files": 0,
+                    "backend_files": 0,
+                    "met_conditions": {"total": 0, "frontend": 0, "backend": 0},
+                    "unmet_conditions": {"total": 0, "frontend": 0, "backend": 0}
+                },
+                model_info={
+                    "name": "DeepSeek-R1-Distill-Qwen-7B",
+                    "ram_required": "8 GB",
+                    "parameters": "7 billion",
+                    "type": "deepseek",
+                },
+                error="Please enter requirements to analyze"
+            )
+        
+    except Exception as e:
+        logger.error(f"GPT4All analysis failed: {e}")
+        
+        # Return error template
+        return render_template(
+            "gpt4all_analysis.html",
+            model=model if "model" in locals() else None,
+            app_num=app_num if "app_num" in locals() else None,
+            directory=str(directory) if "directory" in locals() else "",
+            analysis_type=analysis_type if "analysis_type" in locals() else "requirements",
+            requirements=requirements if "requirements" in locals() else [],
+            issues=[],
+            summary={
+                "total_issues": 0,
+                "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0, "INFO": 0},
+                "files_affected": 0,
+                "issue_types": {},
+                "tool_counts": {"GPT4All": 0},
+                "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "met_conditions": {"total": 0, "frontend": 0, "backend": 0},
+                "unmet_conditions": {"total": 0, "frontend": 0, "backend": 0}
+            },
+            model_info={
+                "name": "DeepSeek-R1-Distill-Qwen-7B",
+                "ram_required": "8 GB",
+                "parameters": "7 billion",
+                "type": "deepseek",
+            },
+            error=str(e)
+        )
+
+
+def get_app_directory(app, model: str, app_num: int) -> Path:
+    """Helper function to get app directory path."""
+    return app.config["BASE_DIR"] / f"{model}/app{app_num}"
 
 
 def get_analysis_summary(issues: List[AnalysisIssue]) -> Dict[str, Any]:
     """
-    Generates a summary dictionary based on a list of AnalysisIssue objects.
-    
-    Args:
-        issues: List of AnalysisIssue objects
-        
-    Returns:
-        A dictionary with summary statistics
+    Generate a summary dictionary from a list of analysis issues.
     """
     if not issues:
         return {
             "total_issues": 0,
-            "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
+            "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0, "INFO": 0},
             "files_affected": 0,
             "issue_types": {},
             "tool_counts": {"GPT4All": 0},
-            "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "met_conditions": {"total": 0, "frontend": 0, "backend": 0},
+            "unmet_conditions": {"total": 0, "frontend": 0, "backend": 0}
         }
+    
+    # Initialize counters for met/unmet conditions
+    frontend_met = 0
+    frontend_unmet = 0
+    backend_met = 0
+    backend_unmet = 0
+    
+    # Count issues by type
+    issue_types = {}
+    
+    for issue in issues:
+        if issue.issue_type.startswith("Frontend: MET"):
+            frontend_met += 1
+        elif issue.issue_type.startswith("Frontend: UNMET"):
+            frontend_unmet += 1
+        elif issue.issue_type.startswith("Backend: MET"):
+            backend_met += 1
+        elif issue.issue_type.startswith("Backend: UNMET"):
+            backend_unmet += 1
         
+        # Count by issue type
+        issue_types[issue.issue_type] = issue_types.get(issue.issue_type, 0) + 1
+    
+    # Build summary
     summary = {
         "total_issues": len(issues),
-        "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
-        "files_affected": 0,
-        "issue_types": {},
+        "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0, "INFO": 0},
+        "files_affected": len(set(issue.filename for issue in issues)),
+        "issue_types": issue_types,
         "tool_counts": {},
-        "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "met_conditions": {
+            "total": frontend_met + backend_met,
+            "frontend": frontend_met,
+            "backend": backend_met
+        },
+        "unmet_conditions": {
+            "total": frontend_unmet + backend_unmet,
+            "frontend": frontend_unmet,
+            "backend": backend_unmet
+        }
     }
     
-    affected_files = set()
+    # Count by severity and tool
     for issue in issues:
-        # Count affected files
-        affected_files.add(issue.filename)
+        # Count severity
+        severity = issue.severity.upper()
+        if severity in summary["severity_counts"]:
+            summary["severity_counts"][severity] += 1
         
-        # Count issues by severity
-        sev = issue.severity.upper()
-        summary["severity_counts"][sev] = summary["severity_counts"].get(sev, 0) + 1
-        
-        # Count issues by type
-        itype = issue.issue_type
-        summary["issue_types"][itype] = summary["issue_types"].get(itype, 0) + 1
-        
-        # Count issues by tool
+        # Count tool usage
         tool = issue.tool
         summary["tool_counts"][tool] = summary["tool_counts"].get(tool, 0) + 1
-
-    summary["files_affected"] = len(affected_files)
-    return summary
-
-
-async def run_analysis(
-    base_path: Union[Path, str],
-    directory: Optional[Path] = None, 
-    file_patterns: Optional[List[str]] = None,
-    analysis_type: str = "security"
-) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
-    """
-    Convenience function to run analysis without instantiating the class directly.
     
-    Args:
-        base_path: Base path for the analyzer
-        directory: Directory to analyze (defaults to base_path)
-        file_patterns: File patterns to include
-        analysis_type: Type of analysis to perform
-        
-    Returns:
-        Tuple of (list of issue dictionaries, summary dictionary)
-    """
-    analyzer = GPT4AllAnalyzer(base_path)
-    issues, summary = await analyzer.analyze_directory(
-        directory=directory or Path(base_path),
-        file_patterns=file_patterns,
-        analysis_type=analysis_type
-    )
-    return [issue.to_dict() for issue in issues], summary
+    return summary
