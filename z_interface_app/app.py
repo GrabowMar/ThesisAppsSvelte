@@ -47,7 +47,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 # =============================================================================
 from backend_security_analysis import BackendSecurityAnalyzer
 from frontend_security_analysis import FrontendSecurityAnalyzer
-from gpt4all_analysis import GPT4AllAnalyzer, get_analysis_summary
+from gpt4all_analysis import GPT4AllAnalyzer
 from performance_analysis import PerformanceTester
 from zap_scanner import ZAPScanner, create_scanner
 
@@ -1026,68 +1026,98 @@ def analyze_gpt4all(analysis_type: str):
         logger.error(f"GPT4All analysis failed: {e}")
         return jsonify({"error": str(e)}), 500
 
+# In the gpt4all_analysis.py file, modify the gpt4all_analysis route:
 
-@gpt4all_bp.route("/gpt4all-analysis")
+@gpt4all_bp.route("/gpt4all-analysis", methods=["GET", "POST"])
 @error_handler
 def gpt4all_analysis():
+    """Flask route for GPT4All analysis."""
     try:
-        model = request.args.get("model")
-        app_num = request.args.get("app_num")
+        model = request.args.get("model") or request.form.get("model")
+        app_num = request.args.get("app_num") or request.form.get("app_num")
         analysis_type = request.args.get("type", "security")
+        
+        # Handle both GET and POST for requirements
+        requirements = []
+        if request.method == "POST" and "requirements" in request.form:
+            requirements_text = request.form.get("requirements", "")
+            requirements = [r.strip() for r in requirements_text.strip().splitlines() if r.strip()]
+            # Set analysis type to requirements if we have requirements
+            if requirements:
+                analysis_type = "requirements"
+            
         if not model or not app_num:
             raise ValueError("Model and app number are required")
+            
         directory = get_app_directory(current_app, model, app_num)
         if not directory.exists():
             raise ValueError(f"Directory not found: {directory}")
-        analyzer = GPT4AllAnalyzer(directory)
-        issues, summary = asyncio.run(analyzer.analyze_directory(directory=directory, analysis_type=analysis_type))
-        
-        # Ensure summary has the expected structure
-        if isinstance(summary, dict) and "issue_types" not in summary:
-            # Create a default structure if missing
-            summary = get_analysis_summary(issues)
             
+        # Initialize analyzer and run analysis
+        analyzer = GPT4AllAnalyzer(directory)
+        
+        # Use the analyze_directory method which is known to work
+        issues, summary = asyncio.run(analyzer.analyze_directory(
+            directory=directory,
+            analysis_type=analysis_type
+        ))
+        
+        # Store requirements in summary for display
+        if requirements:
+            summary["requirements"] = requirements
+        
         return render_template(
             "gpt4all_analysis.html",
             model=model,
             app_num=app_num,
             directory=str(directory),
             analysis_type=analysis_type,
+            requirements=requirements,
             issues=issues,
             summary=summary,
             model_info={
-                "name": "Phi-3 Mini Instruct",
-                "ram_required": "4 GB",
-                "parameters": "3 billion",
-                "type": "phi",
+                "name": "DeepSeek-R1-Distill-Qwen-7B",
+                "ram_required": "8 GB",
+                "parameters": "7 billion", 
+                "type": "deepseek",
             },
-            error=None,
+            error=None
         )
+        
     except Exception as e:
         logger.error(f"GPT4All analysis failed: {e}")
+        
+        # Create default objects with proper structure
+        summary = {
+            "total_issues": 0,
+            "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
+            "files_affected": 0,
+            "issue_types": {},
+            "tool_counts": {"GPT4All": 0},
+            "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "frontend_files": 0,
+            "backend_files": 0,
+            "met_conditions": {"total": 0, "frontend": 0, "backend": 0},
+            "unmet_conditions": {"total": 0, "frontend": 0, "backend": 0}
+        }
+        
         return render_template(
             "gpt4all_analysis.html",
             model=model if "model" in locals() else None,
             app_num=app_num if "app_num" in locals() else None,
             directory=str(directory) if "directory" in locals() else "",
-            analysis_type=analysis_type if "analysis_type" in locals() else "security",
+            analysis_type=analysis_type if "analysis_type" in locals() else "requirements",
+            requirements=[],
             issues=[],
-            summary={
-                "total_issues": 0,
-                "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
-                "files_affected": 0,
-                "issue_types": {},
-                "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            },
+            summary=summary,
             model_info={
-                "name": "Phi-3 Mini Instruct",
-                "ram_required": "4 GB",
-                "parameters": "3 billion",
-                "type": "phi",
+                "name": "DeepSeek-R1-Distill-Qwen-7B",
+                "ram_required": "8 GB",
+                "parameters": "7 billion",
+                "type": "deepseek", 
             },
-            error=str(e),
+            error=str(e)
         )
-
 # =============================================================================
 # Error Handlers & Request Hooks
 # =============================================================================

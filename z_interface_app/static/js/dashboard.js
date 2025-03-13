@@ -562,3 +562,230 @@ class DashboardController {
     console.log('Auto-refresh interval:', this.config.autoRefreshDuration / 1000, 'seconds');
   }
 }
+
+
+/**
+ * GPT4All Requirements Analysis UI
+ * 
+ * This script handles the UI interactions for the requirements analysis tool,
+ * including form toggling, filtering, progress tracking, and dynamic updates.
+ */
+
+class RequirementsAnalyzer {
+  constructor() {
+    // UI Elements
+    this.form = document.querySelector('form');
+    this.requirementsForm = document.getElementById('requirementsForm');
+    this.toggleFormBtn = document.getElementById('toggleForm');
+    this.cancelBtn = document.getElementById('cancelBtn');
+    this.submitBtn = document.getElementById('submitBtn');
+    this.btnText = document.getElementById('btnText');
+    this.btnLoading = document.getElementById('btnLoading');
+    this.progressBar = document.getElementById('progressBar');
+    this.progressStatus = document.getElementById('progressStatus');
+    this.analysisProgress = document.getElementById('analysisProgress');
+    
+    // Filters
+    this.searchInput = document.getElementById('searchIssues');
+    this.severityFilter = document.getElementById('severityFilter');
+    this.fileFilter = document.getElementById('fileFilter');
+    
+    // Initialize event listeners
+    this.initEventListeners();
+    
+    // Auto-show form if needed
+    this.maybeShowForm();
+    
+    // Calculate and display analysis duration
+    this.updateAnalysisDuration();
+  }
+
+  initEventListeners() {
+    // Form toggle buttons
+    if (this.toggleFormBtn) {
+      this.toggleFormBtn.addEventListener('click', () => this.toggleForm());
+    }
+    
+    if (this.cancelBtn) {
+      this.cancelBtn.addEventListener('click', () => this.hideForm());
+    }
+    
+    // Form submission
+    if (this.form) {
+      this.form.addEventListener('submit', (e) => this.handleFormSubmit(e));
+    }
+    
+    // Issue details expand/collapse
+    document.querySelectorAll('.expand-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => this.toggleIssueDetails(e.target));
+    });
+    
+    // Filters
+    if (this.searchInput) {
+      this.searchInput.addEventListener('input', () => {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(() => this.applyFilters(), 300);
+      });
+    }
+    
+    if (this.severityFilter) {
+      this.severityFilter.addEventListener('change', () => this.applyFilters());
+    }
+    
+    if (this.fileFilter) {
+      this.fileFilter.addEventListener('change', () => this.applyFilters());
+    }
+  }
+  
+  toggleForm() {
+    if (!this.requirementsForm) return;
+    
+    this.requirementsForm.classList.toggle('hidden');
+    
+    if (this.toggleFormBtn) {
+      this.toggleFormBtn.textContent = this.requirementsForm.classList.contains('hidden') 
+        ? 'Show Requirements' 
+        : 'Hide Requirements';
+    }
+  }
+  
+  hideForm() {
+    if (!this.requirementsForm) return;
+    
+    this.requirementsForm.classList.add('hidden');
+    
+    if (this.toggleFormBtn) {
+      this.toggleFormBtn.textContent = 'Show Requirements';
+    }
+  }
+  
+  handleFormSubmit(e) {
+    // Show loading state
+    if (this.submitBtn) this.submitBtn.disabled = true;
+    if (this.btnText) this.btnText.classList.add('hidden');
+    if (this.btnLoading) this.btnLoading.classList.remove('hidden');
+    
+    // Show and animate progress bar
+    if (this.analysisProgress) this.analysisProgress.classList.remove('hidden');
+    if (this.progressStatus) this.progressStatus.textContent = 'Processing requirements...';
+    
+    // Simulate progress
+    this.simulateProgress();
+  }
+  
+  simulateProgress() {
+    // Clear any existing interval
+    if (this.progressInterval) {
+      clearInterval(this.progressInterval);
+    }
+    
+    let progress = 0;
+    const statuses = [
+      'Initializing analysis...',
+      'Finding code files...',
+      'Processing frontend code...',
+      'Processing backend code...',
+      'Analyzing requirements...',
+      'Generating report...'
+    ];
+    
+    this.progressInterval = setInterval(() => {
+      // Increment progress
+      progress += 1.5;
+      
+      // Update progress bar
+      if (this.progressBar) {
+        this.progressBar.style.width = Math.min(progress, 95) + '%';
+      }
+      
+      // Update status message occasionally
+      if (progress % 15 === 0 && this.progressStatus) {
+        const statusIndex = Math.floor(progress / 15) % statuses.length;
+        this.progressStatus.textContent = statuses[statusIndex];
+      }
+      
+      // Stop at 95% (the page reload will complete it)
+      if (progress >= 95) {
+        clearInterval(this.progressInterval);
+      }
+    }, 300);
+  }
+  
+  toggleIssueDetails(button) {
+    if (!button) return;
+    
+    const container = button.closest('div').nextElementSibling;
+    if (!container) return;
+    
+    const details = container.querySelector('.issue-details');
+    if (!details) return;
+    
+    details.classList.toggle('hidden');
+    button.textContent = details.classList.contains('hidden') ? 'Expand' : 'Collapse';
+  }
+  
+  applyFilters() {
+    if (!this.searchInput || !this.severityFilter || !this.fileFilter) return;
+    
+    const searchTerm = this.searchInput.value.toLowerCase();
+    const selectedSeverity = this.severityFilter.value;
+    const selectedFile = this.fileFilter.value;
+    let visibleCount = 0;
+    
+    document.querySelectorAll('#issueList > div').forEach(issue => {
+      const severityMatch = selectedSeverity === 'all' || issue.dataset.severity === selectedSeverity;
+      const fileMatch = selectedFile === 'all' || issue.dataset.file === selectedFile;
+      const searchMatch = !searchTerm || issue.dataset.searchable.toLowerCase().includes(searchTerm);
+      const isVisible = severityMatch && fileMatch && searchMatch;
+      
+      issue.style.display = isVisible ? 'block' : 'none';
+      if (isVisible) visibleCount++;
+    });
+    
+    // Update filters status
+    const filterStatus = document.getElementById('filterStatus');
+    if (filterStatus) {
+      if (searchTerm || selectedSeverity !== 'all' || selectedFile !== 'all') {
+        filterStatus.textContent = `Showing ${visibleCount} filtered results`;
+        filterStatus.classList.remove('hidden');
+      } else {
+        filterStatus.classList.add('hidden');
+      }
+    }
+  }
+  
+  updateAnalysisDuration() {
+    const durationElement = document.getElementById('analysisDuration');
+    if (!durationElement || !window.summary) return;
+    
+    if (window.summary.start_time && window.summary.end_time) {
+      const start = new Date(window.summary.start_time);
+      const end = new Date(window.summary.end_time);
+      const seconds = Math.round((end - start) / 1000);
+      durationElement.textContent = seconds + 's';
+    } else {
+      durationElement.textContent = 'N/A';
+    }
+  }
+  
+  maybeShowForm() {
+    // Show form if no issues and no requirements
+    const hasIssues = document.querySelectorAll('#issueList > div').length > 0;
+    const hasRequirements = window.summary && 
+                           window.summary.requirements && 
+                           window.summary.requirements.length > 0;
+    
+    if (!hasIssues && !hasRequirements && this.requirementsForm) {
+      this.requirementsForm.classList.remove('hidden');
+      
+      if (this.toggleFormBtn) {
+        this.toggleFormBtn.textContent = 'Hide Requirements';
+      }
+    }
+  }
+}
+
+// Initialize the analyzer when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  const analyzer = new RequirementsAnalyzer();
+});

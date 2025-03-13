@@ -53,10 +53,10 @@
           <input type="hidden" name="type" value="requirements">
           
           <div class="mt-2 flex justify-between items-center">
-            <button type="submit" class="action-btn bg-blue-600 text-white hover:bg-blue-700">
-              <span id="submitBtnText">Analyze Requirements</span>
+            <button type="submit" class="action-btn bg-blue-600 text-white hover:bg-blue-700" id="submitBtn">
+              <span id="submitBtnText">Check Requirements</span>
               <span id="loadingIndicator" class="hidden ml-1">
-                <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg class="animate-spin h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
@@ -66,19 +66,6 @@
           </div>
         </div>
       </form>
-    </div>
-
-    <!-- Analysis Progress -->
-    <div id="analysisProgress" class="hidden p-2">
-      <div class="border border-gray-400 bg-white p-2">
-        <div class="flex justify-between items-center mb-2">
-          <div class="text-xs font-bold">Analysis in Progress</div>
-          <div class="text-xs" id="progressStatus">Starting...</div>
-        </div>
-        <div class="w-full bg-gray-200 rounded-full h-2">
-          <div id="progressBar" class="bg-blue-600 rounded-full h-2 transition-all duration-500" style="width: 0%"></div>
-        </div>
-      </div>
     </div>
 
     <!-- Analysis Grid -->
@@ -132,6 +119,19 @@
         <div class="mt-1 text-xs">
           <span class="text-gray-600">Analyzed: </span>
           <span class="font-bold">{{ summary.backend_files if summary else 0 }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analysis Progress -->
+    <div id="analysisProgress" class="hidden p-2">
+      <div class="border border-gray-400 bg-white p-2">
+        <div class="flex justify-between items-center mb-2">
+          <div class="text-xs font-bold">Analysis in Progress</div>
+          <div class="text-xs" id="progressStatus">Starting...</div>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div id="progressBar" class="bg-blue-600 rounded-full h-2 transition-all duration-500" style="width: 0%"></div>
         </div>
       </div>
     </div>
@@ -359,8 +359,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Add loading indicator when form is submitted
+  // Show loading indicator when requirements form is submitted
   const requirementsForm = document.getElementById('requirementsForm');
+  const submitBtn = document.getElementById('submitBtn');
   const submitBtnText = document.getElementById('submitBtnText');
   const loadingIndicator = document.getElementById('loadingIndicator');
   const progressBar = document.getElementById('progressBar');
@@ -368,14 +369,15 @@ document.addEventListener('DOMContentLoaded', function() {
   
   if (requirementsForm) {
     requirementsForm.addEventListener('submit', function() {
-      // Show loading state
+      // Show loading state on button
+      if (submitBtn) submitBtn.disabled = true;
       if (submitBtnText) submitBtnText.textContent = 'Analyzing...';
       if (loadingIndicator) loadingIndicator.classList.remove('hidden');
       
       // Show progress bar
       if (analysisProgress) analysisProgress.classList.remove('hidden');
       
-      // Simulate progress (since we don't have real-time updates)
+      // Simulate progress
       let progress = 0;
       const interval = setInterval(() => {
         progress += 1;
@@ -385,14 +387,6 @@ document.addEventListener('DOMContentLoaded', function() {
           clearInterval(interval);
         }
       }, 500);
-      
-      // Disable form to prevent double submission
-      this.querySelectorAll('button, input, textarea, select').forEach(el => {
-        el.disabled = true;
-      });
-      
-      // Let the form submit proceed
-      return true;
     });
   }
 
