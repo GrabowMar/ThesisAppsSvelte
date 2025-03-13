@@ -38,20 +38,28 @@ h3 {
   margin-top: 0.5rem !important;
 }
 
-/* Cards & Panels - Sharp edges, defined borders */
-.bg-white.shadow.rounded-lg {
+/* Cards & Panels - Desktop appearance with subtle rounding */
+.bg-white.shadow, 
+.bg-white.shadow-sm,
+.border.border-gray-400.bg-white,
+.border.border-gray-300 {
   background: #fff;
-  border-radius: 0;
-  box-shadow: none;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
   border: 1px solid #999;
+  transition: border-color 0.15s ease;
 }
 
-.bg-white.shadow.rounded-lg:hover {
+.bg-white.shadow:hover,
+.bg-white.shadow-sm:hover,
+.border.border-gray-400.bg-white:hover,
+.border.border-gray-300:hover {
   border-color: #666;
 }
 
 /* Section styling - Clear separation */
-section.bg-white.shadow.rounded-lg.p-6 {
+section.bg-white.shadow.rounded-lg.p-6,
+section.bg-white.shadow-sm.rounded-sm.p-2 {
   border-left: none;
   border-top: 2px solid #0066cc;
   padding: 0.5rem !important;
@@ -59,26 +67,55 @@ section.bg-white.shadow.rounded-lg.p-6 {
 }
 
 /* Form Controls - Classic desktop look */
-input[type="text"], select {
+input[type="text"], 
+input[type="number"],
+input[type="search"],
+select {
   padding: 2px 4px;
-  border-radius: 0;
+  border-radius: 2px;
   border: 1px solid #7f9db9;
   background: #fff;
   font-size: 12px;
-  height: 20px;
+  height: 22px;
 }
 
-input[type="text"]:focus, select:focus {
+/* Selects specifically */
+select {
+  appearance: menulist;
+  background-color: #f8f8f8;
+  background-image: linear-gradient(to bottom, #ffffff, #e8e8e8);
+  padding-right: 16px;
+}
+
+input[type="text"]:focus, 
+input[type="number"]:focus,
+input[type="search"]:focus,
+select:focus {
   border-color: #0066cc;
-  outline: none;
+  outline: 1px solid #99c2ff;
   box-shadow: none;
 }
 
+/* Checkboxes and Radio Buttons */
+input[type="checkbox"],
+input[type="radio"] {
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* Labels */
+label {
+  display: inline-block;
+  margin-bottom: 3px;
+}
+
 /* Buttons - Enhanced Desktop Style */
-button, .action-btn {
+button, 
+.action-btn,
+a.action-btn {
   font-size: 11px;
   padding: 3px 8px;
-  border-radius: 1px;
+  border-radius: 2px;
   border: 1px solid #888;
   border-bottom-color: #666;
   background: #e8e8e8;
@@ -91,6 +128,10 @@ button, .action-btn {
   box-shadow: inset 0 -1px 1px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.8);
   text-shadow: 0 1px 0 rgba(255,255,255,0.7);
   position: relative;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Specialized Button Types */
@@ -122,8 +163,22 @@ button, .action-btn {
   color: #444488;
 }
 
+.action-btn[data-action="status"] {
+  background-image: linear-gradient(to bottom, #f0f8ff, #e6f0fa);
+  border-color: #6699cc;
+  border-bottom-color: #5588bb;
+  color: #336699;
+}
+
+/* Expand Button */
+.expand-btn {
+  min-width: 55px;
+}
+
 /* Hover States */
-button:hover, .action-btn:hover {
+button:hover, 
+.action-btn:hover,
+a.action-btn:hover {
   background-image: linear-gradient(to bottom, #ffffff, #f0f0f0);
   box-shadow: inset 0 -1px 1px rgba(0,0,0,0.1), 
               inset 0 1px 1px rgba(255,255,255,0.8), 
@@ -146,8 +201,22 @@ button:hover, .action-btn:hover {
   background-image: linear-gradient(to bottom, #f8f8ff, #f0f0ff);
 }
 
+.action-btn[data-action="status"]:hover {
+  background-image: linear-gradient(to bottom, #f0faff, #e0f0ff);
+}
+
+/* Focus state for keyboard navigation */
+button:focus, 
+.action-btn:focus,
+a.action-btn:focus {
+  outline: 1px dotted #000;
+  outline-offset: 1px;
+}
+
 /* Active/Pressed State */
-button:active, .action-btn:active {
+button:active, 
+.action-btn:active,
+a.action-btn:active {
   background-image: linear-gradient(to bottom, #e0e0e0, #e8e8e8);
   box-shadow: inset 0 2px 3px rgba(0,0,0,0.2);
   text-shadow: 0 1px 0 rgba(255,255,255,0.4);
@@ -157,7 +226,9 @@ button:active, .action-btn:active {
 }
 
 /* Disabled State */
-button:disabled, .action-btn:disabled {
+button:disabled, 
+.action-btn:disabled,
+a.action-btn:disabled {
   background: #f0f0f0;
   border-color: #ccc;
   color: #999;
@@ -167,86 +238,153 @@ button:disabled, .action-btn:disabled {
 }
 
 /* Action Button Colors - Muted, professional */
-.action-btn.bg-green-500 {
+.action-btn.bg-green-500,
+.action-btn.text-green-500 {
   background: #e1e1e1;
   color: #000;
   border: 1px solid #999;
 }
-.action-btn.bg-red-500 {
+.action-btn.bg-red-500,
+.action-btn.text-red-500 {
   background: #e1e1e1;
   color: #000;
   border: 1px solid #999;
 }
-.action-btn.bg-yellow-500 {
+.action-btn.bg-yellow-500,
+.action-btn.text-yellow-500 {
   background: #e1e1e1;
   color: #000;
   border: 1px solid #999;
 }
-.action-btn.bg-blue-500 {
+.action-btn.bg-blue-500,
+.action-btn.text-blue-500 {
   background: #e1e1e1;
   color: #000;
   border: 1px solid #999;
 }
 
 /* Status Colors - High contrast */
-.bg-green-100.text-green-800 {
+.bg-green-100.text-green-800,
+.status-badge.bg-green-100 {
   background-color: #e0ffe0 !important;
   color: #006600 !important;
   border: 1px solid #006600;
 }
-.bg-yellow-100.text-yellow-800 {
+.bg-yellow-100.text-yellow-800,
+.status-badge.bg-yellow-100 {
   background-color: #ffffd0 !important;
   color: #666600 !important;
   border: 1px solid #666600;
 }
-.bg-red-100.text-red-800 {
+.bg-red-100.text-red-800,
+.status-badge.bg-red-100 {
   background-color: #ffe0e0 !important;
   color: #660000 !important;
   border: 1px solid #660000;
+}
+.bg-blue-100.text-blue-800 {
+  background-color: #e0e0ff !important;
+  color: #000066 !important;
+  border: 1px solid #000066;
+}
+.bg-gray-100.text-gray-800 {
+  background-color: #f0f0f0 !important;
+  color: #333333 !important;
+  border: 1px solid #666666;
+}
+
+/* Severity Badges */
+span[class*="px-2 py-0.5 border"] {
+  border-radius: 2px;
+  font-weight: normal;
 }
 
 /* App Cards - Compact grid layout */
 [data-app-id] {
   @apply border border-solid border-gray-400 p-2 bg-white relative;
-  transition: none;
+  transition: border-color 0.15s ease;
+  border-radius: 2px;
 }
 
 [data-app-id]:hover {
   transform: none;
   border-color: #666;
-  box-shadow: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 /* Status Badges - Clear, visible states */
-[data-app-id] .absolute.top-4.right-4 span {
+.status-badge,
+[data-app-id] .status-badge {
   font-size: 11px;
   padding: 1px 4px;
-  border-radius: 0;
+  border-radius: 2px;
   font-weight: normal;
   background-image: none;
 }
 
+/* Security indicator badges */
+.security-indicator,
+.security-high,
+.security-medium,
+.security-low {
+  font-size: 11px;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
 /* Status Text Colors */
-.font-medium.text-green-600 { color: #006600 !important; }
-.font-medium.text-red-600 { color: #660000 !important; }
-.font-medium.text-yellow-600 { color: #666600 !important; }
+.font-medium.text-green-700,
+.text-green-700 { 
+  color: #006600 !important; 
+}
+.font-medium.text-red-700,
+.text-red-700 { 
+  color: #660000 !important; 
+}
+.font-medium.text-yellow-700,
+.text-yellow-700 { 
+  color: #666600 !important; 
+}
+.font-medium.text-blue-700,
+.text-blue-700 { 
+  color: #000066 !important; 
+}
 
 /* Links - Underlined, classic style */
-a.bg-indigo-500.text-white {
-  @apply inline-flex items-center px-2 py-1;
+a.text-blue-700,
+a.hover\:underline {
   text-decoration: underline;
-  background: none;
   color: #0066cc;
 }
 
-a.bg-indigo-500.text-white:hover {
+a.text-blue-700:hover,
+a.hover\:underline:hover {
   color: #003399;
+  text-decoration: underline;
+}
+
+a.action-btn {
+  text-decoration: none;
+  color: #222;
+}
+
+/* Progress bars */
+.bg-blue-600.rounded-full {
+  background-color: #0078d7 !important;
+  border-radius: 0 !important;
+}
+
+.bg-gray-200.rounded-full {
+  background-color: #e5e5e5 !important;
+  border-radius: 0 !important;
+  border: 1px solid #999;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 }
 
 /* Toast Notifications - Windows-style alerts */
 .fixed.bottom-4.right-4 {
   font-size: 12px;
-  border-radius: 0;
+  border-radius: 2px;
   border: 1px solid #999;
   box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
   background: #fff;
@@ -258,7 +396,8 @@ a.bg-indigo-500.text-white:hover {
 }
 
 /* Icon Sizing */
-button svg.w-4.h-4, .action-btn svg.w-4.h-4 {
+button svg.w-3.h-3,
+.action-btn svg.w-3.h-3 {
   width: 12px !important;
   height: 12px !important;
   margin-right: 4px !important;
@@ -274,6 +413,7 @@ button svg.w-4.h-4, .action-btn svg.w-4.h-4 {
 table {
   border-collapse: collapse;
   width: 100%;
+  border: 1px solid #999;
 }
 
 th, td {
@@ -305,4 +445,173 @@ th {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #a1a1a1;
+}
+
+/* Pre and Code elements - IMPROVED FOR READABILITY */
+pre, code {
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+pre {
+  padding: 8px 10px;
+  margin: 0;
+  overflow-x: auto;
+  border: 1px solid #8090a0;
+  background-color: #f5f5f5;
+}
+
+/* Ensure code in dark backgrounds is readable */
+pre.bg-gray-800,
+div.bg-gray-800,
+pre.bg-gray-50 code,
+pre.font-mono.bg-gray-800 {
+  background-color: #f0f0f0 !important;
+  color: #000 !important;
+  border: 1px solid #8090a0;
+}
+
+.font-mono.bg-gray-800.text-white {
+  background-color: #f0f0f0 !important;
+  color: #000 !important;
+}
+
+/* Code elements in evidence sections */
+div.font-mono.bg-gray-800.text-white p-2 .font-bold.text-gray-400 {
+  color: #333 !important;
+  font-weight: bold;
+}
+
+div.font-bold.text-gray-400 {
+  color: #333 !important;
+}
+
+/* Make code blocks look like Windows console but readable */
+.text-white code,
+.text-white pre {
+  color: #000 !important;
+}
+
+/* Alert items */
+.alert-item {
+  border: 1px solid #999;
+  background: #fff;
+  border-radius: 2px;
+  margin-bottom: 5px;
+  transition: border-color 0.15s;
+}
+
+.alert-item:hover {
+  border-color: #666;
+}
+
+/* Tool outputs section */
+#tool-outputs h3,
+div.bg-gray-100.border-b.border-gray-300 h3.text-xs.font-bold {
+  font-weight: bold;
+  background-color: #e1e1e1;
+  padding: 2px 5px;
+  border-bottom: 1px solid #999;
+}
+
+/* Filter dropdowns styling */
+div[class*="flex items-center space-x-2"] select {
+  min-width: 100px;
+  background-color: #f8f8f8;
+  padding-right: 16px;
+}
+
+/* Search box */
+input[placeholder*="Search issues"] {
+  min-width: 150px;
+}
+
+/* Severity level badges */
+span[class*="text-xs px-2 py-0.5"] {
+  border-radius: 2px !important;
+  padding: 1px 4px !important;
+  font-size: 11px !important;
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+}
+
+/* Tool status indicators in sidebar */
+div.flex.justify-between.text-xs span {
+  font-weight: normal;
+  padding: 1px 4px;
+}
+
+/* Details sections */
+.issue-details, 
+.alert-details {
+  margin-top: 5px;
+  border-top: 1px solid #ddd;
+  padding-top: 5px;
+}
+
+.whitespace-pre-wrap {
+  white-space: pre-wrap;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* Modal */
+#modal {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+#modal .bg-gray-100 {
+  border-radius: 2px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* Additional helper classes for rounded corners and shadows */
+.rounded-sm {
+  border-radius: 2px !important;
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+}
+
+/* Accessibility improvements */
+.sr-only:focus {
+  background: #0066cc;
+  color: #fff;
+  padding: 0.5rem;
+  z-index: 100;
+}
+
+/* Tool status indicators in right sidebar */
+.border.border-gray-300.p-1 {
+  padding: 3px 6px;
+}
+
+.border.border-gray-300.p-1 .flex.justify-between.text-xs span[class*="text-"] {
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+/* Fix for tool output backgrounds */
+pre.text-xs.font-mono.bg-gray-800.text-white.p-1 {
+  background-color: #f5f5f5 !important;
+  color: #000 !important;
+  border: 1px solid #999;
+}
+
+pre.text-xs.font-mono.bg-gray-50.p-2 {
+  background-color: #f5f5f5 !important; 
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  button, .action-btn {
+    forced-color-adjust: none;
+  }
+  
+  pre, code {
+    forced-color-adjust: none;
+  }
 }

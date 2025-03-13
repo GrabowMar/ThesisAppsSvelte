@@ -2,33 +2,37 @@
 
 {% block content %}
 <div class="flex min-h-screen bg-gray-100">
-  <!-- Main Content -->
+  <!-- Main Content Area -->
   <div class="flex-1 flex flex-col overflow-hidden">
-    <!-- Top Bar -->
+    <!-- Top Navigation and Filter Bar -->
     <div class="bg-gray-200 border-b border-gray-400 p-1">
       <div class="flex justify-between items-center">
+        <!-- Left Side Controls -->
         <div class="flex items-center space-x-2">
-          <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs">Back</a>
-          <button id="refreshAnalysis" class="action-btn h-6 px-2 text-xs">Run Analysis</button>
+          <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs rounded-sm">Back</a>
+          <button id="refreshAnalysis" class="action-btn h-6 px-2 text-xs rounded-sm">Run Analysis</button>
           {% if not full_scan %}
-          <a href="?full=true" class="action-btn h-6 px-2 text-xs">Full Scan</a>
+          <a href="?full=true" class="action-btn h-6 px-2 text-xs rounded-sm">Full Scan</a>
           {% endif %}
         </div>
+        
+        <!-- Right Side Filters -->
         <div class="flex items-center space-x-2">
-          <input type="text" id="searchIssues" placeholder="Search issues..." class="h-6 px-2 text-xs border border-gray-300">
-          <select id="toolFilter" class="h-6 px-2 text-xs border border-gray-300">
+          <input type="text" id="searchIssues" placeholder="Search issues..." 
+                 class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
+          <select id="toolFilter" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
             <option value="all">All Tools</option>
             {% for tool in summary.tool_counts.keys() %}
             <option value="{{ tool }}">{{ tool }}</option>
             {% endfor %}
           </select>
-          <select id="severityFilter" class="h-6 px-2 text-xs border border-gray-300">
+          <select id="severityFilter" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
             <option value="all">All Severities</option>
             <option value="HIGH">High</option>
             <option value="MEDIUM">Medium</option>
             <option value="LOW">Low</option>
           </select>
-          <select id="fileFilter" class="h-6 px-2 text-xs border border-gray-300">
+          <select id="fileFilter" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
             <option value="all">All Files</option>
             {% set files = [] %}
             {% for issue in issues %}
@@ -42,61 +46,82 @@
       </div>
     </div>
 
-    <!-- Issue List Area -->
+    <!-- Analysis Content Area -->
     <div class="p-2 flex-1 overflow-auto space-y-2">
-      <!-- Analysis Stats Grid -->
+      <!-- Analysis Stats Overview -->
       <div class="grid grid-cols-4 gap-2">
-        <div class="border border-gray-400 bg-white p-2">
+        <div class="border border-gray-400 bg-white p-2 rounded-sm shadow-sm">
           <div class="text-xs text-gray-600">Total Issues</div>
           <div class="text-xs font-bold">{{ summary.total_issues if summary else 0 }}</div>
         </div>
-        <div class="border border-gray-400 bg-white p-2">
+        <div class="border border-gray-400 bg-white p-2 rounded-sm shadow-sm">
           <div class="text-xs text-red-800">High Severity</div>
           <div class="text-xs font-bold text-red-700">{{ summary.severity_counts.HIGH if summary else 0 }}</div>
         </div>
-        <div class="border border-gray-400 bg-white p-2">
+        <div class="border border-gray-400 bg-white p-2 rounded-sm shadow-sm">
           <div class="text-xs text-yellow-800">Medium Severity</div>
           <div class="text-xs font-bold text-yellow-700">{{ summary.severity_counts.MEDIUM if summary else 0 }}</div>
         </div>
-        <div class="border border-gray-400 bg-white p-2">
+        <div class="border border-gray-400 bg-white p-2 rounded-sm shadow-sm">
           <div class="text-xs text-blue-800">Low Severity</div>
           <div class="text-xs font-bold text-blue-700">{{ summary.severity_counts.LOW if summary else 0 }}</div>
         </div>
       </div>
 
-      <!-- Issue List -->
+      <!-- Security Issues List -->
       {% if issues %}
       <div class="space-y-2" id="issueList">
         {% for issue in issues %}
-        <div class="border border-gray-400 bg-white {% if issue.severity == 'HIGH' %}bg-red-50{% elif issue.severity == 'MEDIUM' %}bg-yellow-50{% else %}bg-blue-50{% endif %}"
-             data-tool="{{ issue.tool }}" data-severity="{{ issue.severity }}" data-file="{{ issue.filename }}"
+        <div class="border border-gray-400 bg-white rounded-sm shadow-sm 
+                  {% if issue.severity == 'HIGH' %}bg-red-50
+                  {% elif issue.severity == 'MEDIUM' %}bg-yellow-50
+                  {% else %}bg-blue-50{% endif %}"
+             data-tool="{{ issue.tool }}" 
+             data-severity="{{ issue.severity }}" 
+             data-file="{{ issue.filename }}"
              data-searchable="{{ issue.issue_type }} {{ issue.issue_text }} {{ issue.filename }}">
+          
+          <!-- Issue Header -->
           <div class="p-2">
             <div class="flex items-center space-x-2 mb-1">
-              <span class="text-xs px-2 py-0.5 border {% if issue.severity == 'HIGH' %}bg-red-100 text-red-800 border-red-700{% elif issue.severity == 'MEDIUM' %}bg-yellow-100 text-yellow-800 border-yellow-700{% else %}bg-blue-100 text-blue-800 border-blue-700{% endif %}">
+              <!-- Severity Badge -->
+              <span class="text-xs px-2 py-0.5 border rounded-sm
+                {% if issue.severity == 'HIGH' %}bg-red-100 text-red-800 border-red-700
+                {% elif issue.severity == 'MEDIUM' %}bg-yellow-100 text-yellow-800 border-yellow-700
+                {% else %}bg-blue-100 text-blue-800 border-blue-700{% endif %}">
                 {{ issue.severity }}
               </span>
-              <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400">{{ issue.tool }}</span>
-              <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400">{{ issue.confidence }}</span>
-              <button class="ml-auto action-btn h-6 px-2 text-xs expand-btn">Expand</button>
+              
+              <!-- Tool and Confidence Badges -->
+              <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400 rounded-sm">{{ issue.tool }}</span>
+              <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400 rounded-sm">{{ issue.confidence }}</span>
+              
+              <!-- Expand Button -->
+              <button class="ml-auto action-btn h-6 px-2 text-xs expand-btn rounded-sm">Expand</button>
             </div>
+            
+            <!-- Issue Content -->
             <div class="space-y-2">
               <div>
                 <div class="text-xs font-bold">{{ issue.issue_type }}</div>
                 <div class="text-xs text-gray-600">{{ issue.issue_text }}</div>
               </div>
-              <div class="issue-details hidden">
+              
+              <!-- Collapsible Details -->
+              <div class="issue-details hidden space-y-2">
                 {% if issue.fix_suggestion %}
-                <div class="text-xs bg-white border border-gray-300 p-2">
+                <div class="text-xs bg-white border border-gray-300 p-2 rounded-sm">
                   <span class="font-bold">Fix:</span> {{ issue.fix_suggestion }}
                 </div>
                 {% endif %}
+                
+                <!-- File and Code Information -->
                 <div>
                   <div class="text-xs font-mono text-gray-600">
                     {{ issue.filename }}{% if issue.line_number > 0 %}:{{ issue.line_number }}{% endif %}
                   </div>
                   <div class="mt-1">
-                    <pre class="text-xs font-mono bg-gray-800 text-white p-1 overflow-x-auto"><code>{{ issue.code }}</code></pre>
+                    <pre class="text-xs font-mono bg-gray-800 text-white p-1 overflow-x-auto rounded-sm"><code>{{ issue.code }}</code></pre>
                   </div>
                 </div>
               </div>
@@ -107,32 +132,32 @@
       </div>
       {% else %}
       <!-- No Issues Message -->
-      <div class="border border-gray-400 bg-white p-4 text-center">
+      <div class="border border-gray-400 bg-white p-4 text-center rounded-sm shadow-sm">
         {% if error %}
-        <div class="inline-block border border-red-700 bg-red-50 p-2">
+        <div class="inline-block border border-red-700 bg-red-50 p-2 rounded-sm">
           <p class="text-xs font-bold text-red-700">{{ error }}</p>
         </div>
         {% else %}
-        <div class="inline-block border border-green-700 bg-green-50 p-2">
+        <div class="inline-block border border-green-700 bg-green-50 p-2 rounded-sm">
           <p class="text-xs font-bold text-green-700">No security issues found.</p>
         </div>
         {% endif %}
       </div>
       {% endif %}
 
-      <!-- Tool Outputs -->
-      <div class="border border-gray-400 bg-white">
+      <!-- Tool Outputs Section -->
+      <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
           <h2 class="font-bold text-sm">Tool Outputs</h2>
         </div>
         <div class="p-2 space-y-2">
           {% for tool, output in tool_output_details.items() %}
-          <div class="border border-gray-300">
+          <div class="border border-gray-300 rounded-sm">
             <div class="bg-gray-100 border-b border-gray-300 px-2 py-1">
               <h3 class="text-xs font-bold">{{ tool|title }}</h3>
             </div>
             <div class="p-1">
-              <pre class="text-xs font-mono bg-gray-800 text-white p-1 overflow-x-auto whitespace-pre-wrap"><code>{{ output }}</code></pre>
+              <pre class="text-xs font-mono bg-gray-800 text-white p-1 overflow-x-auto whitespace-pre-wrap rounded-sm"><code>{{ output }}</code></pre>
             </div>
           </div>
           {% endfor %}
@@ -144,8 +169,8 @@
   <!-- Right Sidebar -->
   <aside class="w-64 bg-gray-200 border-l border-gray-400 flex flex-col">
     <div class="p-2 space-y-2 flex-1 overflow-auto">
-      <!-- Analysis Info -->
-      <div class="border border-gray-400 bg-white">
+      <!-- Analysis Information Card -->
+      <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
           <h2 class="font-bold text-xs">Analysis Info</h2>
         </div>
@@ -173,17 +198,20 @@
         </div>
       </div>
 
-      <!-- Tool Status -->
-      <div class="border border-gray-400 bg-white">
+      <!-- Tool Status Card -->
+      <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
           <h2 class="font-bold text-xs">Tool Status</h2>
         </div>
         <div class="p-2 space-y-1">
           {% for tool, status in tool_status.items() %}
-          <div class="border border-gray-300 p-1">
+          <div class="border border-gray-300 p-1 rounded-sm">
             <div class="flex justify-between text-xs">
               <span>{{ tool|title }}</span>
-              <span class="{% if 'No issues' in status %}text-green-700{% elif 'Not run' in status %}text-gray-600{% elif 'Error' in status %}text-red-700{% else %}text-yellow-700{% endif %}">
+              <span class="{% if 'No issues' in status %}text-green-700
+                          {% elif 'Not run' in status %}text-gray-600
+                          {% elif 'Error' in status %}text-red-700
+                          {% else %}text-yellow-700{% endif %}">
                 {{ status }}
               </span>
             </div>
@@ -192,30 +220,32 @@
         </div>
       </div>
 
-      <!-- AI Analysis -->
-      <div class="border border-gray-400 bg-white">
+      <!-- AI Analysis Card -->
+      <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
           <h2 class="font-bold text-xs">AI Analysis</h2>
         </div>
         <div class="p-2">
           <div class="space-y-2">
-            <button id="aiAnalyzeBtn" class="action-btn h-6 px-2 text-xs w-full">
+            <button id="aiAnalyzeBtn" class="action-btn h-6 px-2 text-xs w-full rounded-sm">
               Analyze with Claude
             </button>
-            <select id="aiModel" class="h-6 px-2 text-xs w-full border border-gray-300">
+            <select id="aiModel" class="h-6 px-2 text-xs w-full border border-gray-300 rounded-sm">
               <option value="claude-3-opus-20240229">Claude 3 Opus</option>
               <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
               <option value="gpt-4">GPT-4</option>
               <option value="gpt-3.5-turbo">GPT-3.5</option>
             </select>
           </div>
+          
+          <!-- AI Response (Hidden by Default) -->
           <div id="aiResponse" class="mt-2 text-xs hidden">
             <div class="flex justify-between items-center mb-1">
               <div class="font-bold">AI Analysis:</div>
-              <button onclick="document.getElementById('aiResponse').classList.add('hidden')" 
+              <button id="closeAiResponse" aria-label="Close AI analysis" 
                       class="text-xs text-gray-500 hover:text-gray-700">×</button>
             </div>
-            <div class="border border-gray-300 p-2 whitespace-pre-wrap" id="aiContent"></div>
+            <div class="border border-gray-300 p-2 whitespace-pre-wrap rounded-sm overflow-auto max-h-80" id="aiContent"></div>
           </div>
         </div>
       </div>
@@ -225,55 +255,83 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // DOM Elements
   const refreshBtn = document.getElementById('refreshAnalysis');
   const toolFilter = document.getElementById('toolFilter');
   const severityFilter = document.getElementById('severityFilter');
   const fileFilter = document.getElementById('fileFilter');
   const searchInput = document.getElementById('searchIssues');
+  const aiAnalyzeBtn = document.getElementById('aiAnalyzeBtn');
+  const aiResponseSection = document.getElementById('aiResponse');
+  const aiContentArea = document.getElementById('aiContent');
+  const closeAiResponseBtn = document.getElementById('closeAiResponse');
 
-  // Expand/Collapse functionality
-  document.querySelectorAll('.expand-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const details = this.closest('div').nextElementSibling.querySelector('.issue-details');
-      details.classList.toggle('hidden');
-      this.textContent = details.classList.contains('hidden') ? 'Expand' : 'Collapse';
-    });
-  });
-
-  // Refresh functionality
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', function() {
-      refreshBtn.disabled = true;
-      refreshBtn.innerHTML = '<svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Analyzing...';
-      window.location.reload();
+  /**
+   * Handle expand/collapse functionality for issue details
+   */
+  function setupExpandButtons() {
+    document.querySelectorAll('.expand-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const details = this.closest('div').nextElementSibling.querySelector('.issue-details');
+        if (details) {
+          details.classList.toggle('hidden');
+          this.textContent = details.classList.contains('hidden') ? 'Expand' : 'Collapse';
+        }
+      });
     });
   }
 
-  // Filter functionality
+  /**
+   * Set up refresh button functionality
+   */
+  function setupRefreshButton() {
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', function() {
+        refreshBtn.disabled = true;
+        refreshBtn.innerHTML = '<svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Analyzing...';
+        window.location.reload();
+      });
+    }
+  }
+
+  /**
+   * Apply filters to the issue list
+   */
   function applyFilters() {
     const selectedTool = toolFilter?.value || 'all';
     const selectedSeverity = severityFilter?.value || 'all';
     const selectedFile = fileFilter?.value || 'all';
     const searchText = searchInput?.value.toLowerCase() || '';
 
+    let visibleCount = 0;
+    let highCount = 0;
+    let mediumCount = 0;
+    let lowCount = 0;
+
     document.querySelectorAll('#issueList > div').forEach(issue => {
       const toolMatch = selectedTool === 'all' || issue.dataset.tool === selectedTool;
       const severityMatch = selectedSeverity === 'all' || issue.dataset.severity === selectedSeverity;
       const fileMatch = selectedFile === 'all' || issue.dataset.file === selectedFile;
       const searchMatch = !searchText || issue.dataset.searchable.toLowerCase().includes(searchText);
-      issue.style.display = (toolMatch && severityMatch && fileMatch && searchMatch) ? 'block' : 'none';
+      const isVisible = toolMatch && severityMatch && fileMatch && searchMatch;
+      
+      issue.style.display = isVisible ? 'block' : 'none';
+      
+      if (isVisible) {
+        visibleCount++;
+        if (issue.dataset.severity === 'HIGH') highCount++;
+        else if (issue.dataset.severity === 'MEDIUM') mediumCount++;
+        else if (issue.dataset.severity === 'LOW') lowCount++;
+      }
     });
 
-    // Update counts if grid exists
-    const totalCount = document.querySelectorAll('#issueList > div:not([style*="display: none"])').length;
-    const highCount = document.querySelectorAll('#issueList > div[data-severity="HIGH"]:not([style*="display: none"])').length;
-    const mediumCount = document.querySelectorAll('#issueList > div[data-severity="MEDIUM"]:not([style*="display: none"])').length;
-    const lowCount = document.querySelectorAll('#issueList > div[data-severity="LOW"]:not([style*="display: none"])').length;
-
-    // Update summary stats if they exist
-    updateSummaryStats(totalCount, highCount, mediumCount, lowCount);
+    // Update summary stats
+    updateSummaryStats(visibleCount, highCount, mediumCount, lowCount);
   }
 
+  /**
+   * Update the summary statistics display
+   */
   function updateSummaryStats(total, high, medium, low) {
     const statsElements = {
       total: document.querySelector('.text-xs.font-bold:not([class*="text-"])'),
@@ -288,106 +346,130 @@ document.addEventListener('DOMContentLoaded', function() {
     if (statsElements.low) statsElements.low.textContent = low;
   }
 
-  // Add filter event listeners
-  [toolFilter, severityFilter, fileFilter].forEach(filter => {
-    filter?.addEventListener('change', applyFilters);
-  });
+  /**
+   * Set up filter event listeners
+   */
+  function setupFilters() {
+    [toolFilter, severityFilter, fileFilter].forEach(filter => {
+      if (filter) {
+        filter.addEventListener('change', applyFilters);
+      }
+    });
 
-  // Add search functionality with debounce
-  let searchTimeout;
-  searchInput?.addEventListener('input', () => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(applyFilters, 300);
-  });
-
-  // AI Analysis integration
-  document.getElementById('aiAnalyzeBtn')?.addEventListener('click', async function() {
-    const btn = this;
-    const response = document.getElementById('aiResponse');
-    const content = document.getElementById('aiContent');
-    const model = document.getElementById('aiModel').value;
-    
-    btn.disabled = true;
-    const originalText = btn.textContent;
-    btn.textContent = 'Analyzing...';
-    
-    try {
-      // Collect all visible issues for analysis
-      const issueData = Array.from(document.querySelectorAll('#issueList > div:not([style*="display: none"])')).map(issue => ({
-        type: issue.querySelector('.font-bold').textContent,
-        text: issue.querySelector('.text-gray-600').textContent,
-        severity: issue.dataset.severity,
-        file: issue.dataset.file,
-        code: issue.querySelector('code')?.textContent
-      }));
-
-      const result = await fetch('/api/analyze-security', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          issues: issueData,
-          model: model 
-        })
+    // Add search with debounce
+    if (searchInput) {
+      let searchTimeout;
+      searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(applyFilters, 300);
       });
-
-      if (!result.ok) {
-        const error = await result.json();
-        throw new Error(error.error || 'Analysis failed');
-      }
-      
-      const analysis = await result.json();
-      content.innerHTML = analysis.response.replace(/\n/g, '<br>');
-      response.classList.remove('hidden');
-    } catch (err) {
-      let errorMsg = err.message;
-      if (errorMsg.includes('quota')) {
-        errorMsg = 'API quota exceeded. Please try again later or use a different model.';
-      } else if (errorMsg.includes('rate limit')) {
-        errorMsg = 'Too many requests. Please wait a moment and try again.';
-      }
-      content.textContent = 'Error: ' + errorMsg;
-      response.classList.remove('hidden');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = originalText;
     }
-  });
-
-  // Close AI analysis response
-  document.querySelectorAll('[data-close-response]').forEach(btn => {
-    btn.addEventListener('click', function() {
-      this.closest('.response-container').classList.add('hidden');
-    });
-  });
-
-  // Handle tool output toggling
-  document.querySelectorAll('[data-toggle-output]').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const toolId = this.dataset.toggleOutput;
-      const outputEl = document.getElementById(`output-${toolId}`);
-      if (outputEl) {
-        outputEl.classList.toggle('hidden');
-        this.textContent = outputEl.classList.contains('hidden') ? 'Show Output' : 'Hide Output';
-      }
-    });
-  });
-
-  // Initialize tooltips if present
-  const tooltipElements = document.querySelectorAll('[data-tooltip]');
-  if (tooltipElements.length > 0) {
-    tooltipElements.forEach(el => {
-      el.addEventListener('mouseenter', function(e) {
-        const tooltip = document.createElement('div');
-        tooltip.className = 'absolute z-50 bg-gray-900 text-white text-xs rounded px-2 py-1';
-        tooltip.textContent = this.dataset.tooltip;
-        tooltip.style.top = `${e.pageY + 10}px`;
-        tooltip.style.left = `${e.pageX + 10}px`;
-        document.body.appendChild(tooltip);
-        
-        this.addEventListener('mouseleave', () => tooltip.remove(), { once: true });
-      });
-    });
   }
+
+  /**
+   * Set up AI analysis functionality
+   */
+  function setupAiAnalysis() {
+    if (aiAnalyzeBtn) {
+      aiAnalyzeBtn.addEventListener('click', async function() {
+        const aiModel = document.getElementById('aiModel')?.value || 'claude-3-opus-20240229';
+        
+        // Button loading state
+        const originalText = this.textContent;
+        this.disabled = true;
+        this.textContent = 'Analyzing...';
+        
+        try {
+          // Collect visible issues for analysis
+          const issueData = Array.from(
+            document.querySelectorAll('#issueList > div:not([style*="display: none"])')
+          ).map(issue => ({
+            type: issue.querySelector('.font-bold')?.textContent || 'Unknown',
+            text: issue.querySelector('.text-gray-600')?.textContent || '',
+            severity: issue.dataset.severity || 'UNKNOWN',
+            file: issue.dataset.file || 'unknown',
+            code: issue.querySelector('code')?.textContent || ''
+          }));
+
+          if (issueData.length === 0) {
+            throw new Error('No issues found to analyze');
+          }
+
+          // Call API for analysis
+          const result = await fetch('/api/analyze-security', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              issues: issueData,
+              model: aiModel 
+            })
+          });
+
+          if (!result.ok) {
+            const errorData = await result.json();
+            throw new Error(errorData.error || 'Analysis failed');
+          }
+          
+          // Update UI with results
+          const analysis = await result.json();
+          aiContentArea.innerHTML = analysis.response.replace(/\n/g, '<br>');
+          aiResponseSection.classList.remove('hidden');
+        } catch (err) {
+          // Handle specific error cases with more user-friendly messages
+          let errorMsg = err.message;
+          if (errorMsg.includes('quota')) {
+            errorMsg = 'API quota exceeded. Please try again later or use a different model.';
+          } else if (errorMsg.includes('rate limit')) {
+            errorMsg = 'Too many requests. Please wait a moment and try again.';
+          }
+          
+          aiContentArea.textContent = 'Error: ' + errorMsg;
+          aiResponseSection.classList.remove('hidden');
+        } finally {
+          // Reset button state
+          this.disabled = false;
+          this.textContent = originalText;
+        }
+      });
+    }
+
+    // Close AI response
+    if (closeAiResponseBtn && aiResponseSection) {
+      closeAiResponseBtn.addEventListener('click', function() {
+        aiResponseSection.classList.add('hidden');
+      });
+    }
+  }
+
+  /**
+   * Set up tooltips for elements with data-tooltip attribute
+   */
+  function setupTooltips() {
+    const tooltipElements = document.querySelectorAll('[data-tooltip]');
+    if (tooltipElements.length > 0) {
+      tooltipElements.forEach(el => {
+        el.addEventListener('mouseenter', function(e) {
+          const tooltip = document.createElement('div');
+          tooltip.className = 'absolute z-50 bg-gray-900 text-white text-xs rounded px-2 py-1';
+          tooltip.textContent = this.dataset.tooltip;
+          tooltip.style.top = `${e.pageY + 10}px`;
+          tooltip.style.left = `${e.pageX + 10}px`;
+          document.body.appendChild(tooltip);
+          
+          const removeTooltip = () => tooltip.remove();
+          this.addEventListener('mouseleave', removeTooltip, { once: true });
+          this.addEventListener('click', removeTooltip, { once: true });
+        });
+      });
+    }
+  }
+
+  // Initialize all UI components
+  setupExpandButtons();
+  setupRefreshButton();
+  setupFilters();
+  setupAiAnalysis();
+  setupTooltips();
 });
 </script>
 {% endblock %}
