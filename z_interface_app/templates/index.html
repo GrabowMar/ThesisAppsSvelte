@@ -219,8 +219,9 @@
             <!-- Analysis Tools Row -->
             <a href="{{ url_for('zap.zap_scan', model=app.model, app_num=app.app_num) }}"
               class="action-btn text-center">ZAP</a>
+            <!-- Change this link to point to our new requirements check page -->
             <a href="{{ url_for('gpt4all.gpt4all_analysis', model=app.model, app_num=app.app_num) }}"
-              class="action-btn text-center">AI Analysis</a>
+   class="action-btn text-center">Requirements</a>
           </div>
         </div>
 

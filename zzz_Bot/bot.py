@@ -6,8 +6,9 @@ import re
 import sqlite3
 import threading
 import time
+from dataclasses import dataclass, asdict, field
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List, Optional, Tuple, Any
 
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, scrolledtext, simpledialog
@@ -19,11 +20,31 @@ APP_CONFIG = {
     "presets_dir": Path("zzz_Bot/app_templates"),  # Folder with template files
     "default_template_ext": ".md",
     "allowed_models": {
-        "ChatGPT4o", "ChatGPTo1", "ChatGPTo3", "ClaudeSonnet",
-        "DeepSeek", "Gemini", "Grok", "Llama", "Mixtral", "Qwen"
+        "Llama", "Mistral", "DeepSeek", "GPT4o", "Claude", 
+        "Gemini", "Grok", "R1", "O3"
     },
     "db_path": "assistant.db"
 }
+
+# =============================================================================
+# Model Configuration - IMPORTANT: Order must match app.py
+# =============================================================================
+@dataclass
+class AIModel:
+    name: str
+    color: str
+
+AI_MODELS: List[AIModel] = [
+    AIModel("Llama", "#f97316"),
+    AIModel("Mistral", "#9333ea"),
+    AIModel("DeepSeek", "#ff5555"),
+    AIModel("GPT4o", "#10a37f"),
+    AIModel("Claude", "#7b2bf9"),
+    AIModel("Gemini", "#1a73e8"),
+    AIModel("Grok", "#ff4d4f"),
+    AIModel("R1", "#fa541c"),
+    AIModel("O3", "#0ca57f")
+]
 
 # =============================================================================
 # Natural Sort Helper
@@ -52,37 +73,40 @@ file_handler.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s: %(mess
 logger.addHandler(file_handler)
 
 # =============================================================================
-# PortManager
+# Port Management - Synchronized with app.py
 # =============================================================================
 class PortManager:
-    """Computes backend/frontend ports for each model's apps."""
     BASE_BACKEND_PORT = 5001
     BASE_FRONTEND_PORT = 5501
     PORTS_PER_APP = 2
     BUFFER_PORTS = 20
-    APPS_PER_MODEL = 20
+    APPS_PER_MODEL = 30
 
     @classmethod
-    def get_port_range(cls, model_index: int) -> Dict[str, Dict[str, int]]:
+    def get_port_range(cls, model_idx: int) -> Dict[str, Dict[str, int]]:
         total_needed = cls.APPS_PER_MODEL * cls.PORTS_PER_APP + cls.BUFFER_PORTS
         return {
             "backend": {
-                "start": cls.BASE_BACKEND_PORT + (model_index * total_needed),
-                "end": cls.BASE_BACKEND_PORT + ((model_index + 1) * total_needed) - cls.BUFFER_PORTS,
+                "start": cls.BASE_BACKEND_PORT + (model_idx * total_needed),
+                "end": cls.BASE_BACKEND_PORT + ((model_idx + 1) * total_needed) - cls.BUFFER_PORTS,
             },
             "frontend": {
-                "start": cls.BASE_FRONTEND_PORT + (model_index * total_needed),
-                "end": cls.BASE_FRONTEND_PORT + ((model_index + 1) * total_needed) - cls.BUFFER_PORTS,
+                "start": cls.BASE_FRONTEND_PORT + (model_idx * total_needed),
+                "end": cls.BASE_FRONTEND_PORT + ((model_idx + 1) * total_needed) - cls.BUFFER_PORTS,
             },
         }
 
     @classmethod
-    def get_app_ports(cls, model_index: int, app_number: int) -> Dict[str, int]:
-        rng = cls.get_port_range(model_index)
+    def get_app_ports(cls, model_idx: int, app_num: int) -> Dict[str, int]:
+        rng = cls.get_port_range(model_idx)
         return {
-            "backend": rng["backend"]["start"] + (app_number - 1) * cls.PORTS_PER_APP,
-            "frontend": rng["frontend"]["start"] + (app_number - 1) * cls.PORTS_PER_APP,
+            "backend": rng["backend"]["start"] + (app_num - 1) * cls.PORTS_PER_APP,
+            "frontend": rng["frontend"]["start"] + (app_num - 1) * cls.PORTS_PER_APP,
         }
+
+# Helper function to get model index (consistent with app.py)
+def get_model_index(model_name: str) -> int:
+    return next((i for i, m in enumerate(AI_MODELS) if m.name == model_name), 0)
 
 # =============================================================================
 # DatabaseClient
@@ -255,22 +279,486 @@ class AssistantApp(tk.Tk):
     # MAIN UI
     # -------------------------------------------------------------------------
     def _setup_main_ui(self) -> None:
+        # Create log panel first so logging works during initialization
+        self._create_log_panel()  # This needs to happen first!
+        
         self.main_notebook = ttk.Notebook(self)
         self.main_notebook.pack(fill="both", expand=True)
 
+        self._create_summary_tab()           # Tab 0: Summary Dashboard
         self._create_template_manager_tab()  # Tab 1: Template Manager
-        self._create_ports_info_tab()          # Tab 2: Ports
-        self._create_generate_code_tab()       # Tab 3: Generate Code
-        self._create_file_replace_tab()        # Tab 4: Replace Files
-        self._create_model_app_tab()           # Tab 5: Model & App Status
-        self._create_research_tab()            # Tab 6: Research Notes
-        self._create_progress_log_tab()        # Tab 7: Progress Notes
-
-        self._create_log_panel()
+        self._create_ports_info_tab()        # Tab 2: Ports
+        self._create_generate_code_tab()     # Tab 3: Generate Code
+        self._create_file_replace_tab()      # Tab 4: Replace Files
+        self._create_model_app_tab()         # Tab 5: Model & App Status
+        self._create_research_tab()          # Tab 6: Research Notes
+        self._create_progress_log_tab()      # Tab 7: Progress Notes
 
     def _setup_logging_handler(self) -> None:
         gui_handler = GuiLogHandler(self)
         logger.addHandler(gui_handler)
+
+# -------------------------------------------------------------------------
+# TAB 0: Summary Dashboard - One-stop workflow center
+# -------------------------------------------------------------------------
+    def _create_summary_tab(self) -> None:
+        self.summary_tab = ttk.Frame(self.main_notebook)
+        self.main_notebook.add(self.summary_tab, text="Summary")
+        self.main_notebook.select(0)  # Make Summary tab the default
+        
+        # Top frame with model and app selection
+        top_frame = ttk.LabelFrame(self.summary_tab, text="Project Selection")
+        top_frame.pack(fill="x", padx=10, pady=5)
+        
+        # Model & App Selection
+        model_frame = ttk.Frame(top_frame)
+        model_frame.pack(fill="x", padx=5, pady=5)
+        
+        ttk.Label(model_frame, text="Model:").grid(row=0, column=0, padx=5, pady=2, sticky="w")
+        self.summary_model_var = tk.StringVar()
+        models = [model.name for model in AI_MODELS]
+        self.summary_model_dropdown = ttk.Combobox(model_frame, textvariable=self.summary_model_var,
+                                                values=models, state="readonly", width=20)
+        if models:
+            self.summary_model_var.set(models[0])
+        self.summary_model_dropdown.grid(row=0, column=1, padx=5, pady=2, sticky="w")
+        self.summary_model_dropdown.bind("<<ComboboxSelected>>", self._on_summary_model_selected)
+        
+        ttk.Label(model_frame, text="App:").grid(row=0, column=2, padx=5, pady=2, sticky="w")
+        self.summary_app_var = tk.StringVar()
+        # Populate apps based on selected model
+        base_dir = Path('.') / self.summary_model_var.get()
+        apps = natsorted([d.name for d in base_dir.iterdir() if d.is_dir() and d.name.lower().startswith("app")], 
+                        key=_natural_sort_key) if base_dir.exists() else []
+        
+        self.summary_app_dropdown = ttk.Combobox(model_frame, textvariable=self.summary_app_var,
+                                            values=apps, state="readonly", width=20)
+        if apps:
+            self.summary_app_var.set(apps[0])
+        self.summary_app_dropdown.grid(row=0, column=3, padx=5, pady=2, sticky="w")
+        
+        ttk.Button(model_frame, text="Refresh All", 
+                command=self._refresh_summary_page).grid(row=0, column=4, padx=10, pady=2)
+        
+        # Main content frame - split into three columns
+        content_frame = ttk.Frame(self.summary_tab)
+        content_frame.pack(fill="both", expand=True, padx=10, pady=5)
+        
+        # Left panel - Template selection & Preview
+        left_frame = ttk.LabelFrame(content_frame, text="Template")
+        left_frame.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+        
+        template_select_frame = ttk.Frame(left_frame)
+        template_select_frame.pack(fill="x", padx=5, pady=5)
+        
+        ttk.Label(template_select_frame, text="Select Template:").pack(side="left")
+        self.summary_template_var = tk.StringVar()
+        presets = self._scan_template_presets()
+        self.summary_template_dropdown = ttk.Combobox(
+            template_select_frame, textvariable=self.summary_template_var,
+            values=presets, state="readonly", width=30
+        )
+        if presets:
+            self.summary_template_var.set(presets[0])
+        self.summary_template_dropdown.pack(side="left", padx=5)
+        
+        ttk.Button(template_select_frame, text="Load", 
+                command=self._load_summary_template).pack(side="left", padx=5)
+        ttk.Button(template_select_frame, text="Copy Template", 
+                command=self._copy_summary_template).pack(side="left", padx=5)
+        
+        # Template preview
+        template_frame = ttk.Frame(left_frame)
+        template_frame.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        self.summary_template_text = scrolledtext.ScrolledText(template_frame, wrap="word", height=10)
+        self.summary_template_text.pack(fill="both", expand=True)
+        
+        # Middle panel - Quick Paste & Replace
+        middle_frame = ttk.LabelFrame(content_frame, text="Quick Paste & Replace")
+        middle_frame.pack(side="left", fill="both", expand=True, padx=5, pady=5)
+        
+        # File type selector
+        file_type_frame = ttk.Frame(middle_frame)
+        file_type_frame.pack(fill="x", padx=5, pady=5)
+        
+        ttk.Label(file_type_frame, text="File Type:").pack(side="left", padx=5)
+        self.summary_file_type_var = tk.StringVar()
+        file_types = ["app.py", "App.jsx", "App.css", "requirements.txt", "package.json", "vite.config.js"]
+        self.summary_file_type_dropdown = ttk.Combobox(
+            file_type_frame, textvariable=self.summary_file_type_var,
+            values=file_types, state="readonly", width=20
+        )
+        self.summary_file_type_var.set(file_types[0])
+        self.summary_file_type_dropdown.pack(side="left", padx=5)
+        
+        # Quick paste buttons 
+        paste_btn_frame = ttk.Frame(file_type_frame)
+        paste_btn_frame.pack(side="left", padx=5)
+        
+        ttk.Button(paste_btn_frame, text="Paste Code", 
+                command=self._paste_to_summary_editor).pack(side="left", padx=5)
+        ttk.Button(paste_btn_frame, text="One-Click Paste & Replace", 
+                command=self._one_click_paste_and_replace).pack(side="left", padx=5)
+        
+        # Code editor
+        code_frame = ttk.Frame(middle_frame)
+        code_frame.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        self.summary_code_editor = scrolledtext.ScrolledText(code_frame, wrap="none", height=10)
+        self.summary_code_editor.pack(fill="both", expand=True)
+        
+        # Replace button
+        ttk.Button(middle_frame, text="Replace File with Content Above", 
+                command=self._replace_from_summary_editor).pack(side="bottom", padx=5, pady=5)
+        
+        # Right panel - Info & Actions
+        right_frame = ttk.Frame(content_frame)
+        right_frame.pack(side="right", fill="both", expand=True, padx=5, pady=5)
+        
+        # Port information
+        port_frame = ttk.LabelFrame(right_frame, text="Port Information")
+        port_frame.pack(fill="x", padx=5, pady=5)
+        
+        self.summary_port_info = ttk.Treeview(port_frame, columns=("name", "value"), 
+                                            show="headings", height=4)
+        self.summary_port_info.heading("name", text="Item")
+        self.summary_port_info.heading("value", text="Value")
+        self.summary_port_info.column("name", width=150)
+        self.summary_port_info.column("value", width=200)
+        self.summary_port_info.pack(fill="x", padx=5, pady=5)
+        
+        ttk.Button(port_frame, text="Copy Port Info", 
+                command=self._copy_summary_port_info).pack(side="right", padx=5, pady=5)
+        
+        # Status information
+        status_frame = ttk.LabelFrame(right_frame, text="Code Status")
+        status_frame.pack(fill="x", padx=5, pady=5)
+        
+        self.summary_status_info = ttk.Treeview(status_frame, columns=("file", "status"), 
+                                            show="headings", height=5)
+        self.summary_status_info.heading("file", text="File")
+        self.summary_status_info.heading("status", text="Status")
+        self.summary_status_info.column("file", width=150)
+        self.summary_status_info.column("status", width=200)
+        self.summary_status_info.pack(fill="x", padx=5, pady=5)
+        
+        # Research notes
+        notes_frame = ttk.LabelFrame(right_frame, text="Research Notes")
+        notes_frame.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        self.summary_notes_text = scrolledtext.ScrolledText(notes_frame, wrap="word", height=5)
+        self.summary_notes_text.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        notes_btn_frame = ttk.Frame(notes_frame)
+        notes_btn_frame.pack(fill="x", padx=5, pady=5)
+        
+        ttk.Button(notes_btn_frame, text="Add Note", 
+                command=self._add_summary_research_note).pack(side="left", padx=5)
+        ttk.Button(notes_btn_frame, text="View All Notes", 
+                command=lambda: self.main_notebook.select(6)).pack(side="left", padx=5)
+        
+        # Quick action buttons
+        action_frame = ttk.LabelFrame(self.summary_tab, text="Actions")
+        action_frame.pack(fill="x", padx=10, pady=5)
+        
+        ttk.Button(action_frame, text="Generate Code", 
+                command=lambda: self.main_notebook.select(3)).pack(side="left", padx=5, pady=5)
+        ttk.Button(action_frame, text="Replace Files", 
+                command=lambda: self.main_notebook.select(4)).pack(side="left", padx=5, pady=5)
+        ttk.Button(action_frame, text="Copy Workflow Command", 
+                command=self._copy_workflow_command).pack(side="left", padx=5, pady=5)
+        
+        # Initialize the summary page data
+        self._refresh_summary_page()
+
+    def _paste_to_summary_editor(self) -> None:
+        """Paste clipboard content to the summary code editor"""
+        try:
+            content = self.clipboard_get()
+            self.summary_code_editor.delete("1.0", tk.END)
+            self.summary_code_editor.insert(tk.END, content)
+            self._log("Code pasted to editor")
+        except Exception as e:
+            self._log(f"Could not get clipboard content: {e}", error=True)
+
+    def _replace_from_summary_editor(self) -> None:
+        """Replace the selected file type with content from the summary code editor"""
+        file_type = self.summary_file_type_var.get()
+        content = self.summary_code_editor.get("1.0", tk.END)
+        
+        if not content.strip():
+            self._log("No content to replace with", error=True)
+            return
+        
+        model = self.summary_model_var.get()
+        app = self.summary_app_var.get()
+        
+        if not model or not app:
+            self._log("Model or App not selected", error=True)
+            return
+        
+        self._run_in_thread(lambda: self._replace_file_content(file_type, content))()
+        
+        # Update status info after replacement
+        self.after(1000, self._update_summary_status_info)
+
+    def _one_click_paste_and_replace(self) -> None:
+        """One-click operation to paste from clipboard and immediately replace file"""
+        try:
+            # Get content from clipboard
+            content = self.clipboard_get()
+            
+            # Update the code editor for user reference
+            self.summary_code_editor.delete("1.0", tk.END)
+            self.summary_code_editor.insert(tk.END, content)
+            
+            # Immediately replace the file
+            file_type = self.summary_file_type_var.get()
+            model = self.summary_model_var.get()
+            app = self.summary_app_var.get()
+            
+            if not content.strip():
+                self._log("Clipboard is empty", error=True)
+                return
+                
+            if not model or not app:
+                self._log("Model or App not selected", error=True)
+                return
+            
+            # Confirm replacement with a more streamlined dialog
+            if messagebox.askyesno("Quick Replace", 
+                                f"Replace {file_type} in {model}/{app}?",
+                                icon='question'):
+                self._run_in_thread(lambda: self._replace_file_content(file_type, content))()
+                
+                # Update status info after replacement
+                self.after(1000, self._update_summary_status_info)
+                
+                self._log(f"One-click replacement complete: {file_type}")
+            else:
+                self._log("One-click replacement cancelled")
+                
+        except Exception as e:
+            self._log(f"One-click paste and replace failed: {e}", error=True)
+
+    def _on_summary_model_selected(self, event=None) -> None:
+        """Update app dropdowns when a model is selected in summary tab"""
+        model = self.summary_model_var.get()
+        base_dir = Path('.') / model
+        apps = []
+        if base_dir.exists():
+            apps = natsorted([d.name for d in base_dir.iterdir() 
+                        if d.is_dir() and d.name.lower().startswith("app")],
+                        key=_natural_sort_key)
+        
+        self.summary_app_dropdown["values"] = apps
+        if apps:
+            self.summary_app_var.set(apps[0])
+        else:
+            self.summary_app_var.set("")
+        
+        # Refresh all data with new model/app
+        self._refresh_summary_page()
+
+    def _refresh_summary_page(self) -> None:
+        """Refresh all data on the summary page"""
+        self._update_summary_port_info()
+        self._update_summary_status_info()
+        self._update_summary_notes()
+        
+        # If a template is selected, load it
+        if self.summary_template_var.get():
+            self._load_summary_template()
+
+    def _load_summary_template(self) -> None:
+        """Load the selected template into the summary preview"""
+        preset_name = self.summary_template_var.get()
+        path = APP_CONFIG["presets_dir"] / preset_name
+        if path.exists():
+            try:
+                content = path.read_text(encoding="utf-8")
+                self.summary_template_text.delete("1.0", tk.END)
+                self.summary_template_text.insert(tk.END, content)
+                self._log(f"Loaded template: {preset_name}")
+            except Exception as e:
+                self._log(f"Error loading template: {e}", error=True)
+        else:
+            self._log("Template file not found", error=True)
+
+    def _copy_summary_template(self) -> None:
+        """Copy the template content to clipboard"""
+        content = self.summary_template_text.get("1.0", tk.END)
+        self.clipboard_clear()
+        self.clipboard_append(content)
+        self._log("Template copied to clipboard.")
+
+    def _update_summary_port_info(self) -> None:
+        """Update the port information display"""
+        # Clear existing items
+        for row in self.summary_port_info.get_children():
+            self.summary_port_info.delete(row)
+        
+        model = self.summary_model_var.get()
+        app = self.summary_app_var.get()
+        
+        if not model or not app:
+            return
+        
+        # Extract app number from app name (e.g., "app5" -> 5)
+        match = re.search(r'(\d+)', app)
+        if not match:
+            return
+        
+        app_num = int(match.group(1))
+        model_idx = get_model_index(model)
+        ports = PortManager.get_app_ports(model_idx, app_num)
+        
+        # Insert port information
+        self.summary_port_info.insert("", tk.END, values=("Model", model))
+        self.summary_port_info.insert("", tk.END, values=("App", app))
+        self.summary_port_info.insert("", tk.END, values=("Backend Port", ports["backend"]))
+        self.summary_port_info.insert("", tk.END, values=("Frontend Port", ports["frontend"]))
+        
+        # Add copy-ready format
+        ready_text = f"(frontend {ports['frontend']} and backend {ports['backend']})"
+        self.summary_port_info.insert("", tk.END, values=("Copy-Ready Format", ready_text))
+
+    def _copy_summary_port_info(self) -> None:
+        """Copy the port information in a ready-to-use format"""
+        model = self.summary_model_var.get()
+        app = self.summary_app_var.get()
+        
+        if not model or not app:
+            self._log("Model or app not selected", error=True)
+            return
+        
+        match = re.search(r'(\d+)', app)
+        if not match:
+            self._log("Invalid app format", error=True)
+            return
+        
+        app_num = int(match.group(1))
+        model_idx = get_model_index(model)
+        ports = PortManager.get_app_ports(model_idx, app_num)
+        
+        copy_text = f"(frontend {ports['frontend']} and backend {ports['backend']})"
+        self.clipboard_clear()
+        self.clipboard_append(copy_text)
+        self._log(f"Copied port info: {copy_text}")
+
+    def _update_summary_status_info(self) -> None:
+        """Update the code status information display"""
+        # Clear existing items
+        for row in self.summary_status_info.get_children():
+            self.summary_status_info.delete(row)
+        
+        model = self.summary_model_var.get()
+        app = self.summary_app_var.get()
+        
+        if not model or not app:
+            return
+        
+        app_path = Path('.') / model / app
+        
+        # Check various file statuses
+        files_to_check = [
+            ("app.py", app_path / "backend" / "app.py"),
+            ("App.jsx", app_path / "frontend" / "src" / "App.jsx"),
+            ("App.css", app_path / "frontend" / "src" / "App.css"),
+            ("requirements.txt", app_path / "backend" / "requirements.txt"),
+            ("package.json", app_path / "frontend" / "package.json"),
+            ("vite.config.js", app_path / "frontend" / "vite.config.js")
+        ]
+        
+        for file_name, file_path in files_to_check:
+            status = "✅ Present" if file_path.exists() else "❌ Missing"
+            self.summary_status_info.insert("", tk.END, values=(file_name, status))
+
+    def _update_summary_notes(self) -> None:
+        """Update the research notes display"""
+        self.summary_notes_text.delete("1.0", tk.END)
+        
+        model = self.summary_model_var.get()
+        app = self.summary_app_var.get()
+        
+        if not model or not app:
+            return
+        
+        # Get recent notes for this model/app
+        notes = self.database.get_research_notes(limit=100)
+        relevant_notes = []
+        for note in notes:
+            note_id, note_model, note_app, note_type, note_text, timestamp = note
+            if note_model == model and note_app == app:
+                relevant_notes.append((timestamp, note_type, note_text))
+        
+        if not relevant_notes:
+            self.summary_notes_text.insert(tk.END, "No research notes for this model/app.")
+            return
+        
+        # Display the most recent notes (limit to 3)
+        for i, (timestamp, note_type, note_text) in enumerate(relevant_notes[:3]):
+            if i > 0:
+                self.summary_notes_text.insert(tk.END, "\n\n" + "-"*50 + "\n\n")
+            
+            self.summary_notes_text.insert(tk.END, f"[{timestamp}] {note_type}\n\n")
+            self.summary_notes_text.insert(tk.END, note_text)
+
+    def _add_summary_research_note(self) -> None:
+        """Add a new research note from the summary tab"""
+        model = self.summary_model_var.get()
+        app = self.summary_app_var.get()
+        
+        if not model or not app:
+            self._log("Model or app not selected", error=True)
+            return
+        
+        # Switch to the research tab and set up for a new note
+        self.main_notebook.select(6)  # Index of research tab
+        self.research_model_var.set(model)
+        self._on_research_model_selected(None)  # Update app dropdown
+        self.research_app_var.set(app)
+        self._new_research_note()
+
+    def _copy_workflow_command(self) -> None:
+        """Copy a complete workflow command for reference"""
+        model = self.summary_model_var.get()
+        app = self.summary_app_var.get()
+        
+        if not model or not app:
+            self._log("Model or app not selected", error=True)
+            return
+        
+        match = re.search(r'(\d+)', app)
+        if not match:
+            self._log("Invalid app format", error=True)
+            return
+        
+        app_num = int(match.group(1))
+        model_idx = get_model_index(model)
+        ports = PortManager.get_app_ports(model_idx, app_num)
+        
+        # Build comprehensive command with all relevant info
+        command = (
+            f"# {model} {app} Workflow\n"
+            f"# Backend Port: {ports['backend']}\n"
+            f"# Frontend Port: {ports['frontend']}\n"
+            f"# Directory: ./{model}/{app}/\n\n"
+            f"# Start application:\n"
+            f"cd ./{model}/{app} && docker-compose up -d\n\n"
+            f"# Stop application:\n"
+            f"cd ./{model}/{app} && docker-compose down\n\n"
+            f"# Access URLs:\n"
+            f"# Backend: http://localhost:{ports['backend']}\n"
+            f"# Frontend: http://localhost:{ports['frontend']}\n"
+        )
+        
+        self.clipboard_clear()
+        self.clipboard_append(command)
+        self._log("Copied workflow command.")
+
+
 
     # -------------------------------------------------------------------------
     # TAB 1: Template Manager
@@ -383,9 +871,11 @@ class AssistantApp(tk.Tk):
         current_index = self.code_notebook.index(self.code_notebook.select())
         target_widget = [
             self.app_py_text,
+            self.app_css_text,
             self.app_react_text,
             self.requirements_text,
-            self.package_json_text
+            self.package_json_text,
+            self.vite_config_text
         ][current_index]
 
         target_widget.delete("1.0", tk.END)
@@ -404,10 +894,7 @@ class AssistantApp(tk.Tk):
         
         ttk.Label(sel_frame, text="Select Model:").grid(row=0, column=0, padx=5, pady=2, sticky="w")
         self.replace_model_var = tk.StringVar()
-        models = natsorted(
-            [d.name for d in Path('.').iterdir() if d.is_dir() and d.name in APP_CONFIG["allowed_models"]],
-            key=_natural_sort_key
-        )
+        models = [model.name for model in AI_MODELS]  # Use the same order as app.py
         self.replace_model_dropdown = ttk.Combobox(sel_frame, textvariable=self.replace_model_var,
                                                    values=models, state="readonly", width=30)
         if models:
@@ -509,95 +996,152 @@ class AssistantApp(tk.Tk):
         self._replace_file_content("App.jsx", self.app_react_text.get("1.0", tk.END))
         self._replace_file_content("requirements.txt", self.requirements_text.get("1.0", tk.END))
         self._replace_file_content("package.json", self.package_json_text.get("1.0", tk.END))
-        self._replace_file_content("App.css", self.app_css_text.get("1.0", tk.END))  # Fixed: use app_css_text
-        self._replace_file_content("vite.config.js", self.vite_config_text.get("1.0", tk.END))  # New file
+        self._replace_file_content("App.css", self.app_css_text.get("1.0", tk.END))
+        self._replace_file_content("vite.config.js", self.vite_config_text.get("1.0", tk.END))
 
     # -------------------------------------------------------------------------
-    # TAB 4: Progress Log
+    # TAB 4: Ports Info with Filtering & Sorting
     # -------------------------------------------------------------------------
-    def _create_progress_log_tab(self) -> None:
-        self.progress_log_tab = ttk.Frame(self.main_notebook)
-        self.main_notebook.add(self.progress_log_tab, text="Progress Logs")
+    def _create_ports_info_tab(self) -> None:
+        self.ports_info_tab = ttk.Frame(self.main_notebook)
+        self.main_notebook.add(self.ports_info_tab, text="Ports")
 
-        top_frame = ttk.Frame(self.progress_log_tab)
+        self.ports_sort_column = None
+        self.ports_sort_reverse = False
+        self.ports_data = []
+
+        top_frame = ttk.Frame(self.ports_info_tab)
         top_frame.pack(fill="x", padx=10, pady=5)
+        ttk.Button(top_frame, text="Refresh Ports", command=self._refresh_ports_table).pack(side="left", padx=5)
 
-        ttk.Label(top_frame, text="Filter:").pack(side="left", padx=5)
-        self.progress_search_var = tk.StringVar()
-        entry = tk.Entry(top_frame, textvariable=self.progress_search_var)
+        tk.Label(top_frame, text="Filter:").pack(side="left", padx=5)
+        self.ports_filter_var = tk.StringVar()
+        entry = tk.Entry(top_frame, textvariable=self.ports_filter_var)
         entry.pack(side="left", padx=5)
-        entry.bind("<KeyRelease>", lambda event: self._refresh_progress_logs())
-        ttk.Button(top_frame, text="Refresh", command=self._refresh_progress_logs).pack(side="left", padx=5)
-        ttk.Button(top_frame, text="Clear", command=self._clear_progress_logs).pack(side="left", padx=5)
-        ttk.Button(top_frame, text="Export CSV", command=self._export_progress_logs).pack(side="left", padx=5)
+        entry.bind("<KeyRelease>", lambda event: self._refresh_ports_table())
+        ttk.Button(top_frame, text="Apply Filter", command=self._refresh_ports_table).pack(side="left", padx=5)
 
-        self.pause_btn = ttk.Button(top_frame, text="Pause", command=self._toggle_auto_refresh)
-        self.pause_btn.pack(side="left", padx=5)
+        columns = ("model", "app_folder", "app_num", "backend", "frontend", "backend_range", "frontend_range")
+        self.ports_table = ttk.Treeview(self.ports_info_tab, columns=columns, show="headings")
 
-        columns = ("timestamp", "task", "progress", "message")
-        self.progress_table = ttk.Treeview(self.progress_log_tab, columns=columns, show="headings")
-        self.progress_table.heading("timestamp", text="Timestamp")
-        self.progress_table.heading("task", text="Task")
-        self.progress_table.heading("progress", text="Progress")
-        self.progress_table.heading("message", text="Message")
-        self.progress_table.column("timestamp", width=150)
-        self.progress_table.column("task", width=150)
-        self.progress_table.column("progress", width=80, anchor="center")
-        self.progress_table.column("message", width=400)
-        vsb = ttk.Scrollbar(self.progress_log_tab, orient="vertical", command=self.progress_table.yview)
-        self.progress_table.configure(yscrollcommand=vsb.set)
+        self.ports_table.heading("model", text="Model", command=lambda: self._sort_ports_table("model"))
+        self.ports_table.heading("app_folder", text="App Folder", command=lambda: self._sort_ports_table("app_folder"))
+        self.ports_table.heading("app_num", text="App #", command=lambda: self._sort_ports_table("app_num"))
+        self.ports_table.heading("backend", text="Backend Port", command=lambda: self._sort_ports_table("backend"))
+        self.ports_table.heading("frontend", text="Frontend Port", command=lambda: self._sort_ports_table("frontend"))
+        self.ports_table.heading("backend_range", text="Backend Range", command=lambda: self._sort_ports_table("backend_range"))
+        self.ports_table.heading("frontend_range", text="Frontend Range", command=lambda: self._sort_ports_table("frontend_range"))
+
+        self.ports_table.column("model", width=100)
+        self.ports_table.column("app_folder", width=150)
+        self.ports_table.column("app_num", width=70, anchor="center")
+        self.ports_table.column("backend", width=100, anchor="center")
+        self.ports_table.column("frontend", width=100, anchor="center")
+        self.ports_table.column("backend_range", width=150, anchor="center")
+        self.ports_table.column("frontend_range", width=150, anchor="center")
+
+        vsb = ttk.Scrollbar(self.ports_info_tab, orient="vertical", command=self.ports_table.yview)
+        self.ports_table.configure(yscrollcommand=vsb.set)
         vsb.pack(side="right", fill="y")
-        self.progress_table.pack(fill="both", expand=True, padx=10, pady=5)
+        self.ports_table.pack(fill="both", expand=True, padx=10, pady=5)
+        self.ports_table.bind("<Double-1>", self._on_ports_table_double_click)
 
-        self._auto_refresh_progress_logs()
+        self._refresh_ports_table()
 
-    def _toggle_auto_refresh(self) -> None:
-        self.pause_refresh = not self.pause_refresh
-        self.pause_btn.config(text="Resume" if self.pause_refresh else "Pause")
+    def _refresh_ports_table(self) -> None:
+        self.ports_data.clear()
 
-    def _auto_refresh_progress_logs(self) -> None:
-        if not self.pause_refresh:
-            self._refresh_progress_logs()
-        self.after(5000, self._auto_refresh_progress_logs)
-
-    def _refresh_progress_logs(self) -> None:
-        filter_text = self.progress_search_var.get().lower()
-        for row in self.progress_table.get_children():
-            self.progress_table.delete(row)
-        logs = self.database.get_recent_logs(limit=100)
-        for entry in logs:
-            timestamp = entry[4]
-            task = entry[1]
-            progress = entry[2]
-            message = entry[3]
-            if filter_text and (filter_text not in task.lower() and filter_text not in message.lower()):
+        # Use the same order of models as app.py
+        for i, model in enumerate(AI_MODELS):
+            model_name = model.name
+            model_dir = Path('.') / model_name
+            if not model_dir.is_dir():
                 continue
-            self.progress_table.insert("", tk.END, values=(timestamp, task, f"{progress}%", message))
 
-    def _clear_progress_logs(self) -> None:
-        if messagebox.askyesno("Confirm", "Clear all progress logs?"):
-            self.database.clear_logs()
-            self._refresh_progress_logs()
-            self._log("Progress logs cleared.")
+            rng = PortManager.get_port_range(i)
+            backend_range_str = f"{rng['backend']['start']}-{rng['backend']['end']}"
+            frontend_range_str = f"{rng['frontend']['start']}-{rng['frontend']['end']}"
 
-    def _export_progress_logs(self) -> None:
-        export_path = filedialog.asksaveasfilename(
-            defaultextension=".csv",
-            filetypes=[("CSV files", "*.csv")],
-            title="Export progress logs to CSV"
-        )
-        if not export_path:
+            apps = sorted(
+                [d for d in model_dir.iterdir() if d.is_dir() and d.name.lower().startswith("app")],
+                key=lambda d: _natural_sort_key(d.name)
+            )
+            for app_dir in apps:
+                match = re.search(r'(\d+)', app_dir.name)
+                app_num = int(match.group(1)) if match else 1
+                ports = PortManager.get_app_ports(i, app_num)
+                self.ports_data.append({
+                    "model": model_name,
+                    "app_folder": app_dir.name,
+                    "app_num": app_num,
+                    "backend": ports["backend"],
+                    "frontend": ports["frontend"],
+                    "backend_range": backend_range_str,
+                    "frontend_range": frontend_range_str
+                })
+
+        filtered = self._apply_ports_filter(self.ports_data)
+        if self.ports_sort_column:
+            filtered = self._sort_ports_data(filtered, self.ports_sort_column, self.ports_sort_reverse)
+        self._populate_ports_table(filtered)
+
+    def _apply_ports_filter(self, data):
+        ft = self.ports_filter_var.get().strip().lower()
+        if not ft:
+            return data
+        result = []
+        for row in data:
+            if (ft in row["model"].lower() or
+                ft in row["app_folder"].lower() or
+                ft in str(row["app_num"]).lower() or
+                ft in str(row["backend"]).lower() or
+                ft in str(row["frontend"]).lower() or
+                ft in row["backend_range"].lower() or
+                ft in row["frontend_range"].lower()):
+                result.append(row)
+        return result
+
+    def _sort_ports_table(self, col: str):
+        if self.ports_sort_column == col:
+            self.ports_sort_reverse = not self.ports_sort_reverse
+        else:
+            self.ports_sort_column = col
+            self.ports_sort_reverse = False
+        self._refresh_ports_table()
+
+    def _sort_ports_data(self, data, col: str, reverse: bool):
+        def sort_key(row):
+            if col in ("app_num", "backend", "frontend"):
+                return int(row[col])
+            else:
+                return _natural_sort_key(str(row[col]))
+        return sorted(data, key=sort_key, reverse=reverse)
+
+    def _populate_ports_table(self, data):
+        for row in self.ports_table.get_children():
+            self.ports_table.delete(row)
+        for row in data:
+            self.ports_table.insert("", tk.END, values=(
+                row["model"],
+                row["app_folder"],
+                row["app_num"],
+                row["backend"],
+                row["frontend"],
+                row["backend_range"],
+                row["frontend_range"]
+            ))
+
+    def _on_ports_table_double_click(self, event) -> None:
+        item_id = self.ports_table.identify_row(event.y)
+        if not item_id:
             return
-        logs = self.database.get_recent_logs(limit=1000)
-        try:
-            with open(export_path, "w", newline="", encoding="utf-8") as csvfile:
-                writer = csv.writer(csvfile)
-                writer.writerow(["Timestamp", "Task", "Progress", "Message"])
-                for entry in logs:
-                    writer.writerow([entry[4], entry[1], f"{entry[2]}%", entry[3]])
-            self._log(f"Progress logs exported to {export_path}")
-        except Exception as e:
-            self._log(f"Export failed: {e}", error=True)
+        vals = self.ports_table.item(item_id, "values")
+        backend_port = vals[3]
+        frontend_port = vals[4]
+        text_to_copy = f"(frontend {frontend_port} and backend {backend_port})"
+        self.clipboard_clear()
+        self.clipboard_append(text_to_copy)
+        self._log(f"Copied port numbers: {text_to_copy}")
 
     # -------------------------------------------------------------------------
     # TAB 5: Model & App Status (Auto-Discovered) with Filtering & Sorting
@@ -654,7 +1198,8 @@ class AssistantApp(tk.Tk):
             existing_map[(model, app)] = {"id": row_id, "comment": comment}
 
         discovered = []
-        for model_name in APP_CONFIG["allowed_models"]:
+        for model in AI_MODELS:  # Use model list from app.py
+            model_name = model.name
             model_dir = Path('.') / model_name
             if model_dir.is_dir():
                 apps = sorted(
@@ -672,8 +1217,8 @@ class AssistantApp(tk.Tk):
 
         for (model, app) in discovered:
             app_path = Path('.') / model / app
-            has_app_py = (app_path / "app.py").exists()
-            has_react = (app_path / "App.jsx").exists()
+            has_app_py = (app_path / "backend" / "app.py").exists()
+            has_react = (app_path / "frontend" / "src" / "App.jsx").exists()
             if (model, app) in existing_map:
                 row_data = existing_map[(model, app)]
                 self.database.update_model_app_status(
@@ -784,150 +1329,7 @@ class AssistantApp(tk.Tk):
         self.model_app_table.item(item_id, values=values)
 
     # -------------------------------------------------------------------------
-    # TAB 6: Ports Info with Filtering & Sorting
-    # -------------------------------------------------------------------------
-    def _create_ports_info_tab(self) -> None:
-        self.ports_info_tab = ttk.Frame(self.main_notebook)
-        self.main_notebook.add(self.ports_info_tab, text="Ports")
-
-        self.ports_sort_column = None
-        self.ports_sort_reverse = False
-        self.ports_data = []
-
-        top_frame = ttk.Frame(self.ports_info_tab)
-        top_frame.pack(fill="x", padx=10, pady=5)
-        ttk.Button(top_frame, text="Refresh Ports", command=self._refresh_ports_table).pack(side="left", padx=5)
-
-        tk.Label(top_frame, text="Filter:").pack(side="left", padx=5)
-        self.ports_filter_var = tk.StringVar()
-        entry = tk.Entry(top_frame, textvariable=self.ports_filter_var)
-        entry.pack(side="left", padx=5)
-        entry.bind("<KeyRelease>", lambda event: self._refresh_ports_table())
-        ttk.Button(top_frame, text="Apply Filter", command=self._refresh_ports_table).pack(side="left", padx=5)
-
-        columns = ("model", "app_folder", "app_num", "backend", "frontend", "backend_range", "frontend_range")
-        self.ports_table = ttk.Treeview(self.ports_info_tab, columns=columns, show="headings")
-
-        self.ports_table.heading("model", text="Model", command=lambda: self._sort_ports_table("model"))
-        self.ports_table.heading("app_folder", text="App Folder", command=lambda: self._sort_ports_table("app_folder"))
-        self.ports_table.heading("app_num", text="App #", command=lambda: self._sort_ports_table("app_num"))
-        self.ports_table.heading("backend", text="Backend Port", command=lambda: self._sort_ports_table("backend"))
-        self.ports_table.heading("frontend", text="Frontend Port", command=lambda: self._sort_ports_table("frontend"))
-        self.ports_table.heading("backend_range", text="Backend Range", command=lambda: self._sort_ports_table("backend_range"))
-        self.ports_table.heading("frontend_range", text="Frontend Range", command=lambda: self._sort_ports_table("frontend_range"))
-
-        self.ports_table.column("model", width=100)
-        self.ports_table.column("app_folder", width=150)
-        self.ports_table.column("app_num", width=70, anchor="center")
-        self.ports_table.column("backend", width=100, anchor="center")
-        self.ports_table.column("frontend", width=100, anchor="center")
-        self.ports_table.column("backend_range", width=150, anchor="center")
-        self.ports_table.column("frontend_range", width=150, anchor="center")
-
-        vsb = ttk.Scrollbar(self.ports_info_tab, orient="vertical", command=self.ports_table.yview)
-        self.ports_table.configure(yscrollcommand=vsb.set)
-        vsb.pack(side="right", fill="y")
-        self.ports_table.pack(fill="both", expand=True, padx=10, pady=5)
-        self.ports_table.bind("<Double-1>", self._on_ports_table_double_click)
-
-        self._refresh_ports_table()
-
-    def _refresh_ports_table(self) -> None:
-        self.ports_data.clear()
-
-        sorted_models = natsorted(list(APP_CONFIG["allowed_models"]), key=_natural_sort_key)
-        for i, model in enumerate(sorted_models):
-            model_dir = Path('.') / model
-            if not model_dir.is_dir():
-                continue
-
-            rng = PortManager.get_port_range(i)
-            backend_range_str = f"{rng['backend']['start']}-{rng['backend']['end']}"
-            frontend_range_str = f"{rng['frontend']['start']}-{rng['frontend']['end']}"
-
-            apps = sorted(
-                [d for d in model_dir.iterdir() if d.is_dir() and d.name.lower().startswith("app")],
-                key=lambda d: _natural_sort_key(d.name)
-            )
-            for app_dir in apps:
-                match = re.search(r'(\d+)', app_dir.name)
-                app_num = int(match.group(1)) if match else 1
-                ports = PortManager.get_app_ports(i, app_num)
-                self.ports_data.append({
-                    "model": model,
-                    "app_folder": app_dir.name,
-                    "app_num": app_num,
-                    "backend": ports["backend"],
-                    "frontend": ports["frontend"],
-                    "backend_range": backend_range_str,
-                    "frontend_range": frontend_range_str
-                })
-
-        filtered = self._apply_ports_filter(self.ports_data)
-        if self.ports_sort_column:
-            filtered = self._sort_ports_data(filtered, self.ports_sort_column, self.ports_sort_reverse)
-        self._populate_ports_table(filtered)
-
-    def _apply_ports_filter(self, data):
-        ft = self.ports_filter_var.get().strip().lower()
-        if not ft:
-            return data
-        result = []
-        for row in data:
-            if (ft in row["model"].lower() or
-                ft in row["app_folder"].lower() or
-                ft in str(row["app_num"]).lower() or
-                ft in str(row["backend"]).lower() or
-                ft in str(row["frontend"]).lower() or
-                ft in row["backend_range"].lower() or
-                ft in row["frontend_range"].lower()):
-                result.append(row)
-        return result
-
-    def _sort_ports_table(self, col: str):
-        if self.ports_sort_column == col:
-            self.ports_sort_reverse = not self.ports_sort_reverse
-        else:
-            self.ports_sort_column = col
-            self.ports_sort_reverse = False
-        self._refresh_ports_table()
-
-    def _sort_ports_data(self, data, col: str, reverse: bool):
-        def sort_key(row):
-            if col in ("app_num", "backend", "frontend"):
-                return int(row[col])
-            else:
-                return _natural_sort_key(str(row[col]))
-        return sorted(data, key=sort_key, reverse=reverse)
-
-    def _populate_ports_table(self, data):
-        for row in self.ports_table.get_children():
-            self.ports_table.delete(row)
-        for row in data:
-            self.ports_table.insert("", tk.END, values=(
-                row["model"],
-                row["app_folder"],
-                row["app_num"],
-                row["backend"],
-                row["frontend"],
-                row["backend_range"],
-                row["frontend_range"]
-            ))
-
-    def _on_ports_table_double_click(self, event) -> None:
-        item_id = self.ports_table.identify_row(event.y)
-        if not item_id:
-            return
-        vals = self.ports_table.item(item_id, "values")
-        backend_port = vals[3]
-        frontend_port = vals[4]
-        text_to_copy = f"(frontend {frontend_port} and backend {backend_port})"
-        self.clipboard_clear()
-        self.clipboard_append(text_to_copy)
-        self._log(f"Copied port numbers: {text_to_copy}")
-
-    # -------------------------------------------------------------------------
-    # TAB 7: Research Notes
+    # TAB 6: Research Notes
     # -------------------------------------------------------------------------
     def _create_research_tab(self) -> None:
         self.research_tab = ttk.Frame(self.main_notebook)
@@ -938,7 +1340,7 @@ class AssistantApp(tk.Tk):
         ref_frame.pack(fill="x", padx=10, pady=5)
         ttk.Label(ref_frame, text="Model:").pack(side="left", padx=5)
         self.research_model_var = tk.StringVar()
-        models = natsorted(list(APP_CONFIG["allowed_models"]), key=_natural_sort_key)
+        models = [model.name for model in AI_MODELS]  # Use the same order as app.py
         self.research_model_dropdown = ttk.Combobox(ref_frame, textvariable=self.research_model_var,
                                                     values=models, state="readonly", width=20)
         if models:
@@ -1058,7 +1460,7 @@ class AssistantApp(tk.Tk):
         self.research_table.selection_remove(self.research_table.selection())
         self.research_note_text.delete("1.0", tk.END)
         # Optionally, reset the reference selectors to default values
-        models = natsorted(list(APP_CONFIG["allowed_models"]), key=_natural_sort_key)
+        models = [model.name for model in AI_MODELS]  # Use model list from app.py
         if models:
             self.research_model_var.set(models[0])
             self._on_research_model_selected(None)
@@ -1094,6 +1496,93 @@ class AssistantApp(tk.Tk):
             self._log(f"Deleted research note {note_id}.")
             self._refresh_research_notes()
             self.research_note_text.delete("1.0", tk.END)
+
+    # -------------------------------------------------------------------------
+    # TAB 7: Progress Log
+    # -------------------------------------------------------------------------
+    def _create_progress_log_tab(self) -> None:
+        self.progress_log_tab = ttk.Frame(self.main_notebook)
+        self.main_notebook.add(self.progress_log_tab, text="Progress Logs")
+
+        top_frame = ttk.Frame(self.progress_log_tab)
+        top_frame.pack(fill="x", padx=10, pady=5)
+
+        ttk.Label(top_frame, text="Filter:").pack(side="left", padx=5)
+        self.progress_search_var = tk.StringVar()
+        entry = tk.Entry(top_frame, textvariable=self.progress_search_var)
+        entry.pack(side="left", padx=5)
+        entry.bind("<KeyRelease>", lambda event: self._refresh_progress_logs())
+        ttk.Button(top_frame, text="Refresh", command=self._refresh_progress_logs).pack(side="left", padx=5)
+        ttk.Button(top_frame, text="Clear", command=self._clear_progress_logs).pack(side="left", padx=5)
+        ttk.Button(top_frame, text="Export CSV", command=self._export_progress_logs).pack(side="left", padx=5)
+
+        self.pause_btn = ttk.Button(top_frame, text="Pause", command=self._toggle_auto_refresh)
+        self.pause_btn.pack(side="left", padx=5)
+
+        columns = ("timestamp", "task", "progress", "message")
+        self.progress_table = ttk.Treeview(self.progress_log_tab, columns=columns, show="headings")
+        self.progress_table.heading("timestamp", text="Timestamp")
+        self.progress_table.heading("task", text="Task")
+        self.progress_table.heading("progress", text="Progress")
+        self.progress_table.heading("message", text="Message")
+        self.progress_table.column("timestamp", width=150)
+        self.progress_table.column("task", width=150)
+        self.progress_table.column("progress", width=80, anchor="center")
+        self.progress_table.column("message", width=400)
+        vsb = ttk.Scrollbar(self.progress_log_tab, orient="vertical", command=self.progress_table.yview)
+        self.progress_table.configure(yscrollcommand=vsb.set)
+        vsb.pack(side="right", fill="y")
+        self.progress_table.pack(fill="both", expand=True, padx=10, pady=5)
+
+        self._auto_refresh_progress_logs()
+
+    def _toggle_auto_refresh(self) -> None:
+        self.pause_refresh = not self.pause_refresh
+        self.pause_btn.config(text="Resume" if self.pause_refresh else "Pause")
+
+    def _auto_refresh_progress_logs(self) -> None:
+        if not self.pause_refresh:
+            self._refresh_progress_logs()
+        self.after(5000, self._auto_refresh_progress_logs)
+
+    def _refresh_progress_logs(self) -> None:
+        filter_text = self.progress_search_var.get().lower()
+        for row in self.progress_table.get_children():
+            self.progress_table.delete(row)
+        logs = self.database.get_recent_logs(limit=100)
+        for entry in logs:
+            timestamp = entry[4]
+            task = entry[1]
+            progress = entry[2]
+            message = entry[3]
+            if filter_text and (filter_text not in task.lower() and filter_text not in message.lower()):
+                continue
+            self.progress_table.insert("", tk.END, values=(timestamp, task, f"{progress}%", message))
+
+    def _clear_progress_logs(self) -> None:
+        if messagebox.askyesno("Confirm", "Clear all progress logs?"):
+            self.database.clear_logs()
+            self._refresh_progress_logs()
+            self._log("Progress logs cleared.")
+
+    def _export_progress_logs(self) -> None:
+        export_path = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv")],
+            title="Export progress logs to CSV"
+        )
+        if not export_path:
+            return
+        logs = self.database.get_recent_logs(limit=1000)
+        try:
+            with open(export_path, "w", newline="", encoding="utf-8") as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow(["Timestamp", "Task", "Progress", "Message"])
+                for entry in logs:
+                    writer.writerow([entry[4], entry[1], f"{entry[2]}%", entry[3]])
+            self._log(f"Progress logs exported to {export_path}")
+        except Exception as e:
+            self._log(f"Export failed: {e}", error=True)
 
     # -------------------------------------------------------------------------
     # LOG PANEL
@@ -1152,6 +1641,9 @@ class GuiLogHandler(logging.Handler):
         self.app.log_text.insert(tk.END, msg + "\n")
         self.app.log_text.see(tk.END)
         self.app.log_text.config(state="disabled")
+
+# Missing imports that were implied but not explicitly included in the initial code
+from dataclasses import dataclass
 
 # =============================================================================
 # Main Entry

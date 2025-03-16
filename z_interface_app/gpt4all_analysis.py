@@ -2,8 +2,8 @@
 Enhanced GPT4All Code Analysis Module
 
 This module provides code analysis capabilities using a local GPT4All API server.
-It specializes in analyzing code against predefined requirements and provides a
-detailed breakdown of which requirements are met by frontend and backend code.
+It specializes in analyzing code against predefined requirements and provides
+simplified yes/no responses for requirement checks.
 """
 
 import os
@@ -135,24 +135,14 @@ class GPT4AllAnalyzer:
 
         # Define prompt templates for requirements analysis
         self.requirements_prompt = (
-            "Analyze the following code against these requirements:\n"
-            "{requirements}\n\n"
-            "For each requirement, determine if the code meets the requirement.\n"
-            "Return a JSON object with an 'issues' array. Each issue should have these fields:\n"
-            "- filename: the file being analyzed\n"
-            "- line_number: relevant line number or -1 if N/A\n"
-            "- issue_text: description of the requirement\n"
-            "- severity: 'INFO' for met requirements, 'HIGH' for unmet\n"
-            "- confidence: HIGH, MEDIUM, or LOW\n"
-            "- issue_type: 'requirement_check'\n"
-            "- line_range: array of relevant line numbers\n"
-            "- code: relevant code or empty string\n"
-            "- suggested_fix: suggestions for improvement\n"
-            "- explanation: detailed explanation\n\n"
-            "Example format: {\"issues\": [{\"filename\": \"app.py\", \"line_number\": 10, ...}]}"
+            "Analyze the following code against this requirement:\n"
+            "{requirement}\n\n"
+            "Respond with a JSON object in this format: {{\"met\": true/false, \"confidence\": \"HIGH/MEDIUM/LOW\", \"explanation\": \"brief explanation\"}}\n"
+            "where 'met' is true if the requirement is met, false otherwise.\n"
+            "Use 'confidence' to indicate how certain you are about your assessment."
         )
         
-        # Security analysis prompt
+        # Original security analysis prompt (kept for backward compatibility)
         self.security_prompt = (
             "Analyze the following code for security vulnerabilities.\n"
             "Return a JSON object with an 'issues' array containing security issues.\n"
@@ -490,6 +480,11 @@ class GPT4AllAnalyzer:
                     # Not valid JSON, continue to next pattern
                     continue
         
+        # If response is for requirements checking, try to parse a simple true/false response
+        if "met" in text.lower() and "requirement" in text.lower():
+            meets_requirement = "meets the requirement" in text.lower() or "requirement is met" in text.lower()
+            return f"{{\"met\": {str(meets_requirement).lower()}, \"confidence\": \"LOW\", \"explanation\": \"{text[:200].replace('\n', ' ').replace('\"', '\\\"')}\" }}"
+        
         # If we get here, no pattern worked. Try to massage the text.
         # Check if the text contains "issues":
         if '"issues":' in text or "'issues':" in text:
@@ -501,8 +496,8 @@ class GPT4AllAnalyzer:
             except Exception:
                 pass
         
-        # If no JSON found with regex patterns, just return the original text
-        return text
+        # If no JSON found with regex patterns, return a default JSON
+        return '{"met": false, "confidence": "LOW", "explanation": "Failed to parse response"}'
 
     def _detect_language(self, file_path: Path) -> str:
         """
@@ -599,7 +594,7 @@ class GPT4AllAnalyzer:
         requirements_text = "\n".join(f"{i+1}. {req}" for i, req in enumerate(requirements))
         
         # Prepare the prompt template with the requirements
-        prompt_template = self.requirements_prompt.format(requirements=requirements_text)
+        prompt_template = self.prompts.get("requirements", self.requirements_prompt)
         
         # Process frontend files
         for file_path in frontend_files:
@@ -888,175 +883,124 @@ class GPT4AllAnalyzer:
         
         return all_issues, summary
 
-
-# ---------------------------------------------------------------------------- #
-# Flask route for requirements analysis                                        #
-# ---------------------------------------------------------------------------- #
-@gpt4all_bp.route("/gpt4all-analysis", methods=["GET", "POST"])
-@error_handler  # Added error handler decorator for robustness
-def gpt4all_analysis():
-    """Flask route for GPT4All analysis."""
-    try:
-        # Extract parameters, handling both GET and POST requests
-        model = request.args.get("model") or request.form.get("model")
-        app_num = request.args.get("app_num") or request.form.get("app_num")
-        analysis_type = request.args.get("type", "security") or request.form.get("type", "security")
+    async def check_single_requirement(self, code_files: List[Path], requirement: str, is_frontend: bool = False) -> Dict[str, Any]:
+        """
+        Check a single requirement against provided code files.
         
-        # Validate required parameters
-        if not model or not app_num:
-            return render_template(
-                "gpt4all_analysis.html",
-                model=None,
-                app_num=None,
-                directory="",
-                analysis_type="requirements",
-                requirements=[],
-                issues=[],
-                summary={
-                    "total_issues": 0,
-                    "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0, "INFO": 0},
-                    "files_affected": 0,
-                    "issue_types": {},
-                    "tool_counts": {"GPT4All": 0},
-                    "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "met_conditions": {"total": 0, "frontend": 0, "backend": 0},
-                    "unmet_conditions": {"total": 0, "frontend": 0, "backend": 0}
-                },
-                model_info={
-                    "name": "DeepSeek-R1-Distill-Qwen-7B",
-                    "ram_required": "8 GB",
-                    "parameters": "7 billion",
-                    "type": "deepseek",
-                },
-                error="Model and app number are required"
-            )
+        Args:
+            code_files: List of code files to analyze
+            requirement: The requirement to check
+            is_frontend: Whether these are frontend files
             
-        # Find the application directory
-        directory = get_app_directory(current_app, model, app_num)
-        if not directory.exists():
-            return render_template(
-                "gpt4all_analysis.html",
-                model=model,
-                app_num=app_num,
-                directory="",
-                analysis_type="requirements",
-                requirements=[],
-                issues=[],
-                summary={
-                    "total_issues": 0,
-                    "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0, "INFO": 0},
-                    "files_affected": 0,
-                    "issue_types": {},
-                    "tool_counts": {"GPT4All": 0},
-                    "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "met_conditions": {"total": 0, "frontend": 0, "backend": 0},
-                    "unmet_conditions": {"total": 0, "frontend": 0, "backend": 0}
-                },
-                model_info={
-                    "name": "DeepSeek-R1-Distill-Qwen-7B",
-                    "ram_required": "8 GB",
-                    "parameters": "7 billion",
-                    "type": "deepseek",
-                },
-                error=f"Directory not found: {directory}"
-            )
+        Returns:
+            Dictionary with met status and confidence
+        """
+        if not code_files:
+            return {"met": False, "confidence": "HIGH", "error": "No files to analyze"}
         
-        # Setup for requirements analysis
-        all_issues = []
-        req_list = []
+        # Combine code from all files (with limits to prevent token overload)
+        combined_code = ""
+        for file_path in code_files[:3]:  # Limit to 3 files to avoid token limits
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    code = f.read()
+                    # Truncate long files
+                    if len(code) > 3000:
+                        code = code[:3000] + "...[truncated]"
+                    combined_code += f"\n\n--- File: {file_path.name} ---\n{code}"
+            except Exception as e:
+                logger.error(f"Error reading file {file_path}: {e}")
+                
+        if not combined_code:
+            return {"met": False, "confidence": "HIGH", "error": "Could not read any files"}
+            
+        # Create prompt with the specific requirement
+        prompt = self.requirements_prompt.format(requirement=requirement)
+        file_type = "FRONTEND" if is_frontend else "BACKEND"
+        file_prompt = (
+            f"{prompt}\n\n"
+            f"Code Type: {file_type} CODE\n\n"
+            f"Code:\n```\n{combined_code}\n```"
+        )
         
-        # Handle requirements if provided in POST
-        if request.method == "POST" and "requirements" in request.form:
-            requirements_text = request.form.get("requirements", "")
-            req_list = [r.strip() for r in requirements_text.strip().splitlines() if r.strip()]
-            if req_list:
-                analysis_type = "requirements"
-        
-        # Initialize analyzer and run analysis
-        analyzer = GPT4AllAnalyzer(directory)
-        
-        # Run the appropriate analysis based on the type
-        if analysis_type == "requirements" and req_list and request.method == "POST":
-            # For actual requirements analysis
-            all_issues, summary = asyncio.run(analyzer.analyze_directory(
-                directory=directory,
-                analysis_type="requirements"
-            ))
-            summary["requirements"] = req_list
-        else:
-            # For other analysis types or just displaying the form initially
-            all_issues, summary = [], {
-                "total_issues": 0,
-                "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0, "INFO": 0},
-                "files_affected": 0,
-                "issue_types": {},
-                "tool_counts": {"GPT4All": 0},
-                "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "frontend_files": 0,
-                "backend_files": 0,
-                "met_conditions": {"total": 0, "frontend": 0, "backend": 0},
-                "unmet_conditions": {"total": 0, "frontend": 0, "backend": 0}
+        # Request analysis from API
+        response = await self._api_request(file_prompt)
+        if not response:
+            return {"met": False, "confidence": "LOW", "error": "API request failed"}
+            
+        # Extract JSON response
+        try:
+            json_str = self._extract_json_from_markdown(response)
+            result = json.loads(json_str)
+            return {
+                "met": result.get("met", False),
+                "confidence": result.get("confidence", "LOW"),
+                "explanation": result.get("explanation", "")
             }
+        except json.JSONDecodeError:
+            logger.warning(f"Failed to parse JSON from analysis: {response[:100]}...")
+            # Fallback to text analysis
+            is_met = "requirement is met" in response.lower() or "meets the requirement" in response.lower()
+            return {"met": is_met, "confidence": "LOW", "explanation": response[:200]}
+
+    async def check_requirements(self, directory: Path, requirements: List[str]) -> List[Dict[str, Any]]:
+        """
+        Check multiple requirements against code in the directory.
         
-        # If we have requirements but no analysis was run, prepare default message
-        error_message = None
-        if not all_issues and analysis_type == "requirements":
-            error_message = "Enter requirements and click 'Check Requirements' to analyze"
+        Args:
+            directory: Directory containing code files
+            requirements: List of requirements to check
+            
+        Returns:
+            List of dictionaries with requirement and check results
+        """
+        directory = directory or self.base_path
+        directory = self.adjust_path(directory)
         
-        # Render template with results
-        return render_template(
-            "gpt4all_analysis.html",
-            model=model,
-            app_num=app_num,
-            directory=str(directory),
-            analysis_type=analysis_type,
-            requirements=req_list,
-            issues=all_issues,
-            summary=summary,
-            model_info={
-                "name": "DeepSeek-R1-Distill-Qwen-7B",
-                "ram_required": "8 GB",
-                "parameters": "7 billion",
-                "type": "deepseek",
-            },
-            error=error_message
-        )
+        # Find frontend and backend files
+        frontend_files = []
+        backend_files = []
         
-    except Exception as e:
-        logger.error(f"GPT4All analysis failed: {e}")
+        try:
+            # Collect frontend and backend files
+            for root, _, files in os.walk(directory):
+                for file_name in files:
+                    file_path = Path(root) / file_name
+                    
+                    # Skip if the file shouldn't be analyzed
+                    if self._should_skip_file(file_path):
+                        continue
+                        
+                    # Frontend files
+                    if file_name.endswith(('.js', '.jsx', '.ts', '.tsx', '.html', '.css', '.vue', '.svelte')):
+                        if not any(skip in str(file_path) for skip in ['/node_modules/', '/.git/']):
+                            frontend_files.append(file_path)
+                    # Backend files
+                    elif file_name.endswith('.py'):
+                        if not any(skip in str(file_path) for skip in ['__pycache__', '/.git/']):
+                            backend_files.append(file_path)
+        except Exception as e:
+            logger.error(f"Error finding files: {e}")
+            return [{"requirement": req, "frontend": {"met": False, "confidence": "HIGH", "error": str(e)}, 
+                    "backend": {"met": False, "confidence": "HIGH", "error": str(e)}} for req in requirements]
         
-        # Create default objects with proper structure
-        default_summary = {
-            "total_issues": 0,
-            "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0, "INFO": 0},
-            "files_affected": 0,
-            "issue_types": {},  # Empty dictionary, not None
-            "tool_counts": {"GPT4All": 0},
-            "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "frontend_files": 0,
-            "backend_files": 0,
-            "met_conditions": {"total": 0, "frontend": 0, "backend": 0},
-            "unmet_conditions": {"total": 0, "frontend": 0, "backend": 0}
-        }
-        
-        # Return a proper error template
-        return render_template(
-            "gpt4all_analysis.html",
-            model=model if "model" in locals() else None,
-            app_num=app_num if "app_num" in locals() else None,
-            directory=str(directory) if "directory" in locals() else "",
-            analysis_type=analysis_type if "analysis_type" in locals() else "requirements",
-            requirements=[],
-            issues=[],
-            summary=default_summary,
-            model_info={
-                "name": "DeepSeek-R1-Distill-Qwen-7B",
-                "ram_required": "8 GB",
-                "parameters": "7 billion",
-                "type": "deepseek",
-            },
-            error=f"Analysis error: {str(e)}"
-        )
+        # Check each requirement
+        results = []
+        for req in requirements:
+            # Check frontend files
+            frontend_result = await self.check_single_requirement(frontend_files, req, is_frontend=True)
+            
+            # Check backend files
+            backend_result = await self.check_single_requirement(backend_files, req, is_frontend=False)
+            
+            results.append({
+                "requirement": req,
+                "frontend": frontend_result,
+                "backend": backend_result,
+                "overall": frontend_result.get("met", False) or backend_result.get("met", False)
+            })
+            
+        return results
 
 
 def get_app_directory(app, model: str, app_num: int) -> Path:
@@ -1144,3 +1088,94 @@ def get_analysis_summary(issues: List[AnalysisIssue]) -> Dict[str, Any]:
         summary["tool_counts"][tool] = summary["tool_counts"].get(tool, 0) + 1
     
     return summary
+
+
+# ----- API Route for GPT4All Analysis -----
+@gpt4all_bp.route("/analyze-gpt4all/<string:analysis_type>", methods=["POST"])
+@error_handler
+def analyze_gpt4all(analysis_type: str):
+    try:
+        data = request.get_json()
+        directory = Path(data.get("directory", current_app.config["BASE_DIR"]))
+        file_patterns = data.get("file_patterns", ["*.py", "*.js", "*.ts", "*.react"])
+        analyzer = GPT4AllAnalyzer(directory)
+        issues, summary = asyncio.run(analyzer.analyze_directory(
+            directory=directory, file_patterns=file_patterns, analysis_type=analysis_type
+        ))
+        if not isinstance(summary, dict):
+            summary = get_analysis_summary(issues)
+        return jsonify({"issues": [asdict(issue) for issue in issues], "summary": summary})
+    except Exception as e:
+        logger.error(f"GPT4All analysis failed: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+# ----- Main Route for Requirements Checking -----
+@gpt4all_bp.route("/gpt4all-analysis", methods=["GET", "POST"])
+@error_handler
+def gpt4all_analysis():
+    """Flask route for checking requirements against code."""
+    try:
+        # Extract parameters
+        model = request.args.get("model") or request.form.get("model")
+        app_num = request.args.get("app_num") or request.form.get("app_num")
+        
+        # Validate required parameters
+        if not model or not app_num:
+            return render_template(
+                "requirements_check.html",
+                model=None,
+                app_num=None,
+                requirements=[],
+                results=None,
+                error="Model and app number are required"
+            )
+            
+        # Find the application directory
+        directory = get_app_directory(current_app, model, app_num)
+        if not directory.exists():
+            return render_template(
+                "requirements_check.html",
+                model=model,
+                app_num=app_num,
+                requirements=[],
+                results=None,
+                error=f"Directory not found: {directory}"
+            )
+        
+        # Setup for requirements analysis
+        req_list = []
+        results = None
+        
+        # Handle requirements from POST
+        if request.method == "POST" and "requirements" in request.form:
+            requirements_text = request.form.get("requirements", "")
+            req_list = [r.strip() for r in requirements_text.strip().splitlines() if r.strip()]
+            
+            if req_list:
+                # Initialize analyzer
+                analyzer = GPT4AllAnalyzer(directory)
+                
+                # Run check for each requirement
+                results = asyncio.run(analyzer.check_requirements(directory, req_list))
+        
+        # Render template with form or results
+        return render_template(
+            "requirements_check.html",
+            model=model,
+            app_num=app_num,
+            requirements=req_list,
+            results=results,
+            error=None
+        )
+        
+    except Exception as e:
+        logger.error(f"Requirements check failed: {e}")
+        return render_template(
+            "requirements_check.html",
+            model=model if "model" in locals() else None,
+            app_num=app_num if "app_num" in locals() else None,
+            requirements=[],
+            results=None,
+            error=str(e)
+        )

@@ -81,3 +81,94 @@
 [12:40:49] INFO: Replace vite.config.js - 100%: Replaced content of ChatGPT4o\app4\frontend\vite.config.js
 [12:40:49] INFO: Replaced content of ChatGPT4o\app4\frontend\vite.config.js
 [16:50:18] INFO: Loaded template: app_1_login.md
+[08:35:48] INFO: Loaded template: app_1_login.md
+[08:36:30] INFO: Loaded template: app_1_login.md
+[08:36:32] INFO: Template copied to clipboard.
+[21:59:41] INFO: Loaded template: app_1_login.md
+[21:59:42] INFO: Template copied to clipboard.
+[21:59:58] INFO: Copied port numbers: (frontend 5501 and backend 5001)
+[09:26:15] INFO: Loaded template: app_1_login.md
+[09:26:39] INFO: Loaded template: app_2_chat.md
+[09:26:40] INFO: Loaded template: app_3_feedback.md
+[09:26:43] INFO: Loaded template: app_1_login.md
+[09:26:45] INFO: Loaded template: app_2_chat.md
+[09:26:46] INFO: Loaded template: app_4_blog.md
+[09:26:50] INFO: Loaded template: app_1_login.md
+[09:26:57] INFO: Loaded template: app_1_login.md
+[09:26:57] INFO: Loaded template: app_1_login.md
+[09:26:59] INFO: Loaded template: app_1_login.md
+[09:27:05] INFO: Loaded template: app_1_login.md
+[09:27:07] INFO: Loaded template: app_1_login.md
+[10:27:50] INFO: Loaded template: app_1_login.md
+[11:25:57] INFO: Loaded template: app_1_login.md
+[11:26:02] INFO: Loaded template: app_1_login.md
+[11:26:06] INFO: Loaded template: app_1_login.md
+[11:26:08] INFO: Template copied to clipboard.
+[11:28:11] INFO: Copied workflow command.
+[11:28:43] INFO: Loaded template: app_1_login.md
+[11:28:48] INFO: Loaded template: app_1_login.md
+[11:28:52] INFO: Template copied to clipboard.
+[11:29:02] INFO: Copied port numbers: (frontend 5501 and backend 5001)
+[11:29:06] INFO: Copied port info: (frontend 5501 and backend 5001)
+[11:29:54] INFO: Replace app.py - 0%: Starting file replacement
+[11:29:55] INFO: Replace app.py - 100%: Replaced content of Llama\app1\backend\app.py
+[11:29:55] INFO: Replaced content of Llama\app1\backend\app.py
+[11:29:55] INFO: Replace App.jsx - 0%: Starting file replacement
+[11:29:56] INFO: Replace App.jsx - 100%: Replaced content of Llama\app1\frontend\src\App.jsx
+[11:29:56] INFO: Replaced content of Llama\app1\frontend\src\App.jsx
+[11:29:57] INFO: Replace requirements.txt - 0%: Starting file replacement
+[11:29:58] INFO: Replace requirements.txt - 100%: Replaced content of Llama\app1\backend\requirements.txt
+[11:29:58] INFO: Replaced content of Llama\app1\backend\requirements.txt
+[11:29:58] INFO: Replace package.json - 0%: Starting file replacement
+[11:29:59] INFO: Replace package.json - 100%: Replaced content of Llama\app1\frontend\package.json
+[11:29:59] INFO: Replaced content of Llama\app1\frontend\package.json
+[11:30:00] INFO: Replace app.py - 0%: Starting file replacement
+[11:30:01] INFO: Replace app.py - 100%: Replaced content of Llama\app1\backend\app.py
+[11:30:01] INFO: Replaced content of Llama\app1\backend\app.py
+[11:30:01] INFO: Replace App.jsx - 0%: Starting file replacement
+[11:30:03] INFO: Replace App.jsx - 100%: Replaced content of Llama\app1\frontend\src\App.jsx
+[11:30:03] INFO: Replaced content of Llama\app1\frontend\src\App.jsx
+[11:30:03] INFO: Replace requirements.txt - 0%: Starting file replacement
+[11:30:03] INFO: Replacement canceled.
+[11:30:03] INFO: Replace package.json - 0%: Starting file replacement
+[11:30:03] INFO: Replace package.json - 100%: Replaced content of Llama\app1\frontend\package.json
+[11:30:03] INFO: Replaced content of Llama\app1\frontend\package.json
+[11:30:03] INFO: Replace App.css - 0%: Starting file replacement
+[11:30:04] INFO: Replace App.css - 100%: Replaced content of Llama\app1\frontend\src\App.css
+[11:30:04] INFO: Replaced content of Llama\app1\frontend\src\App.css
+[11:30:04] INFO: Replace vite.config.js - 0%: Starting file replacement
+[11:30:04] INFO: Replace vite.config.js - 100%: Replaced content of Llama\app1\frontend\vite.config.js
+[11:30:04] INFO: Replaced content of Llama\app1\frontend\vite.config.js
+[11:34:42] INFO: Loaded template: app_2_chat.md
+[11:34:43] INFO: Template copied to clipboard.
+[11:34:54] INFO: Loaded template: app_2_chat.md
+[11:34:59] INFO: Loaded template: app_2_chat.md
+[11:35:04] INFO: Copied port info: (frontend 5503 and backend 5003)
+[11:35:44] INFO: Copied port info: (frontend 5503 and backend 5003)
+[11:39:55] INFO: Loaded template: app_1_login.md
+[11:41:56] INFO: Loaded template: app_1_login.md
+[11:41:59] INFO: Loaded template: app_1_login.md
+[11:42:05] INFO: Loaded template: app_2_chat.md
+[11:42:07] INFO: Loaded template: app_2_chat.md
+[11:42:11] INFO: Loaded template: app_2_chat.md
+[11:42:13] INFO: Loaded template: app_2_chat.md
+[11:42:14] INFO: Loaded template: app_2_chat.md
+[11:42:16] INFO: Loaded template: app_2_chat.md
+[11:42:17] INFO: Template copied to clipboard.
+[11:42:25] INFO: Copied port info: (frontend 5503 and backend 5003)
+[11:42:41] INFO: One-click replacement complete: app.py
+[11:42:41] INFO: Replace app.py - 0%: Starting file replacement
+[11:42:43] INFO: Replace app.py - 100%: Replaced content of Llama\app1\backend\app.py
+[11:42:44] INFO: Replaced content of Llama\app1\backend\app.py
+[11:42:59] INFO: One-click replacement complete: requirements.txt
+[11:42:59] INFO: Replace requirements.txt - 0%: Starting file replacement
+[11:42:59] INFO: Replace requirements.txt - 100%: Replaced content of Llama\app1\backend\requirements.txt
+[11:42:59] INFO: Replaced content of Llama\app1\backend\requirements.txt
+[11:43:09] INFO: One-click replacement complete: App.jsx
+[11:43:09] INFO: Replace App.jsx - 0%: Starting file replacement
+[11:43:10] INFO: Replace App.jsx - 100%: Replaced content of Llama\app1\frontend\src\App.jsx
+[11:43:10] INFO: Replaced content of Llama\app1\frontend\src\App.jsx
+[11:43:21] INFO: One-click replacement complete: App.css
+[11:43:21] INFO: Replace App.css - 0%: Starting file replacement
+[11:43:22] INFO: Replace App.css - 100%: Replaced content of Llama\app1\frontend\src\App.css
+[11:43:22] INFO: Replaced content of Llama\app1\frontend\src\App.css
