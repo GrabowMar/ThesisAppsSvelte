@@ -1,2 +1,4 @@
-flask
-flask_socketio
+Flask==2.0.2
+Flask-CORS==3.0.10
+mysql-connector-python==8.0.28
+Werkzeug==2.0.2

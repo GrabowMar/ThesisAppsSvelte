@@ -172,3 +172,110 @@
 [11:43:21] INFO: Replace App.css - 0%: Starting file replacement
 [11:43:22] INFO: Replace App.css - 100%: Replaced content of Llama\app1\frontend\src\App.css
 [11:43:22] INFO: Replaced content of Llama\app1\frontend\src\App.css
+[12:17:43] ERROR: Error loading template: '_tkinter.tkapp' object has no attribute 'summary_template_text'
+[12:18:44] ERROR: Error loading template: '_tkinter.tkapp' object has no attribute 'summary_template_text'
+[12:19:13] INFO: Syncing app status for Llama...
+[12:19:13] INFO: App status sync complete for Llama
+[12:49:59] ERROR: Error loading template: '_tkinter.tkapp' object has no attribute 'summary_template_text'
+[13:30:37] INFO: Loaded template: app_1_login.md
+[13:31:03] INFO: Syncing app status for Llama...
+[13:31:03] INFO: App status sync complete for Llama
+[13:31:27] INFO: Replaced Llama\app1\backend\app.py
+[13:31:35] INFO: Replaced Llama\app1\backend\requirements.txt
+[13:34:27] INFO: Loaded template: app_1_login.md
+[13:34:50] INFO: Replaced Llama\app1\backend\app.py
+[13:34:57] INFO: Replaced Llama\app1\backend\requirements.txt
+[13:35:02] INFO: Replaced Llama\app1\frontend\src\App.jsx
+[13:35:13] INFO: Replaced Llama\app1\frontend\package.json
+[13:35:18] INFO: Replaced Llama\app1\frontend\vite.config.js
+[13:35:24] INFO: Replaced Llama\app1\frontend\src\App.css
+[13:35:48] INFO: Loaded template: app_1_login.md
+[13:35:58] INFO: Replaced Llama\app2\backend\app.py
+[13:36:05] INFO: Replaced Llama\app2\backend\requirements.txt
+[13:36:16] INFO: Replaced Llama\app2\frontend\src\App.jsx
+[13:36:21] INFO: Replaced Llama\app2\frontend\src\App.css
+[13:37:02] INFO: Replaced Llama\app2\frontend\src\App.css
+[13:37:13] INFO: Replaced Llama\app2\frontend\package.json
+[13:37:18] INFO: Replaced Llama\app2\frontend\vite.config.js
+[13:37:31] INFO: Loaded template: app_2_chat.md
+[13:37:35] INFO: Loaded template: app_3_feedback.md
+[13:37:36] INFO: Template copied to clipboard.
+[13:37:58] INFO: Replaced Llama\app3\backend\app.py
+[13:38:03] INFO: Replaced Llama\app3\backend\requirements.txt
+[13:38:08] INFO: Replaced Llama\app3\frontend\src\App.jsx
+[13:38:14] INFO: Replaced Llama\app3\frontend\src\App.css
+[13:38:22] INFO: Replaced Llama\app3\frontend\package.json
+[13:38:29] INFO: Replaced Llama\app3\frontend\vite.config.js
+[13:38:32] INFO: Copied port info: (frontend 5505 and backend 5005)
+[13:50:04] INFO: Replaced Llama\app3\backend\app.py
+[13:50:10] INFO: Replaced Llama\app3\backend\requirements.txt
+[13:50:18] INFO: Replaced Llama\app3\frontend\src\App.jsx
+[13:50:28] INFO: Replaced Llama\app3\frontend\vite.config.js
+[13:50:34] INFO: Loaded template: app_3_feedback.md
+[13:50:37] INFO: Loaded template: app_3_feedback.md
+[13:50:41] INFO: Loaded template: app_3_feedback.md
+[13:50:44] INFO: Loaded template: app_4_blog.md
+[13:50:44] INFO: Template copied to clipboard.
+[13:55:45] INFO: Copied port info: (frontend 5507 and backend 5007)
+[16:14:55] INFO: Loaded template: app_4_blog.md
+[16:14:56] INFO: Loaded template: app_4_blog.md
+[16:14:57] INFO: Template copied to clipboard.
+[16:15:13] INFO: Copied port info: (frontend 5507 and backend 5007)
+[16:15:50] INFO: Replaced Llama\app4\frontend\package.json
+[16:15:56] INFO: Replaced Llama\app4\backend\requirements.txt
+[16:16:21] INFO: Replaced Llama\app4\backend\app.py
+[16:19:17] INFO: Replaced Llama\app4\frontend\src\App.jsx
+[16:19:24] INFO: Replaced Llama\app4\backend\app.py
+[16:19:32] INFO: Replaced Llama\app4\frontend\src\App.css
+[16:19:39] INFO: Replaced Llama\app4\frontend\vite.config.js
+[16:37:45] INFO: Loaded template: app_5_cart.md
+[16:37:46] INFO: Loaded template: app_5_cart.md
+[16:37:47] INFO: Template copied to clipboard.
+[16:37:55] INFO: Loaded template: app_5_cart.md
+[16:37:57] INFO: Copied port info: (frontend 5509 and backend 5009)
+[16:38:24] INFO: Replaced Llama\app5\backend\app.py
+[16:38:31] INFO: Replaced Llama\app5\backend\requirements.txt
+[16:38:44] INFO: Replaced Llama\app5\frontend\src\App.jsx
+[16:38:55] INFO: Replaced Llama\app5\frontend\package.json
+[16:38:59] INFO: Replaced Llama\app5\frontend\vite.config.js
+[16:39:03] INFO: Replaced Llama\app5\frontend\src\App.css
+[16:39:10] INFO: Loaded template: app_5_cart.md
+[16:39:14] INFO: Loaded template: app_6_notes.md
+[16:40:09] INFO: Loaded template: app_6_notes.md
+[16:40:10] INFO: Template copied to clipboard.
+[16:59:36] INFO: Replaced Llama\app6\frontend\src\App.jsx
+[16:59:43] INFO: Replaced Llama\app6\frontend\package.json
+[16:59:47] INFO: Replaced Llama\app6\frontend\vite.config.js
+[16:59:52] INFO: Replaced Llama\app6\frontend\src\App.css
+[17:00:03] INFO: Loaded template: app_6_notes.md
+[17:00:05] INFO: Loaded template: app_7_fileUpload.md
+[17:00:06] INFO: Template copied to clipboard.
+[17:01:05] INFO: Copied port info: (frontend 5513 and backend 5013)
+[17:01:37] INFO: Replaced Llama\app7\backend\app.py
+[17:01:42] INFO: Replaced Llama\app7\backend\requirements.txt
+[17:01:47] INFO: Replaced Llama\app7\frontend\src\App.jsx
+[17:01:53] INFO: Replaced Llama\app7\frontend\package.json
+[17:01:57] INFO: Replaced Llama\app7\frontend\vite.config.js
+[17:02:03] INFO: Replaced Llama\app7\frontend\src\App.css
+[17:02:27] INFO: Loaded template: app_7_fileUpload.md
+[17:02:31] INFO: Loaded template: app_8_forum.md
+[17:02:31] INFO: Template copied to clipboard.
+[17:02:39] INFO: Copied port info: (frontend 5515 and backend 5015)
+[17:15:21] INFO: Replaced Llama\app8\backend\app.py
+[17:15:26] INFO: Replaced Llama\app8\backend\requirements.txt
+[17:15:31] INFO: Replaced Llama\app8\frontend\src\App.jsx
+[17:15:38] INFO: Replaced Llama\app8\frontend\src\App.css
+[17:15:43] INFO: Replaced Llama\app8\frontend\package.json
+[17:15:46] INFO: Replaced Llama\app8\frontend\vite.config.js
+[17:15:52] INFO: Loaded template: app_8_forum.md
+[17:15:57] INFO: Loaded template: app_9_crud.md
+[17:15:58] INFO: Template copied to clipboard.
+[17:16:10] INFO: Copied port info: (frontend 5517 and backend 5017)
+[17:16:47] INFO: Replaced Llama\app9\backend\app.py
+[17:16:52] INFO: Replaced Llama\app9\backend\requirements.txt
+[17:16:57] INFO: Replaced Llama\app9\frontend\src\App.jsx
+[17:17:03] INFO: Replaced Llama\app9\frontend\src\App.css
+[17:17:07] INFO: Replaced Llama\app9\frontend\package.json
+[17:17:12] INFO: Replaced Llama\app9\frontend\vite.config.js
+[17:17:30] INFO: Updated generation status for Llama/app9: Generated
+[17:17:35] INFO: Loaded template: app_9_crud.md

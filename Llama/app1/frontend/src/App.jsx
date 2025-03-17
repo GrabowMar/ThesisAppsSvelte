@@ -1,86 +1,95 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom/client';
 import './App.css';
-import { io } from 'socket.io-client';
-
-const socket = io('http://localhost:5003');
 
 function App() {
-    const [username, setUsername] = useState('');
-    const [message, setMessage] = useState('');
-    const [chatMessages, setChatMessages] = useState([]);
-    const [onlineUsers, setOnlineUsers] = useState({});
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loggedIn, setLoggedIn] = useState(false);
 
-    useEffect(() => {
-        // Fetch initial online users and chat messages
-        fetch('http://localhost:5003/dashboard')
-            .then(response => response.json())
-            .then(data => console.log(data));
+  const handleRegister = () => {
+    fetch('http://localhost:5001/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, email, password }),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.error(error));
+  };
 
-        // Listen for incoming messages
-        socket.on('receive_message', (data) => {
-            setChatMessages((prevMessages) => [...prevMessages, data]);
-        });
+  const handleLogin = () => {
+    fetch('http://localhost:5001/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message === 'Logged in successfully') {
+          setLoggedIn(true);
+        }
+      })
+      .catch((error) => console.error(error));
+  };
 
-        // Listen for updates to online status
-        socket.on('update_online_status', (data) => {
-            setOnlineUsers((prevUsers) => ({ ...prevUsers, [data.username]: data.status }));
-        });
-    }, []);
+  const handleLogout = () => {
+    fetch('http://localhost:5001/logout', {
+      method: 'POST',
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message === 'Logged out successfully') {
+          setLoggedIn(false);
+        }
+      })
+      .catch((error) => console.error(error));
+  };
 
-    const handleLogin = () => {
-        // Send login request to backend
-        fetch('http://localhost:5003/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username }),
-        })
-            .then(response => response.json())
-            .then(data => console.log(data));
-
-        // Update online status
-        socket.emit('update_online_status', { username, status: true });
-    };
-
-    const handleRegister = () => {
-        // Send register request to backend
-        fetch('http://localhost:5003/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username }),
-        })
-            .then(response => response.json())
-            .then(data => console.log(data));
-    };
-
-    const handleSendMessage = () => {
-        // Send message to backend
-        socket.emit('send_message', { username, message });
-
-        // Clear message input
-        setMessage('');
-    };
-
+  if (loggedIn) {
     return (
-        <div className="App">
-            <h1>Chat Application</h1>
-            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
-            <button onClick={handleLogin}>Login</button>
-            <button onClick={handleRegister}>Register</button>
-            <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Message" />
-            <button onClick={handleSendMessage}>Send Message</button>
-            <ul>
-                {chatMessages.map((message, index) => (
-                    <li key={index}>{message.username}: {message.message}</li>
-                ))}
-            </ul>
-            <h2>Online Users:</h2>
-            <ul>
-                {Object.keys(onlineUsers).map((username, index) => (
-                    <li key={index}>{username}: {onlineUsers[username] ? 'Online' : 'Offline'}</li>
-                ))}
-            </ul>
-        </div>
+      <div className="App">
+        <h1>Welcome, {username}!</h1>
+        <button onClick={handleLogout}>Logout</button>
+      </div>
     );
+  } else {
+    return (
+      <div className="App">
+        <h1>Register or Login</h1>
+        <input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Username"
+        />
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+        />
+        <button onClick={handleRegister}>Register</button>
+        <button onClick={handleLogin}>Login</button>
+      </div>
+    );
+  }
 }
 
-export default App;
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
