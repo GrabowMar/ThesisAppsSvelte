@@ -1,0 +1,42 @@
+/* app/frontend/src/App.css */
+
+.App {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+}
+
+input, textarea, select {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+div {
+  margin: 20px 0;
+  border: 1px solid #ccc;
+  padding: 10px;
+  cursor: pointer;
+}
+
+div:hover {
+  background-color: #f9f9f9;
+}
