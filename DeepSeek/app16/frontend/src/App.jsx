@@ -1,37 +1,93 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
+import './App.css';
 
-const App = () => {
-  const [message, setMessage] = useState('Loading...');
+function App() {
+  const [devices, setDevices] = useState([]);
+  const [newDeviceName, setNewDeviceName] = useState('');
 
+  // Fetch devices from backend
   useEffect(() => {
-    // Fetch the message from the backend server running on port 5191
-    fetch('http://localhost:5191')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setMessage(data.message || 'No message received');
-      })
-      .catch((error) => {
-        setMessage(`Error fetching message: ${error.message}`);
-      });
+    fetch('http://localhost:5191/api/devices')
+      .then((response) => response.json())
+      .then((data) => setDevices(data))
+      .catch((error) => console.error('Error fetching devices:', error));
   }, []);
 
-  return (
-    <main>
-      <h1>{message}</h1>
-    </main>
-  );
-};
+  // Toggle device status
+  const toggleDeviceStatus = (deviceId, currentStatus) => {
+    const newStatus = currentStatus === 'on' ? 'off' : 'on';
+    fetch(`http://localhost:5191/api/devices/${deviceId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus }),
+    })
+      .then((response) => response.json())
+      .then((updatedDevice) => {
+        setDevices((prevDevices) =>
+          prevDevices.map((device) =>
+            device.id === updatedDevice.id ? updatedDevice : device
+          )
+        );
+      })
+      .catch((error) => console.error('Error updating device:', error));
+  };
 
-const container = document.getElementById('root');
-if (container) {
-  const root = ReactDOM.createRoot(container);
-  root.render(<App />);
+  // Add a new device
+  const addDevice = () => {
+    if (!newDeviceName.trim()) return;
+    fetch('http://localhost:5191/api/devices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: newDeviceName }),
+    })
+      .then((response) => response.json())
+      .then((newDevice) => {
+        setDevices((prevDevices) => [...prevDevices, newDevice]);
+        setNewDeviceName('');
+      })
+      .catch((error) => console.error('Error adding device:', error));
+  };
+
+  // Delete a device
+  const deleteDevice = (deviceId) => {
+    fetch(`http://localhost:5191/api/devices/${deviceId}`, {
+      method: 'DELETE',
+    })
+      .then(() => {
+        setDevices((prevDevices) =>
+          prevDevices.filter((device) => device.id !== deviceId)
+        );
+      })
+      .catch((error) => console.error('Error deleting device:', error));
+  };
+
+  return (
+    <div className="app">
+      <h1>IoT Device Controller</h1>
+      <div className="add-device">
+        <input
+          type="text"
+          placeholder="Enter device name"
+          value={newDeviceName}
+          onChange={(e) => setNewDeviceName(e.target.value)}
+        />
+        <button onClick={addDevice}>Add Device</button>
+      </div>
+      <div className="device-list">
+        {devices.map((device) => (
+          <div key={device.id} className="device-card">
+            <h3>{device.name}</h3>
+            <p>Status: {device.status}</p>
+            <button onClick={() => toggleDeviceStatus(device.id, device.status)}>
+              Turn {device.status === 'on' ? 'Off' : 'On'}
+            </button>
+            <button onClick={() => deleteDevice(device.id)}>Delete</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
-export default App;
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);

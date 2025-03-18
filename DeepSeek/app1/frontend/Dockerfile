@@ -27,3 +27,7 @@ ENV PORT=5661
 
 # Start the React development server
 CMD ["npx", "vite", "--host", "0.0.0.0"]
+
+
+
+

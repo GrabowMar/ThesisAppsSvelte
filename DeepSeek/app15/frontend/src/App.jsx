@@ -1,37 +1,83 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
+import './App.css';
 
 const App = () => {
-  const [message, setMessage] = useState('Loading...');
+  const [files, setFiles] = useState([]);
+  const [storageInfo, setStorageInfo] = useState({ used: 0, quota: 0 });
+  const [error, setError] = useState('');
+
+  const fetchFiles = async () => {
+    try {
+      const response = await fetch('/files');
+      const data = await response.json();
+      setFiles(data.files);
+    } catch (err) {
+      setError('Failed to fetch files');
+    }
+  };
+
+  const fetchStorageInfo = async () => {
+    try {
+      const response = await fetch('/storage');
+      const data = await response.json();
+      setStorageInfo(data);
+    } catch (err) {
+      setError('Failed to fetch storage info');
+    }
+  };
+
+  const handleUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      if (response.ok) {
+        fetchFiles();
+        fetchStorageInfo();
+      } else {
+        setError(data.error || 'Upload failed');
+      }
+    } catch (err) {
+      setError('Upload failed');
+    }
+  };
+
+  const handleDownload = async (filename) => {
+    window.open(`/download/${filename}`, '_blank');
+  };
 
   useEffect(() => {
-    // Fetch the message from the backend server running on port 5189
-    fetch('http://localhost:5189')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setMessage(data.message || 'No message received');
-      })
-      .catch((error) => {
-        setMessage(`Error fetching message: ${error.message}`);
-      });
+    fetchFiles();
+    fetchStorageInfo();
   }, []);
 
   return (
-    <main>
-      <h1>{message}</h1>
-    </main>
+    <div className="App">
+      <h1>File Storage System</h1>
+      {error && <p className="error">{error}</p>}
+      <div className="storage-info">
+        <p>Storage Used: {(storageInfo.used / 1024 / 1024).toFixed(2)} MB</p>
+        <p>Storage Quota: {(storageInfo.quota / 1024 / 1024).toFixed(2)} MB</p>
+      </div>
+      <input type="file" onChange={handleUpload} />
+      <ul>
+        {files.map((file, index) => (
+          <li key={index}>
+            {file} <button onClick={() => handleDownload(file)}>Download</button>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 
-const container = document.getElementById('root');
-if (container) {
-  const root = ReactDOM.createRoot(container);
-  root.render(<App />);
-}
-
-export default App;
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
