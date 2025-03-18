@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy package.json and package-lock.json first to leverage Docker caching
 COPY package.json package-lock.json* ./
 
+# Copy package.json and package-lock.json first to leverage Docker caching
+RUN npm install --save-dev vite@latest @vitejs/plugin-react
+
 # Install dependencies with detailed logging
 RUN npm install --verbose && \
     npm ls && \
@@ -23,4 +26,4 @@ EXPOSE 5689
 ENV PORT=5689
 
 # Start the React development server
-CMD ["npm", "run", "dev"]
+CMD ["npx", "vite", "--host", "0.0.0.0"]
