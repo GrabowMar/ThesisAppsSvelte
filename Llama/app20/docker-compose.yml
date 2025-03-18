@@ -18,8 +18,8 @@ services:
             - "5539:5539"
         volumes:
             - ./frontend/src:/app/src 
-            - ./frontend:/app
-            - /app/node_modules
+            - ./frontend/vite.config.js:/app/vite.config.js
+            - ./frontend/index.html:/app/index.html
         environment:
             - PORT=5539
         restart: always

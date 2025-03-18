@@ -18,8 +18,8 @@ services:
             - "6179:6179"
         volumes:
             - ./frontend/src:/app/src 
-            - ./frontend:/app
-            - /app/node_modules
+            - ./frontend/vite.config.js:/app/vite.config.js
+            - ./frontend/index.html:/app/index.html
         environment:
             - PORT=6179
         restart: always

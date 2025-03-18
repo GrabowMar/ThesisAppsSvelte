@@ -18,8 +18,8 @@ services:
             - "{frontend_port}:{frontend_port}"
         volumes:
             - ./frontend/src:/app/src 
-            - ./frontend:/app
-            - /app/node_modules
+            - ./frontend/vite.config.js:/app/vite.config.js
+            - ./frontend/index.html:/app/index.html
         environment:
             - PORT={frontend_port}
         restart: always

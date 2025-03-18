@@ -1,37 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
+import './App.css';
 
 const App = () => {
-  const [message, setMessage] = useState('Loading...');
+  const [locations, setLocations] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
+  // Fetch locations from backend
   useEffect(() => {
-    // Fetch the message from the backend server running on port 5199
-    fetch('http://localhost:5199')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setMessage(data.message || 'No message received');
-      })
-      .catch((error) => {
-        setMessage(`Error fetching message: ${error.message}`);
-      });
+    fetch('http://localhost:5199/api/locations')
+      .then((response) => response.json())
+      .then((data) => setLocations(data))
+      .catch((error) => console.error('Error fetching locations:', error));
   }, []);
 
+  // Handle search
+  const handleSearch = (e) => {
+    e.preventDefault();
+    fetch(`http://localhost:5199/api/locations/search?q=${searchQuery}`)
+      .then((response) => response.json())
+      .then((data) => setLocations(data))
+      .catch((error) => console.error('Error searching locations:', error));
+  };
+
   return (
-    <main>
-      <h1>{message}</h1>
-    </main>
+    <div className="App">
+      <h1>Map Sharing System</h1>
+      <form onSubmit={handleSearch}>
+        <input
+          type="text"
+          placeholder="Search for a location..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <button type="submit">Search</button>
+      </form>
+      <div className="map-container">
+        {locations.map((location) => (
+          <div key={location.id} className="marker">
+            <h2>{location.name}</h2>
+            <p>Latitude: {location.lat}, Longitude: {location.lng}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
-const container = document.getElementById('root');
-if (container) {
-  const root = ReactDOM.createRoot(container);
-  root.render(<App />);
-}
-
-export default App;
+// Mounting logic
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
