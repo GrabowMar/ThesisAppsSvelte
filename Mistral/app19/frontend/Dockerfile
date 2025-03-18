@@ -1,22 +1,17 @@
-# Use the official Node.js image as the base
 FROM node:18
 
-# Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json first to leverage Docker caching
+# Copy package files
 COPY package.json package-lock.json* ./
 
-# Copy package.json and package-lock.json first to leverage Docker caching
-RUN npm install --save-dev vite@latest @vitejs/plugin-react
-
-# Install dependencies with detailed logging
+# Single install command for all dependencies
 RUN npm install --verbose && \
     npm ls && \
     du -h node_modules/ && \
     find node_modules/ -type f | wc -l
 
-# Copy the remaining application files
+# Copy the rest of the app
 COPY vite.config.js .
 COPY index.html .
 COPY src/ src/

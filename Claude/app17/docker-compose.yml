@@ -6,7 +6,7 @@ services:
         ports:
             - "5353:5353"
         volumes:
-            - ./backend:/app
+            - ./backend/src:/app/src
         restart: always
         environment:
             - PYTHONUNBUFFERED=1 
@@ -17,6 +17,7 @@ services:
         ports:
             - "5853:5853"
         volumes:
+            - ./frontend/src:/app/src 
             - ./frontend:/app
             - /app/node_modules
         environment:

@@ -819,3 +819,86 @@
 [09:06:44] INFO: Replaced DeepSeek\app10\frontend\src\App.css
 [09:06:52] INFO: Replaced DeepSeek\app10\frontend\package.json
 [09:06:55] INFO: Replaced DeepSeek\app10\frontend\vite.config.js
+[09:13:32] INFO: Loaded template: app_10_microblog.md
+[09:13:33] INFO: Loaded template: app_11_polling.md
+[09:13:33] INFO: Template copied to clipboard.
+[09:13:36] INFO: Copied port info: (frontend 5681 and backend 5181)
+[09:16:53] INFO: Replaced DeepSeek\app11\backend\app.py
+[09:16:59] INFO: Replaced DeepSeek\app11\backend\requirements.txt
+[09:17:04] INFO: Replaced DeepSeek\app11\frontend\src\App.jsx
+[09:17:09] INFO: Replaced DeepSeek\app11\frontend\src\App.css
+[09:17:13] INFO: Replaced DeepSeek\app11\frontend\package.json
+[09:17:17] INFO: Replaced DeepSeek\app11\frontend\vite.config.js
+[09:17:20] INFO: Loaded template: app_12_reservation.md
+[09:17:21] INFO: Loaded template: app_12_reservation.md
+[09:17:21] INFO: Template copied to clipboard.
+[09:17:25] INFO: Copied port info: (frontend 5683 and backend 5183)
+[09:19:55] INFO: Replaced DeepSeek\app12\backend\app.py
+[09:19:59] INFO: Replaced DeepSeek\app12\backend\requirements.txt
+[09:20:33] INFO: Template copied to clipboard.
+[09:21:36] INFO: Replaced DeepSeek\app12\frontend\src\App.jsx
+[09:21:40] INFO: Replaced DeepSeek\app12\frontend\src\App.css
+[09:21:46] INFO: Replaced DeepSeek\app12\frontend\package.json
+[09:21:50] INFO: Replaced DeepSeek\app12\frontend\vite.config.js
+[09:21:56] INFO: Loaded template: app_13_gallery.md
+[09:21:56] INFO: Loaded template: app_13_gallery.md
+[09:21:57] INFO: Template copied to clipboard.
+[09:22:09] INFO: Copied port info: (frontend 5685 and backend 5185)
+[09:23:36] INFO: Copied port info: (frontend 5685 and backend 5185)
+[10:08:30] INFO: Loaded template: app_13_gallery.md
+[10:08:52] INFO: Loaded template: app_13_gallery.md
+[10:09:04] INFO: Replaced DeepSeek\app13\backend\app.py
+[10:09:08] INFO: Replaced DeepSeek\app13\backend\requirements.txt
+[10:13:48] INFO: Replaced DeepSeek\app13\frontend\src\App.jsx
+[10:13:51] INFO: Replaced DeepSeek\app13\frontend\package.json
+[10:13:54] INFO: Replaced DeepSeek\app13\frontend\vite.config.js
+[10:13:57] INFO: Replaced DeepSeek\app13\frontend\src\App.css
+[10:14:08] INFO: Loaded template: app_14_storage.md
+[10:14:08] INFO: Loaded template: app_14_storage.md
+[10:14:09] INFO: Template copied to clipboard.
+[10:14:15] INFO: Copied port info: (frontend 5687 and backend 5187)
+[10:18:19] INFO: Replaced DeepSeek\app14\backend\app.py
+[10:18:24] INFO: Replaced DeepSeek\app14\backend\requirements.txt
+[10:18:27] INFO: Replaced DeepSeek\app14\frontend\src\App.jsx
+[10:18:32] INFO: Replaced DeepSeek\app14\frontend\src\App.css
+[10:18:39] INFO: Replaced DeepSeek\app14\frontend\package.json
+[10:18:44] INFO: Replaced DeepSeek\app14\frontend\vite.config.js
+[10:18:53] INFO: Loaded template: app_14_storage.md
+[10:18:55] INFO: Loaded template: app_14_storage.md
+[10:18:55] INFO: Template copied to clipboard.
+[10:19:42] INFO: Copied port info: (frontend 5689 and backend 5189)
+[10:22:56] INFO: Replaced DeepSeek\app15\backend\app.py
+[10:23:06] INFO: Replaced DeepSeek\app15\backend\requirements.txt
+[10:23:10] INFO: Replaced DeepSeek\app15\frontend\src\App.jsx
+[10:23:18] INFO: Replaced DeepSeek\app15\frontend\package.json
+[10:23:22] INFO: Replaced DeepSeek\app15\frontend\vite.config.js
+[10:23:27] INFO: Replaced DeepSeek\app15\frontend\src\App.css
+[10:23:45] INFO: Saved DeepSeek\app15\backend\app.py
+[10:23:51] INFO: Replaced DeepSeek\app15\frontend\vite.config.js
+[10:29:50] INFO: Loaded template: app_16_iot.md
+[10:29:52] INFO: Loaded template: app_16_iot.md
+[10:29:52] INFO: Template copied to clipboard.
+[10:34:08] INFO: Loaded template: app_16_iot.md
+[10:34:09] INFO: Template copied to clipboard.
+[10:34:11] INFO: Copied port info: (frontend 5691 and backend 5191)
+[10:38:03] INFO: Replaced DeepSeek\app16\backend\app.py
+[10:38:08] INFO: Replaced DeepSeek\app16\backend\requirements.txt
+[10:38:12] INFO: Replaced DeepSeek\app16\frontend\src\App.jsx
+[10:38:17] INFO: Replaced DeepSeek\app16\frontend\src\App.css
+[10:38:22] INFO: Replaced DeepSeek\app16\frontend\package.json
+[10:38:25] INFO: Replaced DeepSeek\app16\frontend\vite.config.js
+[10:38:31] INFO: Loaded template: app_17_fitness.md
+[10:38:31] INFO: Loaded template: app_17_fitness.md
+[10:38:32] INFO: Template copied to clipboard.
+[10:38:45] INFO: Copied port info: (frontend 5693 and backend 5193)
+[12:51:33] INFO: Loaded template: app_17_fitness.md
+[12:51:40] INFO: Replaced DeepSeek\app17\backend\app.py
+[12:51:45] INFO: Replaced DeepSeek\app17\backend\requirements.txt
+[12:51:51] INFO: Replaced DeepSeek\app17\frontend\src\App.jsx
+[12:51:55] INFO: Replaced DeepSeek\app17\frontend\package.json
+[12:51:59] INFO: Replaced DeepSeek\app17\frontend\vite.config.js
+[12:52:03] INFO: Replaced DeepSeek\app17\frontend\src\App.css
+[12:52:08] INFO: Loaded template: app_18_wiki.md
+[12:52:10] INFO: Loaded template: app_18_wiki.md
+[12:52:10] INFO: Template copied to clipboard.
+[12:52:13] INFO: Copied port info: (frontend 5695 and backend 5195)

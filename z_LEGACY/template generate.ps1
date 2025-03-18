@@ -191,7 +191,7 @@ services:
         ports:
             - "{backend_port}:{backend_port}"
         volumes:
-            - ./backend:/app
+            - ./backend/src:/app/src
         restart: always
 
     frontend:
@@ -200,6 +200,7 @@ services:
         ports:
             - "{frontend_port}:{frontend_port}"
         volumes:
+            - ./frontend/src:/app/src 
             - ./frontend:/app
             - /app/node_modules
         environment:
