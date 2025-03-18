@@ -355,22 +355,75 @@ def run_docker_compose(
 ) -> Tuple[bool, str]:
     app_dir = Path(f"{model}/app{app_num}")
     if not app_dir.exists():
+        logger.error(f"Directory not found: {app_dir}")
         return False, f"Directory not found: {app_dir}"
+    
+    # Check for compose file existence
+    compose_file = app_dir / "docker-compose.yml"
+    compose_yaml = app_dir / "docker-compose.yaml"
+    if not compose_file.exists() and not compose_yaml.exists():
+        logger.error(f"No docker-compose.yml/yaml file found in {app_dir}")
+        return False, f"No docker-compose file found in {app_dir}"
+    
+    cmd = ["docker-compose"] + command
+    logger.info(f"Running command: {' '.join(cmd)} in {app_dir} with timeout {timeout}s")
+    
     try:
         result = subprocess.run(
-            ["docker-compose"] + command,
-            cwd=app_dir,
+            cmd,
+            cwd=str(app_dir),  # Ensure string path for compatibility
             check=check,
             capture_output=True,
             text=True,
             timeout=timeout,
         )
         output = result.stdout or result.stderr
-        return result.returncode == 0, output
+        success = result.returncode == 0
+        
+        if success:
+            logger.info(f"Command succeeded: {' '.join(cmd)}")
+        else:
+            logger.error(f"Command failed with code {result.returncode}: {' '.join(cmd)}")
+            logger.error(f"Error output: {output[:500]}")
+        
+        return success, output
     except subprocess.TimeoutExpired:
-        return False, f"Timeout after {timeout}s"
+        logger.error(f"Command timed out after {timeout}s: {' '.join(cmd)}")
+        return False, f"Command timed out after {timeout}s"
     except Exception as e:
+        logger.error(f"Error running {' '.join(cmd)}: {str(e)}")
         return False, str(e)
+
+def handle_docker_action(action: str, model: str, app_num: int) -> Tuple[bool, str]:
+    commands = {
+        "start": [("up", "-d", 120)],
+        "stop": [("down", None, 30)],
+        "reload": [("restart", None, 90)],
+        "rebuild": [("down", None, 30), ("build", None, 600), ("up", "-d", 120)],  # Increased build timeout
+        "build": [("build", None, 600)],  # Increased build timeout
+    }
+    
+    if action not in commands:
+        logger.error(f"Invalid action: {action}")
+        return False, f"Invalid action: {action}"
+    
+    logger.info(f"Starting {action} for {model}/app{app_num}")
+    
+    # Execute each command step
+    for i, (base_cmd, extra_arg, timeout) in enumerate(commands[action]):
+        cmd = [base_cmd] + ([extra_arg] if extra_arg else [])
+        step_desc = f"Step {i+1}/{len(commands[action])}: {' '.join(cmd)}"
+        logger.info(f"{step_desc} for {model}/app{app_num}")
+        
+        success, msg = run_docker_compose(cmd, model, app_num, timeout=timeout)
+        
+        if not success:
+            error_msg = f"{action.capitalize()} failed during {base_cmd}: {msg}"
+            logger.error(f"Docker {action} failed: {error_msg}")
+            return False, error_msg
+    
+    logger.info(f"Successfully completed {action} for {model}/app{app_num}")
+    return True, f"Successfully completed {action}"
 
 
 def handle_docker_action(action: str, model: str, app_num: int) -> Tuple[bool, str]:
@@ -578,6 +631,43 @@ def index():
         app_info["frontend_status"] = statuses["frontend"]
     return render_template("index.html", apps=apps, models=AI_MODELS)
 
+@main_bp.route("/docker-logs/<string:model>/<int:app_num>")
+@error_handler
+def view_docker_logs(model: str, app_num: int):
+    """View Docker compose logs for debugging."""
+    app_dir = Path(f"{model}/app{app_num}")
+    if not app_dir.exists():
+        flash(f"Directory not found: {app_dir}", "error")
+        return redirect(url_for("main.index"))
+    
+    try:
+        # Get docker-compose logs
+        result = subprocess.run(
+            ["docker-compose", "logs", "--no-color"],
+            cwd=str(app_dir),
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        compose_logs = result.stdout or "No docker-compose logs available"
+        
+        # Get individual container logs
+        b_name, f_name = get_container_names(model, app_num)
+        docker_manager: DockerManager = current_app.config["docker_manager"]
+        backend_logs = docker_manager.get_container_logs(b_name, tail=100)
+        frontend_logs = docker_manager.get_container_logs(f_name, tail=100)
+        
+        return render_template(
+            "docker_logs.html",
+            model=model,
+            app_num=app_num,
+            compose_logs=compose_logs,
+            backend_logs=backend_logs,
+            frontend_logs=frontend_logs
+        )
+    except Exception as e:
+        flash(f"Error fetching logs: {str(e)}", "error")
+        return redirect(url_for("main.index"))
 
 @main_bp.route("/status/<string:model>/<int:app_num>")
 @error_handler
@@ -683,6 +773,64 @@ def container_status(model: str, app_num: int):
     status = get_app_container_statuses(model, app_num, docker_manager)
     return jsonify(status)
 
+@api_bp.route("/debug/docker/<string:model>/<int:app_num>")
+@error_handler
+def debug_docker_environment(model: str, app_num: int):
+    """Debug endpoint to inspect docker environment for an app."""
+    app_dir = Path(f"{model}/app{app_num}")
+    
+    try:
+        # Check directory existence
+        dir_exists = app_dir.exists()
+        
+        # Check docker-compose file
+        compose_file = app_dir / "docker-compose.yml"
+        compose_yaml = app_dir / "docker-compose.yaml"
+        compose_file_exists = compose_file.exists() or compose_yaml.exists()
+        compose_content = ""
+        if compose_file.exists():
+            compose_content = compose_file.read_text(errors='replace')[:500] + "..."
+        elif compose_yaml.exists():
+            compose_content = compose_yaml.read_text(errors='replace')[:500] + "..."
+        
+        # Check docker installation
+        docker_version = subprocess.run(
+            ["docker", "--version"], 
+            capture_output=True, 
+            text=True
+        ).stdout.strip()
+        
+        # Check docker-compose installation
+        try:
+            docker_compose_version = subprocess.run(
+                ["docker-compose", "--version"], 
+                capture_output=True, 
+                text=True
+            ).stdout.strip()
+        except:
+            docker_compose_version = "Not available or error"
+        
+        # Get list of running containers related to this app
+        b_name, f_name = get_container_names(model, app_num)
+        container_info = []
+        
+        docker_manager: DockerManager = current_app.config["docker_manager"]
+        backend_status = docker_manager.get_container_status(b_name)
+        frontend_status = docker_manager.get_container_status(f_name)
+        
+        return jsonify({
+            "directory_exists": dir_exists,
+            "compose_file_exists": compose_file_exists,
+            "compose_file_preview": compose_content,
+            "docker_version": docker_version,
+            "docker_compose_version": docker_compose_version,
+            "backend_container": backend_status.to_dict(),
+            "frontend_container": frontend_status.to_dict(),
+            "timestamp": datetime.now().isoformat()
+        })
+    except Exception as e:
+        logger.error(f"Error in debug endpoint: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @api_bp.route("/health/<string:model>/<int:app_num>")
 @error_handler

@@ -150,19 +150,41 @@ class DashboardController {
    * @returns {Promise<boolean>} - Success status
    */
   async performAction(action, model, appNum) {
-    const response = await fetch(`/${action}/${model}/${appNum}`, {
-      headers: { 
-        'X-Requested-With': 'XMLHttpRequest',
-        'Cache-Control': 'no-cache'
+    try {
+      // Show special handling for rebuild which may take longer
+      if (action === 'rebuild') {
+        this.showToast(`Rebuilding ${model} App ${appNum}. This may take several minutes...`, 'info');
       }
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `Action failed: ${response.statusText}`);
+      
+      const response = await fetch(`/${action}/${model}/${appNum}`, {
+        headers: { 
+          'X-Requested-With': 'XMLHttpRequest',
+          'Cache-Control': 'no-cache'
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMsg = errorData.message || `Action failed: ${response.statusText}`;
+        console.error(`Error during ${action}:`, errorMsg);
+        throw new Error(errorMsg);
+      }
+      
+      try {
+        const data = await response.json();
+        // If we received a more detailed message, show it
+        if (data && data.message) {
+          console.log(`${action} response:`, data.message);
+        }
+      } catch (e) {
+        // Response might not be JSON, that's OK
+      }
+      
+      return true;
+    } catch (error) {
+      console.error(`Error during ${action}:`, error);
+      throw error;
     }
-    
-    return true;
   }
 
   /**
@@ -446,7 +468,7 @@ class DashboardController {
   showToast(message, type = 'success') {
     const toast = document.createElement('div');
     toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white
-        ${type === 'error' ? 'bg-red-500' : 'bg-green-500'}`;
+        ${type === 'error' ? 'bg-red-500' : type === 'info' ? 'bg-blue-500' : 'bg-green-500'}`;
     toast.textContent = message;
     
     // Remove any existing toasts
@@ -909,6 +931,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (!response.ok) throw new Error(`Health check failed for app ${appNum}`);
         return true;
+      }
+      
+      // Show special handling for rebuild which may take longer
+      if (action === 'rebuild') {
+        showToast(`Rebuilding ${model} App ${appNum}. This may take several minutes...`, 'info');
       }
       
       // Handle standard Docker actions
