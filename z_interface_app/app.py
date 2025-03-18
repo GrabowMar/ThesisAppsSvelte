@@ -1097,7 +1097,6 @@ def analyze_single_file():
         return jsonify({"error": "File analysis failed"}), 500
 
 # ----- Performance Testing Routes -----
-# ----- Performance Testing Routes -----
 @performance_bp.route("/<string:model>/<int:port>", methods=["GET", "POST"])
 @error_handler
 def performance_test(model: str, port: int):
@@ -1219,7 +1218,6 @@ def view_performance_report(model: str, port: int, report_name: str):
         return render_template("500.html", error=str(e)), 500
 
 # ----- GPT4All Routes -----
-# ----- GPT4All Routes -----
 @gpt4all_bp.route("/analyze-gpt4all/<string:analysis_type>", methods=["POST"])
 @error_handler
 def analyze_gpt4all(analysis_type: str):
@@ -1232,7 +1230,7 @@ def analyze_gpt4all(analysis_type: str):
             directory=directory, file_patterns=file_patterns, analysis_type=analysis_type
         ))
         if not isinstance(summary, dict):
-            summary = get_analysis_summary(issues)
+            summary = analyzer.get_analysis_summary(issues)
         return jsonify({"issues": [asdict(issue) for issue in issues], "summary": summary})
     except Exception as e:
         logger.error(f"GPT4All analysis failed: {e}")
