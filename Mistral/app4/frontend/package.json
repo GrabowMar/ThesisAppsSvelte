@@ -1,19 +1,19 @@
 {
-  "name": "react-mistral-app",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "feedback-app",
+  "version": "1.0.0",
+  "description": "Feedback collection system",
+  "main": "index.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "serve": "vite preview"
   },
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.2"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.0.0",
-    "vite": "^5.0.8"
+    "vite": "^4.0.0"
   }
 }

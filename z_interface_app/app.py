@@ -589,6 +589,69 @@ def check_app_status(model: str, app_num: int):
     flash(f"Status checked for {model} App {app_num}", "info")
     return redirect(url_for("main.index"))
 
+# Add this route to the main blueprint (main_bp) in app.py
+
+@main_bp.route("/batch/<action>/<string:model>", methods=["POST"])
+@error_handler
+def batch_docker_action(action: str, model: str):
+    """
+    Perform batch operations on all apps for a specific model.
+    
+    Args:
+        action: The action to perform (start, stop, reload, rebuild)
+        model: The model name to target
+    
+    Returns:
+        JSON response with results
+    """
+    # Get all apps for the model
+    apps = get_apps_for_model(model)
+    if not apps:
+        return jsonify({"status": "error", "message": f"No apps found for model {model}"}), 404
+    
+    # Validate the action
+    valid_actions = ["start", "stop", "reload", "rebuild", "health-check"]
+    if action not in valid_actions:
+        return jsonify({"status": "error", "message": f"Invalid action: {action}"}), 400
+    
+    # Process all apps
+    results = []
+    for app in apps:
+        app_num = app["app_num"]
+        try:
+            if action == "health-check":
+                docker_manager: DockerManager = current_app.config["docker_manager"]
+                healthy, message = verify_container_health(docker_manager, model, app_num)
+                results.append({
+                    "app_num": app_num,
+                    "success": healthy,
+                    "message": message
+                })
+            else:
+                success, message = handle_docker_action(action, model, app_num)
+                results.append({
+                    "app_num": app_num, 
+                    "success": success,
+                    "message": message
+                })
+        except Exception as e:
+            logger.error(f"Error during batch {action} for {model} app {app_num}: {e}")
+            results.append({
+                "app_num": app_num,
+                "success": False,
+                "message": str(e)
+            })
+    
+    # Summarize results
+    success_count = sum(1 for r in results if r["success"])
+    
+    return jsonify({
+        "status": "success" if success_count == len(results) else "partial" if success_count > 0 else "error",
+        "total": len(results),
+        "success_count": success_count,
+        "failure_count": len(results) - success_count,
+        "results": results
+    })
 
 @main_bp.route("/logs/<string:model>/<int:app_num>")
 @error_handler

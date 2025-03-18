@@ -785,6 +785,252 @@ class RequirementsAnalyzer {
   }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  // Set up dropdown toggles for batch operation menus
+  document.querySelectorAll('.batch-menu-button').forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const dropdown = button.nextElementSibling;
+      dropdown.classList.toggle('hidden');
+      
+      // Close other open dropdowns
+      document.querySelectorAll('.batch-menu-items').forEach(menu => {
+        if (menu !== dropdown && !menu.classList.contains('hidden')) {
+          menu.classList.add('hidden');
+        }
+      });
+    });
+  });
+  
+  // Close dropdowns when clicking elsewhere
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.batch-menu-items').forEach(menu => {
+      menu.classList.add('hidden');
+    });
+  });
+  
+  // Handle batch action clicks
+  document.querySelectorAll('.batch-action').forEach(button => {
+    button.addEventListener('click', async function() {
+      const model = this.dataset.model;
+      const action = this.dataset.action;
+      const modelSection = document.querySelector(`[data-model-section="${model}"]`);
+      
+      // Get confirmation from user
+      if (!confirm(`Are you sure you want to ${action} all apps for model ${model}?`)) {
+        return;
+      }
+      
+      // Find all apps for this model
+      const appCards = modelSection.querySelectorAll(`[data-model="${model}"]`);
+      if (appCards.length === 0) {
+        showToast(`No apps found for model ${model}`);
+        return;
+      }
+      
+      // Show batch operation status
+      const statusEl = modelSection.querySelector('.batch-status');
+      const statusTextEl = statusEl.querySelector('.batch-status-text');
+      const progressEl = statusEl.querySelector('.batch-progress');
+      
+      statusTextEl.textContent = `${action.charAt(0).toUpperCase() + action.slice(1)}ing apps...`;
+      progressEl.textContent = `0/${appCards.length}`;
+      statusEl.classList.remove('hidden');
+      
+      // Track success and failure counts
+      let success = 0;
+      let failed = 0;
+      let inProgress = 0;
+      
+      // Process apps in batches of 3 to avoid overloading the server
+      const batchSize = 3;
+      const appNumbers = Array.from(appCards).map(card => card.dataset.appId);
+      
+      for (let i = 0; i < appNumbers.length; i += batchSize) {
+        const batch = appNumbers.slice(i, i + batchSize);
+        inProgress = batch.length;
+        
+        // Start concurrent operations for this batch
+        const batchPromises = batch.map(appNum => processBatchOperation(model, appNum, action));
+        
+        // Wait for all operations in this batch to complete
+        const results = await Promise.allSettled(batchPromises);
+        
+        // Update counts based on results
+        results.forEach(result => {
+          if (result.status === 'fulfilled' && result.value === true) {
+            success++;
+          } else {
+            failed++;
+          }
+        });
+        
+        // Update progress display
+        progressEl.textContent = `${success + failed}/${appCards.length}`;
+      }
+      
+      // Update final status
+      if (failed === 0) {
+        statusTextEl.textContent = `All apps ${action}ed successfully`;
+        statusEl.querySelector('span').className = 'px-2 py-0.5 text-xs bg-green-100 text-green-800 border border-green-300 rounded-sm';
+      } else if (success === 0) {
+        statusTextEl.textContent = `Failed to ${action} all apps`;
+        statusEl.querySelector('span').className = 'px-2 py-0.5 text-xs bg-red-100 text-red-800 border border-red-300 rounded-sm';
+      } else {
+        statusTextEl.textContent = `${success} succeeded, ${failed} failed`;
+        statusEl.querySelector('span').className = 'px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-sm';
+      }
+      
+      // Hide status after delay if successful, keep visible if there were failures
+      if (failed === 0) {
+        setTimeout(() => {
+          statusEl.classList.add('hidden');
+        }, 5000);
+      }
+      
+      // Refresh app statuses after batch operation
+      refreshAppStatuses(model);
+    });
+  });
+  
+  /**
+   * Process a single batch operation for an app
+   * @param {string} model - Model name
+   * @param {string} appNum - App number
+   * @param {string} action - Action to perform (start, stop, reload, etc.)
+   * @returns {Promise<boolean>} Success or failure
+   */
+  async function processBatchOperation(model, appNum, action) {
+    try {
+      // Handle special non-Docker actions
+      if (action === 'health-check') {
+        const response = await fetch(`/api/health/${model}/${appNum}`, {
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        if (!response.ok) throw new Error(`Health check failed for app ${appNum}`);
+        return true;
+      }
+      
+      // Handle standard Docker actions
+      const response = await fetch(`/${action}/${model}/${appNum}`, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to ${action} app ${appNum}`);
+      }
+      
+      return true;
+    } catch (error) {
+      console.error(`Error processing ${action} for ${model} app ${appNum}:`, error);
+      return false;
+    }
+  }
+  
+  /**
+   * Refresh the status display for all apps of a model
+   * @param {string} model - Model name
+   */
+  async function refreshAppStatuses(model) {
+    const modelSection = document.querySelector(`[data-model-section="${model}"]`);
+    const appCards = modelSection.querySelectorAll(`[data-model="${model}"]`);
+    
+    for (const card of appCards) {
+      const appNum = card.dataset.appId;
+      try {
+        const response = await fetch(`/status/${model}/${appNum}`, {
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          updateAppStatusDisplay(card, data);
+        }
+      } catch (error) {
+        console.error(`Error refreshing status for ${model} app ${appNum}:`, error);
+      }
+    }
+  }
+  
+  /**
+   * Update the status display for an app card
+   * @param {HTMLElement} card - The app card element
+   * @param {Object} status - The status data from the API
+   */
+  function updateAppStatusDisplay(card, status) {
+    const backendRunning = status.backend.running;
+    const frontendRunning = status.frontend.running;
+    
+    // Update status badge
+    const statusBadge = card.querySelector('.status-badge');
+    if (backendRunning && frontendRunning) {
+      statusBadge.textContent = 'Running';
+      statusBadge.className = 'status-badge text-xs px-1 border rounded-sm bg-green-100 text-green-800 border-green-700';
+    } else if (backendRunning || frontendRunning) {
+      statusBadge.textContent = 'Partial';
+      statusBadge.className = 'status-badge text-xs px-1 border rounded-sm bg-yellow-100 text-yellow-800 border-yellow-700';
+    } else {
+      statusBadge.textContent = 'Stopped';
+      statusBadge.className = 'status-badge text-xs px-1 border rounded-sm bg-red-100 text-red-800 border-red-700';
+    }
+    
+    // Update backend status
+    const backendStatus = card.querySelector('[data-status="backend"]');
+    if (backendStatus) {
+      backendStatus.textContent = backendRunning ? 'Running' : 'Stopped';
+      backendStatus.className = `font-medium ${backendRunning ? 'text-green-700' : 'text-red-700'}`;
+    }
+    
+    // Update frontend status
+    const frontendStatus = card.querySelector('[data-status="frontend"]');
+    if (frontendStatus) {
+      frontendStatus.textContent = frontendRunning ? 'Running' : 'Stopped';
+      frontendStatus.className = `font-medium ${frontendRunning ? 'text-green-700' : 'text-red-700'}`;
+    }
+  }
+  
+  /**
+   * Show a toast notification
+   * @param {string} message - The message to display
+   * @param {string} type - The notification type (success, error, info)
+   */
+  function showToast(message, type = 'info') {
+    // Check if toast container exists, create if not
+    let toastContainer = document.getElementById('toast-container');
+    if (!toastContainer) {
+      toastContainer = document.createElement('div');
+      toastContainer.id = 'toast-container';
+      toastContainer.className = 'fixed bottom-4 right-4 z-50 flex flex-col space-y-2';
+      document.body.appendChild(toastContainer);
+    }
+    
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `px-4 py-2 rounded-sm shadow-md text-sm ${
+      type === 'success' ? 'bg-green-100 border border-green-300 text-green-800' :
+      type === 'error' ? 'bg-red-100 border border-red-300 text-red-800' :
+      'bg-blue-100 border border-blue-300 text-blue-800'
+    }`;
+    toast.innerText = message;
+    
+    // Add to container
+    toastContainer.appendChild(toast);
+    
+    // Remove after delay
+    setTimeout(() => {
+      toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+      setTimeout(() => {
+        toast.remove();
+        
+        // Remove container if empty
+        if (toastContainer.children.length === 0) {
+          toastContainer.remove();
+        }
+      }, 500);
+    }, 3000);
+  }
+});
+
 // Initialize the analyzer when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
   const analyzer = new RequirementsAnalyzer();

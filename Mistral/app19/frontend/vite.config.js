@@ -1,11 +1,9 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import reactRefresh from '@vitejs/plugin-react-refresh';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [reactRefresh()],
   server: {
-    host: true,
-    port: 5617,
-    strictPort: true
+    port: 5617
   }
-})
+});

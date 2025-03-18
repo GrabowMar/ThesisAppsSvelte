@@ -120,10 +120,50 @@
 
   <!-- Model Sections -->
   {% for model in models %}
-  <div class="border border-gray-400 bg-white rounded-sm shadow-sm" data-model-section="{{ model.name }}">
-    <!-- Model Header -->
-    <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
-      <h2 class="font-bold text-sm" style="color: {{ model.color }};">{{ model.name }}</h2>
+<div class="border border-gray-400 bg-white rounded-sm shadow-sm" data-model-section="{{ model.name }}">
+  <!-- Model Header with Batch Operations -->
+  <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+    <div class="flex justify-between items-center">
+      <div class="flex items-center">
+        <h2 class="font-bold text-sm" style="color: {{ model.color }};">{{ model.name }}</h2>
+        <!-- Batch Operations Dropdown -->
+        <div class="ml-4 relative inline-block text-left" data-model="{{ model.name }}">
+          <button type="button" class="batch-menu-button inline-flex justify-center items-center text-xs bg-gray-200 hover:bg-gray-300 border border-gray-400 rounded-sm px-2 py-0.5">
+            <span>Batch Operations</span>
+            <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          <!-- Dropdown Menu -->
+          <div class="batch-menu-items hidden absolute z-10 mt-1 w-48 bg-white border border-gray-300 rounded-sm shadow-lg">
+            <div class="py-1">
+              <button class="batch-action w-full text-left px-4 py-1 text-xs hover:bg-gray-100" data-action="start" data-model="{{ model.name }}">
+                Start All Apps
+              </button>
+              <button class="batch-action w-full text-left px-4 py-1 text-xs hover:bg-gray-100" data-action="stop" data-model="{{ model.name }}">
+                Stop All Apps
+              </button>
+              <button class="batch-action w-full text-left px-4 py-1 text-xs hover:bg-gray-100" data-action="reload" data-model="{{ model.name }}">
+                Reload All Apps
+              </button>
+              <button class="batch-action w-full text-left px-4 py-1 text-xs hover:bg-gray-100" data-action="rebuild" data-model="{{ model.name }}">
+                Rebuild All Apps
+              </button>
+              <hr class="my-1 border-gray-200">
+              <button class="batch-action w-full text-left px-4 py-1 text-xs hover:bg-gray-100" data-action="health-check" data-model="{{ model.name }}">
+                Health Check All
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Batch Operation Status Indicator -->
+        <div class="batch-status ml-2 hidden">
+          <span class="px-2 py-0.5 text-xs bg-blue-100 text-blue-800 border border-blue-300 rounded-sm">
+            <span class="batch-status-text">Processing...</span>
+            <span class="batch-progress ml-1">0/0</span>
+          </span>
+        </div>
+      </div>
       <div class="flex items-center space-x-2">
         <span class="text-xs text-gray-600">Security Status:</span>
         <div class="security-badges flex space-x-1">
@@ -133,6 +173,7 @@
         </div>
       </div>
     </div>
+  </div>
 
     <!-- App Cards Grid -->
     <div class="p-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
