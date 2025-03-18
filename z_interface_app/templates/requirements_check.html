@@ -1,152 +1,180 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="container mx-auto px-4 py-6">
-  <h1 class="text-2xl font-bold mb-4">Requirements Check {% if model and app_num %}for {{ model }} App {{ app_num }}{% endif %}</h1>
-  
-  {% if error %}
-  <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-    <strong>Error:</strong> {{ error }}
-  </div>
-  {% endif %}
-  
-  <!-- Requirements Input Form -->
-  <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-    <form method="POST" action="{{ url_for('gpt4all.gpt4all_analysis') }}?model={{ model }}&app_num={{ app_num }}">
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="requirements">
-          Requirements (one per line)
-        </label>
-        <textarea id="requirements" name="requirements" rows="6" 
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{% if requirements %}{{ '\n'.join(requirements) }}{% else %}The application must handle errors gracefully
+<div class="flex min-h-screen bg-gray-100">
+  <!-- Main Content Area -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <!-- Top Navigation and Filter Bar -->
+    <div class="bg-gray-200 border-b border-gray-400 p-1">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs rounded-sm">Back</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Requirements Input Section -->
+    <div class="p-2 flex-1 overflow-auto space-y-2">
+      <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+          <h2 class="font-bold text-sm">Requirements Check 
+            {% if model and app_num %}
+              for {{ model }} App {{ app_num }}
+            {% endif %}
+          </h2>
+        </div>
+        
+        <div class="p-2">
+          {% if error %}
+          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <strong>Error:</strong> {{ error }}
+          </div>
+          {% endif %}
+          
+          <!-- Requirements Input Form -->
+          <form method="POST" action="{{ url_for('gpt4all.gpt4all_analysis') }}?model={{ model }}&app_num={{ app_num }}">
+            <div class="mb-4">
+              <label class="block text-gray-700 text-xs font-bold mb-2" for="requirements">
+                Requirements (one per line)
+              </label>
+              <textarea id="requirements" name="requirements" rows="6" 
+                class="shadow appearance-none border border-gray-300 rounded w-full py-2 px-3 text-xs text-gray-700 leading-tight focus:outline-none focus:border-blue-500">{% if requirements %}{{ '\n'.join(requirements) }}{% else %}The application must handle errors gracefully
 The application must sanitize user inputs
 The application must implement proper authentication
 The application must have adequate test coverage
 The application must follow secure coding practices{% endif %}</textarea>
+            </div>
+            
+            <div class="flex items-center justify-between">
+              <button type="submit" id="submitBtn" class="action-btn h-6 px-2 text-xs rounded-sm">
+                Check Requirements
+              </button>
+              <a href="{{ url_for('main.index') }}" class="text-xs text-blue-700 hover:underline">
+                Back to App List
+              </a>
+            </div>
+          </form>
+        </div>
       </div>
       
-      <div class="flex items-center justify-between">
-        <button type="submit" id="submitBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-          Check Requirements
-        </button>
-        <a href="{{ url_for('main.index') }}" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
-          Back to App List
-        </a>
+      <!-- Results Section -->
+      {% if results %}
+      <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+          <h2 class="font-bold text-sm">Requirements Analysis Results</h2>
+        </div>
+        
+        <div class="p-2 overflow-x-auto">
+          <table class="min-w-full">
+            <thead>
+              <tr>
+                <th class="py-2 px-4 border border-gray-300 bg-gray-100 text-left text-xs font-semibold text-gray-600">
+                  Requirement
+                </th>
+                <th class="py-2 px-4 border border-gray-300 bg-gray-100 text-center text-xs font-semibold text-gray-600">
+                  Frontend
+                </th>
+                <th class="py-2 px-4 border border-gray-300 bg-gray-100 text-center text-xs font-semibold text-gray-600">
+                  Backend
+                </th>
+                <th class="py-2 px-4 border border-gray-300 bg-gray-100 text-center text-xs font-semibold text-gray-600">
+                  Overall
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for result in results %}
+              <tr class="hover:bg-gray-50 cursor-pointer" onclick="toggleDetails('detail-{{ loop.index }}')">
+                <td class="py-2 px-4 border border-gray-300 text-xs">
+                  {{ result.requirement }}
+                </td>
+                <td class="py-2 px-4 border border-gray-300 text-center">
+                  {% if result.frontend.met %}
+                  <span class="inline-flex items-center px-2 py-0.5 text-xs rounded-sm bg-green-100 text-green-800 border border-green-300">
+                    Yes ({{ result.frontend.confidence }})
+                  </span>
+                  {% else %}
+                  <span class="inline-flex items-center px-2 py-0.5 text-xs rounded-sm bg-red-100 text-red-800 border border-red-300">
+                    No ({{ result.frontend.confidence }})
+                  </span>
+                  {% endif %}
+                </td>
+                <td class="py-2 px-4 border border-gray-300 text-center">
+                  {% if result.backend.met %}
+                  <span class="inline-flex items-center px-2 py-0.5 text-xs rounded-sm bg-green-100 text-green-800 border border-green-300">
+                    Yes ({{ result.backend.confidence }})
+                  </span>
+                  {% else %}
+                  <span class="inline-flex items-center px-2 py-0.5 text-xs rounded-sm bg-red-100 text-red-800 border border-red-300">
+                    No ({{ result.backend.confidence }})
+                  </span>
+                  {% endif %}
+                </td>
+                <td class="py-2 px-4 border border-gray-300 text-center">
+                  {% if result.overall %}
+                  <span class="inline-flex items-center px-2 py-0.5 text-xs rounded-sm bg-green-100 text-green-800 border border-green-300">
+                    Yes
+                  </span>
+                  {% else %}
+                  <span class="inline-flex items-center px-2 py-0.5 text-xs rounded-sm bg-red-100 text-red-800 border border-red-300">
+                    No
+                  </span>
+                  {% endif %}
+                </td>
+              </tr>
+              <tr id="detail-{{ loop.index }}" class="hidden bg-gray-50">
+                <td colspan="4" class="py-2 px-4 border border-gray-300">
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <h3 class="font-semibold text-xs mb-1">Frontend Analysis</h3>
+                      <div class="bg-white p-2 border border-gray-300 rounded-sm text-xs">
+                        {% if result.frontend.explanation %}
+                          {{ result.frontend.explanation }}
+                        {% elif result.frontend.error %}
+                          <span class="text-red-500">{{ result.frontend.error }}</span>
+                        {% else %}
+                          No detailed explanation provided.
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div>
+                      <h3 class="font-semibold text-xs mb-1">Backend Analysis</h3>
+                      <div class="bg-white p-2 border border-gray-300 rounded-sm text-xs">
+                        {% if result.backend.explanation %}
+                          {{ result.backend.explanation }}
+                        {% elif result.backend.error %}
+                          <span class="text-red-500">{{ result.backend.error }}</span>
+                        {% else %}
+                          No detailed explanation provided.
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </form>
-  </div>
-  
-  <!-- Results Table -->
-  {% if results %}
-  <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-    <h2 class="text-xl font-bold mb-4">Results</h2>
-    
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-white">
-        <thead>
-          <tr>
-            <th class="py-2 px-4 bg-gray-100 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              Requirement
-            </th>
-            <th class="py-2 px-4 bg-gray-100 border-b border-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              Frontend
-            </th>
-            <th class="py-2 px-4 bg-gray-100 border-b border-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              Backend
-            </th>
-            <th class="py-2 px-4 bg-gray-100 border-b border-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              Overall
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for result in results %}
-          <tr class="hover:bg-gray-50 cursor-pointer" onclick="toggleDetails('detail-{{ loop.index }}')">
-            <td class="py-2 px-4 border-b border-gray-200">
-              {{ result.requirement }}
-            </td>
-            <td class="py-2 px-4 border-b border-gray-200 text-center">
-              {% if result.frontend.met %}
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                Yes ({{ result.frontend.confidence }})
-              </span>
-              {% else %}
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                No ({{ result.frontend.confidence }})
-              </span>
-              {% endif %}
-            </td>
-            <td class="py-2 px-4 border-b border-gray-200 text-center">
-              {% if result.backend.met %}
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                Yes ({{ result.backend.confidence }})
-              </span>
-              {% else %}
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                No ({{ result.backend.confidence }})
-              </span>
-              {% endif %}
-            </td>
-            <td class="py-2 px-4 border-b border-gray-200 text-center">
-              {% if result.overall %}
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                Yes
-              </span>
-              {% else %}
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                No
-              </span>
-              {% endif %}
-            </td>
-          </tr>
-          <tr id="detail-{{ loop.index }}" class="hidden bg-gray-50">
-            <td colspan="4" class="py-2 px-4 border-b border-gray-200">
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <h3 class="font-semibold text-sm mb-1">Frontend Analysis</h3>
-                  <div class="bg-white p-2 rounded border text-xs">
-                    {% if result.frontend.explanation %}
-                      {{ result.frontend.explanation }}
-                    {% elif result.frontend.error %}
-                      <span class="text-red-500">{{ result.frontend.error }}</span>
-                    {% else %}
-                      No detailed explanation provided.
-                    {% endif %}
-                  </div>
-                </div>
-                <div>
-                  <h3 class="font-semibold text-sm mb-1">Backend Analysis</h3>
-                  <div class="bg-white p-2 rounded border text-xs">
-                    {% if result.backend.explanation %}
-                      {{ result.backend.explanation }}
-                    {% elif result.backend.error %}
-                      <span class="text-red-500">{{ result.backend.error }}</span>
-                    {% else %}
-                      No detailed explanation provided.
-                    {% endif %}
-                  </div>
-                </div>
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      {% endif %}
     </div>
   </div>
-  {% endif %}
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Show loading state when form is submitted
   const form = document.querySelector('form');
   const submitBtn = document.getElementById('submitBtn');
   
   if (form && submitBtn) {
     form.addEventListener('submit', function() {
-      submitBtn.innerText = 'Checking...';
+      submitBtn.innerHTML = `
+        <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>Checking...`;
       submitBtn.disabled = true;
-      submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
     });
   }
 });
@@ -155,11 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function toggleDetails(id) {
   const detailRow = document.getElementById(id);
   if (detailRow) {
-    if (detailRow.classList.contains('hidden')) {
-      detailRow.classList.remove('hidden');
-    } else {
-      detailRow.classList.add('hidden');
-    }
+    detailRow.classList.toggle('hidden');
   }
 }
 </script>

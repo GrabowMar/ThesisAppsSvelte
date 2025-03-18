@@ -17,6 +17,7 @@ import sqlite3
 import subprocess
 import threading
 import time
+import uuid
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from functools import wraps
@@ -31,6 +32,7 @@ from docker.errors import NotFound
 from flask import (
     Flask,
     flash,
+    g,
     jsonify,
     redirect,
     render_template,
@@ -105,6 +107,77 @@ AI_MODELS: List[AIModel] = [
     AIModel("R1", "#fa541c"),
     AIModel("O3", "#0ca57f")
 ]
+
+# =============================================================================
+# Enhanced Request Logging Middleware
+# =============================================================================
+class RequestLoggerMiddleware:
+    """
+    Middleware to enhance request logging with additional context information.
+    Adds referrer, user agent, client IP, and a request ID to logs.
+    """
+    
+    def __init__(self, app):
+        self.app = app
+        self.logger = app.logger
+        
+        # Apply the middleware
+        @app.before_request
+        def before_request():
+            # Generate a unique ID for this request
+            request_id = str(uuid.uuid4())[:8]
+            g.request_id = request_id
+            g.start_time = time.time()
+            
+            # Log the beginning of the request with context
+            referrer = request.referrer or 'No referrer'
+            user_agent = request.user_agent.string if request.user_agent else 'No user agent'
+            
+            self.logger.info(
+                f"REQUEST START [{request_id}]: {request.method} {request.path} | "
+                f"Referrer: {referrer} | "
+                f"User-Agent: {user_agent} | "
+                f"IP: {request.remote_addr}"
+            )
+            
+            # For AJAX requests, log additional context
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                self.logger.info(
+                    f"AJAX REQUEST [{request_id}]: {request.method} {request.path} | "
+                    f"Content-Type: {request.content_type}"
+                )
+                
+        @app.after_request
+        def after_request(response):
+            # Calculate the request duration
+            duration = time.time() - g.get('start_time', time.time())
+            
+            # Get the request_id or generate a fallback
+            request_id = g.get('request_id', 'unknown')
+            
+            # Log the end of the request with status and duration
+            self.logger.info(
+                f"REQUEST END [{request_id}]: {request.method} {request.path} | "
+                f"Status: {response.status_code} | "
+                f"Duration: {duration:.4f}s"
+            )
+            
+            # Add the request ID to the response headers for debugging
+            response.headers['X-Request-ID'] = request_id
+            
+            return response
+        
+        # Handle exceptions in requests
+        @app.errorhandler(Exception)
+        def handle_exception(e):
+            request_id = g.get('request_id', 'unknown')
+            self.logger.error(
+                f"REQUEST ERROR [{request_id}]: {request.method} {request.path} | "
+                f"Error: {str(e)}"
+            )
+            # Let the regular error handlers take care of the response
+            raise e
+
 # =============================================================================
 # Logging Configuration
 # =============================================================================
@@ -120,13 +193,39 @@ class StatusEndpointFilter(logging.Filter):
 class LoggingService:
     @staticmethod
     def configure(log_level: str) -> None:
+        # More detailed log format that includes thread info
+        log_format = (
+            "%(asctime)s - %(name)s - [%(levelname)s] - "
+            "%(threadName)s - %(message)s"
+        )
+        
+        # Configure the basic logging
         logging.basicConfig(
             level=getattr(logging, log_level.upper(), logging.ERROR),
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            format=log_format,
+            datefmt="%Y-%m-%d %H:%M:%S"
         )
-        logging.getLogger("werkzeug").addFilter(StatusEndpointFilter())
+        
+        # Configure werkzeug to be more verbose by removing the filter
+        werkzeug_logger = logging.getLogger("werkzeug")
+        
+        # Set specific log levels for various components
         logging.getLogger("zap_scanner").setLevel(logging.INFO)
         logging.getLogger("owasp_zap").setLevel(logging.WARNING)
+        
+        # Create a file handler for important logs
+        try:
+            file_handler = logging.FileHandler("app_requests.log")
+            file_handler.setLevel(logging.INFO)
+            file_handler.setFormatter(logging.Formatter(log_format))
+            
+            # Add the file handler to the werkzeug logger and root logger
+            werkzeug_logger.addHandler(file_handler)
+            logging.getLogger().addHandler(file_handler)
+            
+            logging.info("File logging initialized successfully")
+        except (IOError, PermissionError) as e:
+            logging.warning(f"Could not initialize file logging: {e}")
 
 # =============================================================================
 # Port Management
@@ -426,25 +525,6 @@ def handle_docker_action(action: str, model: str, app_num: int) -> Tuple[bool, s
     return True, f"Successfully completed {action}"
 
 
-def handle_docker_action(action: str, model: str, app_num: int) -> Tuple[bool, str]:
-    commands = {
-        "start": [("up", "-d", 120)],
-        "stop": [("down", None, 30)],
-        "reload": [("restart", None, 90)],
-        "rebuild": [("down", None, 30), ("build", None, 300), ("up", "-d", 120)],
-        "build": [("build", None, 300)],
-    }
-    if action not in commands:
-        return False, f"Invalid action: {action}"
-    for base_cmd, extra_arg, timeout in commands[action]:
-        cmd = [base_cmd] + ([extra_arg] if extra_arg else [])
-        success, msg = run_docker_compose(cmd, model, app_num, timeout=timeout)
-        if not success:
-            logger.error(f"Docker {action} failed on {cmd}: {msg}")
-            return False, msg
-    return True, f"Successfully completed {action}"
-
-
 def verify_container_health(
     docker_manager: DockerManager, model: str, app_num: int, max_retries: int = 10, retry_delay: int = 3
 ) -> Tuple[bool, str]:
@@ -679,8 +759,6 @@ def check_app_status(model: str, app_num: int):
     flash(f"Status checked for {model} App {app_num}", "info")
     return redirect(url_for("main.index"))
 
-# Add this route to the main blueprint (main_bp) in app.py
-
 @main_bp.route("/batch/<action>/<string:model>", methods=["POST"])
 @error_handler
 def batch_docker_action(action: str, model: str):
@@ -864,6 +942,36 @@ def get_model_info():
         }
         for idx, model in enumerate(AI_MODELS)
     ])
+
+# ----- Client-side Error Logging Endpoint -----
+@api_bp.route("/log-client-error", methods=["POST"])
+@error_handler
+def log_client_error():
+    """
+    Endpoint to log client-side errors that might be causing
+    undefined route requests.
+    """
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"status": "error", "message": "No error data provided"}), 400
+            
+        # Log the client error with detailed context
+        logger.error(
+            f"CLIENT ERROR: {data.get('message')} | "
+            f"URL: {data.get('url')} | "
+            f"File: {data.get('filename')}:{data.get('lineno')}:{data.get('colno')} | "
+            f"User-Agent: {data.get('userAgent')}"
+        )
+        
+        # Log stack trace at debug level
+        if 'stack' in data:
+            logger.debug(f"Error stack trace: {data.get('stack')}")
+            
+        return jsonify({"status": "success"})
+    except Exception as e:
+        logger.error(f"Error in client error logger: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 # ----- ZAP Routes -----
 @zap_bp.route("/<string:model>/<int:app_num>")
@@ -1154,10 +1262,8 @@ def performance_test(model: str, port: int):
 @error_handler
 def stop_performance_test(model: str, port: int):
     """Stop a running performance test."""
-    # In a more complete implementation, this would communicate with a 
-    # background task manager to terminate the running test
     try:
-        # For now, we'll just return success (actual implementation would depend on how tests are run)
+        # For now, we'll just return success
         return jsonify({"status": "success", "message": "Test stopped successfully"})
     except Exception as e:
         logger.exception(f"Error stopping performance test: {e}")
@@ -1230,7 +1336,7 @@ def analyze_gpt4all(analysis_type: str):
             directory=directory, file_patterns=file_patterns, analysis_type=analysis_type
         ))
         if not isinstance(summary, dict):
-            summary = analyzer.get_analysis_summary(issues)
+            summary = get_analysis_summary(issues)
         return jsonify({"issues": [asdict(issue) for issue in issues], "summary": summary})
     except Exception as e:
         logger.error(f"GPT4All analysis failed: {e}")
@@ -1304,6 +1410,7 @@ def gpt4all_analysis():
             results=None,
             error=str(e)
         )
+
 # =============================================================================
 # Error Handlers & Request Hooks
 # =============================================================================
@@ -1360,7 +1467,13 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     app_config = config or AppConfig.from_env()
     app.config.from_object(app_config)
     app.config["BASE_DIR"] = app_config.BASE_DIR
+    
+    # Configure enhanced logging
     LoggingService.configure(app_config.LOG_LEVEL)
+    
+    # Apply request logger middleware
+    RequestLoggerMiddleware(app)
+    
     app.json_encoder = CustomJSONEncoder
 
     base_path = app_config.BASE_DIR.parent
@@ -1388,6 +1501,8 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
 
     register_error_handlers(app)
     register_request_hooks(app, docker_manager)
+    
+    logger.info("Application initialization complete")
     return app
 
 # =============================================================================

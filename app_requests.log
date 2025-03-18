@@ -1,0 +1,471 @@
+2025-03-18 14:29:33,377 - root - [INFO] - MainThread - File logging initialized successfully
+2025-03-18 14:29:33,378 - root - [INFO] - MainThread - File logging initialized successfully
+2025-03-18 14:29:33,378 - root - [INFO] - MainThread - File logging initialized successfully
+2025-03-18 14:29:33,379 - __main__ - [INFO] - MainThread - Initializing analyzers with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-03-18 14:29:33,379 - __main__ - [INFO] - MainThread - Initializing analyzers with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-03-18 14:29:33,428 - zap_scanner - [INFO] - MainThread - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-03-18 14:29:33,428 - zap_scanner - [INFO] - MainThread - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-03-18 14:29:33,429 - zap_scanner - [INFO] - MainThread - Found free port: 8090
+2025-03-18 14:29:33,429 - zap_scanner - [INFO] - MainThread - Found free port: 8090
+2025-03-18 14:29:33,447 - __main__ - [INFO] - MainThread - Application initialization complete
+2025-03-18 14:29:33,447 - __main__ - [INFO] - MainThread - Application initialization complete
+2025-03-18 14:29:33,528 - werkzeug - [WARNING] - MainThread -  * Debugger is active!
+2025-03-18 14:29:33,528 - werkzeug - [WARNING] - MainThread -  * Debugger is active!
+2025-03-18 14:29:33,528 - werkzeug - [WARNING] - MainThread -  * Debugger is active!
+2025-03-18 14:29:33,528 - werkzeug - [WARNING] - MainThread -  * Debugger is active!
+2025-03-18 14:29:33,530 - werkzeug - [INFO] - MainThread -  * Debugger PIN: 121-685-227
+2025-03-18 14:29:33,530 - werkzeug - [INFO] - MainThread -  * Debugger PIN: 121-685-227
+2025-03-18 14:29:33,530 - werkzeug - [INFO] - MainThread -  * Debugger PIN: 121-685-227
+2025-03-18 14:29:33,530 - werkzeug - [INFO] - MainThread -  * Debugger PIN: 121-685-227
+2025-03-18 14:30:18,060 - root - [INFO] - MainThread - File logging initialized successfully
+2025-03-18 14:30:18,061 - root - [INFO] - MainThread - File logging initialized successfully
+2025-03-18 14:30:18,061 - root - [INFO] - MainThread - File logging initialized successfully
+2025-03-18 14:30:18,061 - __main__ - [INFO] - MainThread - Initializing analyzers with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-03-18 14:30:18,061 - __main__ - [INFO] - MainThread - Initializing analyzers with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-03-18 14:30:18,122 - zap_scanner - [INFO] - MainThread - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-03-18 14:30:18,122 - zap_scanner - [INFO] - MainThread - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-03-18 14:30:18,123 - zap_scanner - [INFO] - MainThread - Found free port: 8090
+2025-03-18 14:30:18,123 - zap_scanner - [INFO] - MainThread - Found free port: 8090
+2025-03-18 14:30:18,140 - __main__ - [INFO] - MainThread - Application initialization complete
+2025-03-18 14:30:18,140 - __main__ - [INFO] - MainThread - Application initialization complete
+2025-03-18 14:30:18,223 - werkzeug - [INFO] - MainThread - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-03-18 14:30:18,223 - werkzeug - [INFO] - MainThread - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-03-18 14:30:18,223 - werkzeug - [INFO] - MainThread - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-03-18 14:30:18,223 - werkzeug - [INFO] - MainThread - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-03-18 14:30:18,223 - werkzeug - [INFO] - MainThread - [33mPress CTRL+C to quit[0m
+2025-03-18 14:30:18,223 - werkzeug - [INFO] - MainThread - [33mPress CTRL+C to quit[0m
+2025-03-18 14:30:18,223 - werkzeug - [INFO] - MainThread - [33mPress CTRL+C to quit[0m
+2025-03-18 14:30:18,223 - werkzeug - [INFO] - MainThread - [33mPress CTRL+C to quit[0m
+2025-03-18 14:30:18,224 - werkzeug - [INFO] - MainThread -  * Restarting with stat
+2025-03-18 14:30:18,224 - werkzeug - [INFO] - MainThread -  * Restarting with stat
+2025-03-18 14:30:18,224 - werkzeug - [INFO] - MainThread -  * Restarting with stat
+2025-03-18 14:30:18,224 - werkzeug - [INFO] - MainThread -  * Restarting with stat
+2025-03-18 14:30:18,860 - root - [INFO] - MainThread - File logging initialized successfully
+2025-03-18 14:30:18,861 - root - [INFO] - MainThread - File logging initialized successfully
+2025-03-18 14:30:18,861 - root - [INFO] - MainThread - File logging initialized successfully
+2025-03-18 14:30:18,861 - __main__ - [INFO] - MainThread - Initializing analyzers with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-03-18 14:30:18,861 - __main__ - [INFO] - MainThread - Initializing analyzers with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-03-18 14:30:18,916 - zap_scanner - [INFO] - MainThread - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-03-18 14:30:18,916 - zap_scanner - [INFO] - MainThread - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-03-18 14:30:18,917 - zap_scanner - [INFO] - MainThread - Found free port: 8090
+2025-03-18 14:30:18,917 - zap_scanner - [INFO] - MainThread - Found free port: 8090
+2025-03-18 14:30:18,933 - __main__ - [INFO] - MainThread - Application initialization complete
+2025-03-18 14:30:18,933 - __main__ - [INFO] - MainThread - Application initialization complete
+2025-03-18 14:30:19,008 - werkzeug - [WARNING] - MainThread -  * Debugger is active!
+2025-03-18 14:30:19,008 - werkzeug - [WARNING] - MainThread -  * Debugger is active!
+2025-03-18 14:30:19,008 - werkzeug - [WARNING] - MainThread -  * Debugger is active!
+2025-03-18 14:30:19,008 - werkzeug - [WARNING] - MainThread -  * Debugger is active!
+2025-03-18 14:30:19,010 - werkzeug - [INFO] - MainThread -  * Debugger PIN: 121-685-227
+2025-03-18 14:30:19,010 - werkzeug - [INFO] - MainThread -  * Debugger PIN: 121-685-227
+2025-03-18 14:30:19,010 - werkzeug - [INFO] - MainThread -  * Debugger PIN: 121-685-227
+2025-03-18 14:30:19,010 - werkzeug - [INFO] - MainThread -  * Debugger PIN: 121-685-227
+2025-03-18 14:30:25,822 - app - [INFO] - Thread-4 (process_request_thread) - REQUEST START [e5f29da7]: GET / | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Mistral&app_num=8 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:25,822 - app - [INFO] - Thread-4 (process_request_thread) - REQUEST START [e5f29da7]: GET / | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Mistral&app_num=8 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:27,449 - app - [INFO] - Thread-4 (process_request_thread) - REQUEST END [e5f29da7]: GET / | Status: 200 | Duration: 1.6269s
+2025-03-18 14:30:27,449 - app - [INFO] - Thread-4 (process_request_thread) - REQUEST END [e5f29da7]: GET / | Status: 200 | Duration: 1.6269s
+2025-03-18 14:30:27,450 - werkzeug - [INFO] - Thread-4 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:27] "GET / HTTP/1.1" 200 -
+2025-03-18 14:30:27,450 - werkzeug - [INFO] - Thread-4 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:27] "GET / HTTP/1.1" 200 -
+2025-03-18 14:30:27,450 - werkzeug - [INFO] - Thread-4 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:27] "GET / HTTP/1.1" 200 -
+2025-03-18 14:30:27,450 - werkzeug - [INFO] - Thread-4 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:27] "GET / HTTP/1.1" 200 -
+2025-03-18 14:30:27,462 - app - [INFO] - Thread-5 (process_request_thread) - REQUEST START [74ca984b]: GET /static/style.css | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:27,462 - app - [INFO] - Thread-5 (process_request_thread) - REQUEST START [74ca984b]: GET /static/style.css | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:27,463 - app - [INFO] - Thread-6 (process_request_thread) - REQUEST START [bce00f37]: GET /static/js/dashboard.js | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:27,463 - app - [INFO] - Thread-6 (process_request_thread) - REQUEST START [bce00f37]: GET /static/js/dashboard.js | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:27,511 - app - [INFO] - Thread-5 (process_request_thread) - REQUEST END [74ca984b]: GET /static/style.css | Status: 304 | Duration: 0.0490s
+2025-03-18 14:30:27,511 - app - [INFO] - Thread-5 (process_request_thread) - REQUEST END [74ca984b]: GET /static/style.css | Status: 304 | Duration: 0.0490s
+2025-03-18 14:30:27,511 - werkzeug - [INFO] - Thread-5 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:27] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:30:27,511 - werkzeug - [INFO] - Thread-5 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:27] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:30:27,511 - werkzeug - [INFO] - Thread-5 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:27] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:30:27,511 - werkzeug - [INFO] - Thread-5 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:27] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:30:27,539 - app - [INFO] - Thread-6 (process_request_thread) - REQUEST END [bce00f37]: GET /static/js/dashboard.js | Status: 200 | Duration: 0.0755s
+2025-03-18 14:30:27,539 - app - [INFO] - Thread-6 (process_request_thread) - REQUEST END [bce00f37]: GET /static/js/dashboard.js | Status: 200 | Duration: 0.0755s
+2025-03-18 14:30:27,540 - werkzeug - [INFO] - Thread-6 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:27] "GET /static/js/dashboard.js HTTP/1.1" 200 -
+2025-03-18 14:30:27,540 - werkzeug - [INFO] - Thread-6 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:27] "GET /static/js/dashboard.js HTTP/1.1" 200 -
+2025-03-18 14:30:27,540 - werkzeug - [INFO] - Thread-6 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:27] "GET /static/js/dashboard.js HTTP/1.1" 200 -
+2025-03-18 14:30:27,540 - werkzeug - [INFO] - Thread-6 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:27] "GET /static/js/dashboard.js HTTP/1.1" 200 -
+2025-03-18 14:30:37,550 - app - [INFO] - Thread-7 (process_request_thread) - REQUEST START [e6ff6826]: GET /frontend-security/Llama/2 | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:37,550 - app - [INFO] - Thread-7 (process_request_thread) - REQUEST START [e6ff6826]: GET /frontend-security/Llama/2 | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:37,551 - app - [INFO] - Thread-8 (process_request_thread) - REQUEST START [f01f8b2b]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:37,551 - app - [INFO] - Thread-8 (process_request_thread) - REQUEST START [f01f8b2b]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:37,551 - app - [INFO] - Thread-9 (process_request_thread) - REQUEST START [02a46610]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:37,551 - app - [INFO] - Thread-9 (process_request_thread) - REQUEST START [02a46610]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:37,551 - app - [INFO] - Thread-8 (process_request_thread) - AJAX REQUEST [f01f8b2b]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:30:37,551 - app - [INFO] - Thread-8 (process_request_thread) - AJAX REQUEST [f01f8b2b]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:30:37,551 - app - [INFO] - Thread-9 (process_request_thread) - AJAX REQUEST [02a46610]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:30:37,551 - app - [INFO] - Thread-9 (process_request_thread) - AJAX REQUEST [02a46610]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:30:37,551 - frontend_security_analysis - [INFO] - Thread-7 (process_request_thread) - Using frontend directory: C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend
+2025-03-18 14:30:37,551 - frontend_security_analysis - [INFO] - Thread-7 (process_request_thread) - Using frontend directory: C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend
+2025-03-18 14:30:37,552 - app - [INFO] - Thread-8 (process_request_thread) - REQUEST END [f01f8b2b]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0011s
+2025-03-18 14:30:37,552 - app - [INFO] - Thread-8 (process_request_thread) - REQUEST END [f01f8b2b]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0011s
+2025-03-18 14:30:37,552 - werkzeug - [INFO] - Thread-8 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:37] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:37,552 - werkzeug - [INFO] - Thread-8 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:37] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:37,552 - app - [INFO] - Thread-9 (process_request_thread) - REQUEST END [02a46610]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0005s
+2025-03-18 14:30:37,552 - app - [INFO] - Thread-9 (process_request_thread) - REQUEST END [02a46610]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0005s
+2025-03-18 14:30:37,553 - werkzeug - [INFO] - Thread-9 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:37] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:37,553 - werkzeug - [INFO] - Thread-9 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:37] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:37,552 - werkzeug - [INFO] - Thread-8 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:37] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:37,552 - werkzeug - [INFO] - Thread-8 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:37] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:37,553 - werkzeug - [INFO] - Thread-9 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:37] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:37,553 - werkzeug - [INFO] - Thread-9 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:37] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:37,555 - frontend_security_analysis - [INFO] - ThreadPoolExecutor-0_0 - Running ESLint in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend (scanning src)...
+2025-03-18 14:30:37,555 - frontend_security_analysis - [INFO] - ThreadPoolExecutor-0_0 - Running ESLint in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend (scanning src)...
+2025-03-18 14:30:38,455 - app - [INFO] - Thread-7 (process_request_thread) - REQUEST END [e6ff6826]: GET /frontend-security/Llama/2 | Status: 200 | Duration: 0.9052s
+2025-03-18 14:30:38,455 - app - [INFO] - Thread-7 (process_request_thread) - REQUEST END [e6ff6826]: GET /frontend-security/Llama/2 | Status: 200 | Duration: 0.9052s
+2025-03-18 14:30:38,456 - werkzeug - [INFO] - Thread-7 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:38] "GET /frontend-security/Llama/2 HTTP/1.1" 200 -
+2025-03-18 14:30:38,456 - werkzeug - [INFO] - Thread-7 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:38] "GET /frontend-security/Llama/2 HTTP/1.1" 200 -
+2025-03-18 14:30:38,456 - werkzeug - [INFO] - Thread-7 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:38] "GET /frontend-security/Llama/2 HTTP/1.1" 200 -
+2025-03-18 14:30:38,456 - werkzeug - [INFO] - Thread-7 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:38] "GET /frontend-security/Llama/2 HTTP/1.1" 200 -
+2025-03-18 14:30:38,480 - app - [INFO] - Thread-12 (process_request_thread) - REQUEST START [d3e40c2a]: GET /static/style.css | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:38,480 - app - [INFO] - Thread-12 (process_request_thread) - REQUEST START [d3e40c2a]: GET /static/style.css | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:38,481 - app - [INFO] - Thread-13 (process_request_thread) - REQUEST START [ff04dbe2]: GET /static/js/dashboard.js | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:38,481 - app - [INFO] - Thread-13 (process_request_thread) - REQUEST START [ff04dbe2]: GET /static/js/dashboard.js | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:38,482 - app - [INFO] - Thread-12 (process_request_thread) - REQUEST END [d3e40c2a]: GET /static/style.css | Status: 304 | Duration: 0.0019s
+2025-03-18 14:30:38,482 - app - [INFO] - Thread-12 (process_request_thread) - REQUEST END [d3e40c2a]: GET /static/style.css | Status: 304 | Duration: 0.0019s
+2025-03-18 14:30:38,482 - werkzeug - [INFO] - Thread-12 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:38] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:30:38,482 - werkzeug - [INFO] - Thread-12 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:38] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:30:38,482 - app - [INFO] - Thread-13 (process_request_thread) - REQUEST END [ff04dbe2]: GET /static/js/dashboard.js | Status: 304 | Duration: 0.0015s
+2025-03-18 14:30:38,482 - app - [INFO] - Thread-13 (process_request_thread) - REQUEST END [ff04dbe2]: GET /static/js/dashboard.js | Status: 304 | Duration: 0.0015s
+2025-03-18 14:30:38,482 - werkzeug - [INFO] - Thread-12 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:38] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:30:38,482 - werkzeug - [INFO] - Thread-12 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:38] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:30:38,483 - werkzeug - [INFO] - Thread-13 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:38] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:30:38,483 - werkzeug - [INFO] - Thread-13 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:38] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:30:38,483 - werkzeug - [INFO] - Thread-13 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:38] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:30:38,483 - werkzeug - [INFO] - Thread-13 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:38] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:30:56,471 - app - [INFO] - Thread-14 (process_request_thread) - REQUEST START [870db175]: GET /frontend-security/Llama/2 | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:56,471 - app - [INFO] - Thread-14 (process_request_thread) - REQUEST START [870db175]: GET /frontend-security/Llama/2 | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:56,472 - app - [INFO] - Thread-15 (process_request_thread) - REQUEST START [f2cf78f1]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:56,472 - app - [INFO] - Thread-15 (process_request_thread) - REQUEST START [f2cf78f1]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:56,472 - app - [INFO] - Thread-15 (process_request_thread) - AJAX REQUEST [f2cf78f1]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:30:56,472 - app - [INFO] - Thread-15 (process_request_thread) - AJAX REQUEST [f2cf78f1]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:30:56,472 - frontend_security_analysis - [INFO] - Thread-14 (process_request_thread) - Using frontend directory: C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend
+2025-03-18 14:30:56,472 - frontend_security_analysis - [INFO] - Thread-14 (process_request_thread) - Using frontend directory: C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend
+2025-03-18 14:30:56,473 - app - [INFO] - Thread-15 (process_request_thread) - REQUEST END [f2cf78f1]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0005s
+2025-03-18 14:30:56,473 - app - [INFO] - Thread-15 (process_request_thread) - REQUEST END [f2cf78f1]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0005s
+2025-03-18 14:30:56,473 - werkzeug - [INFO] - Thread-15 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:56] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:56,473 - werkzeug - [INFO] - Thread-15 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:56] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:56,473 - werkzeug - [INFO] - Thread-15 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:56] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:56,473 - werkzeug - [INFO] - Thread-15 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:56] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:56,474 - frontend_security_analysis - [INFO] - ThreadPoolExecutor-1_0 - Running npm audit in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend...
+2025-03-18 14:30:56,474 - frontend_security_analysis - [INFO] - ThreadPoolExecutor-1_0 - Running npm audit in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend...
+2025-03-18 14:30:56,474 - frontend_security_analysis - [INFO] - ThreadPoolExecutor-1_1 - Running ESLint in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend (scanning src)...
+2025-03-18 14:30:56,474 - frontend_security_analysis - [INFO] - ThreadPoolExecutor-1_1 - Running ESLint in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend (scanning src)...
+2025-03-18 14:30:56,475 - frontend_security_analysis - [INFO] - ThreadPoolExecutor-1_2 - Running retire.js in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend...
+2025-03-18 14:30:56,475 - frontend_security_analysis - [INFO] - ThreadPoolExecutor-1_2 - Running retire.js in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend...
+2025-03-18 14:30:56,475 - frontend_security_analysis - [INFO] - ThreadPoolExecutor-1_3 - Running Snyk in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend...
+2025-03-18 14:30:56,475 - frontend_security_analysis - [INFO] - ThreadPoolExecutor-1_3 - Running Snyk in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend...
+2025-03-18 14:30:56,476 - app - [INFO] - Thread-16 (process_request_thread) - REQUEST START [80662a9a]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:56,476 - app - [INFO] - Thread-16 (process_request_thread) - REQUEST START [80662a9a]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:56,477 - app - [INFO] - Thread-16 (process_request_thread) - AJAX REQUEST [80662a9a]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:30:56,477 - app - [INFO] - Thread-16 (process_request_thread) - AJAX REQUEST [80662a9a]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:30:56,477 - app - [INFO] - Thread-16 (process_request_thread) - REQUEST END [80662a9a]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0010s
+2025-03-18 14:30:56,477 - app - [INFO] - Thread-16 (process_request_thread) - REQUEST END [80662a9a]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0010s
+2025-03-18 14:30:56,478 - werkzeug - [INFO] - Thread-16 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:56] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:56,478 - werkzeug - [INFO] - Thread-16 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:56] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:56,478 - werkzeug - [INFO] - Thread-16 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:56] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:56,478 - werkzeug - [INFO] - Thread-16 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:56] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:57,489 - app - [INFO] - Thread-25 (process_request_thread) - REQUEST START [94f20349]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:57,489 - app - [INFO] - Thread-25 (process_request_thread) - REQUEST START [94f20349]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:57,489 - app - [INFO] - Thread-25 (process_request_thread) - AJAX REQUEST [94f20349]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:30:57,489 - app - [INFO] - Thread-25 (process_request_thread) - AJAX REQUEST [94f20349]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:30:57,489 - app - [INFO] - Thread-25 (process_request_thread) - REQUEST END [94f20349]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0005s
+2025-03-18 14:30:57,489 - app - [INFO] - Thread-25 (process_request_thread) - REQUEST END [94f20349]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0005s
+2025-03-18 14:30:57,490 - werkzeug - [INFO] - Thread-25 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:57] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:57,490 - werkzeug - [INFO] - Thread-25 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:57] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:57,490 - werkzeug - [INFO] - Thread-25 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:57] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:57,490 - werkzeug - [INFO] - Thread-25 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:57] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:57,490 - app - [INFO] - Thread-26 (process_request_thread) - REQUEST START [50c09b2d]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:57,490 - app - [INFO] - Thread-26 (process_request_thread) - REQUEST START [50c09b2d]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:57,490 - app - [INFO] - Thread-26 (process_request_thread) - AJAX REQUEST [50c09b2d]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:30:57,490 - app - [INFO] - Thread-26 (process_request_thread) - AJAX REQUEST [50c09b2d]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:30:57,491 - app - [INFO] - Thread-26 (process_request_thread) - REQUEST END [50c09b2d]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0005s
+2025-03-18 14:30:57,491 - app - [INFO] - Thread-26 (process_request_thread) - REQUEST END [50c09b2d]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0005s
+2025-03-18 14:30:57,491 - werkzeug - [INFO] - Thread-26 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:57] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:57,491 - werkzeug - [INFO] - Thread-26 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:57] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:57,491 - werkzeug - [INFO] - Thread-26 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:57] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:57,491 - werkzeug - [INFO] - Thread-26 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:57] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:59,498 - app - [INFO] - Thread-27 (process_request_thread) - REQUEST START [6f7afca5]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:59,498 - app - [INFO] - Thread-27 (process_request_thread) - REQUEST START [6f7afca5]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:59,499 - app - [INFO] - Thread-27 (process_request_thread) - AJAX REQUEST [6f7afca5]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:30:59,499 - app - [INFO] - Thread-27 (process_request_thread) - AJAX REQUEST [6f7afca5]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:30:59,499 - app - [INFO] - Thread-27 (process_request_thread) - REQUEST END [6f7afca5]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0006s
+2025-03-18 14:30:59,499 - app - [INFO] - Thread-27 (process_request_thread) - REQUEST END [6f7afca5]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0006s
+2025-03-18 14:30:59,499 - werkzeug - [INFO] - Thread-27 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:59] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:59,499 - werkzeug - [INFO] - Thread-27 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:59] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:59,499 - werkzeug - [INFO] - Thread-27 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:59] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:59,499 - werkzeug - [INFO] - Thread-27 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:59] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:59,500 - app - [INFO] - Thread-28 (process_request_thread) - REQUEST START [8a132fc7]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:59,500 - app - [INFO] - Thread-28 (process_request_thread) - REQUEST START [8a132fc7]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:30:59,500 - app - [INFO] - Thread-28 (process_request_thread) - AJAX REQUEST [8a132fc7]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:30:59,500 - app - [INFO] - Thread-28 (process_request_thread) - AJAX REQUEST [8a132fc7]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:30:59,500 - app - [INFO] - Thread-28 (process_request_thread) - REQUEST END [8a132fc7]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0000s
+2025-03-18 14:30:59,500 - app - [INFO] - Thread-28 (process_request_thread) - REQUEST END [8a132fc7]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0000s
+2025-03-18 14:30:59,501 - werkzeug - [INFO] - Thread-28 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:59] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:59,501 - werkzeug - [INFO] - Thread-28 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:59] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:59,501 - werkzeug - [INFO] - Thread-28 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:59] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:30:59,501 - werkzeug - [INFO] - Thread-28 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:30:59] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:01,034 - app - [INFO] - Thread-14 (process_request_thread) - REQUEST END [870db175]: GET /frontend-security/Llama/2 | Status: 200 | Duration: 4.5629s
+2025-03-18 14:31:01,034 - app - [INFO] - Thread-14 (process_request_thread) - REQUEST END [870db175]: GET /frontend-security/Llama/2 | Status: 200 | Duration: 4.5629s
+2025-03-18 14:31:01,034 - werkzeug - [INFO] - Thread-14 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:01] "GET /frontend-security/Llama/2?full=true HTTP/1.1" 200 -
+2025-03-18 14:31:01,034 - werkzeug - [INFO] - Thread-14 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:01] "GET /frontend-security/Llama/2?full=true HTTP/1.1" 200 -
+2025-03-18 14:31:01,034 - werkzeug - [INFO] - Thread-14 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:01] "GET /frontend-security/Llama/2?full=true HTTP/1.1" 200 -
+2025-03-18 14:31:01,034 - werkzeug - [INFO] - Thread-14 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:01] "GET /frontend-security/Llama/2?full=true HTTP/1.1" 200 -
+2025-03-18 14:31:01,045 - app - [INFO] - Thread-29 (process_request_thread) - REQUEST START [c5112383]: GET /static/style.css | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2?full=true | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:01,045 - app - [INFO] - Thread-29 (process_request_thread) - REQUEST START [c5112383]: GET /static/style.css | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2?full=true | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:01,046 - app - [INFO] - Thread-29 (process_request_thread) - REQUEST END [c5112383]: GET /static/style.css | Status: 304 | Duration: 0.0011s
+2025-03-18 14:31:01,046 - app - [INFO] - Thread-29 (process_request_thread) - REQUEST END [c5112383]: GET /static/style.css | Status: 304 | Duration: 0.0011s
+2025-03-18 14:31:01,046 - werkzeug - [INFO] - Thread-29 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:01] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:31:01,046 - werkzeug - [INFO] - Thread-29 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:01] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:31:01,047 - app - [INFO] - Thread-30 (process_request_thread) - REQUEST START [2491fbc9]: GET /static/js/dashboard.js | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2?full=true | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:01,047 - app - [INFO] - Thread-30 (process_request_thread) - REQUEST START [2491fbc9]: GET /static/js/dashboard.js | Referrer: http://127.0.0.1:5000/frontend-security/Llama/2?full=true | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:01,046 - werkzeug - [INFO] - Thread-29 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:01] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:31:01,046 - werkzeug - [INFO] - Thread-29 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:01] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:31:01,047 - app - [INFO] - Thread-30 (process_request_thread) - REQUEST END [2491fbc9]: GET /static/js/dashboard.js | Status: 304 | Duration: 0.0005s
+2025-03-18 14:31:01,047 - app - [INFO] - Thread-30 (process_request_thread) - REQUEST END [2491fbc9]: GET /static/js/dashboard.js | Status: 304 | Duration: 0.0005s
+2025-03-18 14:31:01,048 - werkzeug - [INFO] - Thread-30 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:01] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:31:01,048 - werkzeug - [INFO] - Thread-30 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:01] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:31:01,048 - werkzeug - [INFO] - Thread-30 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:01] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:31:01,048 - werkzeug - [INFO] - Thread-30 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:01] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:31:20,993 - app - [INFO] - Thread-31 (process_request_thread) - REQUEST START [e1b7413d]: GET /backend-security/Llama/5 | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:20,993 - app - [INFO] - Thread-31 (process_request_thread) - REQUEST START [e1b7413d]: GET /backend-security/Llama/5 | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:20,994 - app - [INFO] - Thread-32 (process_request_thread) - REQUEST START [5026cd06]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:20,994 - app - [INFO] - Thread-32 (process_request_thread) - REQUEST START [5026cd06]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:20,995 - app - [INFO] - Thread-33 (process_request_thread) - REQUEST START [93791de9]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:20,995 - app - [INFO] - Thread-33 (process_request_thread) - REQUEST START [93791de9]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:20,995 - app - [INFO] - Thread-32 (process_request_thread) - AJAX REQUEST [5026cd06]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:20,995 - app - [INFO] - Thread-32 (process_request_thread) - AJAX REQUEST [5026cd06]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:20,995 - app - [INFO] - Thread-33 (process_request_thread) - AJAX REQUEST [93791de9]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:20,995 - app - [INFO] - Thread-33 (process_request_thread) - AJAX REQUEST [93791de9]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:20,995 - app - [INFO] - Thread-32 (process_request_thread) - REQUEST END [5026cd06]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0011s
+2025-03-18 14:31:20,995 - app - [INFO] - Thread-32 (process_request_thread) - REQUEST END [5026cd06]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0011s
+2025-03-18 14:31:20,996 - werkzeug - [INFO] - Thread-32 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:20] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:20,996 - werkzeug - [INFO] - Thread-32 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:20] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:20,995 - app - [INFO] - Thread-33 (process_request_thread) - REQUEST END [93791de9]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0005s
+2025-03-18 14:31:20,995 - app - [INFO] - Thread-33 (process_request_thread) - REQUEST END [93791de9]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0005s
+2025-03-18 14:31:20,996 - werkzeug - [INFO] - Thread-33 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:20] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:20,996 - werkzeug - [INFO] - Thread-33 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:20] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:20,996 - werkzeug - [INFO] - Thread-32 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:20] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:20,996 - werkzeug - [INFO] - Thread-32 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:20] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:20,996 - werkzeug - [INFO] - Thread-33 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:20] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:20,996 - werkzeug - [INFO] - Thread-33 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:20] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:21,571 - app - [INFO] - Thread-31 (process_request_thread) - REQUEST END [e1b7413d]: GET /backend-security/Llama/5 | Status: 200 | Duration: 0.5778s
+2025-03-18 14:31:21,571 - app - [INFO] - Thread-31 (process_request_thread) - REQUEST END [e1b7413d]: GET /backend-security/Llama/5 | Status: 200 | Duration: 0.5778s
+2025-03-18 14:31:21,571 - werkzeug - [INFO] - Thread-31 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:21] "GET /backend-security/Llama/5 HTTP/1.1" 200 -
+2025-03-18 14:31:21,571 - werkzeug - [INFO] - Thread-31 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:21] "GET /backend-security/Llama/5 HTTP/1.1" 200 -
+2025-03-18 14:31:21,571 - werkzeug - [INFO] - Thread-31 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:21] "GET /backend-security/Llama/5 HTTP/1.1" 200 -
+2025-03-18 14:31:21,571 - werkzeug - [INFO] - Thread-31 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:21] "GET /backend-security/Llama/5 HTTP/1.1" 200 -
+2025-03-18 14:31:21,591 - app - [INFO] - Thread-36 (process_request_thread) - REQUEST START [0141f387]: GET /static/style.css | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:21,591 - app - [INFO] - Thread-36 (process_request_thread) - REQUEST START [0141f387]: GET /static/style.css | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:21,592 - app - [INFO] - Thread-36 (process_request_thread) - REQUEST END [0141f387]: GET /static/style.css | Status: 304 | Duration: 0.0011s
+2025-03-18 14:31:21,592 - app - [INFO] - Thread-36 (process_request_thread) - REQUEST END [0141f387]: GET /static/style.css | Status: 304 | Duration: 0.0011s
+2025-03-18 14:31:21,593 - app - [INFO] - Thread-37 (process_request_thread) - REQUEST START [7cca8084]: GET /static/js/dashboard.js | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:21,593 - app - [INFO] - Thread-37 (process_request_thread) - REQUEST START [7cca8084]: GET /static/js/dashboard.js | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:21,593 - werkzeug - [INFO] - Thread-36 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:21] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:31:21,593 - werkzeug - [INFO] - Thread-36 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:21] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:31:21,593 - werkzeug - [INFO] - Thread-36 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:21] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:31:21,593 - werkzeug - [INFO] - Thread-36 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:21] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:31:21,594 - app - [INFO] - Thread-37 (process_request_thread) - REQUEST END [7cca8084]: GET /static/js/dashboard.js | Status: 304 | Duration: 0.0011s
+2025-03-18 14:31:21,594 - app - [INFO] - Thread-37 (process_request_thread) - REQUEST END [7cca8084]: GET /static/js/dashboard.js | Status: 304 | Duration: 0.0011s
+2025-03-18 14:31:21,594 - werkzeug - [INFO] - Thread-37 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:21] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:31:21,594 - werkzeug - [INFO] - Thread-37 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:21] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:31:21,594 - werkzeug - [INFO] - Thread-37 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:21] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:31:21,594 - werkzeug - [INFO] - Thread-37 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:21] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:31:23,315 - app - [INFO] - Thread-38 (process_request_thread) - REQUEST START [6e35c8db]: GET /backend-security/Llama/5 | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:23,315 - app - [INFO] - Thread-38 (process_request_thread) - REQUEST START [6e35c8db]: GET /backend-security/Llama/5 | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:23,319 - app - [INFO] - Thread-39 (process_request_thread) - REQUEST START [89ab691f]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:23,319 - app - [INFO] - Thread-39 (process_request_thread) - REQUEST START [89ab691f]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:23,320 - app - [INFO] - Thread-39 (process_request_thread) - AJAX REQUEST [89ab691f]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:23,320 - app - [INFO] - Thread-39 (process_request_thread) - AJAX REQUEST [89ab691f]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:23,320 - app - [INFO] - Thread-39 (process_request_thread) - REQUEST END [89ab691f]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0011s
+2025-03-18 14:31:23,320 - app - [INFO] - Thread-39 (process_request_thread) - REQUEST END [89ab691f]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0011s
+2025-03-18 14:31:23,321 - werkzeug - [INFO] - Thread-39 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:23] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:23,321 - werkzeug - [INFO] - Thread-39 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:23] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:23,321 - app - [INFO] - Thread-42 (process_request_thread) - REQUEST START [ed543d80]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:23,321 - app - [INFO] - Thread-42 (process_request_thread) - REQUEST START [ed543d80]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:23,321 - werkzeug - [INFO] - Thread-39 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:23] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:23,321 - werkzeug - [INFO] - Thread-39 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:23] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:23,321 - app - [INFO] - Thread-42 (process_request_thread) - AJAX REQUEST [ed543d80]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:23,321 - app - [INFO] - Thread-42 (process_request_thread) - AJAX REQUEST [ed543d80]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:23,322 - app - [INFO] - Thread-42 (process_request_thread) - REQUEST END [ed543d80]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0010s
+2025-03-18 14:31:23,322 - app - [INFO] - Thread-42 (process_request_thread) - REQUEST END [ed543d80]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0010s
+2025-03-18 14:31:23,322 - werkzeug - [INFO] - Thread-42 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:23] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:23,322 - werkzeug - [INFO] - Thread-42 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:23] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:23,322 - werkzeug - [INFO] - Thread-42 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:23] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:23,322 - werkzeug - [INFO] - Thread-42 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:23] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:24,333 - app - [INFO] - Thread-49 (process_request_thread) - REQUEST START [b43b3d9a]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:24,333 - app - [INFO] - Thread-49 (process_request_thread) - REQUEST START [b43b3d9a]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:24,334 - app - [INFO] - Thread-50 (process_request_thread) - REQUEST START [e60f4737]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:24,334 - app - [INFO] - Thread-50 (process_request_thread) - REQUEST START [e60f4737]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:24,334 - app - [INFO] - Thread-49 (process_request_thread) - AJAX REQUEST [b43b3d9a]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:24,334 - app - [INFO] - Thread-49 (process_request_thread) - AJAX REQUEST [b43b3d9a]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:24,335 - app - [INFO] - Thread-50 (process_request_thread) - AJAX REQUEST [e60f4737]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:24,335 - app - [INFO] - Thread-50 (process_request_thread) - AJAX REQUEST [e60f4737]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:24,335 - app - [INFO] - Thread-49 (process_request_thread) - REQUEST END [b43b3d9a]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0022s
+2025-03-18 14:31:24,335 - app - [INFO] - Thread-49 (process_request_thread) - REQUEST END [b43b3d9a]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0022s
+2025-03-18 14:31:24,336 - werkzeug - [INFO] - Thread-49 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:24] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:24,336 - werkzeug - [INFO] - Thread-49 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:24] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:24,335 - app - [INFO] - Thread-50 (process_request_thread) - REQUEST END [e60f4737]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0011s
+2025-03-18 14:31:24,335 - app - [INFO] - Thread-50 (process_request_thread) - REQUEST END [e60f4737]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0011s
+2025-03-18 14:31:24,336 - werkzeug - [INFO] - Thread-50 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:24] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:24,336 - werkzeug - [INFO] - Thread-50 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:24] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:24,336 - werkzeug - [INFO] - Thread-49 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:24] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:24,336 - werkzeug - [INFO] - Thread-49 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:24] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:24,336 - werkzeug - [INFO] - Thread-50 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:24] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:24,336 - werkzeug - [INFO] - Thread-50 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:24] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:26,351 - app - [INFO] - Thread-51 (process_request_thread) - REQUEST START [3a02b8d8]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:26,351 - app - [INFO] - Thread-51 (process_request_thread) - REQUEST START [3a02b8d8]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:26,352 - app - [INFO] - Thread-51 (process_request_thread) - AJAX REQUEST [3a02b8d8]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:26,352 - app - [INFO] - Thread-51 (process_request_thread) - AJAX REQUEST [3a02b8d8]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:26,352 - app - [INFO] - Thread-51 (process_request_thread) - REQUEST END [3a02b8d8]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0008s
+2025-03-18 14:31:26,352 - app - [INFO] - Thread-51 (process_request_thread) - REQUEST END [3a02b8d8]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0008s
+2025-03-18 14:31:26,352 - werkzeug - [INFO] - Thread-51 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:26] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:26,352 - werkzeug - [INFO] - Thread-51 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:26] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:26,352 - werkzeug - [INFO] - Thread-51 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:26] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:26,352 - werkzeug - [INFO] - Thread-51 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:26] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:26,353 - app - [INFO] - Thread-52 (process_request_thread) - REQUEST START [957f19bd]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:26,353 - app - [INFO] - Thread-52 (process_request_thread) - REQUEST START [957f19bd]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/backend-security/Llama/5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:26,354 - app - [INFO] - Thread-52 (process_request_thread) - AJAX REQUEST [957f19bd]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:26,354 - app - [INFO] - Thread-52 (process_request_thread) - AJAX REQUEST [957f19bd]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:26,354 - app - [INFO] - Thread-52 (process_request_thread) - REQUEST END [957f19bd]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0006s
+2025-03-18 14:31:26,354 - app - [INFO] - Thread-52 (process_request_thread) - REQUEST END [957f19bd]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0006s
+2025-03-18 14:31:26,355 - werkzeug - [INFO] - Thread-52 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:26] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:26,355 - werkzeug - [INFO] - Thread-52 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:26] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:26,355 - werkzeug - [INFO] - Thread-52 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:26] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:26,355 - werkzeug - [INFO] - Thread-52 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:26] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:39,388 - app - [INFO] - Thread-38 (process_request_thread) - REQUEST END [6e35c8db]: GET /backend-security/Llama/5 | Status: 200 | Duration: 16.0729s
+2025-03-18 14:31:39,388 - app - [INFO] - Thread-38 (process_request_thread) - REQUEST END [6e35c8db]: GET /backend-security/Llama/5 | Status: 200 | Duration: 16.0729s
+2025-03-18 14:31:39,388 - werkzeug - [INFO] - Thread-38 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:39] "GET /backend-security/Llama/5?full=true HTTP/1.1" 200 -
+2025-03-18 14:31:39,388 - werkzeug - [INFO] - Thread-38 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:39] "GET /backend-security/Llama/5?full=true HTTP/1.1" 200 -
+2025-03-18 14:31:39,388 - werkzeug - [INFO] - Thread-38 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:39] "GET /backend-security/Llama/5?full=true HTTP/1.1" 200 -
+2025-03-18 14:31:39,388 - werkzeug - [INFO] - Thread-38 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:39] "GET /backend-security/Llama/5?full=true HTTP/1.1" 200 -
+2025-03-18 14:31:39,400 - app - [INFO] - Thread-53 (process_request_thread) - REQUEST START [613a6e0b]: GET /static/style.css | Referrer: http://127.0.0.1:5000/backend-security/Llama/5?full=true | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:39,400 - app - [INFO] - Thread-53 (process_request_thread) - REQUEST START [613a6e0b]: GET /static/style.css | Referrer: http://127.0.0.1:5000/backend-security/Llama/5?full=true | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:39,402 - app - [INFO] - Thread-53 (process_request_thread) - REQUEST END [613a6e0b]: GET /static/style.css | Status: 304 | Duration: 0.0012s
+2025-03-18 14:31:39,402 - app - [INFO] - Thread-53 (process_request_thread) - REQUEST END [613a6e0b]: GET /static/style.css | Status: 304 | Duration: 0.0012s
+2025-03-18 14:31:39,402 - werkzeug - [INFO] - Thread-53 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:39] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:31:39,402 - werkzeug - [INFO] - Thread-53 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:39] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:31:39,402 - werkzeug - [INFO] - Thread-53 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:39] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:31:39,402 - werkzeug - [INFO] - Thread-53 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:39] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:31:39,402 - app - [INFO] - Thread-54 (process_request_thread) - REQUEST START [c4c58252]: GET /static/js/dashboard.js | Referrer: http://127.0.0.1:5000/backend-security/Llama/5?full=true | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:39,402 - app - [INFO] - Thread-54 (process_request_thread) - REQUEST START [c4c58252]: GET /static/js/dashboard.js | Referrer: http://127.0.0.1:5000/backend-security/Llama/5?full=true | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:39,403 - app - [INFO] - Thread-54 (process_request_thread) - REQUEST END [c4c58252]: GET /static/js/dashboard.js | Status: 304 | Duration: 0.0011s
+2025-03-18 14:31:39,403 - app - [INFO] - Thread-54 (process_request_thread) - REQUEST END [c4c58252]: GET /static/js/dashboard.js | Status: 304 | Duration: 0.0011s
+2025-03-18 14:31:39,403 - werkzeug - [INFO] - Thread-54 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:39] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:31:39,403 - werkzeug - [INFO] - Thread-54 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:39] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:31:39,403 - werkzeug - [INFO] - Thread-54 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:39] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:31:39,403 - werkzeug - [INFO] - Thread-54 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:39] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:31:56,280 - app - [INFO] - Thread-55 (process_request_thread) - REQUEST START [0804c342]: GET /gpt4all-analysis | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:56,280 - app - [INFO] - Thread-55 (process_request_thread) - REQUEST START [0804c342]: GET /gpt4all-analysis | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:56,285 - app - [INFO] - Thread-55 (process_request_thread) - REQUEST END [0804c342]: GET /gpt4all-analysis | Status: 200 | Duration: 0.0048s
+2025-03-18 14:31:56,285 - app - [INFO] - Thread-55 (process_request_thread) - REQUEST END [0804c342]: GET /gpt4all-analysis | Status: 200 | Duration: 0.0048s
+2025-03-18 14:31:56,286 - werkzeug - [INFO] - Thread-55 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "GET /gpt4all-analysis?model=Llama&app_num=5 HTTP/1.1" 200 -
+2025-03-18 14:31:56,286 - werkzeug - [INFO] - Thread-55 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "GET /gpt4all-analysis?model=Llama&app_num=5 HTTP/1.1" 200 -
+2025-03-18 14:31:56,286 - app - [INFO] - Thread-56 (process_request_thread) - REQUEST START [6a7d2a28]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:56,286 - app - [INFO] - Thread-56 (process_request_thread) - REQUEST START [6a7d2a28]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:56,286 - app - [INFO] - Thread-57 (process_request_thread) - REQUEST START [939fd8ca]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:56,286 - app - [INFO] - Thread-57 (process_request_thread) - REQUEST START [939fd8ca]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/ | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:56,286 - werkzeug - [INFO] - Thread-55 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "GET /gpt4all-analysis?model=Llama&app_num=5 HTTP/1.1" 200 -
+2025-03-18 14:31:56,286 - werkzeug - [INFO] - Thread-55 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "GET /gpt4all-analysis?model=Llama&app_num=5 HTTP/1.1" 200 -
+2025-03-18 14:31:56,287 - app - [INFO] - Thread-56 (process_request_thread) - AJAX REQUEST [6a7d2a28]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:56,287 - app - [INFO] - Thread-56 (process_request_thread) - AJAX REQUEST [6a7d2a28]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:56,287 - app - [INFO] - Thread-57 (process_request_thread) - AJAX REQUEST [939fd8ca]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:56,287 - app - [INFO] - Thread-57 (process_request_thread) - AJAX REQUEST [939fd8ca]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:31:56,287 - app - [INFO] - Thread-56 (process_request_thread) - REQUEST END [6a7d2a28]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0015s
+2025-03-18 14:31:56,287 - app - [INFO] - Thread-56 (process_request_thread) - REQUEST END [6a7d2a28]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0015s
+2025-03-18 14:31:56,288 - werkzeug - [INFO] - Thread-56 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:56,288 - werkzeug - [INFO] - Thread-56 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:56,287 - app - [INFO] - Thread-57 (process_request_thread) - REQUEST END [939fd8ca]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0010s
+2025-03-18 14:31:56,287 - app - [INFO] - Thread-57 (process_request_thread) - REQUEST END [939fd8ca]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0010s
+2025-03-18 14:31:56,288 - werkzeug - [INFO] - Thread-57 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:56,288 - werkzeug - [INFO] - Thread-57 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:56,288 - werkzeug - [INFO] - Thread-56 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:56,288 - werkzeug - [INFO] - Thread-56 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:56,288 - werkzeug - [INFO] - Thread-57 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:56,288 - werkzeug - [INFO] - Thread-57 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:31:56,302 - app - [INFO] - Thread-58 (process_request_thread) - REQUEST START [64fbd2fa]: GET /static/style.css | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Llama&app_num=5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:56,302 - app - [INFO] - Thread-58 (process_request_thread) - REQUEST START [64fbd2fa]: GET /static/style.css | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Llama&app_num=5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:56,303 - app - [INFO] - Thread-59 (process_request_thread) - REQUEST START [ac5a4465]: GET /static/js/dashboard.js | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Llama&app_num=5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:56,303 - app - [INFO] - Thread-59 (process_request_thread) - REQUEST START [ac5a4465]: GET /static/js/dashboard.js | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Llama&app_num=5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:31:56,304 - app - [INFO] - Thread-58 (process_request_thread) - REQUEST END [64fbd2fa]: GET /static/style.css | Status: 304 | Duration: 0.0017s
+2025-03-18 14:31:56,304 - app - [INFO] - Thread-58 (process_request_thread) - REQUEST END [64fbd2fa]: GET /static/style.css | Status: 304 | Duration: 0.0017s
+2025-03-18 14:31:56,304 - app - [INFO] - Thread-59 (process_request_thread) - REQUEST END [ac5a4465]: GET /static/js/dashboard.js | Status: 304 | Duration: 0.0011s
+2025-03-18 14:31:56,304 - app - [INFO] - Thread-59 (process_request_thread) - REQUEST END [ac5a4465]: GET /static/js/dashboard.js | Status: 304 | Duration: 0.0011s
+2025-03-18 14:31:56,305 - werkzeug - [INFO] - Thread-58 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:31:56,305 - werkzeug - [INFO] - Thread-58 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:31:56,305 - werkzeug - [INFO] - Thread-59 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:31:56,305 - werkzeug - [INFO] - Thread-59 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:31:56,305 - werkzeug - [INFO] - Thread-58 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:31:56,305 - werkzeug - [INFO] - Thread-58 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-03-18 14:31:56,305 - werkzeug - [INFO] - Thread-59 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:31:56,305 - werkzeug - [INFO] - Thread-59 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:31:56] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-03-18 14:32:10,848 - app - [INFO] - Thread-60 (process_request_thread) - REQUEST START [859c3ee7]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Llama&app_num=5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:32:10,848 - app - [INFO] - Thread-60 (process_request_thread) - REQUEST START [859c3ee7]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Llama&app_num=5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:32:10,849 - app - [INFO] - Thread-61 (process_request_thread) - REQUEST START [04e63375]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Llama&app_num=5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:32:10,849 - app - [INFO] - Thread-61 (process_request_thread) - REQUEST START [04e63375]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Llama&app_num=5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:32:10,849 - app - [INFO] - Thread-60 (process_request_thread) - AJAX REQUEST [859c3ee7]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:32:10,849 - app - [INFO] - Thread-60 (process_request_thread) - AJAX REQUEST [859c3ee7]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:32:10,849 - app - [INFO] - Thread-61 (process_request_thread) - AJAX REQUEST [04e63375]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:32:10,849 - app - [INFO] - Thread-61 (process_request_thread) - AJAX REQUEST [04e63375]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:32:10,850 - app - [INFO] - Thread-60 (process_request_thread) - REQUEST END [859c3ee7]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0016s
+2025-03-18 14:32:10,850 - app - [INFO] - Thread-60 (process_request_thread) - REQUEST END [859c3ee7]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0016s
+2025-03-18 14:32:10,850 - werkzeug - [INFO] - Thread-60 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:10] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:10,850 - werkzeug - [INFO] - Thread-60 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:10] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:10,850 - app - [INFO] - Thread-61 (process_request_thread) - REQUEST END [04e63375]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0011s
+2025-03-18 14:32:10,850 - app - [INFO] - Thread-61 (process_request_thread) - REQUEST END [04e63375]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0011s
+2025-03-18 14:32:10,850 - werkzeug - [INFO] - Thread-61 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:10] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:10,850 - werkzeug - [INFO] - Thread-61 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:10] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:10,850 - werkzeug - [INFO] - Thread-60 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:10] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:10,850 - werkzeug - [INFO] - Thread-60 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:10] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:10,850 - werkzeug - [INFO] - Thread-61 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:10] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:10,850 - werkzeug - [INFO] - Thread-61 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:10] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:11,857 - app - [INFO] - Thread-62 (process_request_thread) - REQUEST START [99675875]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Llama&app_num=5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:32:11,857 - app - [INFO] - Thread-62 (process_request_thread) - REQUEST START [99675875]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Llama&app_num=5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:32:11,857 - app - [INFO] - Thread-62 (process_request_thread) - AJAX REQUEST [99675875]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:32:11,857 - app - [INFO] - Thread-62 (process_request_thread) - AJAX REQUEST [99675875]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:32:11,858 - app - [INFO] - Thread-63 (process_request_thread) - REQUEST START [3fe25564]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Llama&app_num=5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:32:11,858 - app - [INFO] - Thread-63 (process_request_thread) - REQUEST START [3fe25564]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Llama&app_num=5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:32:11,859 - app - [INFO] - Thread-63 (process_request_thread) - AJAX REQUEST [3fe25564]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:32:11,859 - app - [INFO] - Thread-63 (process_request_thread) - AJAX REQUEST [3fe25564]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:32:11,859 - app - [INFO] - Thread-63 (process_request_thread) - REQUEST END [3fe25564]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0006s
+2025-03-18 14:32:11,859 - app - [INFO] - Thread-63 (process_request_thread) - REQUEST END [3fe25564]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0006s
+2025-03-18 14:32:11,859 - werkzeug - [INFO] - Thread-63 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:11] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:11,859 - werkzeug - [INFO] - Thread-63 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:11] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:11,859 - werkzeug - [INFO] - Thread-63 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:11] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:11,859 - werkzeug - [INFO] - Thread-63 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:11] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:11,862 - app - [INFO] - Thread-62 (process_request_thread) - REQUEST END [99675875]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0052s
+2025-03-18 14:32:11,862 - app - [INFO] - Thread-62 (process_request_thread) - REQUEST END [99675875]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0052s
+2025-03-18 14:32:11,862 - werkzeug - [INFO] - Thread-62 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:11] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:11,862 - werkzeug - [INFO] - Thread-62 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:11] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:11,862 - werkzeug - [INFO] - Thread-62 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:11] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:11,862 - werkzeug - [INFO] - Thread-62 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:11] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:13,867 - app - [INFO] - Thread-64 (process_request_thread) - REQUEST START [f4efb18f]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Llama&app_num=5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:32:13,867 - app - [INFO] - Thread-64 (process_request_thread) - REQUEST START [f4efb18f]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Llama&app_num=5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:32:13,867 - app - [INFO] - Thread-64 (process_request_thread) - AJAX REQUEST [f4efb18f]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:32:13,867 - app - [INFO] - Thread-64 (process_request_thread) - AJAX REQUEST [f4efb18f]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:32:13,867 - app - [INFO] - Thread-64 (process_request_thread) - REQUEST END [f4efb18f]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0005s
+2025-03-18 14:32:13,867 - app - [INFO] - Thread-64 (process_request_thread) - REQUEST END [f4efb18f]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0005s
+2025-03-18 14:32:13,868 - werkzeug - [INFO] - Thread-64 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:13] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:13,868 - werkzeug - [INFO] - Thread-64 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:13] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:13,868 - werkzeug - [INFO] - Thread-64 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:13] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:13,868 - werkzeug - [INFO] - Thread-64 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:13] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:13,870 - app - [INFO] - Thread-65 (process_request_thread) - REQUEST START [343d9066]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Llama&app_num=5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:32:13,870 - app - [INFO] - Thread-65 (process_request_thread) - REQUEST START [343d9066]: GET /undefined/undefined/undefined | Referrer: http://127.0.0.1:5000/gpt4all-analysis?model=Llama&app_num=5 | User-Agent: No user agent | IP: 127.0.0.1
+2025-03-18 14:32:13,870 - app - [INFO] - Thread-65 (process_request_thread) - AJAX REQUEST [343d9066]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:32:13,870 - app - [INFO] - Thread-65 (process_request_thread) - AJAX REQUEST [343d9066]: GET /undefined/undefined/undefined | Content-Type: None
+2025-03-18 14:32:13,870 - app - [INFO] - Thread-65 (process_request_thread) - REQUEST END [343d9066]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0005s
+2025-03-18 14:32:13,870 - app - [INFO] - Thread-65 (process_request_thread) - REQUEST END [343d9066]: GET /undefined/undefined/undefined | Status: 404 | Duration: 0.0005s
+2025-03-18 14:32:13,870 - werkzeug - [INFO] - Thread-65 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:13] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:13,870 - werkzeug - [INFO] - Thread-65 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:13] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:13,870 - werkzeug - [INFO] - Thread-65 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:13] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:32:13,870 - werkzeug - [INFO] - Thread-65 (process_request_thread) - 127.0.0.1 - - [18/Mar/2025 14:32:13] "[33mGET /undefined/undefined/undefined HTTP/1.1[0m" 404 -
+2025-03-18 14:48:34,425 - werkzeug - [INFO] - MainThread -  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\gpt4all_analysis.py', reloading
+2025-03-18 14:48:34,425 - werkzeug - [INFO] - MainThread -  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\gpt4all_analysis.py', reloading
+2025-03-18 14:48:34,425 - werkzeug - [INFO] - MainThread -  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\gpt4all_analysis.py', reloading
+2025-03-18 14:48:34,425 - werkzeug - [INFO] - MainThread -  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\gpt4all_analysis.py', reloading
+2025-03-18 14:48:34,483 - werkzeug - [INFO] - MainThread -  * Restarting with stat
+2025-03-18 14:48:34,483 - werkzeug - [INFO] - MainThread -  * Restarting with stat
+2025-03-18 14:48:34,483 - werkzeug - [INFO] - MainThread -  * Restarting with stat
+2025-03-18 14:48:34,483 - werkzeug - [INFO] - MainThread -  * Restarting with stat

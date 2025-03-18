@@ -7,6 +7,66 @@ document.addEventListener('DOMContentLoaded', () => {
   dashboard.init();
 });
 
+// Add this code to your dashboard.js file, right after the DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', () => {
+  // Original dashboard initialization
+  const dashboard = new DashboardController();
+  dashboard.init();
+  
+  // Add global error handler to log client-side errors
+  window.addEventListener('error', function(event) {
+    // Create a detailed error report
+    const errorDetails = {
+      message: event.message,
+      filename: event.filename, 
+      lineno: event.lineno,
+      colno: event.colno,
+      stack: event.error ? event.error.stack : 'No stack trace',
+      url: window.location.href,
+      userAgent: navigator.userAgent,
+      timestamp: new Date().toISOString()
+    };
+    
+    // Log to console for development
+    console.error('CLIENT ERROR:', errorDetails);
+    
+    // Send error to server for logging
+    fetch('/api/log-client-error', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify(errorDetails)
+    }).catch(err => {
+      console.error('Failed to send error to server:', err);
+    });
+    
+    return false; // Allow default error handling to continue
+  });
+  
+  // Add additional instrumentation for AJAX requests
+  const originalFetch = window.fetch;
+  window.fetch = function(url, options) {
+    // Log the fetch request
+    console.log(`FETCH REQUEST: ${url}`, options);
+    
+    // Intercept errors in fetch requests
+    return originalFetch(url, options)
+      .then(response => {
+        if (!response.ok) {
+          console.warn(`FETCH ERROR: ${response.status} for ${url}`);
+        }
+        return response;
+      })
+      .catch(error => {
+        console.error(`FETCH FAILURE: ${url}`, error);
+        throw error;
+      });
+  };
+});
+
+
 class DashboardController {
   constructor() {
     // Configuration
