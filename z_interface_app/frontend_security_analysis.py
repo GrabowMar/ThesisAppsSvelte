@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Frontend Security Analysis Module (Rewritten)
+Frontend Security Analysis Module
 
 Provides security scanning for frontend code using multiple tools:
 - npm audit for dependency vulnerabilities
@@ -9,8 +9,7 @@ Provides security scanning for frontend code using multiple tools:
 - retire.js for known vulnerable JavaScript libraries
 - snyk for additional security checks
 
-This rewritten version aims to simplify path detection, improve logging,
-and handle common edge cases more gracefully.
+Features improved path detection, better logging, and more robust error handling.
 """
 
 import os
@@ -21,24 +20,24 @@ import concurrent.futures
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional, Tuple, Dict
+from typing import List, Optional, Tuple, Dict, Any, Union
 
 # -----------------------------------------------------------------------------
 # Logging Configuration
 # -----------------------------------------------------------------------------
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 # -----------------------------------------------------------------------------
 # Constants
 # -----------------------------------------------------------------------------
-TOOL_TIMEOUT = 30  # seconds
+TOOL_TIMEOUT = 45  # seconds - increased from 30 to handle slower systems
 SEVERITY_MAP = {
     "critical": "HIGH",
     "high": "HIGH",
     "moderate": "MEDIUM",
     "medium": "MEDIUM",
-    "low": "LOW"
+    "low": "LOW",
+    "info": "LOW"
 }
 
 # -----------------------------------------------------------------------------
@@ -62,6 +61,14 @@ def safe_json_loads(data: str) -> Optional[dict]:
         logger.error(f"Failed to parse JSON: {exc}")
         logger.debug(f"Raw output snippet: {data[:300]}...")
         return None
+
+def normalize_path(path: Union[str, Path]) -> Path:
+    """
+    Normalize a path string or Path object to ensure it's a resolved Path.
+    """
+    if isinstance(path, str):
+        path = Path(path)
+    return path.resolve()
 
 # -----------------------------------------------------------------------------
 # Data Classes
@@ -91,14 +98,18 @@ class FrontendSecurityAnalyzer:
     - npm-audit
     - ESLint
     - retire.js
-    - Snyk
+    - snyk
     """
 
     def __init__(self, base_path: Path):
         """
-        :param base_path: The root directory where the frontend code resides.
+        Initialize the analyzer with the base path.
+        
+        :param base_path: The root directory where all code resides.
         """
-        self.base_path = base_path.resolve()
+        self.base_path = normalize_path(base_path)
+        logger.info(f"Initialized FrontendSecurityAnalyzer with base path: {self.base_path}")
+        
         # Default quick-scan tools vs. full-scan
         self.default_tools = ["eslint"]
         self.all_tools = ["npm-audit", "eslint", "retire-js", "snyk"]
@@ -110,29 +121,39 @@ class FrontendSecurityAnalyzer:
         """
         Attempt to locate the frontend application path. Checks several
         common paths in order of preference, then falls back to base_path.
+        
+        :param model: Model identifier (e.g., 'Llama', 'GPT4o')
+        :param app_num: Application number (e.g., 1, 2, 3)
+        :return: Path to the frontend application directory
         """
-
-        # 1) Potentially check 'model/app{num}/frontend'
-        candidate = self.base_path / model / f"app{app_num}" / "frontend"
-        if candidate.exists() and candidate.is_dir():
-            logger.info(f"Using frontend directory: {candidate}")
-            return candidate.resolve()
-
-        # 2) Potentially check 'model/app{num}'
-        candidate = self.base_path / model / f"app{app_num}"
-        if candidate.exists() and candidate.is_dir():
-            logger.info(f"Using app directory: {candidate}")
-            return candidate.resolve()
-
-        # 3) Check 'z_interface_app' (if it exists)
-        candidate = self.base_path / "z_interface_app"
-        if candidate.exists() and candidate.is_dir():
-            logger.info(f"Using z_interface_app directory: {candidate}")
-            return candidate.resolve()
-
-        # 4) Fallback to base_path
-        logger.warning("No specific frontend path found; using base_path.")
-        return self.base_path
+        logger.debug(f"Finding application path for {model}/app{app_num}")
+        
+        # Try common directory structures
+        candidates = [
+            self.base_path / model / f"app{app_num}" / "frontend",
+            self.base_path / model / f"app{app_num}" / "client",
+            self.base_path / model / f"app{app_num}" / "web",
+            self.base_path / model / f"app{app_num}",
+            self.base_path / "z_interface_app",
+        ]
+        
+        # Check each candidate path
+        for candidate in candidates:
+            if candidate.exists() and candidate.is_dir():
+                logger.info(f"Found frontend directory: {candidate}")
+                return candidate
+        
+        # Fallback to base_path/model/app{num}
+        fallback = self.base_path / model / f"app{app_num}"
+        if not fallback.exists():
+            logger.warning(f"Creating directory {fallback} as it doesn't exist")
+            try:
+                fallback.mkdir(parents=True, exist_ok=True)
+            except Exception as e:
+                logger.error(f"Failed to create directory {fallback}: {e}")
+                
+        logger.warning(f"No specific frontend path found; using fallback: {fallback}")
+        return fallback
 
     def _check_source_files(self, directory: Path) -> Tuple[bool, List[str]]:
         """
@@ -143,28 +164,51 @@ class FrontendSecurityAnalyzer:
                  bool indicates whether any source files were found.
         """
         if not directory.exists() or not directory.is_dir():
+            logger.warning(f"Directory does not exist or is not a directory: {directory}")
             return False, []
 
-        exts = (".js", ".jsx", ".ts", ".tsx", ".vue", ".svelte")
+        # Common frontend file extensions
+        exts = (".js", ".jsx", ".ts", ".tsx", ".vue", ".svelte", ".html", ".css")
         found_files = []
-        for root, _, files in os.walk(directory):
-            for file in files:
-                if file.endswith(exts):
-                    found_files.append(os.path.join(root, file))
-
-        return bool(found_files), found_files
+        
+        try:
+            # Find all matching files but exclude node_modules and other common dirs to avoid
+            # scanning unnecessary files
+            excluded_dirs = ("node_modules", ".git", "dist", "build", "coverage")
+            
+            for root, dirs, files in os.walk(directory):
+                # Skip excluded directories
+                dirs[:] = [d for d in dirs if d not in excluded_dirs]
+                
+                for file in files:
+                    if file.endswith(exts):
+                        file_path = os.path.join(root, file)
+                        found_files.append(file_path)
+            
+            logger.info(f"Found {len(found_files)} frontend source files in {directory}")
+            return bool(found_files), found_files
+        except Exception as e:
+            logger.error(f"Error checking source files in {directory}: {e}")
+            return False, []
 
     # -------------------------------------------------------------------------
     # Individual Tool Runners
     # -------------------------------------------------------------------------
-    def _run_npm_audit(self, app_path: Path) -> Tuple[List[FrontendSecurityIssue], str]:
+    def _run_npm_audit(self, app_path: Path) -> Tuple[List[FrontendSecurityIssue], Dict[str, str], str]:
         """
         Run `npm audit --json` to check for dependency vulnerabilities.
+        
+        :param app_path: Path to the frontend application
+        :return: (issues, status_dict, raw_output)
         """
+        tool_name = "npm-audit"
+        issues: List[FrontendSecurityIssue] = []
+        status = {"npm-audit": "⚠️ Not run (no package.json)"}
+        
         if not (app_path / "package.json").exists():
             msg = f"No package.json found in {app_path}. Skipping npm audit."
             logger.warning(msg)
-            return [], msg
+            return issues, status, msg
 
         # Attempt to ensure package-lock.json exists
         if not (app_path / "package-lock.json").exists():
@@ -175,7 +219,8 @@ class FrontendSecurityAnalyzer:
             except Exception as exc:
                 msg = f"Failed to generate package-lock.json: {exc}"
                 logger.warning(msg)
-                return [], msg
+                status[tool_name] = "❌ Failed to generate package-lock.json"
+                return issues, status, msg
 
         # Now run npm audit
         command = [cmd_name("npm"), "audit", "--json"]
@@ -189,60 +234,133 @@ class FrontendSecurityAnalyzer:
                 timeout=TOOL_TIMEOUT
             )
         except subprocess.TimeoutExpired:
-            return [], "npm audit timed out"
+            status[tool_name] = "❌ Timed out"
+            return issues, status, "npm audit timed out"
         except Exception as exc:
-            return [], f"npm audit failed: {exc}"
+            status[tool_name] = f"❌ Failed: {exc}"
+            return issues, status, f"npm audit failed: {exc}"
 
+        # Special handling for npm audit errors that aren't real errors
         if proc.returncode != 0 and proc.stderr and "ERR!" in proc.stderr:
-            msg = f"npm audit error: {proc.stderr}"
-            logger.error(msg)
-            return [], msg
+            # Check if this is actually a "found vulnerabilities" case
+            if "found vulnerabilities" in proc.stderr:
+                # This is normal - npm audit returns non-zero when finding issues
+                logger.info("npm audit found vulnerabilities")
+            else:
+                msg = f"npm audit error: {proc.stderr}"
+                logger.error(msg)
+                status[tool_name] = "❌ Error"
+                return issues, status, msg
 
         raw_output = proc.stdout.strip()
         if not raw_output:
             # If stdout empty, check stderr
             msg = proc.stderr.strip() or "npm audit produced no output"
-            return [], msg
+            status[tool_name] = "✅ No issues found" if "found 0 vulnerabilities" in msg else "❌ No output"
+            return issues, status, msg
 
         audit_data = safe_json_loads(raw_output)
-        if not audit_data or "vulnerabilities" not in audit_data:
-            return [], raw_output if raw_output else "No vulnerabilities found"
+        if not audit_data:
+            status[tool_name] = "❌ Invalid JSON output"
+            return issues, status, raw_output
+            
+        # Check if vulnerabilities exist in the expected format
+        if "vulnerabilities" not in audit_data:
+            # Check for newer npm audit format
+            if "auditReportVersion" in audit_data:
+                # This is the new npm 7+ format
+                vulnerabilities = audit_data.get("vulnerabilities", {})
+                metadata = audit_data.get("metadata", {})
+                
+                if not vulnerabilities:
+                    status[tool_name] = "✅ No issues found"
+                    return issues, status, raw_output
+                    
+                for vuln_name, vuln_info in vulnerabilities.items():
+                    severity = SEVERITY_MAP.get(vuln_info.get("severity", "low"), "LOW")
+                    issues.append(
+                        FrontendSecurityIssue(
+                            filename="package.json",
+                            line_number=0,
+                            issue_text=vuln_info.get("name", "Unknown vulnerability"),
+                            severity=severity,
+                            confidence="HIGH",
+                            issue_type="dependency_vulnerability",
+                            line_range=[0],
+                            code=f"{vuln_name}@{vuln_info.get('version', 'unknown')}",
+                            tool="npm-audit",
+                            fix_suggestion=vuln_info.get("recommendation", "Update to the latest version")
+                        )
+                    )
+            else:
+                status[tool_name] = "✅ No vulnerabilities found"
+                return issues, status, raw_output
 
-        issues = []
-        for vuln_name, vuln_info in audit_data["vulnerabilities"].items():
-            severity = SEVERITY_MAP.get(vuln_info.get("severity", "low"), "LOW")
-            issues.append(
-                FrontendSecurityIssue(
-                    filename="package.json",
-                    line_number=0,
-                    issue_text=vuln_info.get("title", "Unknown vulnerability"),
-                    severity=severity,
-                    confidence="HIGH",
-                    issue_type="dependency_vulnerability",
-                    line_range=[0],
-                    code=f"{vuln_info.get('name')}@{vuln_info.get('version')}",
-                    tool="npm-audit",
-                    fix_suggestion=vuln_info.get("recommendation", "Update to the latest version")
+        # Process vulnerabilities in the standard format
+        else:
+            for vuln_name, vuln_info in audit_data["vulnerabilities"].items():
+                severity = SEVERITY_MAP.get(vuln_info.get("severity", "low"), "LOW")
+                issues.append(
+                    FrontendSecurityIssue(
+                        filename="package.json",
+                        line_number=0,
+                        issue_text=vuln_info.get("title", "Unknown vulnerability"),
+                        severity=severity,
+                        confidence="HIGH",
+                        issue_type="dependency_vulnerability",
+                        line_range=[0],
+                        code=f"{vuln_info.get('name')}@{vuln_info.get('version')}",
+                        tool="npm-audit",
+                        fix_suggestion=vuln_info.get("recommendation", "Update to the latest version")
+                    )
                 )
-            )
 
-        return issues, raw_output
+        # Update status based on results
+        if issues:
+            status[tool_name] = f"⚠️ Found {len(issues)} issues"
+        else:
+            status[tool_name] = "✅ No issues found"
+            
+        return issues, status, raw_output
 
-    def _run_eslint(self, app_path: Path) -> Tuple[List[FrontendSecurityIssue], str]:
+    def _run_eslint(self, app_path: Path) -> Tuple[List[FrontendSecurityIssue], Dict[str, str], str]:
         """
         Run ESLint to check code quality and potential security issues.
         Adjust plugin usage for React/Svelte as needed.
+        
+        :param app_path: Path to the frontend application
+        :return: (issues, status_dict, raw_output)
         """
-        # If there's a src/ folder, scan it; else scan current directory
+        tool_name = "eslint"
+        issues: List[FrontendSecurityIssue] = []
+        status = {tool_name: "⚠️ Not run"}
+        
+        # Check if we have frontend files to analyze
+        has_files, _ = self._check_source_files(app_path)
+        if not has_files:
+            msg = f"No frontend files found in {app_path}"
+            status[tool_name] = "❌ No files to analyze"
+            return issues, status, msg
+
+        # Determine what to scan - prefer src/ folder if it exists
         scan_dir = "src" if (app_path / "src").exists() else "."
 
+        # Build eslint command with appropriate options
         command = [
             cmd_name("npx"), "eslint",
-            # Remove old/unsupported flags if using ESLint Flat Config
             "--ext", ".js,.jsx,.ts,.tsx,.svelte,.vue",
             "--format", "json",
-            scan_dir
         ]
+        
+        # Check for custom configurations
+        if (app_path / ".eslintrc.js").exists() or (app_path / ".eslintrc.json").exists():
+            logger.info(f"Found custom ESLint configuration in {app_path}")
+        else:
+            # Use a basic configuration for common security rules
+            command.extend(["--no-eslintrc", "--no-ignore"])
+            
+        # Add the scan directory
+        command.append(scan_dir)
 
         logger.info(f"Running ESLint in {app_path} (scanning {scan_dir})...")
         try:
@@ -254,59 +372,126 @@ class FrontendSecurityAnalyzer:
                 timeout=TOOL_TIMEOUT
             )
         except subprocess.TimeoutExpired:
-            return [], "ESLint timed out"
+            status[tool_name] = "❌ Timed out"
+            return issues, status, "ESLint timed out"
         except Exception as exc:
-            return [], f"ESLint failed: {exc}"
+            status[tool_name] = f"❌ Failed: {exc}"
+            return issues, status, f"ESLint failed: {exc}"
 
         raw_output = proc.stdout.strip()
         if not raw_output:
             # If no output, possibly an error or no matching files
-            msg = proc.stderr.strip() or "ESLint produced no output."
-            return [], msg
+            err_msg = proc.stderr.strip() if proc.stderr else ""
+            if err_msg:
+                # Check for common setup issues
+                if "no such file or directory" in err_msg.lower():
+                    status[tool_name] = "❌ ESLint not installed"
+                elif "eslint is not recognized" in err_msg.lower():
+                    status[tool_name] = "❌ ESLint not in PATH"
+                else:
+                    status[tool_name] = "❌ ESLint error"
+                return issues, status, err_msg
+            return issues, status, "ESLint produced no output."
 
+        # Try to parse the JSON output
         parsed = safe_json_loads(raw_output)
+        if not parsed:
+            status[tool_name] = "❌ Invalid JSON output"
+            return issues, status, raw_output
+            
         if not isinstance(parsed, list):
-            # If ESLint didn't produce a list, might be invalid JSON or an error
-            return [], raw_output
+            status[tool_name] = "❌ Unexpected output format"
+            return issues, status, raw_output
 
-        issues = []
+        # Process ESLint results
         for file_result in parsed:
             # Each file_result is a dict with "filePath" and "messages"
             file_path = file_result.get("filePath", "unknown")
             messages = file_result.get("messages", [])
 
-            for msg in messages:
-                # Only consider errors or high-severity warnings as "security" issues
-                severity = "HIGH" if msg.get("severity", 1) == 2 else "MEDIUM"
-                line_num = msg.get("line", 0)
-                code_snippet = msg.get("source", "No code snippet available")
-                rule_id = msg.get("ruleId", "unknown_rule")
+            # Convert to relative path for better display
+            try:
+                rel_path = os.path.relpath(file_path, str(app_path))
+            except ValueError:
+                rel_path = file_path
 
+            for msg in messages:
+                # Check if this is a fatal parsing error
+                is_fatal = msg.get("fatal", False)
+                
+                # Get line number and severity
+                line_num = msg.get("line", 0)
+                severity_value = msg.get("severity", 1)
+                severity = "HIGH" if severity_value >= 2 or is_fatal else "MEDIUM"
+                
+                # Handle the case where ruleId is None (often happens with parsing errors)
+                rule_id = "parsing_error" if is_fatal and msg.get("ruleId") is None else (msg.get("ruleId") or "unknown_rule")
+                
+                # Get the error message
+                message = msg.get("message", "Unknown ESLint issue")
+                
+                # For parsing errors, include specific information
+                if is_fatal:
+                    issue_type = "parsing_error"
+                    code_snippet = file_result.get("source", "No code snippet available")
+                else:
+                    # Normal linting errors
+                    issue_type = rule_id
+                    code_snippet = msg.get("source", "No code snippet available")
+                
+                # Check if this is a security-related issue
+                security_patterns = ["security", "inject", "prototype", "csrf", "xss", "sanitize", 
+                                    "escap", "auth", "unsafe", "exploit", "vuln"]
+                
+                # Convert to strings and check to avoid None.lower() error
+                rule_id_str = str(rule_id).lower() if rule_id else ""
+                message_str = str(message).lower() if message else ""
+                
+                for pattern in security_patterns:
+                    if pattern in rule_id_str or pattern in message_str:
+                        severity = "HIGH"  # Upgrade severity for security issues
+                        break
+                
+                # Create and add the issue
                 issues.append(
                     FrontendSecurityIssue(
-                        filename=os.path.relpath(file_path, str(app_path)),
+                        filename=rel_path,
                         line_number=line_num,
-                        issue_text=msg.get("message", "Unknown ESLint issue"),
+                        issue_text=message,
                         severity=severity,
-                        confidence="MEDIUM",
-                        issue_type=rule_id,
+                        confidence="HIGH" if is_fatal else "MEDIUM",
+                        issue_type=issue_type,
                         line_range=[line_num],
-                        code=code_snippet,
+                        code=code_snippet or "No code available",
                         tool="eslint",
-                        fix_suggestion=msg.get("fix", {}).get("text", None)
+                        fix_suggestion=str(msg.get("fix", {}).get("text", "")) if "fix" in msg else None
                     )
                 )
 
-        return issues, raw_output
+        # Update status based on results
+        if issues:
+            status[tool_name] = f"⚠️ Found {len(issues)} issues"
+        else:
+            status[tool_name] = "✅ No issues found"
+            
+        return issues, status, raw_output
 
-    def _run_retire_js(self, app_path: Path) -> Tuple[List[FrontendSecurityIssue], str]:
+    def _run_retire_js(self, app_path: Path) -> Tuple[List[FrontendSecurityIssue], Dict[str, str], str]:
         """
         Run retire.js to detect known vulnerable libraries in node_modules.
+        
+        :param app_path: Path to the frontend application
+        :return: (issues, status_dict, raw_output)
         """
+        tool_name = "retire-js"
+        issues: List[FrontendSecurityIssue] = []
+        status = {tool_name: "⚠️ Not run"}
+        
         if not (app_path / "node_modules").exists():
             msg = f"No node_modules found in {app_path}. Skipping retire.js."
             logger.warning(msg)
-            return [], msg
+            status[tool_name] = "❌ No node_modules directory"
+            return issues, status, msg
 
         command = [
             cmd_name("npx"), "retire",
@@ -324,58 +509,88 @@ class FrontendSecurityAnalyzer:
                 timeout=TOOL_TIMEOUT
             )
         except subprocess.TimeoutExpired:
-            return [], "retire.js timed out"
+            status[tool_name] = "❌ Timed out"
+            return issues, status, "retire.js timed out"
         except Exception as exc:
-            return [], f"retire.js failed: {exc}"
+            status[tool_name] = f"❌ Failed: {exc}"
+            return issues, status, f"retire.js failed: {exc}"
 
         raw_output = proc.stdout.strip()
         if not raw_output:
-            msg = proc.stderr.strip() or "retire.js produced no output"
-            return [], msg
+            err_msg = proc.stderr.strip() if proc.stderr else ""
+            status[tool_name] = "❌ No output" if not err_msg else "❌ Error"
+            return issues, status, err_msg or "retire.js produced no output"
 
         retire_data = safe_json_loads(raw_output)
-        if not retire_data or "results" not in retire_data:
-            return [], raw_output
+        if not retire_data:
+            status[tool_name] = "❌ Invalid JSON output"
+            return issues, status, raw_output
+            
+        if "results" not in retire_data:
+            status[tool_name] = "✅ No vulnerabilities found"
+            return issues, status, raw_output
 
-        issues = []
+        # Process vulnerabilities
         for result_item in retire_data.get("results", []):
-            if not result_item.get("vulnerabilities"):
+            vulnerabilities = result_item.get("vulnerabilities", [])
+            if not vulnerabilities:
                 continue
 
             file_name = result_item.get("file", "unknown_file")
             component = result_item.get("component", "unknown_component")
             version = result_item.get("version", "unknown_version")
 
-            for vuln in result_item["vulnerabilities"]:
+            # Make file path relative
+            try:
+                rel_file = os.path.relpath(file_name, str(app_path))
+            except ValueError:
+                rel_file = file_name
+
+            for vuln in vulnerabilities:
+                # Get vulnerability info
                 info_list = vuln.get("info", [])
                 info_text = info_list[0] if isinstance(info_list, list) and info_list else "No vulnerability info"
-
-                # Retire.js often flags these as high severity by default
+                
+                # Create issue
                 issues.append(
                     FrontendSecurityIssue(
-                        filename=file_name,
+                        filename=rel_file,
                         line_number=0,
                         issue_text=info_text,
-                        severity="HIGH",
+                        severity="HIGH",  # Retire.js vulnerabilities are typically high
                         confidence="HIGH",
                         issue_type="known_vulnerability",
                         line_range=[0],
                         code=f"{component}@{version}",
                         tool="retire-js",
-                        fix_suggestion=f"Update to version {vuln.get('below', 'latest')}"
+                        fix_suggestion=f"Update to version {vuln.get('below', 'latest')} or newer"
                     )
                 )
 
-        return issues, raw_output
+        # Update status based on results
+        if issues:
+            status[tool_name] = f"⚠️ Found {len(issues)} issues"
+        else:
+            status[tool_name] = "✅ No issues found"
+            
+        return issues, status, raw_output
 
-    def _run_snyk(self, app_path: Path) -> Tuple[List[FrontendSecurityIssue], str]:
+    def _run_snyk(self, app_path: Path) -> Tuple[List[FrontendSecurityIssue], Dict[str, str], str]:
         """
         Run Snyk to detect vulnerabilities in dependencies.
+        
+        :param app_path: Path to the frontend application
+        :return: (issues, status_dict, raw_output)
         """
+        tool_name = "snyk"
+        issues: List[FrontendSecurityIssue] = []
+        status = {tool_name: "⚠️ Not run"}
+        
         if not (app_path / "package.json").exists():
             msg = f"No package.json found in {app_path}. Skipping Snyk."
             logger.warning(msg)
-            return [], msg
+            status[tool_name] = "❌ No package.json"
+            return issues, status, msg
 
         command = [cmd_name("snyk"), "test", "--json"]
         logger.info(f"Running Snyk in {app_path}...")
@@ -388,33 +603,54 @@ class FrontendSecurityAnalyzer:
                 timeout=TOOL_TIMEOUT
             )
         except subprocess.TimeoutExpired:
-            return [], "Snyk timed out"
+            status[tool_name] = "❌ Timed out"
+            return issues, status, "Snyk timed out"
         except Exception as exc:
-            return [], f"Snyk failed: {exc}"
+            status[tool_name] = f"❌ Failed: {exc}"
+            return issues, status, f"Snyk failed: {exc}"
 
         raw_output = proc.stdout.strip()
-        if "Authentication error" in raw_output:
+        
+        # Check for authentication errors
+        if raw_output and ("Authentication error" in raw_output or "Auth token" in raw_output):
             msg = "Snyk authentication required. Run 'snyk auth' first."
             logger.error(msg)
-            return [], msg
+            status[tool_name] = "❌ Authentication required"
+            return issues, status, msg
 
         if not raw_output:
-            msg = proc.stderr.strip() or "Snyk produced no output."
-            return [], msg
+            err_msg = proc.stderr.strip() if proc.stderr else ""
+            status[tool_name] = "❌ No output" if not err_msg else "❌ Error"
+            return issues, status, err_msg or "Snyk produced no output."
 
+        # Try to parse the JSON output
         snyk_data = safe_json_loads(raw_output)
-        if not snyk_data or "vulnerabilities" not in snyk_data:
-            return [], raw_output
+        if not snyk_data:
+            # Check for test success message
+            if "Tested" in raw_output and "No vulnerable paths found." in raw_output:
+                status[tool_name] = "✅ No issues found"
+                return issues, status, raw_output
+            status[tool_name] = "❌ Invalid JSON output"
+            return issues, status, raw_output
+            
+        # Check for vulnerabilities
+        vulnerabilities = snyk_data.get("vulnerabilities", [])
+        if not vulnerabilities:
+            status[tool_name] = "✅ No vulnerabilities found"
+            return issues, status, raw_output
 
-        issues = []
-        for vuln in snyk_data["vulnerabilities"]:
+        # Process vulnerabilities
+        for vuln in vulnerabilities:
             severity = SEVERITY_MAP.get(vuln.get("severity", "low"), "LOW")
+            # Try to get useful information about the vulnerability
             from_chain = vuln.get("from", ["unknown"])
             filename = from_chain[0] if from_chain else "unknown_dependency"
 
+            # Get fix suggestion if available
             upgrade_paths = vuln.get("upgradePath", [])
             fix_suggestion = upgrade_paths[0] if upgrade_paths else "No direct upgrade"
 
+            # Create the issue
             issues.append(
                 FrontendSecurityIssue(
                     filename=filename,
@@ -430,7 +666,13 @@ class FrontendSecurityAnalyzer:
                 )
             )
 
-        return issues, raw_output
+        # Update status based on results
+        if issues:
+            status[tool_name] = f"⚠️ Found {len(issues)} issues"
+        else:
+            status[tool_name] = "✅ No issues found"
+            
+        return issues, status, raw_output
 
     # -------------------------------------------------------------------------
     # Main Entry Point for Security Analysis
@@ -452,19 +694,27 @@ class FrontendSecurityAnalyzer:
                  - tool_status: A dict mapping each tool to a status message
                  - tool_outputs: A dict mapping each tool to its raw output (or errors)
         """
+        logger.info(f"Running frontend security analysis for {model}/app{app_num} (full scan: {use_all_tools})")
+        
+        # Find the application path
         app_path = self._find_application_path(model, app_num)
         if not app_path.exists():
             msg = f"Application directory not found: {app_path}"
             logger.error(msg)
             return [], {t: f"❌ {msg}" for t in self.all_tools}, {t: msg for t in self.all_tools}
 
+        # Check if the directory has frontend files
         has_files, _ = self._check_source_files(app_path)
         if not has_files:
             msg = f"No frontend files found in {app_path}"
-            logger.error(msg)
+            logger.warning(msg)
             return [], {t: f"❌ {msg}" for t in self.all_tools}, {t: msg for t in self.all_tools}
 
+        # Determine which tools to run
         tools_to_run = self.all_tools if use_all_tools else self.default_tools
+        logger.info(f"Running tools: {', '.join(tools_to_run)}")
+        
+        # Map tool names to their runner functions
         tool_map = {
             "npm-audit": self._run_npm_audit,
             "eslint": self._run_eslint,
@@ -476,29 +726,32 @@ class FrontendSecurityAnalyzer:
         tool_status: Dict[str, str] = {}
         tool_outputs: Dict[str, str] = {}
 
-        # Run each selected tool in parallel
-        with concurrent.futures.ThreadPoolExecutor(max_workers=len(tools_to_run)) as executor:
+        # Run each selected tool in parallel for efficiency
+        with concurrent.futures.ThreadPoolExecutor(max_workers=min(len(tools_to_run), 4)) as executor:
+            # Start all tool executions
             future_to_tool = {
                 executor.submit(tool_map[tool], app_path): tool
                 for tool in tools_to_run if tool in tool_map
             }
 
+            # Process results as they complete
             for future in concurrent.futures.as_completed(future_to_tool):
                 tool_name = future_to_tool[future]
                 try:
-                    issues, output = future.result()
+                    issues, status_dict, output = future.result()
+                    # Add issues to the master list
                     all_issues.extend(issues)
+                    # Store the output for reference
                     tool_outputs[tool_name] = output
-
-                    if not issues:
-                        tool_status[tool_name] = "✅ No issues found"
-                    else:
-                        tool_status[tool_name] = f"⚠️ Found {len(issues)} issues"
+                    # Update the status
+                    tool_status.update(status_dict)
+                    
+                    logger.info(f"Tool {tool_name} completed with {len(issues)} issues")
                 except Exception as exc:
                     error_msg = f"❌ Error running {tool_name}: {exc}"
                     logger.error(error_msg)
                     tool_status[tool_name] = error_msg
-                    tool_outputs[tool_name] = error_msg
+                    tool_outputs[tool_name] = str(exc)
 
         # Mark tools that were not run
         for tool_name in self.all_tools:
@@ -520,12 +773,18 @@ class FrontendSecurityAnalyzer:
             )
         )
 
+        logger.info(f"Frontend security analysis completed with {len(sorted_issues)} total issues")
         return sorted_issues, tool_status, tool_outputs
+
+    # For compatibility with existing code that might call this method
+    def analyze_security(self, model: str, app_num: int, use_all_tools: bool = False):
+        """Alias for run_security_analysis for backward compatibility"""
+        return self.run_security_analysis(model, app_num, use_all_tools)
 
     # -------------------------------------------------------------------------
     # Summary Generation
     # -------------------------------------------------------------------------
-    def get_analysis_summary(self, issues: List[FrontendSecurityIssue]) -> dict:
+    def get_analysis_summary(self, issues: List[FrontendSecurityIssue]) -> Dict[str, Any]:
         """
         Generate summary statistics for the analysis results.
 
@@ -543,24 +802,26 @@ class FrontendSecurityAnalyzer:
                 "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
 
+        # Initialize the summary structure
         summary = {
             "total_issues": len(issues),
             "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
             "confidence_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
-            "files_affected": len({iss.filename for iss in issues}),
+            "files_affected": len({issue.filename for issue in issues}),
             "issue_types": {},
             "tool_counts": {},
             "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
 
+        # Count by various metrics
         for issue in issues:
-            # Count severity
+            # Count by severity
             summary["severity_counts"][issue.severity] += 1
-            # Count confidence
+            # Count by confidence
             summary["confidence_counts"][issue.confidence] += 1
-            # Count issue types
+            # Count by issue type
             summary["issue_types"][issue.issue_type] = summary["issue_types"].get(issue.issue_type, 0) + 1
-            # Count tool usage
+            # Count by tool
             summary["tool_counts"][issue.tool] = summary["tool_counts"].get(issue.tool, 0) + 1
 
         return summary
