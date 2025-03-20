@@ -83,9 +83,15 @@ class GPT4AllAnalyzer:
     """
     
     @staticmethod
-    def adjust_path(p: Path) -> Path:
+    def adjust_path(p: Optional[Path]) -> Path:
         """
         Correctly adjusts paths containing "z_interface_app" directory.
+        
+        Args:
+            p: Path to adjust
+            
+        Returns:
+            Adjusted path
         """
         if not p:
             return Path.cwd()
@@ -112,11 +118,14 @@ class GPT4AllAnalyzer:
                 
         except Exception as e:
             logger.error(f"Error adjusting path {p}: {e}")
-            return p
+            return p if p else Path.cwd()
 
     def __init__(self, base_path: Union[Path, str]):
         """
         Initialize the analyzer with a base path and API settings.
+        
+        Args:
+            base_path: Base directory path for analysis
         """
         # Convert string to Path if needed
         if isinstance(base_path, str):
@@ -132,6 +141,10 @@ class GPT4AllAnalyzer:
             if not self.base_path.is_absolute():
                 self.base_path = Path.cwd() / self.base_path
                 logger.info(f"Using current directory + base path: {self.base_path}")
+                
+                # Double-check the new path
+                if not self.base_path.exists():
+                    logger.warning(f"Adjusted base path still does not exist: {self.base_path}")
 
         # Define prompt templates for requirements analysis
         self.requirements_prompt = (
@@ -288,7 +301,7 @@ class GPT4AllAnalyzer:
         for file_path in all_files[:max_files]:  # Limit to max_files
             try:
                 # Read the file
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
                     code = f.read()
                 
                 # Prepare the prompt for this file
@@ -397,6 +410,12 @@ class GPT4AllAnalyzer:
         """
         Sends a request to the GPT4All API with the given prompt.
         Includes retry logic for transient failures.
+        
+        Args:
+            prompt: The prompt to send to the API
+            
+        Returns:
+            Response string or None if failed
         """
         for attempt in range(self.config.max_retries):
             try:
@@ -457,7 +476,16 @@ class GPT4AllAnalyzer:
         """
         Enhanced extraction of JSON from GPT4All responses, which may include
         markdown formatting, prefixes/suffixes, or other content.
+        
+        Args:
+            text: Text response from API
+            
+        Returns:
+            JSON string (or default JSON if not found)
         """
+        if not text:
+            return '{"issues": []}'
+            
         # Try to extract JSON from various formats
         pattern_options = [
             r'```json\s*([\s\S]*?)\s*```',  # JSON in code block with json tag
@@ -483,25 +511,56 @@ class GPT4AllAnalyzer:
         # If response is for requirements checking, try to parse a simple true/false response
         if "met" in text.lower() and "requirement" in text.lower():
             meets_requirement = "meets the requirement" in text.lower() or "requirement is met" in text.lower()
-            return f"{{\"met\": {str(meets_requirement).lower()}, \"confidence\": \"LOW\", \"explanation\": \"{text[:200].replace('\n', ' ').replace('\"', '\\\"')}\" }}"
+            # Extract a short explanation
+            explanation = ""
+            lines = text.split('\n')
+            for line in lines:
+                if "explan" in line.lower() or "reason" in line.lower():
+                    explanation = line.replace("Explanation:", "").replace("Reason:", "").strip()
+                    break
+            if not explanation and len(lines) > 1:
+                explanation = lines[1].strip()
+                
+            # Sanitize for JSON
+            explanation = explanation[:200].replace('\n', ' ').replace('"', '\\"')
+            return f'{{\"met\": {str(meets_requirement).lower()}, \"confidence\": \"MEDIUM\", \"explanation\": \"{explanation}\" }}'
         
-        # If we get here, no pattern worked. Try to massage the text.
-        # Check if the text contains "issues":
+        # Check if the text contains keywords indicating issues
         if '"issues":' in text or "'issues':" in text:
-            # Manually extract a JSON-like structure
             try:
-                # Try to create a valid JSON with just an issues array
-                simplified = '{"issues": []}'
-                return simplified
+                # Try to create a valid JSON with just an issues array by extracting fragments
+                issue_pattern = r'"issue_text":\s*"([^"]*)"'
+                matches = re.findall(issue_pattern, text)
+                if matches:
+                    issues_json = []
+                    for i, match in enumerate(matches):
+                        issues_json.append(
+                            '{"filename": "unknown.py", '
+                            f'"line_number": {i+1}, '
+                            f'"issue_text": "{match}", '
+                            '"severity": "MEDIUM", '
+                            '"confidence": "LOW", '
+                            '"issue_type": "detected_issue", '
+                            f'"line_range": [{i+1}], '
+                            '"code": ""}'
+                        )
+                    return '{"issues": [' + ', '.join(issues_json) + ']}'
+                return '{"issues": []}'
             except Exception:
                 pass
         
-        # If no JSON found with regex patterns, return a default JSON
-        return '{"met": false, "confidence": "LOW", "explanation": "Failed to parse response"}'
+        # If no valid JSON could be extracted, return a default structure
+        return '{"issues": []}'
 
     def _detect_language(self, file_path: Path) -> str:
         """
         Detect the programming language based on file extension.
+        
+        Args:
+            file_path: Path to the file
+            
+        Returns:
+            Detected language name
         """
         ext = file_path.suffix.lower()
         
@@ -537,18 +596,38 @@ class GPT4AllAnalyzer:
     def _should_skip_file(self, file_path: Path) -> bool:
         """
         Check if a file should be skipped (too large, binary, etc.).
+        
+        Args:
+            file_path: Path to check
+            
+        Returns:
+            True if file should be skipped
         """
         try:
+            # Skip non-existent files
+            if not file_path.exists():
+                return True
+                
             # Skip files over 500KB (reduced from 1MB to prevent large token usage)
             if file_path.stat().st_size > 500 * 1024:
                 logger.info(f"Skipping large file: {file_path} ({file_path.stat().st_size / 1024:.1f} KB)")
                 return True
                 
-            # Skip common binary file types
+            # Skip common binary file types and directories
             binary_extensions = {'.pdf', '.png', '.jpg', '.jpeg', '.gif', '.zip', '.tar', '.gz', 
-                                '.exe', '.dll', '.so', '.class', '.pyc', '.pyd'}
+                               '.exe', '.dll', '.so', '.class', '.pyc', '.pyd', '.min.js',
+                               '.woff', '.woff2', '.ttf', '.eot', '.ico', '.webp'}
+            skip_dirs = {'node_modules', '.git', '__pycache__', 'venv', 'env', '.idea', '.vscode', 
+                        'dist', 'build', '.next', 'vendor'}
+            
+            # Check file extension
             if file_path.suffix.lower() in binary_extensions:
                 return True
+            
+            # Check parent directories
+            for part in file_path.parts:
+                if part in skip_dirs:
+                    return True
                 
             # Try to read the first few bytes to check for binary content
             with open(file_path, 'rb') as f:
@@ -592,257 +671,177 @@ class GPT4AllAnalyzer:
         
         # Format the requirements as a single string
         requirements_text = "\n".join(f"{i+1}. {req}" for i, req in enumerate(requirements))
+        logger.info(f"Analyzing {len(frontend_files)} frontend files and {len(backend_files)} backend files")
         
         # Prepare the prompt template with the requirements
         prompt_template = self.prompts.get("requirements", self.requirements_prompt)
         
-        # Process frontend files
-        for file_path in frontend_files:
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    code = f.read()
-                
-                file_prompt = (
-                    f"{prompt_template}\n\n"
-                    f"File: {file_path.name} (FRONTEND CODE)\n"
-                    f"Language: {self._detect_language(file_path)}\n\n"
-                    f"Code:\n```\n{code[:5000]}{'...' if len(code) > 5000 else ''}\n```"
-                )
-                
-                # Wait a moment to avoid overwhelming the server
-                await asyncio.sleep(0.5)
-                
-                response = await self._api_request(file_prompt)
-                if response:
-                    json_str = self._extract_json_from_markdown(response)
+        # Process each requirement separately for frontend files
+        for req in requirements:
+            req_prompt = prompt_template.format(requirement=req)
+            
+            # Frontend check
+            if frontend_files:
+                combined_code = ""
+                for file_path in frontend_files[:2]:  # Limit to first 2 files
                     try:
-                        result = json.loads(json_str)
-                        
-                        if "issues" in result and isinstance(result["issues"], list):
-                            for issue in result["issues"]:
-                                # Determine if requirement is met based on severity or issue_text
-                                severity = issue.get("severity", "").upper()
-                                is_met = severity in ["INFO", "LOW"] or "met" in issue.get("issue_text", "").lower()
+                        with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                            code = f.read()
+                            # Truncate long files
+                            if len(code) > 2000:
+                                code = code[:2000] + "...[truncated]"
+                            combined_code += f"\n\n--- File: {file_path.name} ---\n{code}"
+                    except Exception as e:
+                        logger.error(f"Error reading frontend file {file_path}: {e}")
+                
+                if combined_code:
+                    file_prompt = (
+                        f"{req_prompt}\n\n"
+                        f"Code Type: FRONTEND CODE\n\n"
+                        f"Code:\n```\n{combined_code}\n```"
+                    )
+                    
+                    # Request analysis
+                    response = await self._api_request(file_prompt)
+                    if response:
+                        json_str = self._extract_json_from_markdown(response)
+                        try:
+                            result = json.loads(json_str)
+                            is_met = result.get("met", False)
+                            confidence = result.get("confidence", "LOW")
+                            explanation = result.get("explanation", "No explanation provided")
+                            
+                            if is_met:
+                                frontend_met += 1
+                            else:
+                                frontend_unmet += 1
                                 
-                                if is_met:
-                                    frontend_met += 1
-                                else:
-                                    frontend_unmet += 1
-                                
-                                # Convert numeric confidence to string format if needed
-                                confidence = issue.get("confidence", "MEDIUM")
-                                if isinstance(confidence, (int, float)):
-                                    if confidence >= 90:
-                                        confidence = "HIGH"
-                                    elif confidence >= 70:
-                                        confidence = "MEDIUM"
-                                    else:
-                                        confidence = "LOW"
-                                
-                                # Add the issue to our list
-                                all_issues.append(AnalysisIssue(
-                                    filename=os.path.relpath(file_path, directory),
-                                    line_number=issue.get("line_number", 0),
-                                    issue_text=issue.get("issue_text", "Unknown requirement"),
-                                    severity="LOW" if is_met else "HIGH",
-                                    confidence=str(confidence),
-                                    issue_type=f"Frontend: {'MET' if is_met else 'UNMET'}",
-                                    line_range=issue.get("line_range", [issue.get("line_number", 0)]),
-                                    code=issue.get("code", ""),
-                                    tool="GPT4All",
-                                    suggested_fix=issue.get("suggested_fix", ""),
-                                    explanation=issue.get("explanation", "")
-                                ))
-                        else:
-                            # If no issues key is found, create a fallback
-                            frontend_unmet += 1
+                            # Add requirement check as an issue
                             all_issues.append(AnalysisIssue(
-                                filename=os.path.relpath(file_path, directory),
+                                filename="requirements.txt",
                                 line_number=0,
-                                issue_text="Could not determine if requirements are met",
-                                severity="HIGH",
-                                confidence="LOW", 
-                                issue_type="Frontend: UNMET",
+                                issue_text=f"Requirement: {req}",
+                                severity="LOW" if is_met else "HIGH",
+                                confidence=confidence,
+                                issue_type=f"Frontend: {'MET' if is_met else 'UNMET'}",
                                 line_range=[0],
                                 code="",
                                 tool="GPT4All",
                                 suggested_fix="",
-                                explanation="The analysis did not return proper JSON structure with issues array."
+                                explanation=explanation
                             ))
-                    except json.JSONDecodeError:
-                        logger.warning(f"Failed to parse JSON from frontend analysis: {json_str[:100]}...")
-                        
-                        # Try to extract information from the text response
-                        if "meets requirement" in response.lower() or "requirement satisfied" in response.lower():
-                            frontend_met += 1
-                            all_issues.append(AnalysisIssue(
-                                filename=os.path.relpath(file_path, directory),
-                                line_number=0,
-                                issue_text="Requirement likely met (based on text analysis)",
-                                severity="LOW",
-                                confidence="LOW",
-                                issue_type="Frontend: MET",
-                                line_range=[0],
-                                code="",
-                                tool="GPT4All",
-                                suggested_fix="",
-                                explanation=response[:300]
-                            ))
-                        else:
+                            
+                        except json.JSONDecodeError:
+                            # Fallback handling
                             frontend_unmet += 1
                             all_issues.append(AnalysisIssue(
-                                filename=os.path.relpath(file_path, directory),
+                                filename="requirements.txt",
                                 line_number=0,
-                                issue_text="Requirement likely unmet (based on text analysis)",
+                                issue_text=f"Requirement: {req}",
                                 severity="HIGH",
                                 confidence="LOW",
                                 issue_type="Frontend: UNMET",
                                 line_range=[0],
                                 code="",
                                 tool="GPT4All",
-                                suggested_fix="",
-                                explanation=response[:300]
+                                explanation="Failed to parse analysis response"
                             ))
-            except Exception as e:
-                logger.error(f"Error analyzing frontend file {file_path}: {e}")
-                frontend_unmet += 1
-                all_issues.append(AnalysisIssue(
-                    filename=os.path.relpath(file_path, directory),
-                    line_number=0,
-                    issue_text=f"Error analyzing file: {str(e)}",
-                    severity="HIGH",
-                    confidence="LOW",
-                    issue_type="Frontend: UNMET",
-                    line_range=[0],
-                    code="",
-                    tool="GPT4All",
-                    suggested_fix="",
-                    explanation=f"An error occurred: {str(e)}"
-                ))
-        
-        # Process backend files
-        for file_path in backend_files:
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    code = f.read()
-                
-                file_prompt = (
-                    f"{prompt_template}\n\n"
-                    f"File: {file_path.name} (BACKEND CODE)\n"
-                    f"Language: {self._detect_language(file_path)}\n\n"
-                    f"Code:\n```\n{code[:5000]}{'...' if len(code) > 5000 else ''}\n```"
-                )
-                
-                # Wait a moment to avoid overwhelming the server
-                await asyncio.sleep(0.5)
-                
-                response = await self._api_request(file_prompt)
-                if response:
-                    json_str = self._extract_json_from_markdown(response)
+                    else:
+                        # API request failed
+                        frontend_unmet += 1
+                        all_issues.append(AnalysisIssue(
+                            filename="requirements.txt",
+                            line_number=0,
+                            issue_text=f"Requirement: {req}",
+                            severity="HIGH",
+                            confidence="LOW",
+                            issue_type="Frontend: UNMET",
+                            line_range=[0],
+                            code="",
+                            tool="GPT4All",
+                            explanation="API request failed"
+                        ))
+            
+            # Backend check (similar to frontend)
+            if backend_files:
+                combined_code = ""
+                for file_path in backend_files[:2]:  # Limit to first 2 files
                     try:
-                        result = json.loads(json_str)
-                        
-                        if "issues" in result and isinstance(result["issues"], list):
-                            for issue in result["issues"]:
-                                # Determine if requirement is met based on severity or issue_text
-                                severity = issue.get("severity", "").upper()
-                                is_met = severity in ["INFO", "LOW"] or "met" in issue.get("issue_text", "").lower()
+                        with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                            code = f.read()
+                            # Truncate long files
+                            if len(code) > 2000:
+                                code = code[:2000] + "...[truncated]"
+                            combined_code += f"\n\n--- File: {file_path.name} ---\n{code}"
+                    except Exception as e:
+                        logger.error(f"Error reading backend file {file_path}: {e}")
+                
+                if combined_code:
+                    file_prompt = (
+                        f"{req_prompt}\n\n"
+                        f"Code Type: BACKEND CODE\n\n"
+                        f"Code:\n```\n{combined_code}\n```"
+                    )
+                    
+                    # Request analysis
+                    response = await self._api_request(file_prompt)
+                    if response:
+                        json_str = self._extract_json_from_markdown(response)
+                        try:
+                            result = json.loads(json_str)
+                            is_met = result.get("met", False)
+                            confidence = result.get("confidence", "LOW")
+                            explanation = result.get("explanation", "No explanation provided")
+                            
+                            if is_met:
+                                backend_met += 1
+                            else:
+                                backend_unmet += 1
                                 
-                                if is_met:
-                                    backend_met += 1
-                                else:
-                                    backend_unmet += 1
-                                
-                                # Convert numeric confidence to string format if needed
-                                confidence = issue.get("confidence", "MEDIUM")
-                                if isinstance(confidence, (int, float)):
-                                    if confidence >= 90:
-                                        confidence = "HIGH"
-                                    elif confidence >= 70:
-                                        confidence = "MEDIUM"
-                                    else:
-                                        confidence = "LOW"
-                                
-                                # Add the issue to our list
-                                all_issues.append(AnalysisIssue(
-                                    filename=os.path.relpath(file_path, directory),
-                                    line_number=issue.get("line_number", 0),
-                                    issue_text=issue.get("issue_text", "Unknown requirement"),
-                                    severity="LOW" if is_met else "HIGH",
-                                    confidence=str(confidence),
-                                    issue_type=f"Backend: {'MET' if is_met else 'UNMET'}",
-                                    line_range=issue.get("line_range", [issue.get("line_number", 0)]),
-                                    code=issue.get("code", ""),
-                                    tool="GPT4All",
-                                    suggested_fix=issue.get("suggested_fix", ""),
-                                    explanation=issue.get("explanation", "")
-                                ))
-                        else:
-                            # If no issues key is found, create a fallback
+                            # Add requirement check as an issue
+                            all_issues.append(AnalysisIssue(
+                                filename="requirements.txt",
+                                line_number=0,
+                                issue_text=f"Requirement: {req}",
+                                severity="LOW" if is_met else "HIGH",
+                                confidence=confidence,
+                                issue_type=f"Backend: {'MET' if is_met else 'UNMET'}",
+                                line_range=[0],
+                                code="",
+                                tool="GPT4All",
+                                suggested_fix="",
+                                explanation=explanation
+                            ))
+                        except json.JSONDecodeError:
+                            # Fallback handling
                             backend_unmet += 1
                             all_issues.append(AnalysisIssue(
-                                filename=os.path.relpath(file_path, directory),
+                                filename="requirements.txt",
                                 line_number=0,
-                                issue_text="Could not determine if requirements are met",
+                                issue_text=f"Requirement: {req}",
                                 severity="HIGH",
                                 confidence="LOW",
                                 issue_type="Backend: UNMET",
                                 line_range=[0],
                                 code="",
                                 tool="GPT4All",
-                                suggested_fix="",
-                                explanation="The analysis did not return proper JSON structure with issues array."
+                                explanation="Failed to parse analysis response"
                             ))
-                    except json.JSONDecodeError:
-                        logger.warning(f"Failed to parse JSON from backend analysis: {json_str[:100]}...")
-                        
-                        # Try to extract information from the text response
-                        if "meets requirement" in response.lower() or "requirement satisfied" in response.lower():
-                            backend_met += 1
-                            all_issues.append(AnalysisIssue(
-                                filename=os.path.relpath(file_path, directory),
-                                line_number=0,
-                                issue_text="Requirement likely met (based on text analysis)",
-                                severity="LOW",
-                                confidence="LOW",
-                                issue_type="Backend: MET",
-                                line_range=[0],
-                                code="",
-                                tool="GPT4All",
-                                suggested_fix="",
-                                explanation=response[:300]
-                            ))
-                        else:
-                            backend_unmet += 1
-                            all_issues.append(AnalysisIssue(
-                                filename=os.path.relpath(file_path, directory),
-                                line_number=0,
-                                issue_text="Requirement likely unmet (based on text analysis)",
-                                severity="HIGH",
-                                confidence="LOW",
-                                issue_type="Backend: UNMET",
-                                line_range=[0],
-                                code="",
-                                tool="GPT4All",
-                                suggested_fix="",
-                                explanation=response[:300]
-                            ))
-            except Exception as e:
-                logger.error(f"Error analyzing backend file {file_path}: {e}")
-                backend_unmet += 1
-                all_issues.append(AnalysisIssue(
-                    filename=os.path.relpath(file_path, directory),
-                    line_number=0,
-                    issue_text=f"Error analyzing file: {str(e)}",
-                    severity="HIGH",
-                    confidence="LOW",
-                    issue_type="Backend: UNMET",
-                    line_range=[0],
-                    code="",
-                    tool="GPT4All",
-                    suggested_fix="",
-                    explanation=f"An error occurred: {str(e)}"
-                ))
+                    else:
+                        # API request failed
+                        backend_unmet += 1
+                        all_issues.append(AnalysisIssue(
+                            filename="requirements.txt",
+                            line_number=0,
+                            issue_text=f"Requirement: {req}",
+                            severity="HIGH",
+                            confidence="LOW",
+                            issue_type="Backend: UNMET",
+                            line_range=[0],
+                            code="",
+                            tool="GPT4All",
+                            explanation="API request failed"
+                        ))
         
         # Create summary with frontend/backend metrics
         summary = {
@@ -883,6 +882,74 @@ class GPT4AllAnalyzer:
         
         return all_issues, summary
 
+    async def check_requirements(self, directory: Path, requirements: List[str]) -> List[Dict[str, Any]]:
+        """
+        Check multiple requirements against code in the directory.
+        
+        Args:
+            directory: Directory containing code files
+            requirements: List of requirements to check
+            
+        Returns:
+            List of dictionaries with requirement and check results
+        """
+        directory = directory or self.base_path
+        directory = self.adjust_path(directory)
+        
+        # Find frontend and backend files
+        frontend_files = []
+        backend_files = []
+        
+        try:
+            # Collect frontend and backend files
+            for root, _, files in os.walk(directory):
+                for file_name in files:
+                    file_path = Path(root) / file_name
+                    
+                    # Skip if the file shouldn't be analyzed
+                    if self._should_skip_file(file_path):
+                        continue
+                        
+                    # Frontend files
+                    if file_name.endswith(('.js', '.jsx', '.ts', '.tsx', '.html', '.css', '.vue', '.svelte')):
+                        if not any(skip in str(file_path) for skip in ['/node_modules/', '/.git/']):
+                            frontend_files.append(file_path)
+                    # Backend files
+                    elif file_name.endswith('.py'):
+                        if not any(skip in str(file_path) for skip in ['__pycache__', '/.git/']):
+                            backend_files.append(file_path)
+                            
+            logger.info(f"Found {len(frontend_files)} frontend files and {len(backend_files)} backend files")
+            
+            # Limit to first 10 files of each type to avoid processing too many
+            frontend_files = frontend_files[:10]
+            backend_files = backend_files[:10]
+        except Exception as e:
+            logger.error(f"Error finding files: {e}")
+            return [{"requirement": req, "frontend": {"met": False, "confidence": "HIGH", "error": str(e)}, 
+                    "backend": {"met": False, "confidence": "HIGH", "error": str(e)}} for req in requirements]
+        
+        # Check each requirement
+        results = []
+        for req in requirements:
+            # Process frontend files for this requirement
+            frontend_result = await self.check_single_requirement(frontend_files, req, is_frontend=True)
+            
+            # Process backend files for this requirement
+            backend_result = await self.check_single_requirement(backend_files, req, is_frontend=False)
+            
+            # Determine overall result (met if either frontend or backend meets requirement)
+            overall = frontend_result.get("met", False) or backend_result.get("met", False)
+            
+            results.append({
+                "requirement": req,
+                "frontend": frontend_result,
+                "backend": backend_result,
+                "overall": overall
+            })
+            
+        return results
+
     async def check_single_requirement(self, code_files: List[Path], requirement: str, is_frontend: bool = False) -> Dict[str, Any]:
         """
         Check a single requirement against provided code files.
@@ -898,11 +965,11 @@ class GPT4AllAnalyzer:
         if not code_files:
             return {"met": False, "confidence": "HIGH", "error": "No files to analyze"}
         
-        # Combine code from all files (with limits to prevent token overload)
+        # Combine code from files (with limits to prevent token overload)
         combined_code = ""
-        for file_path in code_files[:3]:  # Limit to 3 files to avoid token limits
+        for file_path in code_files[:3]:  # Limit to first 3 files for analysis
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
                     code = f.read()
                     # Truncate long files
                     if len(code) > 3000:
@@ -942,65 +1009,6 @@ class GPT4AllAnalyzer:
             # Fallback to text analysis
             is_met = "requirement is met" in response.lower() or "meets the requirement" in response.lower()
             return {"met": is_met, "confidence": "LOW", "explanation": response[:200]}
-
-    async def check_requirements(self, directory: Path, requirements: List[str]) -> List[Dict[str, Any]]:
-        """
-        Check multiple requirements against code in the directory.
-        
-        Args:
-            directory: Directory containing code files
-            requirements: List of requirements to check
-            
-        Returns:
-            List of dictionaries with requirement and check results
-        """
-        directory = directory or self.base_path
-        directory = self.adjust_path(directory)
-        
-        # Find frontend and backend files
-        frontend_files = []
-        backend_files = []
-        
-        try:
-            # Collect frontend and backend files
-            for root, _, files in os.walk(directory):
-                for file_name in files:
-                    file_path = Path(root) / file_name
-                    
-                    # Skip if the file shouldn't be analyzed
-                    if self._should_skip_file(file_path):
-                        continue
-                        
-                    # Frontend files
-                    if file_name.endswith(('.js', '.jsx', '.ts', '.tsx', '.html', '.css', '.vue', '.svelte')):
-                        if not any(skip in str(file_path) for skip in ['/node_modules/', '/.git/']):
-                            frontend_files.append(file_path)
-                    # Backend files
-                    elif file_name.endswith('.py'):
-                        if not any(skip in str(file_path) for skip in ['__pycache__', '/.git/']):
-                            backend_files.append(file_path)
-        except Exception as e:
-            logger.error(f"Error finding files: {e}")
-            return [{"requirement": req, "frontend": {"met": False, "confidence": "HIGH", "error": str(e)}, 
-                    "backend": {"met": False, "confidence": "HIGH", "error": str(e)}} for req in requirements]
-        
-        # Check each requirement
-        results = []
-        for req in requirements:
-            # Check frontend files
-            frontend_result = await self.check_single_requirement(frontend_files, req, is_frontend=True)
-            
-            # Check backend files
-            backend_result = await self.check_single_requirement(backend_files, req, is_frontend=False)
-            
-            results.append({
-                "requirement": req,
-                "frontend": frontend_result,
-                "backend": backend_result,
-                "overall": frontend_result.get("met", False) or backend_result.get("met", False)
-            })
-            
-        return results
 
 
 def get_app_directory(app, model: str, app_num: int) -> Path:
@@ -1099,9 +1107,15 @@ def analyze_gpt4all(analysis_type: str):
         directory = Path(data.get("directory", current_app.config["BASE_DIR"]))
         file_patterns = data.get("file_patterns", ["*.py", "*.js", "*.ts", "*.react"])
         analyzer = GPT4AllAnalyzer(directory)
-        issues, summary = asyncio.run(analyzer.analyze_directory(
+        
+        # Handle asyncio in Flask properly
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        issues, summary = loop.run_until_complete(analyzer.analyze_directory(
             directory=directory, file_patterns=file_patterns, analysis_type=analysis_type
         ))
+        loop.close()
+        
         if not isinstance(summary, dict):
             summary = get_analysis_summary(issues)
         return jsonify({"issues": [asdict(issue) for issue in issues], "summary": summary})
@@ -1156,8 +1170,11 @@ def gpt4all_analysis():
                 # Initialize analyzer
                 analyzer = GPT4AllAnalyzer(directory)
                 
-                # Run check for each requirement
-                results = asyncio.run(analyzer.check_requirements(directory, req_list))
+                # Run check for each requirement using proper asyncio handling in Flask
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                results = loop.run_until_complete(analyzer.check_requirements(directory, req_list))
+                loop.close()
         
         # Render template with form or results
         return render_template(
