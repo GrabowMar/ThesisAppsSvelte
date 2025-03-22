@@ -52,6 +52,7 @@ from frontend_security_analysis import FrontendSecurityAnalyzer
 from gpt4all_analysis import GPT4AllAnalyzer
 from performance_analysis import PerformanceTester
 from zap_scanner import ZAPScanner, create_scanner
+from batch_frontend_analysis import init_batch_analysis, batch_analysis_bp
 
 # =============================================================================
 # Module-Level Logger
@@ -392,7 +393,7 @@ def error_handler(f):
             logger.error(f"Error in {f.__name__}: {e}")
             if request.headers.get("X-Requested-With") == "XMLHttpRequest":
                 return jsonify({"error": str(e)}), 500
-            return render_template("500.html"), 500
+            return render_template("500.html", error=str(e)), 500
     return wrapped
 
 
@@ -464,7 +465,12 @@ def run_docker_compose(
         logger.error(f"No docker-compose.yml/yaml file found in {app_dir}")
         return False, f"No docker-compose file found in {app_dir}"
     
-    cmd = ["docker-compose"] + command
+    # Build the custom project name
+    project_name = f"{model}_app{app_num}".lower()
+
+    
+    # Include the -p option to rename the compose stack
+    cmd = ["docker-compose", "-p", project_name] + command
     logger.info(f"Running command: {' '.join(cmd)} in {app_dir} with timeout {timeout}s")
     
     try:
@@ -1332,9 +1338,15 @@ def analyze_gpt4all(analysis_type: str):
         directory = Path(data.get("directory", current_app.config["BASE_DIR"]))
         file_patterns = data.get("file_patterns", ["*.py", "*.js", "*.ts", "*.react"])
         analyzer = GPT4AllAnalyzer(directory)
-        issues, summary = asyncio.run(analyzer.analyze_directory(
+        
+        # Handle asyncio in Flask properly
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        issues, summary = loop.run_until_complete(analyzer.analyze_directory(
             directory=directory, file_patterns=file_patterns, analysis_type=analysis_type
         ))
+        loop.close()
+        
         if not isinstance(summary, dict):
             summary = get_analysis_summary(issues)
         return jsonify({"issues": [asdict(issue) for issue in issues], "summary": summary})
@@ -1387,8 +1399,11 @@ def gpt4all_analysis():
                 # Initialize analyzer
                 analyzer = GPT4AllAnalyzer(directory)
                 
-                # Run check for each requirement
-                results = asyncio.run(analyzer.check_requirements(directory, req_list))
+                # Run check for each requirement using proper asyncio handling in Flask
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                results = loop.run_until_complete(analyzer.check_requirements(directory, req_list))
+                loop.close()
         
         # Render template with form or results
         return render_template(
@@ -1498,6 +1513,11 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     app.register_blueprint(performance_bp, url_prefix="/performance")
     app.register_blueprint(gpt4all_bp)  # This registers both the original and new routes
     app.register_blueprint(zap_bp, url_prefix="/zap")
+
+    # Initialize batch analysis module
+    init_batch_analysis(app)
+    # Register batch analysis blueprint
+    app.register_blueprint(batch_analysis_bp, url_prefix="/batch-analysis")
 
     register_error_handlers(app)
     register_request_hooks(app, docker_manager)
