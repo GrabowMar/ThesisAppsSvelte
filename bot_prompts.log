@@ -1,0 +1,72 @@
+[2025-03-25 22:09:43] INFO: Web prompts table verified/created
+[2025-03-25 22:09:43] INFO: Connected to database: assistant.db
+[2025-03-25 22:09:43] INFO: Web Prompt Bot started
+[2025-03-25 22:10:03] INFO: Database connection closed
+[2025-03-25 22:10:03] INFO: Web Prompt Bot shutting down
+[2025-03-25 22:23:29] INFO: Web prompts table verified/created
+[2025-03-25 22:23:29] INFO: Connected to database: assistant.db
+[2025-03-25 22:24:11] INFO: Web prompts table verified/created
+[2025-03-25 22:24:11] INFO: Connected to database: assistant.db
+[2025-03-25 22:26:49] INFO: Added new column to web_prompts table: html_content
+[2025-03-25 22:26:49] INFO: Added new column to web_prompts table: source_url
+[2025-03-25 22:26:49] INFO: Updated web_prompts table with 2 new columns
+[2025-03-25 22:26:49] INFO: Connected to database: assistant.db
+[2025-03-25 22:26:49] INFO: Web Prompt Bot started
+[2025-03-25 22:28:46] INFO: Chrome browser started successfully
+[2025-03-25 22:28:49] INFO: Navigated to https://mammouth.ai/app/a/default/c/915069
+[2025-03-25 22:28:49] ERROR: Failed to navigate to https://mammouth.ai/app/a/default/c/915069: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=134.0.6998.119)
+Stacktrace:
+	GetHandleVerifier [0x00007FF6E13F4C25+3179557]
+	(No symbol) [0x00007FF6E10588A0]
+	(No symbol) [0x00007FF6E0EE91CA]
+	(No symbol) [0x00007FF6E0EC1753]
+	(No symbol) [0x00007FF6E0F6F83E]
+	(No symbol) [0x00007FF6E0F8FBE2]
+	(No symbol) [0x00007FF6E0F67A03]
+	(No symbol) [0x00007FF6E0F306D0]
+	(No symbol) [0x00007FF6E0F31983]
+	GetHandleVerifier [0x00007FF6E14567CD+3579853]
+	GetHandleVerifier [0x00007FF6E146D1D2+3672530]
+	GetHandleVerifier [0x00007FF6E1462153+3627347]
+	GetHandleVerifier [0x00007FF6E11C092A+868650]
+	(No symbol) [0x00007FF6E1062FFF]
+	(No symbol) [0x00007FF6E105F4A4]
+	(No symbol) [0x00007FF6E105F646]
+	(No symbol) [0x00007FF6E104EAA9]
+	BaseThreadInitThunk [0x00007FFE858F259D+29]
+	RtlUserThreadStart [0x00007FFE8792AF38+40]
+
+[2025-03-25 22:28:52] INFO: Chrome browser closed
+[2025-03-25 22:30:06] INFO: Saved new prompt for DeepSeek/app1
+[2025-03-25 22:30:06] INFO: Saved new prompt for DeepSeek/app1
+[2025-03-25 22:30:12] INFO: Database connection closed
+[2025-03-25 22:30:12] INFO: Web Prompt Bot shutting down
+[2025-03-25 22:30:35] INFO: Web prompts table verified/created
+[2025-03-25 22:30:35] INFO: Connected to database: assistant.db
+[2025-03-25 22:30:35] INFO: Web Prompt Bot started
+[2025-03-25 22:31:15] INFO: Database connection closed
+[2025-03-25 22:31:15] INFO: Web Prompt Bot shutting down
+[2025-03-25 23:54:00] INFO: Web prompts table verified/created
+[2025-03-25 23:54:00] INFO: Connected to database: assistant.db
+[2025-03-25 23:54:00] INFO: Loaded template: app_1_login.md
+[2025-03-25 23:54:07] INFO: Web prompts table verified/created
+[2025-03-25 23:54:07] INFO: Connected to database: assistant.db
+[2025-03-25 23:54:07] INFO: Loaded template: app_1_login.md
+[2025-03-25 23:54:27] INFO: Deleted prompt 1
+[2025-03-25 23:54:27] INFO: Deleted prompt 1
+[2025-03-25 23:57:52] INFO: Loaded template: app_1_login.md
+[2025-03-25 23:57:55] INFO: Loaded template: app_1_login.md
+[2025-03-25 23:57:55] INFO: Template copied to clipboard.
+[2025-03-25 23:58:09] INFO: Loaded template: app_2_chat.md
+[2025-03-25 23:58:22] INFO: Template copied to clipboard.
+[2025-03-25 23:58:26] INFO: Copied port info: (frontend 5503 and backend 5003)
+[2025-03-25 23:58:30] INFO: Copied port info: (frontend 5501 and backend 5001)
+[2025-03-25 23:58:30] INFO: Copied port info: (frontend 5501 and backend 5001)
+[2025-03-25 23:58:36] INFO: Loaded template: app_2_chat.md
+[2025-03-25 23:58:37] INFO: Template copied to clipboard.
+[2025-03-25 23:58:41] INFO: Copied port info: (frontend 5503 and backend 5003)
+[2025-03-25 23:58:56] INFO: Loaded template: app_3_feedback.md
+[2025-03-25 23:58:56] INFO: Template copied to clipboard.
+[2025-03-25 23:58:59] INFO: Copied port info: (frontend 5505 and backend 5005)

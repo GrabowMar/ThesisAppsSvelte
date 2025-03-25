@@ -24,11 +24,14 @@ APP_CONFIG = {
         "Llama", "Mistral", "DeepSeek", "GPT4o", "Claude", 
         "Gemini", "Grok", "R1", "O3"
     },
-    "db_path": "assistant.db"
+    "db_path": "assistant.db",
+    "log_file": "bot_prompts.log",
+    "window_title": "AI Code Generation & Prompt Capture Assistant",
+    "window_size": "1200x900"
 }
 
 # =============================================================================
-# Model Configuration - IMPORTANT: Order must match app.py
+# Model Configuration
 # =============================================================================
 @dataclass
 class AIModel:
@@ -105,16 +108,19 @@ class PortManager:
 # =============================================================================
 logger = logging.getLogger("CodeGenAssistant")
 logger.setLevel(logging.DEBUG)
-file_handler = logging.FileHandler("assistant.log")
-file_handler.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s', datefmt="%H:%M:%S"))
+file_handler = logging.FileHandler(APP_CONFIG["log_file"])
+file_handler.setFormatter(logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s', datefmt="%Y-%m-%d %H:%M:%S"))
 logger.addHandler(file_handler)
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+logger.addHandler(console_handler)
 
 # =============================================================================
 # Database Client
 # =============================================================================
 class DatabaseClient:
     """
-    Handles all database interactions for progress logs, model/app status, and research notes.
+    Handles all database interactions for web prompts, progress logs, model/app status, and research notes.
     """
     def __init__(self, db_path: str) -> None:
         self.db_path = db_path
@@ -122,6 +128,8 @@ class DatabaseClient:
         self._create_tables()
         self._create_model_app_table()
         self._create_research_table()
+        self._create_web_prompts_table()
+        logger.info(f"Connected to database: {db_path}")
 
     def _create_tables(self) -> None:
         with self.conn:
@@ -160,6 +168,21 @@ class DatabaseClient:
                     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
                 );
             ''')
+    
+    def _create_web_prompts_table(self) -> None:
+        """Create the web prompts table if it doesn't exist"""
+        with self.conn:
+            self.conn.execute('''
+                CREATE TABLE IF NOT EXISTS web_prompts (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    model TEXT NOT NULL,
+                    app TEXT,
+                    prompt_text TEXT NOT NULL,
+                    response_text TEXT,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                );
+            ''')
+        logger.info("Web prompts table verified/created")
 
     # -------------------------
     # Progress Logs
@@ -239,6 +262,48 @@ class DatabaseClient:
             "SELECT id, model, app, note_type, note, timestamp FROM research_notes ORDER BY timestamp DESC LIMIT ?",
             (limit,))
         return cursor.fetchall()
+            
+    # -------------------------
+    # Web Prompts
+    # -------------------------
+    def save_prompt(self, model: str, app: str, prompt_text: str, response_text: str = "") -> None:
+        """Save a new prompt to the database"""
+        with self.conn:
+            self.conn.execute(
+                "INSERT INTO web_prompts (model, app, prompt_text, response_text) VALUES (?, ?, ?, ?)",
+                (model, app, prompt_text, response_text)
+            )
+        logger.info(f"Saved new prompt for {model}/{app}")
+
+    def get_prompts(self, limit: int = 100):
+        """Get recent prompts from the database"""
+        cursor = self.conn.cursor()
+        cursor.execute(
+            "SELECT id, model, app, prompt_text, response_text, timestamp FROM web_prompts ORDER BY timestamp DESC LIMIT ?",
+            (limit,)
+        )
+        return cursor.fetchall()
+
+    def update_prompt(self, prompt_id: int, model: str, app: str, prompt_text: str, response_text: str) -> None:
+        """Update an existing prompt in the database"""
+        with self.conn:
+            self.conn.execute(
+                "UPDATE web_prompts SET model = ?, app = ?, prompt_text = ?, response_text = ?, timestamp = CURRENT_TIMESTAMP WHERE id = ?",
+                (model, app, prompt_text, response_text, prompt_id)
+            )
+        logger.info(f"Updated prompt {prompt_id}")
+
+    def delete_prompt(self, prompt_id: int) -> None:
+        """Delete a prompt from the database"""
+        with self.conn:
+            self.conn.execute("DELETE FROM web_prompts WHERE id = ?", (prompt_id,))
+        logger.info(f"Deleted prompt {prompt_id}")
+
+    def close(self) -> None:
+        """Close the database connection"""
+        if self.conn:
+            self.conn.close()
+            logger.info("Database connection closed")
 
 # =============================================================================
 # Main GUI Application
@@ -247,8 +312,8 @@ class AssistantApp(tk.Tk):
     """Main application class containing all tabs and UI logic."""
     def __init__(self) -> None:
         super().__init__()
-        self.title("Code Generation Assistant")
-        self.geometry("1200x900")
+        self.title(APP_CONFIG["window_title"])
+        self.geometry(APP_CONFIG["window_size"])
         self.configure(bg="white")
 
         self.database = DatabaseClient(APP_CONFIG["db_path"])
@@ -275,7 +340,7 @@ class AssistantApp(tk.Tk):
 
         help_menu = tk.Menu(menubar, tearoff=0)
         help_menu.add_command(label="About", command=lambda: messagebox.showinfo(
-            "About", "Code Generation Assistant\nVersion 1.0"
+            "About", "AI Code Generation & Prompt Capture Assistant\nVersion 2.0"
         ))
         menubar.add_cascade(label="Help", menu=help_menu)
 
@@ -296,6 +361,7 @@ class AssistantApp(tk.Tk):
         self._create_model_app_tab()         # Tab 5: Model & App Status
         self._create_research_tab()          # Tab 6: Research Notes
         self._create_progress_log_tab()      # Tab 7: Progress Notes
+        self._create_web_prompt_tab()        # Tab 8: Web Prompt Capture
 
     def _setup_logging_handler(self) -> None:
         gui_handler = GuiLogHandler(self)
@@ -581,6 +647,8 @@ class AssistantApp(tk.Tk):
                 command=lambda: self.main_notebook.select(3)).pack(side="left", padx=5, pady=5)
         ttk.Button(action_frame, text="Copy Workflow Command", 
                 command=self._copy_workflow_command).pack(side="left", padx=5, pady=5)
+        ttk.Button(action_frame, text="Capture Prompts", 
+                command=lambda: self.main_notebook.select(8)).pack(side="left", padx=5, pady=5)
         
         # Initialize the summary page data
         self._refresh_summary_page()
@@ -892,27 +960,62 @@ class AssistantApp(tk.Tk):
         presets = [f.name for f in APP_CONFIG["presets_dir"].glob(f"*{APP_CONFIG['default_template_ext']}")]
         return natsorted(presets)
 
+    def _get_current_port_numbers(self) -> Dict[str, int]:
+        """Get the port numbers for the current model/app selection"""
+        model = self.summary_model_var.get()
+        app = self.summary_app_var.get()
+        
+        if not model or not app:
+            return {"frontend": 0, "backend": 0}
+        
+        # Extract app number from app name
+        match = re.search(r'(\d+)', app)
+        if not match:
+            return {"frontend": 0, "backend": 0}
+        
+        app_num = int(match.group(1))
+        model_idx = get_model_index(model)
+        return PortManager.get_app_ports(model_idx, app_num)
+
+    def _replace_port_placeholders(self, content: str) -> str:
+        """Replace XXXX and YYYY with actual port numbers in template content"""
+        ports = self._get_current_port_numbers()
+        if ports["frontend"] == 0 or ports["backend"] == 0:
+            return content
+        
+        # Replace placeholders with actual port numbers
+        content = content.replace("XXXX", str(ports["frontend"]))
+        content = content.replace("YYYY", str(ports["backend"]))
+        return content
+
     def _load_summary_template(self) -> None:
-        """Load the selected template into the summary preview"""
+        """Load the selected template into the summary preview with port numbers replaced"""
         preset_name = self.summary_template_var.get()
         path = APP_CONFIG["presets_dir"] / preset_name
         if path.exists():
             try:
                 content = path.read_text(encoding="utf-8")
+                
+                # Replace port placeholders with actual ports
+                content = self._replace_port_placeholders(content)
+                
                 self.summary_template_text.delete("1.0", tk.END)
                 self.summary_template_text.insert(tk.END, content)
-                self._log(f"Loaded template: {preset_name}")
+                self._log(f"Loaded template: {preset_name} (with port placeholders replaced)")
             except Exception as e:
                 self._log(f"Error loading template: {e}", error=True)
         else:
             self._log("Template file not found", error=True)
 
     def _copy_summary_template(self) -> None:
-        """Copy the template content to clipboard"""
+        """Copy the template content to clipboard with port numbers replaced"""
         content = self.summary_template_text.get("1.0", tk.END)
+        
+        # No need to replace again since template is already loaded with replaced ports
+        
         self.clipboard_clear()
         self.clipboard_append(content)
-        self._log("Template copied to clipboard.")
+        self._log("Template with actual port numbers copied to clipboard.")
 
     # -------------------------------------------------------------------------
     # Port Information Management
@@ -1248,8 +1351,78 @@ class AssistantApp(tk.Tk):
         ttk.Button(top_frame, text="Load", command=self._load_template).pack(side="left", padx=5)
         ttk.Button(top_frame, text="Copy to Clipboard", command=self._copy_template_to_clipboard).pack(side="left", padx=5)
 
+        # Add model and app selection for port replacement
+        port_frame = ttk.Frame(top_frame)
+        port_frame.pack(side="right", padx=10)
+        
+        ttk.Label(port_frame, text="Model:").pack(side="left")
+        self.template_model_var = tk.StringVar()
+        models = [model.name for model in AI_MODELS]
+        self.template_model_dropdown = ttk.Combobox(
+            port_frame, textvariable=self.template_model_var,
+            values=models, state="readonly", width=15
+        )
+        if models:
+            self.template_model_var.set(models[0])
+        self.template_model_dropdown.pack(side="left", padx=5)
+        self.template_model_dropdown.bind("<<ComboboxSelected>>", self._on_template_model_selected)
+        
+        ttk.Label(port_frame, text="App:").pack(side="left")
+        self.template_app_var = tk.StringVar()
+        base_dir = Path('.') / self.template_model_var.get()
+        apps = natsorted([d.name for d in base_dir.iterdir() if d.is_dir() and d.name.lower().startswith("app")], 
+                        key=_natural_sort_key) if base_dir.exists() else []
+        self.template_app_dropdown = ttk.Combobox(
+            port_frame, textvariable=self.template_app_var,
+            values=apps, state="readonly", width=15
+        )
+        if apps:
+            self.template_app_var.set(apps[0])
+        self.template_app_dropdown.pack(side="left", padx=5)
+
         self.template_text = tk.Text(self.template_manager_tab, wrap="word", height=25)
         self.template_text.pack(fill="both", expand=True, padx=10, pady=5)
+        
+        # Load initial template
+        if presets:
+            self._load_template()
+
+    def _on_template_model_selected(self, event=None) -> None:
+        """Update app dropdown when model is selected in template manager"""
+        model = self.template_model_var.get()
+        base_dir = Path('.') / model
+        apps = []
+        if base_dir.exists():
+            apps = natsorted([d.name for d in base_dir.iterdir() 
+                       if d.is_dir() and d.name.lower().startswith("app")],
+                      key=_natural_sort_key)
+        
+        self.template_app_dropdown["values"] = apps
+        if apps:
+            self.template_app_var.set(apps[0])
+        else:
+            self.template_app_var.set("")
+            
+        # Refresh the template with new ports if it's loaded
+        if self.template_var.get():
+            self._load_template()
+
+    def _get_template_port_numbers(self) -> Dict[str, int]:
+        """Get port numbers for the template manager tab selections"""
+        model = self.template_model_var.get()
+        app = self.template_app_var.get()
+        
+        if not model or not app:
+            return {"frontend": 0, "backend": 0}
+        
+        # Extract app number from app name
+        match = re.search(r'(\d+)', app)
+        if not match:
+            return {"frontend": 0, "backend": 0}
+        
+        app_num = int(match.group(1))
+        model_idx = get_model_index(model)
+        return PortManager.get_app_ports(model_idx, app_num)
 
     def _load_template(self) -> None:
         preset_name = self.template_var.get()
@@ -1257,9 +1430,16 @@ class AssistantApp(tk.Tk):
         if path.exists():
             try:
                 content = path.read_text(encoding="utf-8")
+                
+                # Replace port placeholders with actual ports
+                ports = self._get_template_port_numbers()
+                if ports["frontend"] != 0 and ports["backend"] != 0:
+                    content = content.replace("XXXX", str(ports["frontend"]))
+                    content = content.replace("YYYY", str(ports["backend"]))
+                
                 self.template_text.delete("1.0", tk.END)
                 self.template_text.insert(tk.END, content)
-                self._log(f"Loaded template: {preset_name}")
+                self._log(f"Loaded template: {preset_name} (with port placeholders replaced)")
             except Exception as e:
                 self._log(f"Error loading template: {e}", error=True)
         else:
@@ -1269,7 +1449,7 @@ class AssistantApp(tk.Tk):
         content = self.template_text.get("1.0", tk.END)
         self.clipboard_clear()
         self.clipboard_append(content)
-        self._log("Template copied to clipboard.")
+        self._log("Template with actual port numbers copied to clipboard.")
 
     # -------------------------------------------------------------------------
     # TAB 2: Ports Info
@@ -1407,13 +1587,28 @@ class AssistantApp(tk.Tk):
         item_id = self.ports_table.identify_row(event.y)
         if not item_id:
             return
+        
+        # Get the prompt ID from the selected item
         vals = self.ports_table.item(item_id, "values")
+        model = vals[0]
+        app = vals[1]
         backend_port = vals[3]
         frontend_port = vals[4]
-        text_to_copy = f"(frontend {frontend_port} and backend {backend_port})"
-        self.clipboard_clear()
-        self.clipboard_append(text_to_copy)
-        self._log(f"Copied port numbers: {text_to_copy}")
+        
+        # Add option to load the app in the main interface
+        if messagebox.askyesno("Port Selection", f"Select {model}/{app} in the main interface?"):
+            # Set model and app in summary tab
+            self.summary_model_var.set(model)
+            self._on_summary_model_selected()  # Update app dropdown
+            self.summary_app_var.set(app)
+            self._on_summary_app_selected()
+            self.main_notebook.select(0)  # Switch to summary tab
+        else:
+            # Just copy the port info
+            text_to_copy = f"(frontend {frontend_port} and backend {backend_port})"
+            self.clipboard_clear()
+            self.clipboard_append(text_to_copy)
+            self._log(f"Copied port numbers: {text_to_copy}")
 
     # -------------------------------------------------------------------------
     # TAB 3: Generate Code
@@ -1499,6 +1694,25 @@ class AssistantApp(tk.Tk):
         
         if current_index < len(target_widgets):
             target_widget = target_widgets[current_index]
+            
+            # Check if this might be code with port placeholders that need replacing
+            model = self.summary_model_var.get()
+            app = self.summary_app_var.get()
+            
+            if model and app and ("XXXX" in text or "YYYY" in text):
+                # Extract app number from app name
+                match = re.search(r'(\d+)', app)
+                if match:
+                    app_num = int(match.group(1))
+                    model_idx = get_model_index(model)
+                    ports = PortManager.get_app_ports(model_idx, app_num)
+                    
+                    # Replace port placeholders
+                    text = text.replace("XXXX", str(ports["frontend"]))
+                    text = text.replace("YYYY", str(ports["backend"]))
+                    
+                    self._log("Replaced port placeholders in pasted code")
+            
             target_widget.delete("1.0", tk.END)
             target_widget.insert(tk.END, text)
             self._log("Clipboard content pasted successfully.")
@@ -1612,6 +1826,20 @@ class AssistantApp(tk.Tk):
             self._log("Model or App not selected", error=True)
             return
 
+        # Replace port placeholders in the content
+        if "XXXX" in new_content or "YYYY" in new_content:
+            match = re.search(r'(\d+)', app_name)
+            if match:
+                app_num = int(match.group(1))
+                model_idx = get_model_index(model)
+                ports = PortManager.get_app_ports(model_idx, app_num)
+                
+                # Replace port placeholders
+                new_content = new_content.replace("XXXX", str(ports["frontend"]))
+                new_content = new_content.replace("YYYY", str(ports["backend"]))
+                
+                self._log("Replaced port placeholders in file content")
+
         # Determine target subfolder based on filename
         if custom_subfolder:
             subfolder = custom_subfolder
@@ -1649,20 +1877,65 @@ class AssistantApp(tk.Tk):
             self.database.log_progress(task, 0, f"Error: {e}")
 
     def _replace_all_files(self) -> None:
+        # Check for port placeholders and prepare replacement
+        model = self.replace_model_var.get()
+        app_name = self.replace_app_var.get()
+        ports = None
+        
+        if model and app_name:
+            match = re.search(r'(\d+)', app_name)
+            if match:
+                app_num = int(match.group(1))
+                model_idx = get_model_index(model)
+                ports = PortManager.get_app_ports(model_idx, app_num)
+        
         # Replace backend files
-        self._replace_file_content("app.py", self.app_py_text.get("1.0", tk.END))
-        self._replace_file_content("requirements.txt", self.requirements_text.get("1.0", tk.END))
-        self._replace_file_content("Dockerfile", self.docker_backend_text.get("1.0", tk.END), "backend")
+        app_py_content = self.app_py_text.get("1.0", tk.END)
+        if ports and ("XXXX" in app_py_content or "YYYY" in app_py_content):
+            app_py_content = app_py_content.replace("XXXX", str(ports["frontend"]))
+            app_py_content = app_py_content.replace("YYYY", str(ports["backend"]))
+        self._replace_file_content("app.py", app_py_content)
+        
+        requirements_content = self.requirements_text.get("1.0", tk.END)
+        self._replace_file_content("requirements.txt", requirements_content)
+        
+        docker_backend_content = self.docker_backend_text.get("1.0", tk.END)
+        if ports and ("XXXX" in docker_backend_content or "YYYY" in docker_backend_content):
+            docker_backend_content = docker_backend_content.replace("XXXX", str(ports["frontend"]))
+            docker_backend_content = docker_backend_content.replace("YYYY", str(ports["backend"]))
+        self._replace_file_content("Dockerfile", docker_backend_content, "backend")
         
         # Replace frontend files
-        self._replace_file_content("App.jsx", self.app_react_text.get("1.0", tk.END))
-        self._replace_file_content("App.css", self.app_css_text.get("1.0", tk.END))
-        self._replace_file_content("package.json", self.package_json_text.get("1.0", tk.END))
-        self._replace_file_content("vite.config.js", self.vite_config_text.get("1.0", tk.END))
-        self._replace_file_content("Dockerfile", self.docker_frontend_text.get("1.0", tk.END), "frontend")
+        app_jsx_content = self.app_react_text.get("1.0", tk.END)
+        if ports and ("XXXX" in app_jsx_content or "YYYY" in app_jsx_content):
+            app_jsx_content = app_jsx_content.replace("XXXX", str(ports["frontend"]))
+            app_jsx_content = app_jsx_content.replace("YYYY", str(ports["backend"]))
+        self._replace_file_content("App.jsx", app_jsx_content)
+        
+        app_css_content = self.app_css_text.get("1.0", tk.END)
+        self._replace_file_content("App.css", app_css_content)
+        
+        package_json_content = self.package_json_text.get("1.0", tk.END)
+        self._replace_file_content("package.json", package_json_content)
+        
+        vite_config_content = self.vite_config_text.get("1.0", tk.END)
+        if ports and ("XXXX" in vite_config_content or "YYYY" in vite_config_content):
+            vite_config_content = vite_config_content.replace("XXXX", str(ports["frontend"]))
+            vite_config_content = vite_config_content.replace("YYYY", str(ports["backend"]))
+        self._replace_file_content("vite.config.js", vite_config_content)
+        
+        docker_frontend_content = self.docker_frontend_text.get("1.0", tk.END)
+        if ports and ("XXXX" in docker_frontend_content or "YYYY" in docker_frontend_content):
+            docker_frontend_content = docker_frontend_content.replace("XXXX", str(ports["frontend"]))
+            docker_frontend_content = docker_frontend_content.replace("YYYY", str(ports["backend"]))
+        self._replace_file_content("Dockerfile", docker_frontend_content, "frontend")
         
         # Replace root docker-compose.yml
-        self._replace_file_content("docker-compose.yml", self.docker_compose_text.get("1.0", tk.END))
+        docker_compose_content = self.docker_compose_text.get("1.0", tk.END)
+        if ports and ("XXXX" in docker_compose_content or "YYYY" in docker_compose_content):
+            docker_compose_content = docker_compose_content.replace("XXXX", str(ports["frontend"]))
+            docker_compose_content = docker_compose_content.replace("YYYY", str(ports["backend"]))
+        self._replace_file_content("docker-compose.yml", docker_compose_content)
 
     # -------------------------------------------------------------------------
     # TAB 5: Model & App Status
@@ -2113,6 +2386,365 @@ class AssistantApp(tk.Tk):
             self._log(f"Export failed: {e}", error=True)
 
     # -------------------------------------------------------------------------
+    # TAB 8: Web Prompt Capture
+    # -------------------------------------------------------------------------
+    def _create_web_prompt_tab(self) -> None:
+        """Create the web prompt capture tab UI"""
+        self.web_prompt_tab = ttk.Frame(self.main_notebook)
+        self.main_notebook.add(self.web_prompt_tab, text="Web Prompts")
+        
+        # Top frame for controls
+        top_frame = ttk.Frame(self.web_prompt_tab)
+        top_frame.pack(fill="x", padx=10, pady=5)
+        
+        # Left side - buttons
+        button_frame = ttk.Frame(top_frame)
+        button_frame.pack(side="left", fill="x", padx=5)
+        
+        ttk.Button(button_frame, text="Paste from Clipboard", 
+                  command=self._paste_prompt_from_clipboard).pack(side="left", padx=5)
+        ttk.Button(button_frame, text="New Prompt", 
+                  command=self._new_web_prompt).pack(side="left", padx=5)
+        ttk.Button(button_frame, text="Save Prompt", 
+                  command=self._save_web_prompt).pack(side="left", padx=5)
+        ttk.Button(button_frame, text="Delete", 
+                  command=self._delete_web_prompt).pack(side="left", padx=5)
+        
+        # Right side - Model & App selection
+        selector_frame = ttk.Frame(top_frame)
+        selector_frame.pack(side="right", fill="x", padx=5)
+        
+        ttk.Label(selector_frame, text="Model:").pack(side="left", padx=2)
+        self.web_model_var = tk.StringVar()
+        models = [model.name for model in AI_MODELS]
+        self.web_model_dropdown = ttk.Combobox(selector_frame, textvariable=self.web_model_var,
+                                         values=models, state="readonly", width=15)
+        if models:
+            self.web_model_var.set(models[0])
+        self.web_model_dropdown.pack(side="left", padx=2)
+        self.web_model_dropdown.bind("<<ComboboxSelected>>", self._on_web_model_selected)
+        
+        ttk.Label(selector_frame, text="App:").pack(side="left", padx=2)
+        self.web_app_var = tk.StringVar()
+        # Update app list for initial model
+        base_dir = Path('.') / self.web_model_var.get()
+        apps = natsorted([d.name for d in base_dir.iterdir() if d.is_dir() and d.name.lower().startswith("app")], 
+                         key=_natural_sort_key) if base_dir.exists() else []
+        
+        self.web_app_dropdown = ttk.Combobox(selector_frame, textvariable=self.web_app_var,
+                                       values=apps, state="readonly", width=15)
+        if apps:
+            self.web_app_var.set(apps[0])
+        self.web_app_dropdown.pack(side="left", padx=2)
+        
+        # Split view - Prompts list on left, editor on right
+        paned_window = ttk.PanedWindow(self.web_prompt_tab, orient=tk.HORIZONTAL)
+        paned_window.pack(fill="both", expand=True, padx=10, pady=5)
+        
+        # Left side - List of prompts
+        list_frame = ttk.Frame(paned_window)
+        paned_window.add(list_frame, weight=1)
+        
+        # Search/filter bar
+        filter_frame = ttk.Frame(list_frame)
+        filter_frame.pack(fill="x", padx=5, pady=5)
+        
+        ttk.Label(filter_frame, text="Filter:").pack(side="left")
+        self.web_filter_var = tk.StringVar()
+        self.web_filter_entry = ttk.Entry(filter_frame, textvariable=self.web_filter_var)
+        self.web_filter_entry.pack(side="left", fill="x", expand=True, padx=5)
+        self.web_filter_entry.bind("<KeyRelease>", lambda e: self._apply_web_filter())
+        
+        ttk.Button(filter_frame, text="Clear Filter", 
+                  command=self._clear_web_filter).pack(side="right", padx=2)
+        
+        # Prompts list
+        columns = ("id", "timestamp", "model", "app", "preview")
+        self.prompts_list = ttk.Treeview(list_frame, columns=columns, show="headings")
+        self.prompts_list.heading("id", text="ID")
+        self.prompts_list.heading("timestamp", text="Timestamp")
+        self.prompts_list.heading("model", text="Model")
+        self.prompts_list.heading("app", text="App")
+        self.prompts_list.heading("preview", text="Preview")
+        
+        self.prompts_list.column("id", width=40, anchor="center")
+        self.prompts_list.column("timestamp", width=130)
+        self.prompts_list.column("model", width=80)
+        self.prompts_list.column("app", width=80)
+        self.prompts_list.column("preview", width=200)
+        
+        # Add scrollbar
+        list_scroll = ttk.Scrollbar(list_frame, orient="vertical", command=self.prompts_list.yview)
+        self.prompts_list.configure(yscrollcommand=list_scroll.set)
+        
+        list_scroll.pack(side="right", fill="y")
+        self.prompts_list.pack(fill="both", expand=True, padx=5)
+        
+        # Bind selection event
+        self.prompts_list.bind("<<TreeviewSelect>>", self._on_web_prompt_selected)
+        
+        # Right side - Text editors with tabs for prompt and response
+        edit_frame = ttk.Frame(paned_window)
+        paned_window.add(edit_frame, weight=2)
+        
+        self.prompt_notebook = ttk.Notebook(edit_frame)
+        self.prompt_notebook.pack(fill="both", expand=True)
+        
+        # Prompt tab
+        prompt_frame = ttk.Frame(self.prompt_notebook)
+        self.web_prompt_text = scrolledtext.ScrolledText(prompt_frame, wrap="word")
+        self.web_prompt_text.pack(fill="both", expand=True, padx=5, pady=5)
+        self.prompt_notebook.add(prompt_frame, text="Prompt")
+        
+        # Response tab
+        response_frame = ttk.Frame(self.prompt_notebook)
+        self.web_response_text = scrolledtext.ScrolledText(response_frame, wrap="word")
+        self.web_response_text.pack(fill="both", expand=True, padx=5, pady=5)
+        self.prompt_notebook.add(response_frame, text="Response (Optional)")
+        
+        # Initialize by refreshing the prompts list
+        self._refresh_web_prompts_list()
+
+    def _on_web_model_selected(self, event=None) -> None:
+        """Handle model selection in web prompts tab and update app list"""
+        model = self.web_model_var.get()
+        base_dir = Path('.') / model
+        apps = []
+        if base_dir.exists():
+            apps = natsorted([d.name for d in base_dir.iterdir() 
+                            if d.is_dir() and d.name.lower().startswith("app")],
+                           key=_natural_sort_key)
+        
+        self.web_app_dropdown["values"] = apps
+        if apps:
+            self.web_app_var.set(apps[0])
+        else:
+            self.web_app_var.set("")
+
+    def _refresh_web_prompts_list(self) -> None:
+        """Refresh the list of web prompts from the database"""
+        # Clear existing items
+        for item in self.prompts_list.get_children():
+            self.prompts_list.delete(item)
+            
+        # Get prompts from database
+        prompts = self.database.get_prompts()
+        
+        # Apply filter if needed
+        filter_text = self.web_filter_var.get().lower()
+        
+        # Add prompts to list
+        for prompt in prompts:
+            prompt_id, model, app, prompt_text, response_text, timestamp = prompt
+            
+            # Apply filter if set
+            if filter_text and not (
+                filter_text in model.lower() or 
+                (app and filter_text in app.lower()) or 
+                filter_text in prompt_text.lower()
+            ):
+                continue
+            
+            # Create preview by truncating the prompt text
+            preview = prompt_text.strip().replace("\n", " ")
+            preview = preview if len(preview) <= 50 else preview[:47] + "..."
+            
+            # Insert into the treeview
+            self.prompts_list.insert("", tk.END, values=(
+                prompt_id, timestamp, model, app or "", preview
+            ))
+
+    def _apply_web_filter(self) -> None:
+        """Apply the filter to the web prompts list"""
+        self._refresh_web_prompts_list()
+        filter_text = self.web_filter_var.get()
+        if filter_text:
+            self.status_var.set(f"Filtered prompts by: '{filter_text}'")
+        else:
+            self.status_var.set("Showing all prompts")
+
+    def _clear_web_filter(self) -> None:
+        """Clear the filter and show all prompts"""
+        self.web_filter_var.set("")
+        self._refresh_web_prompts_list()
+        self.status_var.set("Filter cleared")
+
+    def _on_web_prompt_selected(self, event=None) -> None:
+        """Handle selection of a prompt from the list"""
+        selected = self.prompts_list.selection()
+        if not selected:
+            return
+        
+        # Get the prompt ID from the selected item
+        item = self.prompts_list.item(selected[0])
+        prompt_id = item["values"][0]
+        
+        # Fetch the prompt from the database
+        prompts = self.database.get_prompts()
+        prompt_data = next((p for p in prompts if p[0] == prompt_id), None)
+        
+        if not prompt_data:
+            return
+        
+        # Extract prompt data
+        _, model, app, prompt_text, response_text, _ = prompt_data
+        
+        # Update the fields
+        self.web_model_var.set(model)
+        self._on_web_model_selected()  # Update app dropdown
+        
+        if app and app in self.web_app_dropdown["values"]:
+            self.web_app_var.set(app)
+        
+        # Check for port placeholders and replace if needed
+        if "XXXX" in prompt_text or "YYYY" in prompt_text:
+            ports = self._get_prompt_ports(model, app)
+            if ports["frontend"] != 0 and ports["backend"] != 0:
+                prompt_text = prompt_text.replace("XXXX", str(ports["frontend"]))
+                prompt_text = prompt_text.replace("YYYY", str(ports["backend"]))
+        
+        # Update text areas
+        self.web_prompt_text.delete("1.0", tk.END)
+        self.web_prompt_text.insert(tk.END, prompt_text)
+        
+        self.web_response_text.delete("1.0", tk.END)
+        if response_text:
+            # Also replace port placeholders in response
+            if "XXXX" in response_text or "YYYY" in response_text:
+                ports = self._get_prompt_ports(model, app)
+                if ports["frontend"] != 0 and ports["backend"] != 0:
+                    response_text = response_text.replace("XXXX", str(ports["frontend"]))
+                    response_text = response_text.replace("YYYY", str(ports["backend"]))
+            
+            self.web_response_text.insert(tk.END, response_text)
+        
+        self.status_var.set(f"Loaded prompt {prompt_id}")
+
+    def _get_prompt_ports(self, model: str, app: str) -> Dict[str, int]:
+        """Get port information for a given model/app combination"""
+        if not model or not app:
+            return {"frontend": 0, "backend": 0}
+        
+        # Extract app number
+        match = re.search(r'(\d+)', app)
+        if not match:
+            return {"frontend": 0, "backend": 0}
+        
+        app_num = int(match.group(1))
+        model_idx = get_model_index(model)
+        return PortManager.get_app_ports(model_idx, app_num)
+
+    def _paste_prompt_from_clipboard(self) -> None:
+        """Paste clipboard content to the web prompt text area"""
+        try:
+            content = self.clipboard_get()
+            
+            # Check for port placeholders and replace if needed
+            model = self.web_model_var.get()
+            app = self.web_app_var.get()
+            
+            if model and app and ("XXXX" in content or "YYYY" in content):
+                ports = self._get_prompt_ports(model, app)
+                if ports["frontend"] != 0 and ports["backend"] != 0:
+                    content = content.replace("XXXX", str(ports["frontend"]))
+                    content = content.replace("YYYY", str(ports["backend"]))
+                    self._log("Replaced port placeholders in pasted prompt")
+            
+            self.web_prompt_text.delete("1.0", tk.END)
+            self.web_prompt_text.insert(tk.END, content)
+            self.status_var.set("Content pasted from clipboard")
+            
+            # Switch to prompt tab if we're not already there
+            self.prompt_notebook.select(0)
+        except Exception as e:
+            self.status_var.set(f"Error pasting from clipboard: {e}")
+            logger.error(f"Failed to paste from clipboard: {e}")
+
+    def _new_web_prompt(self) -> None:
+        """Create a new web prompt (clear fields)"""
+        # Clear selection in list
+        for selected in self.prompts_list.selection():
+            self.prompts_list.selection_remove(selected)
+        
+        # Clear text areas
+        self.web_prompt_text.delete("1.0", tk.END)
+        self.web_response_text.delete("1.0", tk.END)
+        
+        # Switch to prompt tab
+        self.prompt_notebook.select(0)
+        
+        self.status_var.set("New prompt")
+
+    def _save_web_prompt(self) -> None:
+        """Save the current web prompt to the database"""
+        # Get the content from text widgets
+        prompt_text = self.web_prompt_text.get("1.0", tk.END).strip()
+        response_text = self.web_response_text.get("1.0", tk.END).strip()
+        
+        # Check if prompt is empty
+        if not prompt_text:
+            messagebox.showwarning("Empty Prompt", "Cannot save an empty prompt")
+            self.status_var.set("Cannot save empty prompt")
+            return
+        
+        # Get model and app
+        model = self.web_model_var.get()
+        app = self.web_app_var.get()
+        
+        # Check if updating existing prompt
+        selected = self.prompts_list.selection()
+        
+        try:
+            if selected:
+                # Update existing prompt
+                prompt_id = self.prompts_list.item(selected[0])["values"][0]
+                self.database.update_prompt(prompt_id, model, app, prompt_text, response_text)
+                self.status_var.set(f"Updated prompt {prompt_id}")
+                logger.info(f"Updated prompt {prompt_id}")
+            else:
+                # Create new prompt
+                self.database.save_prompt(model, app, prompt_text, response_text)
+                self.status_var.set("Saved new prompt")
+                logger.info(f"Saved new prompt for {model}/{app}")
+            
+            # Refresh the prompts list
+            self._refresh_web_prompts_list()
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to save prompt: {e}")
+            self.status_var.set(f"Error saving prompt: {e}")
+            logger.error(f"Failed to save prompt: {e}")
+
+    def _delete_web_prompt(self) -> None:
+        """Delete the selected prompt"""
+        selected = self.prompts_list.selection()
+        if not selected:
+            self.status_var.set("No prompt selected to delete")
+            return
+        
+        prompt_id = self.prompts_list.item(selected[0])["values"][0]
+        
+        if messagebox.askyesno("Confirm Delete", 
+                              f"Are you sure you want to delete prompt #{prompt_id}?"):
+            try:
+                self.database.delete_prompt(prompt_id)
+                
+                # Clear text areas
+                self.web_prompt_text.delete("1.0", tk.END)
+                self.web_response_text.delete("1.0", tk.END)
+                
+                # Refresh list
+                self._refresh_web_prompts_list()
+                
+                self.status_var.set(f"Deleted prompt {prompt_id}")
+                logger.info(f"Deleted prompt {prompt_id}")
+                
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to delete prompt: {e}")
+                self.status_var.set(f"Error deleting prompt: {e}")
+                logger.error(f"Failed to delete prompt: {e}")
+
+    # -------------------------------------------------------------------------
     # Utility Methods
     # -------------------------------------------------------------------------
     def _log(self, message: str, error: bool = False) -> None:
@@ -2140,6 +2772,15 @@ class AssistantApp(tk.Tk):
         except Exception as e:
             self._log(f"Error in {func.__name__}: {e}", error=True)
             messagebox.showerror("Error", str(e))
+            
+    def on_closing(self) -> None:
+        """Handle application closing"""
+        try:
+            self.database.close()
+            logger.info("Application shutting down")
+        except Exception as e:
+            logger.error(f"Error during shutdown: {e}")
+        self.destroy()
 
 # =============================================================================
 # GUI Logging Handler
@@ -2161,4 +2802,5 @@ class GuiLogHandler(logging.Handler):
 # =============================================================================
 if __name__ == "__main__":
     app = AssistantApp()
+    app.protocol("WM_DELETE_WINDOW", app.on_closing)
     app.mainloop()

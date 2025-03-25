@@ -3,7 +3,7 @@
 ## Important Implementation Notes
 
 As an AI assistant, when using this template:
-1. Generate MEDIUM-SIZED applications only - not too simple, not too complex
+1. Generate MEDIUM-SIZED applications
 2. Keep ALL changes within app.py and App.jsx files only
 3. Do NOT modify the project structure
 4. Do NOT create additional files unless explicitly requested
