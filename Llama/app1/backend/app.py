@@ -1,87 +1,68 @@
 # 1. Imports Section
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, session
 from flask_cors import CORS
+from flask_bcrypt import Bcrypt
 from flask_session import Session
-from werkzeug.security import generate_password_hash, check_password_hash
 import os
-import sqlite3
 
 # 2. App Configuration
 app = Flask(__name__)
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
 CORS(app)
+app.config['SECRET_KEY'] = os.urandom(64)
+app.config['SESSION_TYPE'] = 'filesystem'
+Session(app)
+bcrypt = Bcrypt(app)
 
-# 3. Database Connection
-conn = sqlite3.connect('database.db')
-c = conn.cursor()
+# 3. Database Models (if needed)
+users = {}
 
-# Create table
-c.execute("""CREATE TABLE IF NOT EXISTS users
-             (username text, password text)""")
-
-conn.commit()
-conn.close()
-
-# 4. Utility Functions
-def get_db_connection():
-    conn = sqlite3.connect('database.db')
-    conn.row_factory = sqlite3.Row
-    return conn
-
-def register_user(username, password):
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE username=?", (username,))
-    if c.fetchone():
-        return False
-    c.execute("INSERT INTO users (username, password) VALUES (?, ?)",
-              (username, generate_password_hash(password)))
-    conn.commit()
-    conn.close()
-    return True
-
-def login_user(username, password):
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE username=?", (username,))
-    user = c.fetchone()
-    if user and check_password_hash(user['password'], password):
-        return True
+# 4. Authentication Logic (if needed)
+def authenticate_user(username, password):
+    if username in users:
+        return bcrypt.check_password_hash(users[username]['password'], password)
     return False
 
-# 5. API Routes
-@app.route('/api/register', methods=['POST'])
+# 5. Utility Functions
+def register_user(username, password):
+    if username in users:
+        return False
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+    users[username] = {'password': hashed_password}
+    return True
+
+# 6. API Routes
+@app.route('/register', methods=['POST'])
 def register():
     data = request.json
-    username = data.get('username')
-    password = data.get('password')
-    if register_user(username, password):
+    if register_user(data['username'], data['password']):
         return jsonify({'message': 'User registered successfully'}), 201
-    return jsonify({'message': 'User already exists'}), 400
+    return jsonify({'message': 'Username already exists'}), 400
 
-@app.route('/api/login', methods=['POST'])
+@app.route('/login', methods=['POST'])
 def login():
     data = request.json
-    username = data.get('username')
-    password = data.get('password')
-    if login_user(username, password):
-        session['username'] = username
+    if authenticate_user(data['username'], data['password']):
+        session['username'] = data['username']
         return jsonify({'message': 'User logged in successfully'}), 200
     return jsonify({'message': 'Invalid username or password'}), 401
 
-@app.route('/api/dashboard', methods=['GET'])
+@app.route('/dashboard', methods=['GET'])
 def dashboard():
     if 'username' in session:
         return jsonify({'message': 'Welcome to the dashboard'}), 200
-    return jsonify({'message': 'Please login first'}), 401
+    return jsonify({'message': 'You are not logged in'}), 401
 
-# 6. Error Handlers
+@app.route('/logout', methods=['POST'])
+def logout():
+    if 'username' in session:
+        session.pop('username', None)
+        return jsonify({'message': 'User logged out successfully'}), 200
+    return jsonify({'message': 'You are not logged in'}), 401
+
+# 7. Error Handlers
 @app.errorhandler(404)
-def page_not_found(e):
-    return jsonify({'message': 'Page not found'}), 404
+def not_found(error):
+    return jsonify({'message': 'Route not found'}), 404
 
-# 7. Run the app
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', '5001')))

@@ -1,125 +1,147 @@
+// 1. Imports
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom/client';
-import './App.css';
+import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
+import axios from 'axios';
 
-function App() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [message, setMessage] = useState('');
+// 2. State Management
+const [username, setUsername] = useState('');
+const [password, setPassword] = useState('');
+const [isLoggedIn, setIsLoggedIn] = useState(false);
+const [error, setError] = useState(null);
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, password })
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setMessage(data.message);
-      } else {
-        setMessage(data.message);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, password })
-      });
-      const data = await response.json();
-      if (response.ok) {
+// 3. Lifecycle Functions
+useEffect(() => {
+    if (localStorage.getItem('username')) {
         setIsLoggedIn(true);
-        setMessage(data.message);
-      } else {
-        setMessage(data.message);
-      }
-    } catch (error) {
-      console.error(error);
     }
-  };
+}, []);
 
-  const handleLogout = async () => {
+// 4. Event Handlers
+const handleRegister = async (event) => {
+    event.preventDefault();
     try {
-      const response = await fetch('/api/logout', {
-        method: 'POST'
-      });
-      if (response.ok) {
-        setIsLoggedIn(false);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    const fetchDashboard = async () => {
-      try {
-        const response = await fetch('/api/dashboard');
-        const data = await response.json();
-        if (response.ok) {
-          setMessage(data.message);
-        } else {
-          setMessage(data.message);
+        const response = await axios.post('http://localhost:5001/register', {
+            username,
+            password,
+        });
+        if (response.status === 201) {
+            setIsLoggedIn(true);
+            localStorage.setItem('username', username);
         }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchDashboard();
-  }, [isLoggedIn]);
+    } catch (error) {
+        setError(error.response.data.message);
+    }
+};
 
-  return (
-    <div className="App">
-      <h1>Login/Register Application</h1>
-      {isLoggedIn ? (
-        <div>
-          <p>Welcome, {username}!</p>
-          <button onClick={handleLogout}>Logout</button>
-          <p>{message}</p>
-        </div>
-      ) : (
-        <div>
-          <form onSubmit={handleRegister}>
-            <label>Username:</label>
-            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-            <br />
-            <label>Password:</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-            <br />
-            <button type="submit">Register</button>
-          </form>
-          <form onSubmit={handleLogin}>
-            <label>Username:</label>
-            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-            <br />
-            <label>Password:</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-            <br />
-            <button type="submit">Login</button>
-          </form>
-          <p>{message}</p>
-        </div>
-      )}
-    </div>
-  );
-}
+const handleLogin = async (event) => {
+    event.preventDefault();
+    try {
+        const response = await axios.post('http://localhost:5001/login', {
+            username,
+            password,
+        });
+        if (response.status === 200) {
+            setIsLoggedIn(true);
+            localStorage.setItem('username', username);
+        }
+    } catch (error) {
+        setError(error.response.data.message);
+    }
+};
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+const handleLogout = async () => {
+    try {
+        const response = await axios.post('http://localhost:5001/logout');
+        if (response.status === 200) {
+            setIsLoggedIn(false);
+            localStorage.removeItem('username');
+        }
+    } catch (error) {
+        setError(error.response.data.message);
+    }
+};
+
+// 5. API Calls
+const getDashboard = async () => {
+    try {
+        const response = await axios.get('http://localhost:5001/dashboard');
+        if (response.status === 200) {
+            return response.data.message;
+        }
+    } catch (error) {
+        setError(error.response.data.message);
+    }
+};
+
+// 6. Render
+return (
+    <Router>
+        <div>
+            <nav>
+                <ul>
+                    <li>
+                        <Link to="/">Register</Link>
+                    </li>
+                    <li>
+                        <Link to="/login">Login</Link>
+                    </li>
+                    {isLoggedIn && (
+                        <li>
+                            <Link to="/dashboard">Dashboard</Link>
+                        </li>
+                    )}
+                    {isLoggedIn && (
+                        <li>
+                            <button onClick={handleLogout}>Logout</button>
+                        </li>
+                    )}
+                </ul>
+            </nav>
+            <Switch>
+                <Route exact path="/">
+                    <form onSubmit={handleRegister}>
+                        <label>
+                            Username:
+                            <input type="text" value={username} onChange={(event) => setUsername(event.target.value)} />
+                        </label>
+                        <br />
+                        <label>
+                            Password:
+                            <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
+                        </label>
+                        <br />
+                        <button type="submit">Register</button>
+                    </form>
+                </Route>
+                <Route exact path="/login">
+                    <form onSubmit={handleLogin}>
+                        <label>
+                            Username:
+                            <input type="text" value={username} onChange={(event) => setUsername(event.target.value)} />
+                        </label>
+                        <br />
+                        <label>
+                            Password:
+                            <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
+                        </label>
+                        <br />
+                        <button type="submit">Login</button>
+                    </form>
+                </Route>
+                <Route exact path="/dashboard">
+                    {isLoggedIn ? (
+                        <div>
+                            <h1>Welcome to the dashboard!</h1>
+                            <p>{getDashboard()}</p>
+                        </div>
+                    ) : (
+                        <div>
+                            <h1>You are not logged in.</h1>
+                        </div>
+                    )}
+                </Route>
+            </Switch>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+        </div>
+    </Router>
 );

@@ -48,6 +48,7 @@ app/
 │   │   └── App.css         # (optional)
 │   ├── Dockerfile          # (optional)
 │   ├── package.json        # (generated if needed)
+│   ├── index.html          # (optional)
 │   └── vite.config.js      # (required for port config)
 │
 └── docker-compose.yml      # (optional)
@@ -92,6 +93,8 @@ if __name__ == '__main__':
 <main>
   <!-- Component Structure -->
 </main>
+
+
 ```
 
 #### Vite (vite.config.js)
@@ -115,8 +118,21 @@ export default defineConfig({
   }
 });
 ```
+#### Main page (index.html)
+```js
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/App.jsx"></script>
+  </body>
+</html>
 
-
+```
 
 ## Response requirements
 

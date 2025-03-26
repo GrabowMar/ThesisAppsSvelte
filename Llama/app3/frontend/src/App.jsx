@@ -1,37 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom/client';
+import React, { useState } from 'react';
+import axios from 'axios';
 
-const App = () => {
-  const [message, setMessage] = useState('Loading...');
+function App() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [feedback, setFeedback] = useState([]);
+  const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    // Fetch the message from the backend server running on port 5005
-    fetch('http://localhost:5005')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setMessage(data.message || 'No message received');
-      })
-      .catch((error) => {
-        setMessage(`Error fetching message: ${error.message}`);
-      });
-  }, []);
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    axios.post('/api/feedback', {
+      name,
+      email,
+      message
+    })
+    .then((response) => {
+      setSuccess(true);
+      getName();
+      setEmail('');
+      setMessage('');
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  };
+
+  const getName = () => {
+    axios.get('/api/feedback')
+    .then((response) => {
+      setFeedback(response.data.feedback);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  };
 
   return (
-    <main>
-      <h1>{message}</h1>
-    </main>
+    <div>
+      <h1>Feedback Form</h1>
+      <form onSubmit={handleFormSubmit}>
+        <label>Name:</label>
+        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+        <br />
+        <label>Email:</label>
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <br />
+        <label>Message:</label>
+        <textarea value={message} onChange={(e) => setMessage(e.target.value)} />
+        <br />
+        <button type="submit">Submit</button>
+      </form>
+      {success && <p>Feedback submitted successfully!</p>}
+      <h2>Feedback:</h2>
+      <ul>
+        {feedback.map((item) => (
+          <li key={item.id}>{item.name} - {item.email} - {item.message}</li>
+        ))}
+      </ul>
+    </div>
   );
-};
-
-const container = document.getElementById('root');
-if (container) {
-  const root = ReactDOM.createRoot(container);
-  root.render(<App />);
 }
 
 export default App;

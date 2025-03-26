@@ -48,11 +48,11 @@ app/
 │   │   └── App.css         # (optional)
 │   ├── Dockerfile          # (optional)
 │   ├── package.json        # (generated if needed)
+│   ├── index.html          # (optional)
 │   └── vite.config.js      # (required for port config)
 │
 └── docker-compose.yml      # (optional)
 ```
-
 ### Core Files Structure
 
 #### Backend (app.py)
