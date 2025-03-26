@@ -1,37 +1,76 @@
+// 1. Imports
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
+import axios from 'axios';
 
-const App = () => {
-  const [message, setMessage] = useState('Loading...');
+// 2. State Management
+const [locations, setLocations] = useState([]);
+const [name, setName] = useState('');
+const [location, setLocation] = useState([45.5236, -122.6750]);
+const [map, setMap] = useState(null);
 
-  useEffect(() => {
-    // Fetch the message from the backend server running on port 5039
-    fetch('http://localhost:5039')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setMessage(data.message || 'No message received');
-      })
-      .catch((error) => {
-        setMessage(`Error fetching message: ${error.message}`);
-      });
-  }, []);
+// 3. Lifecycle Functions
+useEffect(() => {
+    axios.get('/api/locations')
+        .then(response => {
+            setLocations(response.data);
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}, []);
 
-  return (
-    <main>
-      <h1>{message}</h1>
-    </main>
-  );
+// 4. Event Handlers
+const handleSubmit = (event) => {
+    event.preventDefault();
+    const newLocation = { name, location };
+    axios.post('/api/locations', newLocation)
+        .then(response => {
+            setLocations([...locations, response.data]);
+            setName('');
+            setLocation([45.5236, -122.6750]);
+        })
+        .catch(error => {
+            console.error(error);
+        });
 };
 
-const container = document.getElementById('root');
-if (container) {
-  const root = ReactDOM.createRoot(container);
-  root.render(<App />);
-}
+const handleMapChange = (event) => {
+    setMap(event.target.value);
+};
 
-export default App;
+// 5. API Calls
+const fetchMap = () => {
+    axios.get('/api/map')
+        .then(response => {
+            setMap(response.data);
+        })
+        .catch(error => {
+            console.error(error);
+        });
+};
+
+// UI Components
+const App = () => {
+    return (
+        <div>
+            <h1>Map Sharing Application</h1>
+            <form onSubmit={handleSubmit}>
+                <label>
+                    Name:
+                    <input type="text" value={name} onChange={(event) => setName(event.target.value)} />
+                </label>
+                <label>
+                    Location:
+                    <input type="text" value={location} onChange={(event) => setLocation(event.target.value)} />
+                </label>
+                <button type="submit">Create Location</button>
+            </form>
+            <button onClick={fetchMap}>Fetch Map</button>
+            {map && <div dangerouslySetInnerHTML={{ __html: map }} />}
+        </div>
+    );
+};
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);

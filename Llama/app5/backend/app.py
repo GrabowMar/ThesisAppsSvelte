@@ -1,83 +1,70 @@
 # 1. Imports Section
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from flask_socketio import SocketIO, emit
 import os
-import json
+import uuid
 
 # 2. App Configuration
 app = Flask(__name__)
 CORS(app)
-socketio = SocketIO(app, cors_allowed_origins='*')
 
 # 3. Database Models (if needed)
-# For simplicity, we'll use a dictionary to store user data
-users = {}
-rooms = {}
+# For simplicity, we will use a dictionary to store products and orders
+products = {
+    "1": {"name": "Product 1", "price": 10.99},
+    "2": {"name": "Product 2", "price": 9.99},
+    "3": {"name": "Product 3", "price": 12.99},
+}
+
+orders = {}
 
 # 4. Authentication Logic (if needed)
-# Simple authentication using username and password
-def authenticate(username, password):
-    if username in users and users[username]['password'] == password:
-        return True
-    return False
+# No authentication is implemented for simplicity
 
 # 5. Utility Functions
-def get_user_id(username):
-    return username
+def generate_order_id():
+    return str(uuid.uuid4())
 
 # 6. API Routes
-@app.route('/login', methods=['POST'])
-def login():
+@app.route('/api/products', methods=['GET'])
+def get_products():
+    return jsonify(list(products.values()))
+
+@app.route('/api/cart', methods=['POST'])
+def add_to_cart():
     data = request.json
-    username = data['username']
-    password = data['password']
-    if authenticate(username, password):
-        user_id = get_user_id(username)
-        return jsonify({'user_id': user_id})
-    return jsonify({'error': 'Invalid credentials'}), 401
+    product_id = data.get('product_id')
+    if product_id not in products:
+        return jsonify({"error": "Product not found"}), 404
+    if 'cart' not in orders:
+        orders['cart'] = []
+    orders['cart'].append(product_id)
+    return jsonify({"message": "Product added to cart"})
 
-@app.route('/register', methods=['POST'])
-def register():
-    data = request.json
-    username = data['username']
-    password = data['password']
-    if username not in users:
-        users[username] = {'password': password, 'rooms': []}
-        return jsonify({'user_id': get_user_id(username)})
-    return jsonify({'error': 'Username already taken'}), 400
+@app.route('/api/cart', methods=['GET'])
+def get_cart():
+    if 'cart' not in orders:
+        return jsonify({"cart": []})
+    cart = []
+    for product_id in orders['cart']:
+        cart.append(products[product_id])
+    return jsonify({"cart": cart})
 
-# 7. SocketIO Events
-@socketio.on('connect')
-def handle_connect():
-    print('Client connected')
+@app.route('/api/checkout', methods=['POST'])
+def checkout():
+    order_id = generate_order_id()
+    orders[order_id] = orders['cart']
+    del orders['cart']
+    return jsonify({"order_id": order_id, "order": orders[order_id]})
 
-@socketio.on('disconnect')
-def handle_disconnect():
-    print('Client disconnected')
+@app.route('/api/orders', methods=['GET'])
+def get_orders():
+    return jsonify(orders)
 
-@socketio.on('join_room')
-def handle_join_room(data):
-    room_id = data['room_id']
-    user_id = data['user_id']
-    if room_id not in rooms:
-        rooms[room_id] = []
-    rooms[room_id].append(user_id)
-    emit('joined_room', {'room_id': room_id}, broadcast=True)
-
-@socketio.on('leave_room')
-def handle_leave_room(data):
-    room_id = data['room_id']
-    user_id = data['user_id']
-    if room_id in rooms and user_id in rooms[room_id]:
-        rooms[room_id].remove(user_id)
-    emit('left_room', {'room_id': room_id}, broadcast=True)
-
-@socketio.on('send_message')
-def handle_send_message(data):
-    room_id = data['room_id']
-    message = data['message']
-    emit('new_message', {'room_id': room_id, 'message': message}, broadcast=True)
+# 7. Error Handlers
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({"error": "Not found"}), 404
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=int(os.getenv('PORT', '5003')))
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', '5009')))

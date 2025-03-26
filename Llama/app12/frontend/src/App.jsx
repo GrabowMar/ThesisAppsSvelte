@@ -1,37 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom/client';
+import axios from 'axios';
 
-const App = () => {
-  const [message, setMessage] = useState('Loading...');
+function App() {
+  const [devices, setDevices] = useState({});
+  const [deviceStatus, setDeviceStatus] = useState({});
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
-    // Fetch the message from the backend server running on port 5023
-    fetch('http://localhost:5023')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
+    axios.get('/api/devices')
+      .then(response => {
+        setDevices(response.data);
       })
-      .then((data) => {
-        setMessage(data.message || 'No message received');
-      })
-      .catch((error) => {
-        setMessage(`Error fetching message: ${error.message}`);
+      .catch(error => {
+        console.error(error);
       });
   }, []);
 
-  return (
-    <main>
-      <h1>{message}</h1>
-    </main>
-  );
-};
+  const handleLogin = (username, password) => {
+    axios.post('/api/login', { username, password })
+      .then(response => {
+        setToken(response.data.token);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
 
-const container = document.getElementById('root');
-if (container) {
-  const root = ReactDOM.createRoot(container);
-  root.render(<App />);
+  const handleUpdateDeviceStatus = (device_id, status) => {
+    axios.put(`/api/devices/${device_id}/status`, { status })
+      .then(response => {
+        setDeviceStatus(response.data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  return (
+    <div>
+      <h1>IoT Device Management</h1>
+      {token ? (
+        <div>
+          <h2>Devices</h2>
+          <ul>
+            {Object.keys(devices).map(device_id => (
+              <li key={device_id}>
+                {device_id} - {devices[device_id].status}
+                <button onClick={() => handleUpdateDeviceStatus(device_id, 'online')}>Online</button>
+                <button onClick={() => handleUpdateDeviceStatus(device_id, 'offline')}>Offline</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <div>
+          <h2>Login</h2>
+          <form>
+            <label>Username:</label>
+            <input type="text" />
+            <label>Password:</label>
+            <input type="password" />
+            <button onClick={() => handleLogin('admin', 'password123')}>Login</button>
+          </form>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default App;

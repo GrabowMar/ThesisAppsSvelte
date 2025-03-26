@@ -2,17 +2,17 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  plugins: [react()],
-  server: {
-    host: true,
-    port: 5535,  // Changed to match your frontend port
-    strictPort: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:port: 5035',
-        changeOrigin: true,
-        secure: false,
-      }
+    plugins: [react()],
+    server: {
+        host: true,
+        port: 5535,
+        strictPort: true,
+        proxy: {
+            '/api': {
+                target: 'http://localhost:5035',
+                changeOrigin: true,
+                secure: false,
+            }
+        }
     }
-  }
-});
+})

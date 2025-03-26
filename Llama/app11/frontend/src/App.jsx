@@ -1,37 +1,65 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom/client';
+import axios from 'axios';
 
-const App = () => {
-  const [message, setMessage] = useState('Loading...');
+function App() {
+    const [question, setQuestion] = useState('');
+    const [option1, setOption1] = useState('');
+    const [option2, setOption2] = useState('');
+    const [expiresIn, setExpiresIn] = useState('');
+    const [pollId, setPollId] = useState('');
+    const [pollResults, setPollResults] = useState({});
 
-  useEffect(() => {
-    // Fetch the message from the backend server running on port 5021
-    fetch('http://localhost:5021')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+    const createPoll = async () => {
+        try {
+            const response = await axios.post('/api/polls', {
+                question,
+                option1,
+                option2,
+                expires_in: expiresIn
+            });
+            setPollId(response.data.id);
+        } catch (error) {
+            console.error(error);
         }
-        return response.json();
-      })
-      .then((data) => {
-        setMessage(data.message || 'No message received');
-      })
-      .catch((error) => {
-        setMessage(`Error fetching message: ${error.message}`);
-      });
-  }, []);
+    };
 
-  return (
-    <main>
-      <h1>{message}</h1>
-    </main>
-  );
-};
+    const castVote = async (option) => {
+        try {
+            await axios.post(`/api/polls/${pollId}/votes`, { option });
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
-const container = document.getElementById('root');
-if (container) {
-  const root = ReactDOM.createRoot(container);
-  root.render(<App />);
+    const getPollResults = async () => {
+        try {
+            const response = await axios.get(`/api/polls/${pollId}/results`);
+            setPollResults(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    return (
+        <div>
+            <h1>Create Poll</h1>
+            <input type="text" value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="Question" />
+            <input type="text" value={option1} onChange={(e) => setOption1(e.target.value)} placeholder="Option 1" />
+            <input type="text" value={option2} onChange={(e) => setOption2(e.target.value)} placeholder="Option 2" />
+            <input type="number" value={expiresIn} onChange={(e) => setExpiresIn(e.target.value)} placeholder="Expires in (minutes)" />
+            <button onClick={createPoll}>Create Poll</button>
+            {pollId && (
+                <div>
+                    <h2>Poll Results</h2>
+                    <p>Option 1: {pollResults.option1} ({pollResults.option1_votes} votes)</p>
+                    <p>Option 2: {pollResults.option2} ({pollResults.option2_votes} votes)</p>
+                    <button onClick={() => castVote(pollResults.option1)}>Vote for Option 1</button>
+                    <button onClick={() => castVote(pollResults.option2)}>Vote for Option 2</button>
+                    <button onClick={getPollResults}>Get Poll Results</button>
+                </div>
+            )}
+        </div>
+    );
 }
 
 export default App;
