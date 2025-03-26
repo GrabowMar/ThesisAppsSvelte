@@ -1,85 +1,73 @@
-# Import required libraries
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify
+from flask_socketio import SocketIO, emit
 from flask_cors import CORS
-from werkzeug.security import generate_password_hash, check_password_hash
-import mysql.connector
-import os
 
-# Create a new Flask application
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app, cors_allowed_origins='*')
 CORS(app)
 
-# Configure MySQL database connection
-db_host = 'localhost'
-db_user = 'root'
-db_password = 'password'
-db_name = 'auth_system'
+# In-memory storage for users and messages
+users = {}
+messages = {}
 
-# Create a connection to the database
-cnx = mysql.connector.connect(
-    user=db_user,
-    password=db_password,
-    host=db_host,
-    database=db_name
-)
-
-# Create a cursor object to execute SQL queries
-cursor = cnx.cursor()
-
-# Define a function to create a new user
-def create_user(username, email, password):
-    hashed_password = generate_password_hash(password)
-    query = "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)"
-    cursor.execute(query, (username, email, hashed_password))
-    cnx.commit()
-
-# Define a function to check if a user exists
-def user_exists(username):
-    query = "SELECT * FROM users WHERE username = %s"
-    cursor.execute(query, (username,))
-    return cursor.fetchone() is not None
-
-# Define a function to verify user credentials
-def verify_credentials(username, password):
-    query = "SELECT password FROM users WHERE username = %s"
-    cursor.execute(query, (username,))
-    hashed_password = cursor.fetchone()[0]
-    return check_password_hash(hashed_password, password)
-
-# Define routes for the application
+# Register a new user
 @app.route('/register', methods=['POST'])
 def register():
-    username = request.json['username']
-    email = request.json['email']
-    password = request.json['password']
-    if user_exists(username):
-        return jsonify({'error': 'User already exists'}), 400
-    create_user(username, email, password)
-    return jsonify({'message': 'User created successfully'}), 201
+    data = request.json
+    username = data['username']
+    if username in users:
+        return jsonify({'error': 'Username already exists'}), 400
+    users[username] = {'online': False}
+    return jsonify({'message': 'User registered successfully'}), 200
 
+# Login a user
 @app.route('/login', methods=['POST'])
 def login():
-    username = request.json['username']
-    password = request.json['password']
-    if not user_exists(username):
-        return jsonify({'error': 'User does not exist'}), 400
-    if not verify_credentials(username, password):
-        return jsonify({'error': 'Invalid credentials'}), 401
-    session['username'] = username
-    return jsonify({'message': 'Logged in successfully'}), 200
+    data = request.json
+    username = data['username']
+    if username not in users:
+        return jsonify({'error': 'Username does not exist'}), 400
+    users[username]['online'] = True
+    return jsonify({'message': 'User logged in successfully'}), 200
 
-@app.route('/dashboard', methods=['GET'])
-def dashboard():
-    if 'username' not in session:
-        return jsonify({'error': 'Not logged in'}), 401
-    return jsonify({'message': f'Welcome, {session["username"]}'}), 200
-
+# Logout a user
 @app.route('/logout', methods=['POST'])
 def logout():
-    session.pop('username', None)
-    return jsonify({'message': 'Logged out successfully'}), 200
+    data = request.json
+    username = data['username']
+    if username not in users:
+        return jsonify({'error': 'Username does not exist'}), 400
+    users[username]['online'] = False
+    return jsonify({'message': 'User logged out successfully'}), 200
 
-# Run the application
+# Send a message
+@socketio.on('send_message')
+def send_message(data):
+    username = data['username']
+    message = data['message']
+    room = data['room']
+    if room not in messages:
+        messages[room] = []
+    messages[room].append({'username': username, 'message': message})
+    emit('receive_message', data, broadcast=True)
+
+# Get message history
+@app.route('/get_messages', methods=['POST'])
+def get_messages():
+    data = request.json
+    room = data['room']
+    if room not in messages:
+        return jsonify({'messages': []}), 200
+    return jsonify({'messages': messages[room]}), 200
+
+# Get online users
+@app.route('/get_online_users', methods=['POST'])
+def get_online_users():
+    data = request.json
+    room = data['room']
+    online_users = [username for username, user in users.items() if user['online']]
+    return jsonify({'online_users': online_users}), 200
+
 if __name__ == '__main__':
-    app.secret_key = 'secret_key'
-    app.run(port=5001)
+    socketio.run(app, host='0.0.0.0', port=5003)

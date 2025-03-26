@@ -1,14 +1,25 @@
-body {
-  font-family: Arial, sans-serif;
-}
-
-.App {
+.app {
   text-align: center;
 }
 
-button {
-  margin: 10px;
+form {
+  margin-top: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+input[type="text"] {
   padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px 20px;
+  margin-bottom: 20px;
   border: none;
   border-radius: 5px;
   background-color: #4CAF50;
@@ -20,15 +31,17 @@ button:hover {
   background-color: #3e8e41;
 }
 
-input {
-  margin: 10px;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  background-color: #f2f2f2;
-  width: 50%;
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-input:focus {
-  background-color: #ccc;
+li {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+li:last-child {
+  border-bottom: none;
 }

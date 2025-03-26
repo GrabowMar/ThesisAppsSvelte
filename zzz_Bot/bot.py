@@ -417,6 +417,10 @@ class AssistantApp(tk.Tk):
         ttk.Button(model_frame, text="Refresh All", 
                 command=self._refresh_summary_page).grid(row=0, column=4, padx=10, pady=2)
         
+        # NEW: Add Extract Files from LLM Output button
+        ttk.Button(model_frame, text="Extract Files from LLM Output", 
+                command=self._extract_and_save_files_from_llm_output).grid(row=0, column=5, padx=10, pady=2)
+        
         # Main content frame - split into two main sections
         content_frame = ttk.Frame(self.summary_tab)
         content_frame.pack(fill="both", expand=True, padx=10, pady=5)
@@ -691,6 +695,244 @@ class AssistantApp(tk.Tk):
             self._load_summary_template()
 
     # -------------------------------------------------------------------------
+    # File Content Extraction from LLM Output
+    # -------------------------------------------------------------------------
+    def _parse_llm_output(self, text: str) -> Dict[str, str]:
+        """
+        Parse LLM output to extract file contents.
+        Returns a dictionary with filename as key and content as value.
+        """
+        # Dictionary to store extracted files
+        extracted_files = {}
+        
+        # Common file patterns to look for
+        file_patterns = [
+            "app.py", "App.jsx", "App.css", "requirements.txt", 
+            "package.json", "vite.config.js", "Dockerfile", 
+            "docker-compose.yml", "index.html"
+        ]
+        
+        # First try to find code blocks with explicit file markers
+        code_block_pattern = r"```(?:python|javascript|jsx|css|json|plaintext|yaml|yml|html|markdown|md)?\s*(?:#\s*(.*\.(?:py|jsx|js|css|json|yml|yaml|html|txt))|\/\/\s*(.*\.(?:py|jsx|js|css|json|yml|yaml|html|txt))|(.*\.(?:py|jsx|js|css|json|yml|yaml|html|txt)))\s*\n([\s\S]*?)```"
+        
+        # Find all code blocks with potential file headers
+        import re
+        for match in re.finditer(code_block_pattern, text):
+            filename = match.group(1) or match.group(2) or match.group(3)
+            if filename:
+                # Clean up the filename if needed
+                filename = filename.strip().split(" ")[-1]  # Take the last word in case it's like "# app.py file"
+                content = match.group(4).strip()
+                extracted_files[filename] = content
+        
+        # If we couldn't find explicit file markers, try a more aggressive approach
+        if not extracted_files:
+            # Look for common file names in the text and try to extract their content
+            for file in file_patterns:
+                # Check for occurrences like "filename:\n```\ncontent\n```" or "# filename\n```\ncontent\n```"
+                patterns = [
+                    rf"(?:^|\n)(?:#\s*{file}|\*\*{file}\*\*|{file}:)\s*\n```(?:.*?)\n([\s\S]*?)```",
+                    rf"(?:^|\n)(?:{file})\s*\n```(?:.*?)\n([\s\S]*?)```"
+                ]
+                
+                for pattern in patterns:
+                    matches = re.finditer(pattern, text, re.MULTILINE)
+                    for match in matches:
+                        content = match.group(1).strip()
+                        extracted_files[file] = content
+        
+        # If we still don't have some of the important files, look for content between special markers
+        if not any(f in extracted_files for f in ["app.py", "App.jsx"]):
+            # Try to identify file content based on typical file content patterns
+            app_py_patterns = [
+                r"(?:^|\n)from flask import Flask(?:[\s\S]*?)if __name__ == ['\"]__main__['\"]:(?:[\s\S]*?)(?:app|flask|socketio)\.run\([^\)]*\)",
+                r"(?:^|\n)# app\.py\s*(?:[\s\S]*?)if __name__ == ['\"]__main__['\"]:(?:[\s\S]*?)(?:app|flask|socketio)\.run\([^\)]*\)"
+            ]
+            
+            for pattern in app_py_patterns:
+                match = re.search(pattern, text, re.MULTILINE)
+                if match and "app.py" not in extracted_files:
+                    extracted_files["app.py"] = match.group(0).strip()
+                    
+            # Look for App.jsx content
+            app_jsx_patterns = [
+                r"(?:^|\n)import React(?:[\s\S]*?)ReactDOM\.createRoot\((?:[\s\S]*?)\)",
+                r"(?:^|\n)// App\.jsx(?:[\s\S]*?)ReactDOM\.createRoot\((?:[\s\S]*?)\)"
+            ]
+            
+            for pattern in app_jsx_patterns:
+                match = re.search(pattern, text, re.MULTILINE)
+                if match and "App.jsx" not in extracted_files:
+                    extracted_files["App.jsx"] = match.group(0).strip()
+        
+        # For CSS, look for typical CSS code
+        if "App.css" not in extracted_files:
+            css_pattern = r"\.app\s*{(?:[\s\S]*?)}\s*(?:\n|$)(?:[\s\S]*?)li:last-child\s*{(?:[\s\S]*?)}"
+            match = re.search(css_pattern, text, re.MULTILINE)
+            if match:
+                extracted_files["App.css"] = match.group(0).strip()
+        
+        # For package.json, look for typical package.json structure
+        if "package.json" not in extracted_files:
+            package_pattern = r'{\s*"name":\s*"[^"]*",\s*"version":\s*"[^"]*",(?:[\s\S]*?)"dependencies":\s*{(?:[\s\S]*?)}'
+            match = re.search(package_pattern, text, re.MULTILINE)
+            if match:
+                extracted_files["package.json"] = match.group(0).strip()
+        
+        # For vite.config.js
+        if "vite.config.js" not in extracted_files:
+            vite_pattern = r"import\s*{\s*defineConfig\s*}\s*from\s*['\"]vite['\"](?:[\s\S]*?)export default defineConfig\({(?:[\s\S]*?)}\)"
+            match = re.search(vite_pattern, text, re.MULTILINE)
+            if match:
+                extracted_files["vite.config.js"] = match.group(0).strip()
+        
+        # For requirements.txt
+        if "requirements.txt" not in extracted_files:
+            # Look for sections that look like requirements
+            req_patterns = [
+                r"(?:^|\n)(?:Required pip dependencies \(requirements\.txt\):)\s*\n\s*((?:[\w\-]+(?:==[\d\.]+)?\s*\n?)+)",
+                r"(?:^|\n)requirements\.txt:\s*\n\s*((?:[\w\-]+(?:==[\d\.]+)?\s*\n?)+)"
+            ]
+            
+            for pattern in req_patterns:
+                match = re.search(pattern, text, re.MULTILINE)
+                if match:
+                    extracted_files["requirements.txt"] = match.group(1).strip()
+        
+        # Add more specific pattern matchers for other file types as needed
+        
+        return extracted_files
+
+    def _extract_and_save_files_from_llm_output(self) -> None:
+        """
+        Extracts files from LLM output pasted in the clipboard and saves them to appropriate locations.
+        """
+        try:
+            # Get text from clipboard
+            content = self.clipboard_get()
+            if not content.strip():
+                self.status_var.set("Clipboard is empty")
+                return
+            
+            # Try to parse the content to extract files
+            extracted_files = self._parse_llm_output(content)
+            
+            if not extracted_files:
+                messagebox.showinfo("No Files Found", "Could not detect any files in the pasted content.")
+                return
+            
+            # Get the current model and app
+            model = self.summary_model_var.get()
+            app = self.summary_app_var.get()
+            
+            if not model or not app:
+                messagebox.showwarning("Selection Required", "Please select a model and app first.")
+                return
+            
+            # Get port information for replacements
+            match = re.search(r'(\d+)', app)
+            ports = None
+            if match:
+                app_num = int(match.group(1))
+                model_idx = get_model_index(model)
+                ports = PortManager.get_app_ports(model_idx, app_num)
+            
+            # Create a summary of found files
+            file_list = "\n".join([f"- {file}" for file in extracted_files.keys()])
+            if not messagebox.askyesno("Files Found", 
+                                     f"Found {len(extracted_files)} files:\n{file_list}\n\nDo you want to save these files?"):
+                return
+            
+            # Save each file to the appropriate location
+            for filename, content in extracted_files.items():
+                # Replace port placeholders if needed
+                if ports and ("XXXX" in content or "YYYY" in content):
+                    content = content.replace("XXXX", str(ports["frontend"]))
+                    content = content.replace("YYYY", str(ports["backend"]))
+                
+                # Determine the destination based on the filename
+                if filename == "app.py":
+                    target_path = Path('.') / model / app / 'backend' / filename
+                elif filename in ["App.jsx", "App.css", "index.html"]:
+                    target_path = Path('.') / model / app / 'frontend' / 'src' / filename
+                elif filename in ["package.json", "vite.config.js"]:
+                    target_path = Path('.') / model / app / 'frontend' / filename
+                elif filename == "requirements.txt":
+                    target_path = Path('.') / model / app / 'backend' / filename
+                elif filename == "docker-compose.yml":
+                    target_path = Path('.') / model / app / filename
+                elif filename == "Dockerfile" and "backend" in extracted_files:
+                    # This is tricky - we need context to know if it's frontend or backend
+                    # For now, assume it's backend if there's a backend file
+                    target_path = Path('.') / model / app / 'backend' / filename
+                elif filename == "Dockerfile":
+                    # Default to frontend if we can't determine
+                    target_path = Path('.') / model / app / 'frontend' / filename
+                else:
+                    # Default to backend for unknown files
+                    target_path = Path('.') / model / app / 'backend' / filename
+                
+                # Ensure parent directory exists
+                target_path.parent.mkdir(parents=True, exist_ok=True)
+                
+                # Save previous content for undo if file exists
+                if target_path.exists():
+                    prev_content = target_path.read_text(encoding="utf-8")
+                    self.undo_stack.append({
+                        'file': target_path,
+                        'content': prev_content
+                    })
+                    # Limit stack size
+                    if len(self.undo_stack) > self.max_undo_stack:
+                        self.undo_stack.pop(0)
+                
+                # Write the file
+                target_path.write_text(content, encoding="utf-8")
+                self._log(f"Saved extracted {filename} to {target_path}")
+            
+            # Update UI to reflect the changes
+            self._refresh_file_lists()
+            self.status_var.set(f"Successfully extracted and saved {len(extracted_files)} files")
+            
+            # Update app status in database if we saved app.py or App.jsx
+            app_py_saved = "app.py" in extracted_files
+            app_jsx_saved = "App.jsx" in extracted_files
+            
+            if app_py_saved or app_jsx_saved:
+                # Check if we have an existing record
+                status_rows = self.database.get_all_model_app_status()
+                row_id = None
+                comment = ""
+                
+                for row in status_rows:
+                    db_id, db_model, db_app, app_py, app_react, db_comment = row
+                    if db_model == model and db_app == app:
+                        row_id = db_id
+                        comment = db_comment
+                        break
+                
+                if row_id:
+                    # Update existing record
+                    self.database.update_model_app_status(
+                        row_id, model, app,
+                        app_py_saved, app_jsx_saved, 
+                        comment or "Files extracted from LLM output"
+                    )
+                else:
+                    # Insert new record
+                    self.database.insert_model_app_status(
+                        model, app, app_py_saved, app_jsx_saved, 
+                        "Files extracted from LLM output"
+                    )
+                
+                # Update the display
+                self._update_app_status_display()
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to extract files: {str(e)}")
+            self._log(f"Failed to extract files: {e}", error=True)
+
+    # -------------------------------------------------------------------------
     # File Management Methods
     # -------------------------------------------------------------------------
     def _refresh_file_lists(self) -> None:
@@ -893,11 +1135,25 @@ class AssistantApp(tk.Tk):
                 self.status_var.set("Clipboard is empty")
                 return
             
+            # Replace port placeholders if needed
+            model = self.summary_model_var.get()
+            app = self.summary_app_var.get()
+            
+            if model and app and ("XXXX" in content or "YYYY" in content):
+                match = re.search(r'(\d+)', app)
+                if match:
+                    app_num = int(match.group(1))
+                    model_idx = get_model_index(model)
+                    ports = PortManager.get_app_ports(model_idx, app_num)
+                    content = content.replace("XXXX", str(ports["frontend"]))
+                    content = content.replace("YYYY", str(ports["backend"]))
+                    self._log("Replaced port placeholders in content")
+            
             # Update the code editor for user reference
             self.summary_code_editor.delete("1.0", tk.END)
             self.summary_code_editor.insert(tk.END, content)
             
-            # Save previous content for undo
+            # Save previous content for undo if file exists
             if self.current_file_path.exists():
                 prev_content = self.current_file_path.read_text(encoding="utf-8")
                 self.undo_stack.append({
@@ -1620,7 +1876,16 @@ class AssistantApp(tk.Tk):
         top_frame = ttk.Frame(self.generate_code_tab)
         top_frame.pack(fill="x", padx=10, pady=5)
 
-        ttk.Button(top_frame, text="Paste LLM Output", command=self._paste_from_clipboard).pack(side="left", padx=5)
+        # Add buttons in a row
+        ttk.Button(top_frame, text="Paste LLM Output", 
+                  command=self._paste_from_clipboard).pack(side="left", padx=5)
+        
+        # NEW: Add Extract Files button
+        ttk.Button(top_frame, text="Extract & Save Files from Clipboard", 
+                  command=self._extract_and_save_files_from_llm_output).pack(side="left", padx=5)
+        
+        # Add information label
+        ttk.Label(top_frame, text="Or paste individual files in tabs below:").pack(side="left", padx=15)
 
         self.code_notebook = ttk.Notebook(self.generate_code_tab)
         self.code_notebook.pack(fill="both", expand=True, padx=10, pady=5)
@@ -1756,6 +2021,10 @@ class AssistantApp(tk.Tk):
         if apps:
             self.replace_app_var.set(apps[0])
         self.replace_app_dropdown.grid(row=1, column=1, padx=5, pady=2, sticky="w")
+
+        # NEW: Add Extract Files button
+        ttk.Button(sel_frame, text="Extract & Save Files from Clipboard", 
+                   command=self._extract_and_save_files_from_llm_output).grid(row=2, column=0, columnspan=2, padx=5, pady=10, sticky="w")
 
         # Create a grid layout for buttons
         btn_frame = ttk.Frame(self.file_replace_tab)
@@ -2409,6 +2678,10 @@ class AssistantApp(tk.Tk):
                   command=self._save_web_prompt).pack(side="left", padx=5)
         ttk.Button(button_frame, text="Delete", 
                   command=self._delete_web_prompt).pack(side="left", padx=5)
+        
+        # NEW: Add Extract Files button
+        ttk.Button(button_frame, text="Extract Files", 
+                  command=self._extract_and_save_files_from_llm_output).pack(side="left", padx=10)
         
         # Right side - Model & App selection
         selector_frame = ttk.Frame(top_frame)

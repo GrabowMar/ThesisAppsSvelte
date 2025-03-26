@@ -70,3 +70,14 @@ Stacktrace:
 [2025-03-25 23:58:56] INFO: Loaded template: app_3_feedback.md
 [2025-03-25 23:58:56] INFO: Template copied to clipboard.
 [2025-03-25 23:58:59] INFO: Copied port info: (frontend 5505 and backend 5005)
+[2025-03-26 00:16:56] INFO: Web prompts table verified/created
+[2025-03-26 00:16:56] INFO: Connected to database: assistant.db
+[2025-03-26 00:16:56] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 00:16:56] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 00:17:01] INFO: Template with actual port numbers copied to clipboard.
+[2025-03-26 00:17:16] INFO: Template with actual port numbers copied to clipboard.
+[2025-03-26 00:17:18] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 00:17:18] INFO: Template with actual port numbers copied to clipboard.
+[2025-03-26 00:18:12] INFO: Replaced port placeholders in pasted prompt
+[2025-03-26 00:43:43] INFO: Database connection closed
+[2025-03-26 00:43:43] INFO: Application shutting down

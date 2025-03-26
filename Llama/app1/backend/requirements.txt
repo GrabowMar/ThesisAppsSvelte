@@ -1,4 +1,6 @@
-Flask==2.0.2
-Flask-CORS==3.0.10
-mysql-connector-python==8.0.28
-Werkzeug==2.0.2
+flask
+flask_cors
+flask_socketio
+
+Frontend Generation Prompt
+Here

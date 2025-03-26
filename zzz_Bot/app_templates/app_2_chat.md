@@ -57,24 +57,16 @@ app/
 ### Protocol Steps
 
 1. **Port Configuration Prompt**
-   - Request port numbers for backend and frontend.
-   - Replace `XXXX` (backend) and `YYYY` (frontend) placeholders.
-   - **Example format:** "Please provide two port numbers for backend and frontend."
+   - Use `XXXX` (backend) and `YYYY` (frontend) ports.
 
 2. **Backend Generation Prompt**
-   - Request complete **app.py** code generation.
    - Must include all specified backend features.
    - Must list required pip dependencies in form of requirements.txt.
-   - Wait for user confirmation before proceeding.
-   - Aim for best practices and professionalism.
 
 
 3. **Frontend Generation Prompt**
-   - Request complete **App.jsx** code generation.
    - Must include all specified frontend features.
    - Must list required npm dependencies in form of package.json (and vite.config.js if necessary)
-   - Aim for best practices and professionalism.
-   - Request complete **App.css** code generation.
 
 
 **Very important:** Your app should be feature rich and production ready.
