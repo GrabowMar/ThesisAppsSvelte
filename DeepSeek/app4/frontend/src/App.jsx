@@ -1,75 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import './App.css';
 
 const App = () => {
-    const [name, setName] = useState('');
-    const [message, setMessage] = useState('');
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
+  const [message, setMessage] = useState('Loading...');
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        setSuccess('');
-
-        if (!name || !message) {
-            setError('Name and message are required.');
-            return;
+  useEffect(() => {
+    // Fetch the message from the backend server running on port 5167
+    fetch('http://localhost:5167')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+        return response.json();
+      })
+      .then((data) => {
+        setMessage(data.message || 'No message received');
+      })
+      .catch((error) => {
+        setMessage(`Error fetching message: ${error.message}`);
+      });
+  }, []);
 
-        if (message.length < 10) {
-            setError('Message must be at least 10 characters long.');
-            return;
-        }
-
-        try {
-            const response = await fetch('http://localhost:5000/submit-feedback', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, message }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to submit feedback.');
-            }
-
-            const result = await response.json();
-            setSuccess(result.message);
-            setName('');
-            setMessage('');
-        } catch (err) {
-            setError('An error occurred while submitting feedback.');
-        }
-    };
-
-    return (
-        <div className="app">
-            <h1>Feedback Form</h1>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>Name:</label>
-                    <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Message:</label>
-                    <textarea
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        required
-                    />
-                </div>
-                {error && <p className="error">{error}</p>}
-                {success && <p className="success">{success}</p>}
-                <button type="submit">Submit</button>
-            </form>
-        </div>
-    );
+  return (
+    <main>
+      <h1>{message}</h1>
+    </main>
+  );
 };
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+const container = document.getElementById('root');
+if (container) {
+  const root = ReactDOM.createRoot(container);
+  root.render(<App />);
+}
+
+export default App;

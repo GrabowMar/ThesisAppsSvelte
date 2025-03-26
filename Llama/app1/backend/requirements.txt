@@ -1,5 +1,2 @@
-Flask
-Flask-CORS
-Flask-SQLAlchemy
-Werkzeug
-PyJWT
+flask
+flask-cors

@@ -1,6 +1,2 @@
-flask==2.3.2
-flask-socketio==5.3.3
-flask-cors==3.0.10
-werkzeug==2.3.7
-python-engineio==4.5.1
-python-socketio==5.8.1
+flask
+flask-cors
