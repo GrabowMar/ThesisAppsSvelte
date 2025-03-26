@@ -115,3 +115,235 @@ Stacktrace:
 [2025-03-26 10:29:27] INFO: Replaced Llama\app1\frontend\vite.config.js
 [2025-03-26 10:47:05] INFO: Database connection closed
 [2025-03-26 10:47:05] INFO: Application shutting down
+[2025-03-26 11:50:33] INFO: Web prompts table verified/created
+[2025-03-26 11:50:33] INFO: Connected to database: assistant.db
+[2025-03-26 11:50:33] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 11:50:33] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 11:50:36] INFO: Database connection closed
+[2025-03-26 11:50:36] INFO: Application shutting down
+[2025-03-26 11:51:06] INFO: Web prompts table verified/created
+[2025-03-26 11:51:06] INFO: Connected to database: assistant.db
+[2025-03-26 11:51:06] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 11:51:06] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 11:54:01] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 11:54:01] INFO: Template with actual port numbers copied to clipboard.
+[2025-03-26 11:54:25] INFO: Replaced Llama\app1\backend\app.py
+[2025-03-26 11:54:29] INFO: Replaced Llama\app1\backend\requirements.txt
+[2025-03-26 11:54:34] INFO: Replaced Llama\app1\frontend\src\App.jsx
+[2025-03-26 11:54:39] INFO: Replaced Llama\app1\frontend\src\App.css
+[2025-03-26 11:54:44] INFO: Replaced Llama\app1\frontend\vite.config.js
+[2025-03-26 11:54:48] INFO: Replaced Llama\app1\frontend\package.json
+[2025-03-26 12:08:24] INFO: Loaded template: app_2_chat.md (with port placeholders replaced)
+[2025-03-26 12:08:25] INFO: Template with actual port numbers copied to clipboard.
+[2025-03-26 12:08:39] INFO: Replaced Llama\app2\backend\app.py
+[2025-03-26 12:08:44] INFO: Replaced Llama\app2\backend\requirements.txt
+[2025-03-26 12:08:49] INFO: Replaced Llama\app2\frontend\src\App.jsx
+[2025-03-26 12:08:55] INFO: Replaced Llama\app2\frontend\package.json
+[2025-03-26 12:08:59] INFO: Replaced Llama\app2\frontend\vite.config.js
+[2025-03-26 12:09:39] INFO: Saved Llama\app2\frontend\vite.config.js
+[2025-03-26 12:09:53] INFO: Saved new prompt for Llama/app1
+[2025-03-26 12:09:53] INFO: Saved new prompt for Llama/app1
+[2025-03-26 12:10:06] INFO: Saved new prompt for Llama/app2
+[2025-03-26 12:10:06] INFO: Saved new prompt for Llama/app2
+[2025-03-26 12:10:27] INFO: Loaded template: app_3_feedback.md (with port placeholders replaced)
+[2025-03-26 12:10:28] INFO: Template with actual port numbers copied to clipboard.
+[2025-03-26 12:10:42] INFO: Replaced Llama\app3\backend\app.py
+[2025-03-26 12:10:46] INFO: Replaced Llama\app3\frontend\src\App.jsx
+[2025-03-26 12:10:51] INFO: Replaced Llama\app3\frontend\vite.config.js
+[2025-03-26 12:11:08] INFO: Replaced Llama\app3\backend\requirements.txt
+[2025-03-26 12:11:13] INFO: Replaced Llama\app3\frontend\package.json
+[2025-03-26 12:11:21] INFO: Loaded template: app_3_feedback.md (with port placeholders replaced)
+[2025-03-26 12:11:21] INFO: Loaded template: app_3_feedback.md (with port placeholders replaced)
+[2025-03-26 12:11:25] INFO: Loaded template: app_4_blog.md (with port placeholders replaced)
+[2025-03-26 12:11:25] INFO: Template with actual port numbers copied to clipboard.
+[2025-03-26 12:12:34] INFO: Database connection closed
+[2025-03-26 12:12:34] INFO: Application shutting down
+[2025-03-26 12:12:38] INFO: Web prompts table verified/created
+[2025-03-26 12:12:38] INFO: Connected to database: assistant.db
+[2025-03-26 12:12:38] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 12:12:38] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 12:12:42] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 12:12:42] INFO: Template with actual port numbers copied to clipboard.
+[2025-03-26 12:27:43] INFO: Web prompts table verified/created
+[2025-03-26 12:27:43] INFO: Connected to database: assistant.db
+[2025-03-26 12:27:43] INFO: Loaded template: app_1_login.md (with port placeholders replaced and copied to clipboard)
+[2025-03-26 12:27:49] INFO: Syncing app status for Llama...
+[2025-03-26 12:27:50] INFO: App status sync complete for Llama
+[2025-03-26 12:28:11] INFO: Loaded template: app_1_login.md (with port placeholders replaced and copied to clipboard)
+[2025-03-26 12:35:18] INFO: Web prompts table verified/created
+[2025-03-26 12:35:18] INFO: Connected to database: assistant.db
+[2025-03-26 12:35:18] INFO: Scanned backend directory: Llama\app1\backend
+[2025-03-26 12:35:18] INFO: Scanned frontend directory: Llama\app1\frontend
+[2025-03-26 12:35:18] INFO: Found docker-compose.yml at Llama\app1\docker-compose.yml
+[2025-03-26 12:35:18] INFO: Loaded template: app_1_login.md (with port placeholders replaced and copied to clipboard)
+[2025-03-26 12:35:45] INFO: Replaced Llama\app1\backend\app.py
+[2025-03-26 12:35:45] INFO: Scanned backend directory: Llama\app1\backend
+[2025-03-26 12:35:45] INFO: Scanned frontend directory: Llama\app1\frontend
+[2025-03-26 12:35:45] INFO: Found docker-compose.yml at Llama\app1\docker-compose.yml
+[2025-03-26 12:35:51] INFO: Scanned backend directory: Llama\app2\backend
+[2025-03-26 12:35:51] INFO: Scanned frontend directory: Llama\app2\frontend
+[2025-03-26 12:35:51] INFO: Found docker-compose.yml at Llama\app2\docker-compose.yml
+[2025-03-26 12:35:52] INFO: Scanned backend directory: Llama\app3\backend
+[2025-03-26 12:35:52] INFO: Scanned frontend directory: Llama\app3\frontend
+[2025-03-26 12:35:52] INFO: Found docker-compose.yml at Llama\app3\docker-compose.yml
+[2025-03-26 12:35:52] INFO: Scanned backend directory: Llama\app2\backend
+[2025-03-26 12:35:52] INFO: Scanned frontend directory: Llama\app2\frontend
+[2025-03-26 12:35:52] INFO: Found docker-compose.yml at Llama\app2\docker-compose.yml
+[2025-03-26 12:35:53] INFO: Scanned backend directory: Llama\app1\backend
+[2025-03-26 12:35:53] INFO: Scanned frontend directory: Llama\app1\frontend
+[2025-03-26 12:35:53] INFO: Found docker-compose.yml at Llama\app1\docker-compose.yml
+[2025-03-26 12:35:54] INFO: Scanned backend directory: Llama\app2\backend
+[2025-03-26 12:35:54] INFO: Scanned frontend directory: Llama\app2\frontend
+[2025-03-26 12:35:54] INFO: Found docker-compose.yml at Llama\app2\docker-compose.yml
+[2025-03-26 12:35:56] INFO: Loaded template: app_2_chat.md (with port placeholders replaced and copied to clipboard)
+[2025-03-26 12:36:04] INFO: Scanned backend directory: Llama\app3\backend
+[2025-03-26 12:36:04] INFO: Scanned frontend directory: Llama\app3\frontend
+[2025-03-26 12:36:04] INFO: Found docker-compose.yml at Llama\app3\docker-compose.yml
+[2025-03-26 12:36:06] INFO: Scanned backend directory: Llama\app4\backend
+[2025-03-26 12:36:06] INFO: Scanned frontend directory: Llama\app4\frontend
+[2025-03-26 12:36:06] INFO: Found docker-compose.yml at Llama\app4\docker-compose.yml
+[2025-03-26 12:36:06] INFO: Scanned backend directory: Llama\app5\backend
+[2025-03-26 12:36:06] INFO: Scanned frontend directory: Llama\app5\frontend
+[2025-03-26 12:36:06] INFO: Found docker-compose.yml at Llama\app5\docker-compose.yml
+[2025-03-26 12:36:06] INFO: Scanned backend directory: Llama\app4\backend
+[2025-03-26 12:36:06] INFO: Scanned frontend directory: Llama\app4\frontend
+[2025-03-26 12:36:06] INFO: Found docker-compose.yml at Llama\app4\docker-compose.yml
+[2025-03-26 12:36:07] INFO: Scanned backend directory: Llama\app3\backend
+[2025-03-26 12:36:07] INFO: Scanned frontend directory: Llama\app3\frontend
+[2025-03-26 12:36:07] INFO: Found docker-compose.yml at Llama\app3\docker-compose.yml
+[2025-03-26 12:36:07] INFO: Scanned backend directory: Llama\app2\backend
+[2025-03-26 12:36:07] INFO: Scanned frontend directory: Llama\app2\frontend
+[2025-03-26 12:36:07] INFO: Found docker-compose.yml at Llama\app2\docker-compose.yml
+[2025-03-26 12:36:10] INFO: Scanned backend directory: Llama\app1\backend
+[2025-03-26 12:36:10] INFO: Scanned frontend directory: Llama\app1\frontend
+[2025-03-26 12:36:10] INFO: Found docker-compose.yml at Llama\app1\docker-compose.yml
+[2025-03-26 12:36:11] INFO: Scanned backend directory: Llama\app2\backend
+[2025-03-26 12:36:11] INFO: Scanned frontend directory: Llama\app2\frontend
+[2025-03-26 12:36:11] INFO: Found docker-compose.yml at Llama\app2\docker-compose.yml
+[2025-03-26 12:36:11] INFO: Scanned backend directory: Llama\app3\backend
+[2025-03-26 12:36:11] INFO: Scanned frontend directory: Llama\app3\frontend
+[2025-03-26 12:36:11] INFO: Found docker-compose.yml at Llama\app3\docker-compose.yml
+[2025-03-26 12:36:11] INFO: Scanned backend directory: Llama\app4\backend
+[2025-03-26 12:36:11] INFO: Scanned frontend directory: Llama\app4\frontend
+[2025-03-26 12:36:11] INFO: Found docker-compose.yml at Llama\app4\docker-compose.yml
+[2025-03-26 12:36:12] INFO: Scanned backend directory: Llama\app3\backend
+[2025-03-26 12:36:12] INFO: Scanned frontend directory: Llama\app3\frontend
+[2025-03-26 12:36:12] INFO: Found docker-compose.yml at Llama\app3\docker-compose.yml
+[2025-03-26 12:36:12] INFO: Scanned backend directory: Llama\app2\backend
+[2025-03-26 12:36:12] INFO: Scanned frontend directory: Llama\app2\frontend
+[2025-03-26 12:36:12] INFO: Found docker-compose.yml at Llama\app2\docker-compose.yml
+[2025-03-26 12:36:12] INFO: Scanned backend directory: Llama\app1\backend
+[2025-03-26 12:36:12] INFO: Scanned frontend directory: Llama\app1\frontend
+[2025-03-26 12:36:12] INFO: Found docker-compose.yml at Llama\app1\docker-compose.yml
+[2025-03-26 12:36:16] INFO: Scanned backend directory: Llama\app2\backend
+[2025-03-26 12:36:16] INFO: Scanned frontend directory: Llama\app2\frontend
+[2025-03-26 12:36:16] INFO: Found docker-compose.yml at Llama\app2\docker-compose.yml
+[2025-03-26 12:36:17] INFO: Loaded template: app_2_chat.md (with port placeholders replaced and copied to clipboard)
+[2025-03-26 12:39:06] INFO: Scanned backend directory: Llama\app2\backend
+[2025-03-26 12:39:06] INFO: Scanned frontend directory: Llama\app2\frontend
+[2025-03-26 12:39:06] INFO: Found docker-compose.yml at Llama\app2\docker-compose.yml
+[2025-03-26 12:39:06] INFO: Loaded template: app_2_chat.md (with port placeholders replaced and copied to clipboard)
+[2025-03-26 12:39:12] INFO: Replaced Llama\app2\backend\app.py
+[2025-03-26 12:39:12] INFO: Scanned backend directory: Llama\app2\backend
+[2025-03-26 12:39:12] INFO: Scanned frontend directory: Llama\app2\frontend
+[2025-03-26 12:39:12] INFO: Found docker-compose.yml at Llama\app2\docker-compose.yml
+[2025-03-26 13:11:41] INFO: Web prompts table verified/created
+[2025-03-26 13:11:41] INFO: Connected to database: assistant.db
+[2025-03-26 13:11:41] INFO: Loaded and copied template: app_1_login.md
+[2025-03-26 13:11:53] INFO: Loaded and copied template: app_1_login.md
+[2025-03-26 13:11:57] INFO: Loaded and copied template: app_1_login.md
+[2025-03-26 13:12:00] INFO: Loaded and copied template: app_1_login.md
+[2025-03-26 13:12:04] INFO: Loaded and copied template: app_1_login.md
+[2025-03-26 13:12:05] INFO: Loaded and copied template: app_2_chat.md
+[2025-03-26 13:12:08] INFO: Loaded and copied template: app_3_feedback.md
+[2025-03-26 13:12:10] INFO: Loaded and copied template: app_2_chat.md
+[2025-03-26 13:12:22] INFO: Loaded and copied template: app_2_chat.md
+[2025-03-26 13:12:40] INFO: Loaded and copied template: app_2_chat.md
+[2025-03-26 13:12:45] INFO: Loaded and copied template: app_2_chat.md
+[2025-03-26 13:13:39] INFO: Loaded and copied template: app_2_chat.md
+[2025-03-26 13:13:44] INFO: Loaded and copied template: app_1_login.md
+[2025-03-26 13:13:46] INFO: Loaded and copied template: app_1_login.md
+[2025-03-26 13:13:49] INFO: Loaded and copied template: app_1_login.md
+[2025-03-26 13:13:52] INFO: Loaded and copied template: app_2_chat.md
+[2025-03-26 13:13:55] INFO: Loaded and copied template: app_1_login.md
+[2025-03-26 13:13:58] INFO: Loaded and copied template: app_1_login.md
+[2025-03-26 13:14:06] INFO: Loaded and copied template: app_1_login.md
+[2025-03-26 13:14:23] INFO: Loaded and copied template: app_1_login.md
+[2025-03-26 13:16:45] INFO: Database connection closed
+[2025-03-26 13:16:45] INFO: Application shutting down
+[2025-03-26 13:16:47] INFO: Web prompts table verified/created
+[2025-03-26 13:16:47] INFO: Connected to database: assistant.db
+[2025-03-26 13:16:47] INFO: Loaded and copied template: app_1_login.md
+[2025-03-26 13:16:49] INFO: Looking for template for app: app2
+[2025-03-26 13:16:49] INFO: Looking for template: app_2_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:49] INFO: No matching template found for app2
+[2025-03-26 13:16:50] INFO: Looking for template for app: app3
+[2025-03-26 13:16:50] INFO: Looking for template: app_3_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:50] INFO: No matching template found for app3
+[2025-03-26 13:16:50] INFO: Looking for template for app: app4
+[2025-03-26 13:16:50] INFO: Looking for template: app_4_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:50] INFO: No matching template found for app4
+[2025-03-26 13:16:52] INFO: Looking for template for app: app5
+[2025-03-26 13:16:52] INFO: Looking for template: app_5_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:52] INFO: No matching template found for app5
+[2025-03-26 13:16:52] INFO: Looking for template for app: app6
+[2025-03-26 13:16:52] INFO: Looking for template: app_6_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:52] INFO: No matching template found for app6
+[2025-03-26 13:16:53] INFO: Looking for template for app: app7
+[2025-03-26 13:16:53] INFO: Looking for template: app_7_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:53] INFO: No matching template found for app7
+[2025-03-26 13:16:53] INFO: Looking for template for app: app6
+[2025-03-26 13:16:53] INFO: Looking for template: app_6_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:53] INFO: No matching template found for app6
+[2025-03-26 13:16:53] INFO: Looking for template for app: app5
+[2025-03-26 13:16:53] INFO: Looking for template: app_5_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:53] INFO: No matching template found for app5
+[2025-03-26 13:16:53] INFO: Looking for template for app: app4
+[2025-03-26 13:16:53] INFO: Looking for template: app_4_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:53] INFO: No matching template found for app4
+[2025-03-26 13:16:53] INFO: Looking for template for app: app3
+[2025-03-26 13:16:53] INFO: Looking for template: app_3_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:53] INFO: No matching template found for app3
+[2025-03-26 13:16:54] INFO: Looking for template for app: app2
+[2025-03-26 13:16:54] INFO: Looking for template: app_2_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:54] INFO: No matching template found for app2
+[2025-03-26 13:16:54] INFO: Looking for template for app: app1
+[2025-03-26 13:16:54] INFO: Looking for template: app_1_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:54] INFO: Found matching template: app_1_login.md
+[2025-03-26 13:16:54] INFO: Loaded and copied template: app_1_login.md
+[2025-03-26 13:16:58] INFO: Looking for template for app: app2
+[2025-03-26 13:16:58] INFO: Looking for template: app_2_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:58] INFO: No matching template found for app2
+[2025-03-26 13:16:58] INFO: Looking for template for app: app3
+[2025-03-26 13:16:58] INFO: Looking for template: app_3_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:58] INFO: No matching template found for app3
+[2025-03-26 13:16:58] INFO: Looking for template for app: app4
+[2025-03-26 13:16:58] INFO: Looking for template: app_4_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:58] INFO: No matching template found for app4
+[2025-03-26 13:16:59] INFO: Looking for template for app: app5
+[2025-03-26 13:16:59] INFO: Looking for template: app_5_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:59] INFO: No matching template found for app5
+[2025-03-26 13:16:59] INFO: Looking for template for app: app6
+[2025-03-26 13:16:59] INFO: Looking for template: app_6_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:59] INFO: No matching template found for app6
+[2025-03-26 13:16:59] INFO: Looking for template for app: app7
+[2025-03-26 13:16:59] INFO: Looking for template: app_7_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:16:59] INFO: No matching template found for app7
+[2025-03-26 13:17:02] INFO: Looking for template for app: app8
+[2025-03-26 13:17:02] INFO: Looking for template: app_8_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:17:02] INFO: No matching template found for app8
+[2025-03-26 13:17:30] INFO: Looking for template for app: app9
+[2025-03-26 13:17:30] INFO: Looking for template: app_9_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:17:30] INFO: No matching template found for app9
+[2025-03-26 13:17:30] INFO: Looking for template for app: app10
+[2025-03-26 13:17:30] INFO: Looking for template: app_10_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:17:30] INFO: No matching template found for app10
+[2025-03-26 13:17:30] INFO: Looking for template for app: app11
+[2025-03-26 13:17:30] INFO: Looking for template: app_11_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:17:30] INFO: No matching template found for app11
+[2025-03-26 13:17:30] INFO: Looking for template for app: app12
+[2025-03-26 13:17:30] INFO: Looking for template: app_12_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:17:30] INFO: No matching template found for app12
+[2025-03-26 13:17:31] INFO: Looking for template for app: app13
+[2025-03-26 13:17:31] INFO: Looking for template: app_13_login.md in available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-03-26 13:17:31] INFO: No matching template found for app13

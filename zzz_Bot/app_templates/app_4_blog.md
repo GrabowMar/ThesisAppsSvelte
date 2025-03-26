@@ -1,32 +1,35 @@
 ```markdown
-# Feedback Form Application Template - Flask + react
+# Blog Application Template - Flask + React
 
 ## Important Implementation Notes
 
 1. Generate web app with properly implemented key features mentioned below.
-2. Try to keep all changes within **app.py** , **App.jsx** and **App.css** files.
+2. Try to keep all changes within **app.py**, **App.jsx** and **App.css** files.
 3. Try to write feature complete production ready app, with comments, fails states, etc.
 4. **Note:** Multipage routing is possible within these files. On the backend, you can define multiple routes (e.g., `/login`, `/register`, `/dashboard`, etc.) in **app.py**. On the frontend, client-side routing can be managed within **App.jsx** using conditional rendering or a routing library, all within the single-file constraint.
-5. Mounting Logic: The App.jsx file must include mounting logic. This means it should import ReactDOM from react-dom/client and use it to attach the main App component to the DOM element with the id "root".## Introduction
+5. Mounting Logic: The App.jsx file must include mounting logic. This means it should import ReactDOM from react-dom/client and use it to attach the main App component to the DOM element with the id "root".
 
-This template provides a feedback collection system built with Flask and react. The implementation focuses on form handling and data storage while maintaining clean, maintainable code.
+## Introduction
+
+This template provides a blog system built with Flask and React. The implementation focuses on content management, user authentication, and responsive design while maintaining clean, maintainable code.
 
 ## Project Description
 
-**Feedback System**  
-A feedback collection application built with Flask and react, featuring form submission and response management capabilities.
+**Blog System**  
+A blog application built with Flask and React, featuring content creation, user authentication, and responsive design.
 
 **Required Features:**
 - **Multipage Routing:** Extendable routing on both backend and frontend for additional pages/views
-- SImple and modern UI
+- Simple and modern UI
 
 **Template Specific:**
 
-- Multi-field feedback form
-- Form validation
-- Submission handling
-- Response storage
-- Success notifications
+- User authentication (login/register)
+- Blog post creation and editing
+- Comment system
+- Post categorization
+- Responsive design
+- Markdown support for blog content
 
 ## Implementation Structure
 
@@ -41,7 +44,7 @@ app/
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── App.jsx      # ALL frontend logic (with potential multipage routing)
+│   │   ├── App.jsx         # ALL frontend logic (with potential multipage routing)
 │   │   └── App.css         # (optional)
 │   ├── Dockerfile          # (optional)
 │   ├── package.json        # (generated if needed)
@@ -75,20 +78,31 @@ if __name__ == '__main__':
 
 #### Frontend (App.jsx)
 ```react
-<script>
-  // 1. Imports
-  import { onMount } from 'react';
+// 1. Imports
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 
-  // 2. State Management
-  // 3. Lifecycle Functions
-  // 4. Event Handlers
-  // 5. API Calls
-</script>
+// 2. State Management
+// 3. Lifecycle Functions
+// 4. Event Handlers
+// 5. API Calls
+// 6. Components
 
-<!-- UI Components -->
-<main>
-  <!-- Component Structure -->
-</main>
+// 7. Main App Component
+function App() {
+  return (
+    <main>
+      {/* Component Structure */}
+    </main>
+  );
+}
+
+// 8. Mounting Logic
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
 ```
 
 #### Vite (vite.config.js)
@@ -115,11 +129,9 @@ export default defineConfig({
    - Must include all specified backend features.
    - Must list required pip dependencies in form of requirements.txt.
 
-
 3. **Frontend Generation Prompt**
    - Must include all specified frontend features.
    - Must list required npm dependencies in form of package.json (and vite.config.js if necessary)
-
 
 **Very important:** Your app should be feature rich and production ready.
 ```

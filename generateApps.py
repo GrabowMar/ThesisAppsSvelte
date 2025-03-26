@@ -212,6 +212,7 @@ def new_frontend_setup(frontend_dir: str, port: int, deno_base_image: str, backe
     with open("z_code_templates/frontend/vite.config.js.template", "r") as t:
         vite_config = t.read()
     vite_config = vite_config.replace("{port}", str(port))
+    vite_config = vite_config.replace("{port_b}", str(port-500))
     with open(os.path.join(frontend_dir, "vite.config.js"), "w") as f:
         f.write(vite_config)
 
