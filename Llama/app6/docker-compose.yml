@@ -5,8 +5,6 @@ services:
         container_name: llama_backend_5011
         ports:
             - "5011:5011"
-        volumes:
-            - ./backend/src:/app/src
         restart: always
         environment:
             - PYTHONUNBUFFERED=1 
@@ -16,10 +14,6 @@ services:
         container_name: llama_frontend_5511
         ports:
             - "5511:5511"
-        volumes:
-            - ./frontend/src:/app/src 
-            - ./frontend/vite.config.js:/app/vite.config.js
-            - ./frontend/index.html:/app/index.html
         environment:
             - PORT=5511
         restart: always

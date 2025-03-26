@@ -5,8 +5,6 @@ services:
         container_name: gemini_backend_5445
         ports:
             - "5445:5445"
-        volumes:
-            - ./backend/src:/app/src
         restart: always
         environment:
             - PYTHONUNBUFFERED=1 
@@ -16,10 +14,6 @@ services:
         container_name: gemini_frontend_5945
         ports:
             - "5945:5945"
-        volumes:
-            - ./frontend/src:/app/src 
-            - ./frontend/vite.config.js:/app/vite.config.js
-            - ./frontend/index.html:/app/index.html
         environment:
             - PORT=5945
         restart: always

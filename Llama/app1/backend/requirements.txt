@@ -1,6 +1,5 @@
-flask
-flask_cors
-flask_socketio
-
-Frontend Generation Prompt
-Here
+Flask
+Flask-CORS
+Flask-SQLAlchemy
+Werkzeug
+PyJWT

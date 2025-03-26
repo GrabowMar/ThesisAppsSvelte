@@ -5,8 +5,6 @@ services:
         container_name: mistral_backend_5087
         ports:
             - "5087:5087"
-        volumes:
-            - ./backend/src:/app/src
         restart: always
         environment:
             - PYTHONUNBUFFERED=1 
@@ -16,10 +14,6 @@ services:
         container_name: mistral_frontend_5587
         ports:
             - "5587:5587"
-        volumes:
-            - ./frontend/src:/app/src 
-            - ./frontend/vite.config.js:/app/vite.config.js
-            - ./frontend/index.html:/app/index.html
         environment:
             - PORT=5587
         restart: always

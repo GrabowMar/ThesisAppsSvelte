@@ -5,8 +5,6 @@ services:
         container_name: grok_backend_5485
         ports:
             - "5485:5485"
-        volumes:
-            - ./backend/src:/app/src
         restart: always
         environment:
             - PYTHONUNBUFFERED=1 
@@ -16,10 +14,6 @@ services:
         container_name: grok_frontend_5985
         ports:
             - "5985:5985"
-        volumes:
-            - ./frontend/src:/app/src 
-            - ./frontend/vite.config.js:/app/vite.config.js
-            - ./frontend/index.html:/app/index.html
         environment:
             - PORT=5985
         restart: always

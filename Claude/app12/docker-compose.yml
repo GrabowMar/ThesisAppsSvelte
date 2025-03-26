@@ -5,8 +5,6 @@ services:
         container_name: claude_backend_5343
         ports:
             - "5343:5343"
-        volumes:
-            - ./backend/src:/app/src
         restart: always
         environment:
             - PYTHONUNBUFFERED=1 
@@ -16,10 +14,6 @@ services:
         container_name: claude_frontend_5843
         ports:
             - "5843:5843"
-        volumes:
-            - ./frontend/src:/app/src 
-            - ./frontend/vite.config.js:/app/vite.config.js
-            - ./frontend/index.html:/app/index.html
         environment:
             - PORT=5843
         restart: always

@@ -81,3 +81,35 @@ Stacktrace:
 [2025-03-26 00:18:12] INFO: Replaced port placeholders in pasted prompt
 [2025-03-26 00:43:43] INFO: Database connection closed
 [2025-03-26 00:43:43] INFO: Application shutting down
+[2025-03-26 09:04:35] INFO: Web prompts table verified/created
+[2025-03-26 09:04:35] INFO: Connected to database: assistant.db
+[2025-03-26 09:04:35] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 09:04:35] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 09:04:37] INFO: Copied port info: (frontend 5501 and backend 5001)
+[2025-03-26 09:29:58] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 09:30:18] INFO: Replaced Llama\app1\backend\app.py
+[2025-03-26 09:30:26] INFO: Replaced Llama\app1\backend\requirements.txt
+[2025-03-26 09:30:31] INFO: Replaced Llama\app1\frontend\src\App.jsx
+[2025-03-26 09:30:37] INFO: Replaced Llama\app1\frontend\src\App.css
+[2025-03-26 09:30:43] INFO: Replaced Llama\app1\frontend\vite.config.js
+[2025-03-26 10:22:42] INFO: Web prompts table verified/created
+[2025-03-26 10:22:42] INFO: Connected to database: assistant.db
+[2025-03-26 10:22:42] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 10:22:42] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 10:22:53] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 10:22:54] INFO: Template with actual port numbers copied to clipboard.
+[2025-03-26 10:23:21] INFO: Replaced Llama\app1\backend\app.py
+[2025-03-26 10:23:27] INFO: Replaced Llama\app1\frontend\src\App.jsx
+[2025-03-26 10:23:35] INFO: Replaced Llama\app1\backend\requirements.txt
+[2025-03-26 10:23:42] INFO: Replaced Llama\app1\frontend\package.json
+[2025-03-26 10:23:47] INFO: Replaced Llama\app1\frontend\vite.config.js
+[2025-03-26 10:27:48] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 10:27:49] INFO: Template with actual port numbers copied to clipboard.
+[2025-03-26 10:28:23] INFO: Loaded template: app_1_login.md (with port placeholders replaced)
+[2025-03-26 10:28:25] INFO: Template with actual port numbers copied to clipboard.
+[2025-03-26 10:29:05] INFO: Replaced Llama\app1\backend\app.py
+[2025-03-26 10:29:10] INFO: Replaced Llama\app1\backend\requirements.txt
+[2025-03-26 10:29:15] INFO: Replaced Llama\app1\frontend\src\App.jsx
+[2025-03-26 10:29:19] INFO: Replaced Llama\app1\frontend\src\App.css
+[2025-03-26 10:29:23] INFO: Replaced Llama\app1\frontend\package.json
+[2025-03-26 10:29:27] INFO: Replaced Llama\app1\frontend\vite.config.js

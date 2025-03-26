@@ -1,127 +1,61 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom/client';
-import './App.css';
-import { io } from 'socket.io-client';
-
-const socket = io('http://localhost:5003');
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function App() {
   const [username, setUsername] = useState('');
-  const [message, setMessage] = useState('');
-  const [room, setRoom] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [password, setPassword] = useState('');
+  const [token, setToken] = useState('');
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    socket.on('receive_message', (data) => {
-      setMessages((prevMessages) => [...prevMessages, data]);
-    });
+  const handleRegister = async (e) => {
+    e.preventDefault();
 
-    socket.on('connect', () => {
-      console.log('Connected to the server');
-    });
-
-    socket.on('disconnect', () => {
-      console.log('Disconnected from the server');
-    });
-  }, []);
-
-  const handleSendMessage = () => {
-    socket.emit('send_message', { username, message, room });
-    setMessage('');
+    try {
+      const response = await axios.post('http://localhost:5501/register', {
+        username,
+        password
+      });
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleGetMessages = () => {
-    fetch('http://localhost:5003/get_messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ room }),
-    })
-      .then((response) => response.json())
-      .then((data) => setMessages(data.messages));
-  };
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-  const handleGetOnlineUsers = () => {
-    fetch('http://localhost:5003/get_online_users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ room }),
-    })
-      .then((response) => response.json())
-      .then((data) => setOnlineUsers(data.online_users));
-  };
-
-  const handleRegister = () => {
-    fetch('http://localhost:5003/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username }),
-    })
-      .then((response) => response.json())
-      .then((data) => console.log(data));
-  };
-
-  const handleLogin = () => {
-    fetch('http://localhost:5003/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username }),
-    })
-      .then((response) => response.json())
-      .then((data) => console.log(data));
-  };
-
-  const handleLogout = () => {
-    fetch('http://localhost:5003/logout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username }),
-    })
-      .then((response) => response.json())
-      .then((data) => console.log(data));
+    try {
+      const response = await axios.post('http://localhost:5501/login', {
+        username,
+        password
+      });
+      setToken(response.data.token);
+      navigate('/dashboard');
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
-    <div className="app">
-      <h1>Chat Application</h1>
-      <input
-        type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="Username"
-      />
-      <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Message"
-      />
-      <input
-        type="text"
-        value={room}
-        onChange={(e) => setRoom(e.target.value)}
-        placeholder="Room"
-      />
-      <button onClick={handleSendMessage}>Send Message</button>
-      <button onClick={handleGetMessages}>Get Messages</button>
-      <button onClick={handleGetOnlineUsers}>Get Online Users</button>
-      <button onClick={handleRegister}>Register</button>
-      <button onClick={handleLogin}>Login</button>
-      <button onClick={handleLogout}>Logout</button>
-      <h2>Messages:</h2>
-      <ul>
-        {messages.map((message, index) => (
-          <li key={index}>{message.username}: {message.message}</li>
-        ))}
-      </ul>
-      <h2>Online Users:</h2>
-      <ul>
-        {onlineUsers.map((user, index) => (
-          <li key={index}>{user}</li>
-        ))}
-      </ul>
+    <div>
+      <form onSubmit={handleRegister}>
+        <label>Username:</label>
+        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <label>Password:</label>
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <button type="submit">Register</button>
+      </form>
+      <form onSubmit={handleLogin}>
+        <label>Username:</label>
+        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <label>Password:</label>
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <button type="submit">Login</button>
+      </form>
+      <Link to="/dashboard">Dashboard</Link>
     </div>
   );
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root')
+export default App;

@@ -5,8 +5,6 @@ services:
         container_name: r1_backend_5609
         ports:
             - "5609:5609"
-        volumes:
-            - ./backend/src:/app/src
         restart: always
         environment:
             - PYTHONUNBUFFERED=1 
@@ -16,10 +14,6 @@ services:
         container_name: r1_frontend_6109
         ports:
             - "6109:6109"
-        volumes:
-            - ./frontend/src:/app/src 
-            - ./frontend/vite.config.js:/app/vite.config.js
-            - ./frontend/index.html:/app/index.html
         environment:
             - PORT=6109
         restart: always

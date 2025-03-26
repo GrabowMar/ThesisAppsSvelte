@@ -5,8 +5,6 @@ services:
         container_name: {model_prefix}_backend_{backend_port}
         ports:
             - "{backend_port}:{backend_port}"
-        volumes:
-            - ./backend/src:/app/src
         restart: always
         environment:
             - PYTHONUNBUFFERED=1 
@@ -16,10 +14,6 @@ services:
         container_name: {model_prefix}_frontend_{frontend_port}
         ports:
             - "{frontend_port}:{frontend_port}"
-        volumes:
-            - ./frontend/src:/app/src 
-            - ./frontend/vite.config.js:/app/vite.config.js
-            - ./frontend/index.html:/app/index.html
         environment:
             - PORT={frontend_port}
         restart: always

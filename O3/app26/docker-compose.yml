@@ -5,8 +5,6 @@ services:
         container_name: o3_backend_5691
         ports:
             - "5691:5691"
-        volumes:
-            - ./backend/src:/app/src
         restart: always
         environment:
             - PYTHONUNBUFFERED=1 
@@ -16,10 +14,6 @@ services:
         container_name: o3_frontend_6191
         ports:
             - "6191:6191"
-        volumes:
-            - ./frontend/src:/app/src 
-            - ./frontend/vite.config.js:/app/vite.config.js
-            - ./frontend/index.html:/app/index.html
         environment:
             - PORT=6191
         restart: always

@@ -50,9 +50,63 @@ app/
 └── docker-compose.yml      # (optional)
 ```
 
-## Response Protocol
+### Core Files Structure
 
-### Protocol Steps
+#### Backend (app.py)
+```python
+# 1. Imports Section
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+import os
+
+# 2. App Configuration
+app = Flask(__name__)
+CORS(app)
+
+# 3. Database Models (if needed)
+# 4. Authentication Logic (if needed)
+# 5. Utility Functions
+# 6. API Routes
+# 7. Error Handlers
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
+```
+
+#### Frontend (App.jsx)
+```react
+<script>
+  // 1. Imports
+  import { onMount } from 'react';
+
+  // 2. State Management
+  // 3. Lifecycle Functions
+  // 4. Event Handlers
+  // 5. API Calls
+</script>
+
+<!-- UI Components -->
+<main>
+  <!-- Component Structure -->
+</main>
+```
+
+#### Vite (vite.config.js)
+```js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    host: true,
+    port: YYYY,
+    strictPort: true
+  }
+})
+```
+
+## Response requirements
 
 1. **Port Configuration Prompt**
    - Use `XXXX` (backend) and `YYYY` (frontend) ports.

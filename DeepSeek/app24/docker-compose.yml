@@ -5,8 +5,6 @@ services:
         container_name: deepseek_backend_5207
         ports:
             - "5207:5207"
-        volumes:
-            - ./backend/src:/app/src
         restart: always
         environment:
             - PYTHONUNBUFFERED=1 
@@ -16,10 +14,6 @@ services:
         container_name: deepseek_frontend_5707
         ports:
             - "5707:5707"
-        volumes:
-            - ./frontend/src:/app/src 
-            - ./frontend/vite.config.js:/app/vite.config.js
-            - ./frontend/index.html:/app/index.html
         environment:
             - PORT=5707
         restart: always

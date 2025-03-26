@@ -5,8 +5,6 @@ services:
         container_name: gpt4o_backend_5245
         ports:
             - "5245:5245"
-        volumes:
-            - ./backend/src:/app/src
         restart: always
         environment:
             - PYTHONUNBUFFERED=1 
@@ -16,10 +14,6 @@ services:
         container_name: gpt4o_frontend_5745
         ports:
             - "5745:5745"
-        volumes:
-            - ./frontend/src:/app/src 
-            - ./frontend/vite.config.js:/app/vite.config.js
-            - ./frontend/index.html:/app/index.html
         environment:
             - PORT=5745
         restart: always
