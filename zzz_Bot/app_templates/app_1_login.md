@@ -73,7 +73,7 @@ CORS(app)
 # 7. Error Handlers
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'XXXX')))
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 'YYYY')))
 ```
 
 #### Frontend (App.jsx)
@@ -103,11 +103,20 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
-    port: YYYY,
-    strictPort: true
+    port: XXXX,
+    strictPort: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:port: YYYY',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
   }
-})
+});
 ```
+
+
 
 ## Response requirements
 
