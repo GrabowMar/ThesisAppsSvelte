@@ -1,7 +1,7 @@
 {
-  "name": "react-claude-app",
+  "name": "inventory-management-frontend",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,6 +14,6 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.0.0",
-    "vite": "^5.0.8"
+    "vite": "^4.3.9"
   }
 }

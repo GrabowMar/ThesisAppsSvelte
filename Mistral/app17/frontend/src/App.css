@@ -1,0 +1,18 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+nav {
+  background: #333;
+  padding: 1em;
+}
+
+nav a {
+  color: white;
+  margin: 0 1em;
+  text-decoration: none;
+}
+
+h2 {
+  margin-top: 2em;
+}

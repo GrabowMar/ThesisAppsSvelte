@@ -1,0 +1,48 @@
+.App {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+header {
+  text-align: center;
+}
+
+.filters {
+  margin-bottom: 20px;
+}
+
+.filters input,
+.filters select {
+  margin-right: 10px;
+  padding: 5px 10px;
+}
+
+.threads {
+  margin-top: 20px;
+}
+
+.thread {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.new-thread {
+  margin-top: 40px;
+}
+
+.new-thread input,
+.new-thread textarea,
+.new-thread select {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.new-thread button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}

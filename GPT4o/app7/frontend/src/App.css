@@ -1,0 +1,20 @@
+.app-container {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.upload-label {
+  margin-right: 10px;
+}
+
+button {
+  margin-left: 10px;
+}
+
+.preview-box {
+  background: #f4f4f4;
+  padding: 15px;
+  margin-top: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}

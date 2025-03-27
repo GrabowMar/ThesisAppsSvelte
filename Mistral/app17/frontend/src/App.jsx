@@ -1,37 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
+import axios from 'axios';
+import './App.css';
 
-const App = () => {
-  const [message, setMessage] = useState('Loading...');
+const ExerciseList = () => {
+  const [exercises, setExercises] = useState([]);
 
   useEffect(() => {
-    // Fetch the message from the backend server running on port 5113
-    fetch('http://localhost:5113')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setMessage(data.message || 'No message received');
-      })
-      .catch((error) => {
-        setMessage(`Error fetching message: ${error.message}`);
-      });
+    axios.get('/api/exercises').then(response => setExercises(response.data));
   }, []);
 
   return (
-    <main>
-      <h1>{message}</h1>
-    </main>
+    <div>
+      <h2>Exercises</h2>
+      <ul>
+        {exercises.map(exercise => (
+          <li key={exercise.id}>{exercise.name}</li>
+        ))}
+      </ul>
+    </div>
   );
 };
 
-const container = document.getElementById('root');
-if (container) {
-  const root = ReactDOM.createRoot(container);
-  root.render(<App />);
-}
+const LogWorkout = () => {
+  const [exerciseId, setExerciseId] = useState('');
+  const [duration, setDuration] = useState('');
+  const [date, setDate] = useState('');
 
-export default App;
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios.post('/api/logs', { exercise_id: exerciseId, duration, date }).then(() => {
+      alert('Log added successfully');
+    });
+  };
+
+  return (
+    <div>
+      <h2>Log Workout</h2>
+      <form onSubmit={handleSubmit}>
+        <input type="number" placeholder="Exercise ID" value={exerciseId} onChange={e => setExerciseId(e.target.value)} required />
+        <input type="number" placeholder="Duration (minutes)" value={duration} onChange={e => setDuration(e.target.value)} required />
+        <input type="date" value={date} onChange={e => setDate(e.target.value)} required />
+        <button type="submit">Log Workout</button>
+      </form>
+    </div>
+  );
+};
+
+const App = () => {
+  return (
+    <Router>
+      <nav>
+        <Link to="/">Exercises</Link>
+        <Link to="/log">Log Workout</Link>
+      </nav>
+      <Switch>
+        <Route path="/log" component={LogWorkout} />
+        <Route path="/" component={ExerciseList} />
+      </Switch>
+    </Router>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);

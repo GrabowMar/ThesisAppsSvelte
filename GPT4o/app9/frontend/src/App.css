@@ -1,0 +1,28 @@
+.App {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+form input, form button {
+  margin: 5px;
+}
+
+.error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+table, th, td {
+  border: 1px solid black;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+}

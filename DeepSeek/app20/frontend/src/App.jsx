@@ -1,37 +1,86 @@
-import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom/client';
+import { useState, useEffect } from "react";
+import ReactDOM from "react-dom/client";
+import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import "./App.css";
 
 const App = () => {
-  const [message, setMessage] = useState('Loading...');
+    const [locations, setLocations] = useState([]);
+    const [searchResults, setSearchResults] = useState([]);
+    const [center, setCenter] = useState([51.505, -0.09]); // Default center (London)
 
-  useEffect(() => {
-    // Fetch the message from the backend server running on port 5199
-    fetch('http://localhost:5199')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setMessage(data.message || 'No message received');
-      })
-      .catch((error) => {
-        setMessage(`Error fetching message: ${error.message}`);
-      });
-  }, []);
+    // Fetch shared locations from the backend
+    useEffect(() => {
+        fetch("/api/locations")
+            .then((response) => response.json())
+            .then((data) => setLocations(data))
+            .catch((error) => console.error("Error fetching locations:", error));
+    }, []);
 
-  return (
-    <main>
-      <h1>{message}</h1>
-    </main>
-  );
+    // Handle location search
+    const handleSearch = (query) => {
+        fetch(`/api/search?q=${query}`)
+            .then((response) => response.json())
+            .then((data) => setSearchResults(data))
+            .catch((error) => console.error("Error searching location:", error));
+    };
+
+    // Handle sharing a location
+    const handleShareLocation = (lat, lng) => {
+        fetch("/api/share", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ lat, lng }),
+        })
+            .then((response) => response.json())
+            .then((data) => setLocations([...locations, data.location]))
+            .catch((error) => console.error("Error sharing location:", error));
+    };
+
+    return (
+        <main className="app">
+            <h1>Map Sharing System</h1>
+            <div className="controls">
+                <input
+                    type="text"
+                    placeholder="Search location..."
+                    onChange={(e) => handleSearch(e.target.value)}
+                />
+                <button
+                    onClick={() => handleShareLocation(center[0], center[1])}
+                >
+                    Share Current Location
+                </button>
+            </div>
+            <MapContainer center={center} zoom={13} style={{ height: "500px", width: "100%" }}>
+                <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                />
+                {locations.map((loc, index) => (
+                    <Marker key={index} position={[loc.lat, loc.lng]}>
+                        <Popup>Shared Location {index + 1}</Popup>
+                    </Marker>
+                ))}
+                {searchResults.length > 0 && (
+                    <>
+                        <Marker position={[searchResults[0].lat, searchResults[0].lon]}>
+                            <Popup>Search Result</Popup>
+                        </Marker>
+                        <Polyline
+                            positions={[
+                                [center[0], center[1]],
+                                [searchResults[0].lat, searchResults[0].lon],
+                            ]}
+                        />
+                    </>
+                )}
+            </MapContainer>
+        </main>
+    );
 };
 
-const container = document.getElementById('root');
-if (container) {
-  const root = ReactDOM.createRoot(container);
-  root.render(<App />);
-}
-
-export default App;
+// Mount the app
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);

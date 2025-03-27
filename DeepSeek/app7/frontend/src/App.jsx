@@ -1,37 +1,68 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
+import './App.css';
 
 const App = () => {
-  const [message, setMessage] = useState('Loading...');
+  const [files, setFiles] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [error, setError] = useState('');
 
+  // Fetch list of uploaded files
   useEffect(() => {
-    // Fetch the message from the backend server running on port 5173
-    fetch('http://localhost:5173')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setMessage(data.message || 'No message received');
-      })
-      .catch((error) => {
-        setMessage(`Error fetching message: ${error.message}`);
-      });
+    fetch('/api/files')
+      .then((response) => response.json())
+      .then((data) => setFiles(data))
+      .catch((err) => setError('Failed to fetch files'));
   }, []);
+
+  // Handle file upload
+  const handleUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setFiles((prevFiles) => [...prevFiles, data.filename]);
+        setError('');
+      })
+      .catch((err) => setError('Upload failed'));
+  };
+
+  // Handle file download
+  const handleDownload = (filename) => {
+    window.open(`/api/download/${filename}`, '_blank');
+  };
+
+  // Handle file preview
+  const handlePreview = (filename) => {
+    window.open(`/api/preview/${filename}`, '_blank');
+  };
 
   return (
     <main>
-      <h1>{message}</h1>
+      <h1>File Uploader</h1>
+      <div>
+        <input type="file" onChange={handleUpload} />
+      </div>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <h2>Uploaded Files</h2>
+      <ul>
+        {files.map((file, index) => (
+          <li key={index}>
+            {file}{' '}
+            <button onClick={() => handleDownload(file)}>Download</button>{' '}
+            <button onClick={() => handlePreview(file)}>Preview</button>
+          </li>
+        ))}
+      </ul>
     </main>
   );
 };
 
-const container = document.getElementById('root');
-if (container) {
-  const root = ReactDOM.createRoot(container);
-  root.render(<App />);
-}
-
-export default App;
+// Mounting Logic
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);

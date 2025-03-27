@@ -1,37 +1,63 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
+import './App.css';
 
 const App = () => {
-  const [message, setMessage] = useState('Loading...');
+  const [images, setImages] = useState([]);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  const [selectedImage, setSelectedImage] = useState(null);
 
+  // Fetch images from backend
   useEffect(() => {
-    // Fetch the message from the backend server running on port 5185
-    fetch('http://localhost:5185')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setMessage(data.message || 'No message received');
-      })
-      .catch((error) => {
-        setMessage(`Error fetching message: ${error.message}`);
-      });
+    fetch('/api/images')
+      .then(response => response.json())
+      .then(data => setImages(data))
+      .catch(error => console.error('Error fetching images:', error));
   }, []);
+
+  // Handle file upload
+  const handleUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+        .then(response => response.json())
+        .then(() => window.location.reload())
+        .catch(error => console.error('Error uploading file:', error));
+    }
+  };
 
   return (
     <main>
-      <h1>{message}</h1>
+      <h1>Gallery Application</h1>
+      <div className="controls">
+        <label>
+          Upload Image:
+          <input type="file" accept="image/*" onChange={handleUpload} />
+        </label>
+        <button onClick={() => setViewMode('grid')}>Grid View</button>
+        <button onClick={() => setViewMode('list')}>List View</button>
+      </div>
+      {selectedImage && (
+        <div className="modal">
+          <img src={`/uploads/${selectedImage}`} alt={selectedImage} />
+          <button onClick={() => setSelectedImage(null)}>Close</button>
+        </div>
+      )}
+      <div className={viewMode === 'grid' ? 'grid-view' : 'list-view'}>
+        {images.map((image, index) => (
+          <div key={index} className="image-item" onClick={() => setSelectedImage(image)}>
+            <img src={`/uploads/${image}`} alt={image} />
+            <p>{image}</p>
+          </div>
+        ))}
+      </div>
     </main>
   );
 };
 
-const container = document.getElementById('root');
-if (container) {
-  const root = ReactDOM.createRoot(container);
-  root.render(<App />);
-}
-
-export default App;
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);

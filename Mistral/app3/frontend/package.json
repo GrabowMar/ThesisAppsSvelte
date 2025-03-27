@@ -1,19 +1,20 @@
 {
-  "name": "react-mistral-app",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "feedback-form",
+  "version": "1.0.0",
+  "description": "A feedback collection application built with Flask and React.",
+  "main": "index.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "serve": "vite preview"
   },
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "vite": "^4.0.0",
+    "@vitejs/plugin-react": "^3.0.0"
   },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^4.0.0",
-    "vite": "^5.0.8"
-  }
+  "devDependencies": {},
+  "author": "",
+  "license": "ISC"
 }

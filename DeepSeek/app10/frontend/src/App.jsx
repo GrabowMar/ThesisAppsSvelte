@@ -1,37 +1,54 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
+import './App.css';
 
-const App = () => {
-  const [message, setMessage] = useState('Loading...');
+function App() {
+  const [posts, setPosts] = useState([]);
+  const [newPost, setNewPost] = useState({ title: '', content: '' });
 
   useEffect(() => {
-    // Fetch the message from the backend server running on port 5179
-    fetch('http://localhost:5179')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setMessage(data.message || 'No message received');
-      })
-      .catch((error) => {
-        setMessage(`Error fetching message: ${error.message}`);
-      });
+    fetch('/api/posts')
+      .then(response => response.json())
+      .then(data => setPosts(data));
   }, []);
+
+  const handleCreatePost = () => {
+    fetch('/api/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newPost)
+    })
+      .then(response => response.json())
+      .then(data => setPosts([...posts, data]));
+  };
 
   return (
     <main>
-      <h1>{message}</h1>
+      <h1>Microblog</h1>
+      <div>
+        <input
+          type="text"
+          placeholder="Title"
+          value={newPost.title}
+          onChange={e => setNewPost({ ...newPost, title: e.target.value })}
+        />
+        <textarea
+          placeholder="Content"
+          value={newPost.content}
+          onChange={e => setNewPost({ ...newPost, content: e.target.value })}
+        />
+        <button onClick={handleCreatePost}>Create Post</button>
+      </div>
+      <div>
+        {posts.map(post => (
+          <div key={post.id}>
+            <h2>{post.title}</h2>
+            <p>{post.content}</p>
+          </div>
+        ))}
+      </div>
     </main>
   );
-};
-
-const container = document.getElementById('root');
-if (container) {
-  const root = ReactDOM.createRoot(container);
-  root.render(<App />);
 }
 
-export default App;
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);

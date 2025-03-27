@@ -1,0 +1,26 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  color: #333;
+}
+
+.slots ul {
+  list-style: none;
+  padding: 0;
+}
+
+.slots ul li {
+  margin-bottom: 10px;
+}
+
+.confirmation {
+  color: green;
+  margin-top: 20px;
+}
+
+nav button {
+  margin-right: 10px;
+  padding: 5px 10px;
+}
