@@ -327,6 +327,7 @@ class ZAPScanner:
         finally:
             self._cleanup_existing_zap()
 
+
     def start_scan(self, model: str, app_num: int, scan_options: Dict) -> bool:
         """
         Start a scan for the specified model and app number using provided scan options.
@@ -339,10 +340,26 @@ class ZAPScanner:
             "start_time": datetime.now().isoformat()
         }
         try:
-            frontend_port = 5501 + ((app_num - 1) * 2)
+            # Use proper port calculation based on both model and app_num
+            # This matches the logic in PortManager.get_app_ports
+            model_idx = get_model_index(model)  # Helper function to get model index
+            
+            # Calculate frontend port using PortManager logic
+            BASE_FRONTEND_PORT = 5501
+            PORTS_PER_APP = 2
+            BUFFER_PORTS = 20
+            APPS_PER_MODEL = 30
+            total_needed = APPS_PER_MODEL * PORTS_PER_APP + BUFFER_PORTS
+            
+            frontend_port_start = BASE_FRONTEND_PORT + (model_idx * total_needed)
+            frontend_port = frontend_port_start + ((app_num - 1) * PORTS_PER_APP)
+            
             target_url = f"http://localhost:{frontend_port}"
+            logger.info(f"Starting scan of target: {target_url}")
+            
             scan_status.status = "Starting"
             vulnerabilities, summary = self.scan_target(target_url, scan_options.get("scanPolicy"))
+      
 
             # Save scan results to file
             results_path = self.base_path / f"{model}/app{app_num}/.zap_results.json"
@@ -367,6 +384,22 @@ class ZAPScanner:
             logger.error(error_msg)
             scan_status.status = f"Failed: {error_msg}"
             return False
+        
+def get_model_index(model_name: str) -> int:
+        """
+        Get the index of a model in the AI_MODELS list.
+        
+        Args:
+            model_name: Name of the model
+        
+        Returns:
+            Index of the model (0-based) or 0 if not found
+        """
+        AI_MODELS = [
+            "Llama", "Mistral", "DeepSeek", "GPT4o", "Claude", 
+            "Gemini", "Grok", "R1", "O3"
+        ]
+        return next((i for i, m in enumerate(AI_MODELS) if m == model_name), 0)
 
 def create_scanner(base_path: Path) -> ZAPScanner:
     """

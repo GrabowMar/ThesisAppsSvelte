@@ -1012,8 +1012,21 @@ def start_zap_scan(model: str, app_num: int):
         try:
             scanner = create_scanner(base_dir)
             scan_manager.update_scan(scan_id, scanner=scanner)
-            frontend_port = 5501 + ((app_num - 1) * 2)
+            
+            # Fixed port calculation using PortManager-style logic
+            model_idx = get_model_index(model)
+            BASE_FRONTEND_PORT = 5501
+            PORTS_PER_APP = 2
+            BUFFER_PORTS = 20
+            APPS_PER_MODEL = 30
+            total_needed = APPS_PER_MODEL * PORTS_PER_APP + BUFFER_PORTS
+            
+            frontend_port_start = BASE_FRONTEND_PORT + (model_idx * total_needed)
+            frontend_port = frontend_port_start + ((app_num - 1) * PORTS_PER_APP)
+            
             target_url = f"http://localhost:{frontend_port}"
+            logger.info(f"Starting scan of target: {target_url}")
+            
             vulnerabilities, summary = scanner.scan_target(target_url, scan_policy=data.get("scanPolicy"))
             results_file = base_dir / f"{model}/app{app_num}/.zap_results.json"
             results_file.parent.mkdir(parents=True, exist_ok=True)
@@ -1033,7 +1046,28 @@ def start_zap_scan(model: str, app_num: int):
     threading.Thread(target=run_scan, daemon=True).start()
     return jsonify({"status": "started", "scan_id": scan_id})
 
-
+def get_model_index(model_name: str) -> int:
+    """
+    Get the index of a model in the AI_MODELS list.
+    
+    Args:
+        model_name: Name of the model
+    
+    Returns:
+        Index of the model (0-based) or 0 if not found
+    """
+    # Use the existing AI_MODELS list from app.py if available
+    # Otherwise define it here
+    try:
+        return next((i for i, m in enumerate(AI_MODELS) if m.name == model_name), 0)
+    except NameError:
+        # Fallback if AI_MODELS is not available in this scope
+        model_list = [
+            "Llama", "Mistral", "DeepSeek", "GPT4o", "Claude", 
+            "Gemini", "Grok", "R1", "O3"
+        ]
+        return next((i for i, m in enumerate(model_list) if m == model_name), 0)
+    
 @zap_bp.route("/scan/<string:model>/<int:app_num>/status")
 @error_handler
 def zap_scan_status(model: str, app_num: int):

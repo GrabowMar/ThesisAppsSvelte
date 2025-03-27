@@ -1,10 +1,17 @@
 {
   "alerts": [],
   "summary": {
-    "start_time": "2025-03-27T14:48:17.302945",
-    "target_url": "http://localhost:5505",
-    "status": "failed",
-    "error": "Active scan did not start properly; scan id: url_not_found"
+    "start_time": "2025-03-27T15:27:21.543399",
+    "target_url": "http://localhost:5745",
+    "status": "success",
+    "end_time": "2025-03-27T15:27:46.359711",
+    "total_alerts": 0,
+    "risk_counts": {
+      "High": 0,
+      "Medium": 0,
+      "Low": 0,
+      "Info": 0
+    }
   },
-  "scan_time": "2025-03-27T14:48:39.767526"
+  "scan_time": "2025-03-27T15:27:49.121230"
 }

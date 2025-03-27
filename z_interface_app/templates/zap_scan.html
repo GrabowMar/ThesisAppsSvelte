@@ -276,12 +276,51 @@ document.addEventListener('DOMContentLoaded', function() {
   let filterTimeout = null;
 
   /**
-   * Update target URL display based on app number
+   * Calculate the frontend port based on model and app number
+   * This function replicates the logic from PortManager in app.py
+   */
+  function calculatePort(model, appNum) {
+    // Constants matching those in app.py PortManager
+    const BASE_FRONTEND_PORT = 5501;
+    const PORTS_PER_APP = 2;
+    const BUFFER_PORTS = 20;
+    const APPS_PER_MODEL = 30;
+    const TOTAL_PORTS_PER_MODEL = APPS_PER_MODEL * PORTS_PER_APP + BUFFER_PORTS;
+    
+    // AI_MODELS array from app.py for model indexing
+    const AI_MODELS = [
+      "Llama", "Mistral", "DeepSeek", "GPT4o", "Claude", 
+      "Gemini", "Grok", "R1", "O3"
+    ];
+    
+    // Get model index (0-based)
+    let modelIdx = AI_MODELS.indexOf(model);
+    if (modelIdx === -1) {
+      console.warn(`Model "${model}" not found in AI_MODELS list. Using default index 0.`);
+      modelIdx = 0;
+    }
+    
+    // Calculate frontend port using the same logic as PortManager.get_app_ports
+    const frontendPortRangeStart = BASE_FRONTEND_PORT + (modelIdx * TOTAL_PORTS_PER_MODEL);
+    const port = frontendPortRangeStart + ((appNum - 1) * PORTS_PER_APP);
+    
+    return port;
+  }
+
+  /**
+   * Update target URL display based on model and app number
    */
   function updateTargetUrl() {
-    const port = 5501 + ((parseInt("{{ app_num }}") - 1) * 2);
+    // Get model and app number from template variables
+    const model = "{{ model }}";
+    const appNum = parseInt("{{ app_num }}");
+    
+    // Calculate the port using the correct logic
+    const port = calculatePort(model, appNum);
+    
     if (elements.targetUrlElem) {
       elements.targetUrlElem.textContent = `http://localhost:${port}`;
+      console.log(`Target URL set to: http://localhost:${port} for ${model} app ${appNum}`);
     }
   }
   
