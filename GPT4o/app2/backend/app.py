@@ -1,149 +1,63 @@
-```markdown
-# Chat Application Template - Flask + react
-
-## Important Implementation Notes
-
-1. Generate web app with properly implemented key features mentioned below.
-2. Try to keep all changes within **app.py** , **App.jsx** and **App.css** files.
-3. Try to write feature complete production ready app, with comments, fails states, etc.
-4. **Note:** Multipage routing is possible within these files. On the backend, you can define multiple routes (e.g., `/login`, `/register`, `/dashboard`, etc.) in **app.py**. On the frontend, client-side routing can be managed within **App.jsx** using conditional rendering or a routing library, all within the single-file constraint.
-5. Mounting Logic: The App.jsx file must include mounting logic. This means it should import ReactDOM from react-dom/client and use it to attach the main App component to the DOM element with the id "root".
-## Introduction
-
-This template provides a chat system built with Flask and react. The implementation focuses on real-time message exchange while maintaining clean, maintainable code.
-
-## Project Description
-
-**Chat System**  
-A messaging application built with Flask and react, featuring real-time communication capabilities and user interaction.
-
-**Required Features:**
-- **Multipage Routing:** Extendable routing on both backend and frontend for additional pages/views
-- SImple and modern UI
-
-**Template Specific:**
-
-- Real-time message exchange
-- User identification
-- Message history
-- Online status
-- Chat rooms
-
-
-## Implementation Structure
-
-### Project Layout
-
-```plaintext
-app/
-├── backend/
-│   ├── app.py              # ALL backend logic
-│   ├── Dockerfile          # (optional)
-│   └── requirements.txt    # (generated if needed)
-│
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx      # ALL frontend logic (with potential multipage routing)
-│   │   └── App.css         # (optional)
-│   ├── Dockerfile          # (optional)
-│   ├── package.json        # (generated if needed)
-│   ├── index.html          # (optional)
-│   └── vite.config.js      # (required for port config)
-│
-└── docker-compose.yml      # (optional)
-```
-### Core Files Structure
-
-#### Backend (app.py)
-```python
-# 1. Imports Section
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_socketio import SocketIO, emit
 import os
 
-# 2. App Configuration
 app = Flask(__name__)
 CORS(app)
 
-# 3. Database Models (if needed)
-# 4. Authentication Logic (if needed)
-# 5. Utility Functions
-# 6. API Routes
-# 7. Error Handlers
+# Socket initialization for real-time communication
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+# Example data store for chat messages and users
+users = []  # List of online users
+chat_rooms = {"public": []}  # One default public chat room
+
+@app.route('/api/users', methods=['GET'])
+def get_users():
+    """Retrieve all online users."""
+    return jsonify({"users": users}), 200
+
+@app.route('/api/chat_rooms', methods=['GET'])
+def get_chat_rooms():
+    """Retrieve chat rooms."""
+    return jsonify({"chat_rooms": list(chat_rooms.keys())}), 200
+
+@app.route('/api/history/<room>', methods=['GET'])
+def get_chat_history(room):
+    """Retrieve chat history for a specific room."""
+    if room not in chat_rooms:
+        return jsonify({"error": "Room not found"}), 404
+    return jsonify({"messages": chat_rooms[room]}), 200
+
+@socketio.on('join')
+def on_join(data):
+    """Handle users joining a chat room."""
+    username = data.get("username")
+    room = data.get("room", "public")
+    if room not in chat_rooms:
+        chat_rooms[room] = []
+    if username not in users:
+        users.append(username)  # Add user to the online list
+    emit('status', {"message": f"{username} joined {room}."}, broadcast=True)
+
+@socketio.on('send_message')
+def on_message(data):
+    """Handle sending messages in a chat room."""
+    message = data.get("message")
+    username = data.get("username")
+    room = data.get("room", "public")
+    if room not in chat_rooms:
+        return {"error": "Room not found"}
+    chat_message = {"username": username, "message": message}
+    chat_rooms[room].append(chat_message)
+    emit('receive_message', chat_message, broadcast=True)
+
+@socketio.on('disconnect')
+def on_disconnect():
+    """Handle when a user disconnects."""
+    # This would require user tracking logic
+    pass
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.getenv('PORT', '5243')))
-```
-
-#### Frontend (App.jsx)
-```react
-<script>
-  // 1. Imports
-  import { onMount } from 'react';
-
-  // 2. State Management
-  // 3. Lifecycle Functions
-  // 4. Event Handlers
-  // 5. API Calls
-</script>
-
-<!-- UI Components -->
-<main>
-  <!-- Component Structure -->
-</main>
-```
-
-#### Vite (vite.config.js)
-```js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    host: true,
-    port: 5743,
-    strictPort: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:port: 5243',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
-  }
-
-```
-#### Main page (index.html)
-```js
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/App.jsx"></script>
-  </body>
-</html>
-```
-
-
-## Response requirements
-
-1. **Port Configuration Prompt**
-   - Use `5743` (backend) and `5243` (frontend) ports.
-
-2. **Backend Generation Prompt**
-   - Must include all specified backend features.
-   - Must list required pip dependencies in form of requirements.txt.
-
-
-3. **Frontend Generation Prompt**
-   - Must include all specified frontend features.
-   - Must list required npm dependencies in form of package.json (and vite.config.js if necessary)
-
-
-**Very important:** Your app should be feature rich and production ready.
-```
+    socketio.run(app, host='0.0.0.0', port=int(os.getenv('PORT', '5243')))

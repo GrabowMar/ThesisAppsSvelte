@@ -1,0 +1,10 @@
+{
+  "alerts": [],
+  "summary": {
+    "start_time": "2025-03-27T14:48:17.302945",
+    "target_url": "http://localhost:5505",
+    "status": "failed",
+    "error": "Active scan did not start properly; scan id: url_not_found"
+  },
+  "scan_time": "2025-03-27T14:48:39.767526"
+}
