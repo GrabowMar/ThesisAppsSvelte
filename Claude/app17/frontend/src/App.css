@@ -1,0 +1,650 @@
+/* Global Styles & Reset */
+:root {
+  --primary-color: #4a90e2;
+  --primary-dark: #3a7bc8;
+  --secondary-color: #5cb85c;
+  --danger-color: #d9534f;
+  --background-color: #f8f9fa;
+  --card-bg: #ffffff;
+  --text-color: #333333;
+  --border-color: #e1e1e1;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  --header-height: 60px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  line-height: 1.6;
+}
+
+/* Layout */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.app-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--background-color);
+}
+
+/* Auth Pages */
+.auth-container {
+  max-width: 450px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-header h1 {
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.tagline {
+  color: #777;
+  font-size: 1rem;
+}
+
+.auth-form h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.auth-switch button {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-size: 1rem;
+  text-decoration: underline;
+}
+
+.auth-switch button:hover {
+  color: var(--primary-dark);
+}
+
+/* Navigation */
+.main-nav {
+  background-color: var(--card-bg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: var(--header-height);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+}
+
+.nav-brand h1 {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+}
+
+.nav-links li {
+  margin-left: 1.5rem;
+}
+
+.nav-links button {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  transition: color 0.3s;
+}
+
+.nav-links button:hover {
+  color: var(--primary-color);
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+}
+
+.user-menu span {
+  margin-right: 1rem;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn.primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn.primary:hover {
+  background-color: var(--primary-dark);
+}
+
+.btn.secondary {
+  background-color: #f0f0f0;
+  color: var(--text-color);
+}
+
+.btn.secondary:hover {
+  background-color: #e3e3e3;
+}
+
+.btn.danger {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.btn.danger:hover {
+  background-color: #c82333;
+}
+
+.btn.logout {
+  background-color: transparent;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.btn.logout:hover {
+  background-color: #f0f0f0;
+}
+
+.btn.back {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: transparent;
+  color: var(--text-color);
+  padding-left: 0;
+}
+
+.btn.back:hover {
+  color: var(--primary-color);
+}
+
+.btn.small {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-container {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+}
+
+.form-container h3 {
+  margin-bottom: 1.5rem;
+}
+
+/* Common Components */
+.error-message {
+  color: var(--danger-color);
+  background-color: rgba(217, 83, 79, 0.1);
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Dashboard */
+.stats-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.stat-card {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.stat-card h3 {
+  font-size: 1rem;
+  color: #777;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.recent-workouts {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.workout-list {
+  list-style: none;
+  margin-top: 1rem;
+}
+
+.workout-item {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.workout-item:last-child {
+  border-bottom: none;
+}
+
+.workout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.workout-date {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+/* Workouts Page */
+.workouts-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.workout-card {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.workout-details {
+  margin: 1rem 0;
+}
+
+.workout-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.workout-actions button {
+  flex: 1;
+}
+
+/* Workout Details Page */
+.workout-details-container {
+  background-color: var(--card-bg);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.workout-notes {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  margin: 1.5rem 0;
+}
+
+.entries-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.entry-card {
+  background-color: #f8f9fa;
+  padding: 1.25rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  position: relative;
+}
+
+.entry-details {
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem 0;
+}
+
+.entry-stat {
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #777;
+  margin-bottom: 0.25rem;
+}
+
+.entry-notes {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+/* Exercises Page */
+.exercises-container {
+  margin-bottom: 2rem;
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.search-wrapper {
+  flex: 1;
+}
+
+.search-wrapper input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+.filter-wrapper select {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  min-width: 150px;
+}
+
+.exercise-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.exercise-card {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.exercise-details {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.exercise-category,
+.exercise-muscle {
+  font-size: 0.85rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+}
+
+.exercise-description {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* Body Stats Page */
+.body-stats-container {
+  margin-bottom: 2rem;
+}
+
+.stats-chart {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+}
+
+.stats-table {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+
+.stats-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stats-table th {
+  text-align: left;
+  padding: 1rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.stats-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.stats-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Progress Page */
+.progress-container {
+  margin-bottom: 2rem;
+}
+
+.progress-chart,
+.chart-container {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+}
+
+.no-data-message {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.strength-progress h3 {
+  margin-bottom: 1.5rem;
+}
+
+.strength-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Footer */
+.app-footer {
+  text-align: center;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  background-color: var(--card-bg);
+  color: #777;
+  font-size: 0.9rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .content {
+    padding: 1.5rem;
+  }
+  
+  .mobile-menu-btn {
+    display: block;
+  }
+  
+  .nav-links {
+    position: absolute;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background-color: var(--card-bg);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+    display: none;
+  }
+  
+  .nav-links.open {
+    display: flex;
+  }
+  
+  .nav-links li {
+    margin: 0;
+    width: 100%;
+  }
+  
+  .nav-links button {
+    width: 100%;
+    padding: 1rem 2rem;
+    text-align: left;
+  }
+  
+  .workouts-list,
+  .exercise-grid,
+  .entries-list,
+  .stats-overview,
+  .strength-charts {
+    grid-template-columns: 1fr;
+  }
+  
+  .filters {
+    flex-direction: column;
+  }
+  
+  .filter-wrapper select {
+    width: 100%;
+  }
+  
+  .workout-actions {
+    flex-direction: column;
+  }
+}

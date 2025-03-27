@@ -51,6 +51,34 @@
           </div>
         </div>
 
+        <!-- Scan Type -->
+        <div class="mb-4">
+          <h3 class="text-xs font-medium text-gray-700 mb-2">Scan Type <span class="text-red-600">*</span></h3>
+          <div class="flex flex-wrap gap-4">
+            <div class="flex items-center">
+              <input type="radio" id="scan_type_frontend" name="scan_type" value="frontend" class="mr-2 focus:ring-2 focus:ring-blue-500" checked>
+              <label for="scan_type_frontend" class="text-xs text-gray-700">
+                Frontend
+                <span class="ml-1 text-xs text-gray-500">(Analyze JavaScript/HTML/CSS files)</span>
+              </label>
+            </div>
+            <div class="flex items-center">
+              <input type="radio" id="scan_type_backend" name="scan_type" value="backend" class="mr-2 focus:ring-2 focus:ring-blue-500">
+              <label for="scan_type_backend" class="text-xs text-gray-700">
+                Backend
+                <span class="ml-1 text-xs text-gray-500">(Analyze Python files)</span>
+              </label>
+            </div>
+            <div class="flex items-center">
+              <input type="radio" id="scan_type_both" name="scan_type" value="both" class="mr-2 focus:ring-2 focus:ring-blue-500">
+              <label for="scan_type_both" class="text-xs text-gray-700">
+                Both
+                <span class="ml-1 text-xs text-gray-500">(Analyze both Frontend and Backend)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
         <!-- Scan Options -->
         <div class="mb-4">
           <h3 class="text-xs font-medium text-gray-700 mb-2">Scan Options</h3>
@@ -154,6 +182,12 @@
           <option value="{{ model_name }}">{{ model_name }}</option>
         {% endfor %}
       </select>
+      <select id="scanTypeFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500" aria-label="Filter by scan type">
+        <option value="all">All Scan Types</option>
+        <option value="frontend">Frontend</option>
+        <option value="backend">Backend</option>
+        <option value="both">Both</option>
+      </select>
       <select id="statusFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500" aria-label="Filter by status">
         <option value="all">All Statuses</option>
         <option value="running">Running</option>
@@ -185,6 +219,7 @@
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">ID</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Name</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Status</th>
+                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Scan Type</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Models</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Created</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Progress</th>
@@ -194,7 +229,7 @@
             </thead>
             <tbody id="jobsTableBody">
               {% for job in jobs %}
-                <tr class="hover:bg-gray-50 job-row" data-job-id="{{ job.id }}" data-status="{{ job.status }}" data-models="{{ job.models|join(',') }}" data-name="{{ job.name }}">
+                <tr class="hover:bg-gray-50 job-row" data-job-id="{{ job.id }}" data-status="{{ job.status }}" data-scan-type="{{ job.scan_type }}" data-models="{{ job.models|join(',') }}" data-name="{{ job.name }}">
                   <td class="border border-gray-300 px-2 py-1 text-xs">{{ job.id }}</td>
                   <td class="border border-gray-300 px-2 py-1 text-xs font-medium">
                     <a href="#" class="view-job-btn text-blue-700 hover:underline" data-job-id="{{ job.id }}">
@@ -213,6 +248,18 @@
                         bg-red-600
                       {% endif %}">
                       {{ job.status }}
+                    </span>
+                  </td>
+                  <td class="border border-gray-300 px-2 py-1 text-xs">
+                    <span class="px-2 py-0.5 rounded-md 
+                      {% if job.scan_type == 'frontend' %}
+                        bg-purple-100 text-purple-800 border border-purple-700
+                      {% elif job.scan_type == 'backend' %}
+                        bg-indigo-100 text-indigo-800 border border-indigo-700
+                      {% else %}
+                        bg-teal-100 text-teal-800 border border-teal-700
+                      {% endif %}">
+                      {{ job.scan_type }}
                     </span>
                   </td>
                   <td class="border border-gray-300 px-2 py-1 text-xs">
@@ -253,7 +300,7 @@
                 </tr>
               {% endfor %}
               <tr id="noResultsRow" class="hidden">
-                <td colspan="8" class="border border-gray-300 px-2 py-4 text-xs text-center text-gray-500">
+                <td colspan="9" class="border border-gray-300 px-2 py-4 text-xs text-center text-gray-500">
                   No jobs match your current filters
                 </td>
               </tr>
@@ -338,6 +385,12 @@
               </td>
             </tr>
             <tr>
+              <td class="font-medium text-gray-600 py-1">Scan Type:</td>
+              <td id="job-scan-type-cell">
+                <span class="px-2 py-0.5 rounded-md" id="job-scan-type"></span>
+              </td>
+            </tr>
+            <tr>
               <td class="font-medium text-gray-600 py-1">Created:</td>
               <td id="job-created"></td>
             </tr>
@@ -412,6 +465,28 @@
             <div class="text-gray-600">Total Issues</div>
             <div class="font-bold" id="total-issues">0</div>
           </div>
+          
+          <!-- Scan Type-specific stats (shown only for 'both' scan type) -->
+          <div id="scan-type-stats" class="mt-2 hidden">
+            <div class="border-t border-gray-300 pt-2">
+              <div class="text-xs font-medium text-purple-700 mb-1">Frontend Issues</div>
+              <div class="flex space-x-2">
+                <span class="px-1 bg-red-100 text-red-800 border border-red-700 rounded" id="frontend-high-issues">0</span>
+                <span class="px-1 bg-yellow-100 text-yellow-800 border border-yellow-700 rounded" id="frontend-medium-issues">0</span>
+                <span class="px-1 bg-blue-100 text-blue-800 border border-blue-700 rounded" id="frontend-low-issues">0</span>
+                <span class="px-1 bg-gray-100 text-gray-800 border border-gray-700 rounded" id="frontend-total-issues">0 total</span>
+              </div>
+            </div>
+            <div class="border-t border-gray-300 mt-2 pt-2">
+              <div class="text-xs font-medium text-indigo-700 mb-1">Backend Issues</div>
+              <div class="flex space-x-2">
+                <span class="px-1 bg-red-100 text-red-800 border border-red-700 rounded" id="backend-high-issues">0</span>
+                <span class="px-1 bg-yellow-100 text-yellow-800 border border-yellow-700 rounded" id="backend-medium-issues">0</span>
+                <span class="px-1 bg-blue-100 text-blue-800 border border-blue-700 rounded" id="backend-low-issues">0</span>
+                <span class="px-1 bg-gray-100 text-gray-800 border border-gray-700 rounded" id="backend-total-issues">0 total</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -436,6 +511,11 @@
           <select id="resultModelFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
             <option value="all">All Models</option>
           </select>
+          <select id="resultScanTypeFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <option value="all">All Scan Types</option>
+            <option value="frontend">Frontend</option>
+            <option value="backend">Backend</option>
+          </select>
           <button id="exportResultsBtn" class="h-6 px-2 text-xs border border-gray-300 rounded hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 transition flex items-center">
             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -451,6 +531,7 @@
               <tr class="bg-gray-100">
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Model</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">App</th>
+                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Scan Type</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Status</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">High</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Medium</th>
@@ -489,6 +570,9 @@
     <td class="border border-gray-300 px-2 py-1 text-xs result-model"></td>
     <td class="border border-gray-300 px-2 py-1 text-xs">App <span class="result-app-num"></span></td>
     <td class="border border-gray-300 px-2 py-1 text-xs">
+      <span class="result-scan-type px-2 py-0.5 rounded-md"></span>
+    </td>
+    <td class="border border-gray-300 px-2 py-1 text-xs">
       <span class="result-status px-2 py-0.5 rounded-md"></span>
     </td>
     <td class="border border-gray-300 px-2 py-1 text-xs text-red-700 result-high">0</td>
@@ -526,6 +610,12 @@
             <tr>
               <td class="font-medium text-gray-600 py-1">App Number:</td>
               <td id="result-app-num"></td>
+            </tr>
+            <tr>
+              <td class="font-medium text-gray-600 py-1">Scan Type:</td>
+              <td id="result-scan-type-cell">
+                <span class="px-2 py-0.5 rounded-md" id="result-scan-type"></span>
+              </td>
             </tr>
             <tr>
               <td class="font-medium text-gray-600 py-1">Status:</td>
@@ -597,6 +687,9 @@
           </select>
           <select id="fileFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
             <option value="all">All Files</option>
+          </select>
+          <select id="toolFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <option value="all">All Tools</option>
           </select>
           <button id="expandAllIssues" class="h-6 px-2 text-xs border border-gray-300 rounded hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 transition">
             Expand All
@@ -700,503 +793,702 @@
 </template>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  "use strict";
-  
-  // DOM Element references
-  const elements = {
-    // Form toggle buttons
-    toggleCreateForm: document.getElementById('toggleCreateForm'),
-    createJobForm: document.getElementById('createJobForm'),
-    batchJobForm: document.getElementById('batchJobForm'),
-    cancelCreateForm: document.getElementById('cancelCreateForm'),
-    noJobsCreateBtn: document.getElementById('noJobsCreateBtn'),
+  document.addEventListener('DOMContentLoaded', function() {
+    "use strict";
     
-    // Job table elements
-    jobsTableBody: document.getElementById('jobsTableBody'),
-    
-    // Job details elements
-    jobDetailsSection: document.getElementById('jobDetailsSection'),
-    jobDetailsTitle: document.getElementById('jobDetailsTitle'),
-    jobDetailsContent: document.getElementById('jobDetailsContent'),
-    closeJobDetails: document.getElementById('closeJobDetails'),
-    
-    // Result details elements
-    resultDetailsSection: document.getElementById('resultDetailsSection'),
-    resultDetailsTitle: document.getElementById('resultDetailsTitle'),
-    resultDetailsContent: document.getElementById('resultDetailsContent'),
-    closeResultDetails: document.getElementById('closeResultDetails'),
-    
-    // Filter elements
-    searchJobs: document.getElementById('searchJobs'),
-    modelFilter: document.getElementById('modelFilter'),
-    statusFilter: document.getElementById('statusFilter'),
-    clearFilters: document.getElementById('clearFilters'),
-    
-    // Counter elements
-    jobsCounter: document.getElementById('jobsCounter'),
-    visibleJobsCount: document.getElementById('visibleJobsCount'),
-    
-    // Templates
-    jobDetailsTpl: document.getElementById('jobDetailsTpl'),
-    resultItemTpl: document.getElementById('resultItemTpl'),
-    resultDetailsTpl: document.getElementById('resultDetailsTpl'),
-    issueItemTpl: document.getElementById('issueItemTpl'),
-    toastTpl: document.getElementById('toastTpl'),
-    
-    // Toast container
-    toastContainer: document.getElementById('toastContainer')
-  };
-  
-  // Constants
-  const POLLING_INTERVAL = 5000; // 5 seconds
-  const MAX_POLLING_ERRORS = 3;
-  
-  // State variables
-  let activeJobPollingInterval = null;
-  let pollingErrorCount = 0;
-  let activeFilters = {
-    search: '',
-    model: 'all',
-    status: 'all'
-  };
-  let lastFocusedElement = null;
-  
-  // Utility functions
-  const utils = {
-    // Format date/time
-    formatDateTime: function(dateString) {
-      if (!dateString) return 'N/A';
+    // Cache DOM Element references
+    const elements = {
+      // Form toggle buttons
+      toggleCreateForm: document.getElementById('toggleCreateForm'),
+      createJobForm: document.getElementById('createJobForm'),
+      batchJobForm: document.getElementById('batchJobForm'),
+      cancelCreateForm: document.getElementById('cancelCreateForm'),
+      noJobsCreateBtn: document.getElementById('noJobsCreateBtn'),
       
-      try {
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return 'N/A';
+      // Job table elements
+      jobsTableBody: document.getElementById('jobsTableBody'),
+      
+      // Job details elements
+      jobDetailsSection: document.getElementById('jobDetailsSection'),
+      jobDetailsTitle: document.getElementById('jobDetailsTitle'),
+      jobDetailsContent: document.getElementById('jobDetailsContent'),
+      closeJobDetails: document.getElementById('closeJobDetails'),
+      
+      // Result details elements
+      resultDetailsSection: document.getElementById('resultDetailsSection'),
+      resultDetailsTitle: document.getElementById('resultDetailsTitle'),
+      resultDetailsContent: document.getElementById('resultDetailsContent'),
+      closeResultDetails: document.getElementById('closeResultDetails'),
+      
+      // Filter elements
+      searchJobs: document.getElementById('searchJobs'),
+      modelFilter: document.getElementById('modelFilter'),
+      scanTypeFilter: document.getElementById('scanTypeFilter'),
+      statusFilter: document.getElementById('statusFilter'),
+      clearFilters: document.getElementById('clearFilters'),
+      
+      // Counter elements
+      jobsCounter: document.getElementById('jobsCounter'),
+      visibleJobsCount: document.getElementById('visibleJobsCount'),
+      
+      // Templates
+      jobDetailsTpl: document.getElementById('jobDetailsTpl'),
+      resultItemTpl: document.getElementById('resultItemTpl'),
+      resultDetailsTpl: document.getElementById('resultDetailsTpl'),
+      issueItemTpl: document.getElementById('issueItemTpl'),
+      toastTpl: document.getElementById('toastTpl'),
+      
+      // Toast container
+      toastContainer: document.getElementById('toastContainer')
+    };
+    
+    // Constants
+    const POLLING_INTERVAL = 5000; // 5 seconds
+    const MAX_POLLING_ERRORS = 3;
+    const DEBOUNCE_DELAY = 200; // ms
+    
+    // State variables
+    let activeJobPollingInterval = null;
+    let pollingErrorCount = 0;
+    let activeFilters = {
+      search: '',
+      model: 'all',
+      scanType: 'all',
+      status: 'all'
+    };
+    let lastFocusedElement = null;
+    let eventListeners = {}; // For tracking event listeners
+    
+    // Utility functions
+    const utils = {
+      // Format date/time
+      formatDateTime: function(dateString) {
+        if (!dateString) return 'N/A';
         
-        return date.toLocaleString();
-      } catch (error) {
-        console.warn('Error formatting date:', error);
-        return 'N/A';
-      }
-    },
-    
-    // Calculate runtime for a job
-    calculateRuntime: function(data) {
-      try {
-        const startedAt = data.started_at ? new Date(data.started_at) : null;
-        const completedAt = data.completed_at ? new Date(data.completed_at) : null;
-        const now = new Date();
-        
-        let runtime;
-        if (data.status === 'completed' || data.status === 'failed' || data.status === 'canceled') {
-          // Use completed time if available
-          if (completedAt && !isNaN(completedAt) && startedAt && !isNaN(startedAt)) {
-            runtime = Math.floor((completedAt - startedAt) / 1000);
-          } else {
-            runtime = "N/A";
-          }
-        } else if (startedAt && !isNaN(startedAt)) {
-          // Running job - calculate current runtime
-          runtime = Math.floor((now - startedAt) / 1000);
-        } else {
-          runtime = "Not started";
-        }
-        
-        // Format runtime
-        if (typeof runtime === 'number') {
-          const hours = Math.floor(runtime / 3600);
-          const minutes = Math.floor((runtime % 3600) / 60);
-          const seconds = runtime % 60;
-          
-          let formattedRuntime = '';
-          if (hours > 0) formattedRuntime += `${hours}h `;
-          if (minutes > 0 || hours > 0) formattedRuntime += `${minutes}m `;
-          formattedRuntime += `${seconds}s`;
-          
-          return formattedRuntime;
-        } else {
-          return runtime;
-        }
-      } catch (error) {
-        console.warn('Error calculating runtime:', error);
-        return 'N/A';
-      }
-    },
-    
-    // Get CSS class for job status
-    getStatusClass: function(status) {
-      if (!status) return 'bg-gray-600';
-      
-      switch (status.toLowerCase()) {
-        case 'running':
-          return 'bg-green-600';
-        case 'completed':
-          return 'bg-blue-600';
-        case 'pending':
-          return 'bg-gray-600';
-        default:
-          return 'bg-red-600';
-      }
-    },
-    
-    // Get CSS class for result status
-    getResultStatusClass: function(status) {
-      return status === 'completed' 
-        ? 'bg-green-100 text-green-800 border border-green-700'
-        : 'bg-red-100 text-red-800 border border-red-700';
-    },
-    
-    // Validate app range format
-    validateAppRange: function(value) {
-      if (!value) return true; // Empty is valid
-      
-      // Format: 1-3,5,7-9
-      const regex = /^(\d+(-\d+)?)(,\d+(-\d+)?)*$/;
-      return regex.test(value);
-    },
-    
-    // Count visible rows in a table
-    countVisibleRows: function(tableBody, rowClass) {
-      let visibleCount = 0;
-      const rows = tableBody.querySelectorAll(rowClass);
-      
-      rows.forEach(row => {
-        if (row.style.display !== 'none') {
-          visibleCount++;
-        }
-      });
-      
-      return visibleCount;
-    },
-    
-    // Add event listener with automatic cleanup
-    addEventListenerWithCleanup: function(element, eventType, handler) {
-      if (!element) return;
-      
-      // Store original handler and wrapped handler
-      if (!element._eventHandlers) {
-        element._eventHandlers = {};
-      }
-      
-      // Remove any existing handler for this event type
-      if (element._eventHandlers[eventType]) {
-        element.removeEventListener(eventType, element._eventHandlers[eventType].wrapped);
-      }
-      
-      // Create wrapped handler that logs errors
-      const wrappedHandler = function(event) {
         try {
-          handler.call(this, event);
+          const date = new Date(dateString);
+          if (isNaN(date.getTime())) return 'N/A';
+          
+          return date.toLocaleString();
         } catch (error) {
-          console.error(`Error in ${eventType} handler:`, error);
+          console.warn('Error formatting date:', error);
+          return 'N/A';
         }
-      };
+      },
       
-      // Store handler references
-      element._eventHandlers[eventType] = {
-        original: handler,
-        wrapped: wrappedHandler
-      };
+      // Calculate runtime for a job
+      calculateRuntime: function(data) {
+        try {
+          const startedAt = data.started_at ? new Date(data.started_at) : null;
+          const completedAt = data.completed_at ? new Date(data.completed_at) : null;
+          const now = new Date();
+          
+          let runtime;
+          if (data.status === 'completed' || data.status === 'failed' || data.status === 'canceled') {
+            // Use completed time if available
+            if (completedAt && !isNaN(completedAt) && startedAt && !isNaN(startedAt)) {
+              runtime = Math.floor((completedAt - startedAt) / 1000);
+            } else {
+              runtime = "N/A";
+            }
+          } else if (startedAt && !isNaN(startedAt)) {
+            // Running job - calculate current runtime
+            runtime = Math.floor((now - startedAt) / 1000);
+          } else {
+            runtime = "Not started";
+          }
+          
+          // Format runtime
+          if (typeof runtime === 'number') {
+            const hours = Math.floor(runtime / 3600);
+            const minutes = Math.floor((runtime % 3600) / 60);
+            const seconds = runtime % 60;
+            
+            let formattedRuntime = '';
+            if (hours > 0) formattedRuntime += `${hours}h `;
+            if (minutes > 0 || hours > 0) formattedRuntime += `${minutes}m `;
+            formattedRuntime += `${seconds}s`;
+            
+            return formattedRuntime;
+          } else {
+            return runtime;
+          }
+        } catch (error) {
+          console.warn('Error calculating runtime:', error);
+          return 'N/A';
+        }
+      },
       
-      // Add the event listener
-      element.addEventListener(eventType, wrappedHandler);
-    },
-    
-    // Show toast notification
-    showToast: function(type, title, message, duration = 3000) {
-      const template = elements.toastTpl.content.cloneNode(true);
-      const toast = template.querySelector('.toast-notification');
+      // Get CSS class for job status
+      getStatusClass: function(status) {
+        if (!status) return 'bg-gray-600';
+        
+        switch (status.toLowerCase()) {
+          case 'running':
+            return 'bg-green-600';
+          case 'completed':
+            return 'bg-blue-600';
+          case 'pending':
+            return 'bg-gray-600';
+          default:
+            return 'bg-red-600';
+        }
+      },
       
-      // Set content
-      template.querySelector('.toast-title').textContent = title;
-      template.querySelector('.toast-message').textContent = message;
+      // Get CSS class for scan type
+      getScanTypeClass: function(scanType) {
+        if (!scanType) return 'bg-gray-100 text-gray-800 border border-gray-700';
+        
+        switch (scanType.toLowerCase()) {
+          case 'frontend':
+            return 'bg-purple-100 text-purple-800 border border-purple-700';
+          case 'backend':
+            return 'bg-indigo-100 text-indigo-800 border border-indigo-700';
+          case 'both':
+            return 'bg-teal-100 text-teal-800 border border-teal-700';
+          default:
+            return 'bg-gray-100 text-gray-800 border border-gray-700';
+        }
+      },
       
-      // Set styles based on type
-      const iconPath = template.querySelector('.toast-icon svg path');
-      iconPath.setAttribute('stroke-linecap', 'round');
-      iconPath.setAttribute('stroke-linejoin', 'round');
-      iconPath.setAttribute('stroke-width', '2');
+      // Get CSS class for result status
+      getResultStatusClass: function(status) {
+        return status === 'completed' 
+          ? 'bg-green-100 text-green-800 border border-green-700'
+          : 'bg-red-100 text-red-800 border border-red-700';
+      },
       
-      switch (type) {
-        case 'success':
-          toast.classList.add('bg-green-50', 'border-l-4', 'border-green-600', 'text-green-800');
-          iconPath.setAttribute('d', 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z');
-          break;
-        case 'error':
-          toast.classList.add('bg-red-50', 'border-l-4', 'border-red-600', 'text-red-800');
-          iconPath.setAttribute('d', 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z');
-          break;
-        case 'warning':
-          toast.classList.add('bg-yellow-50', 'border-l-4', 'border-yellow-600', 'text-yellow-800');
-          iconPath.setAttribute('d', 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z');
-          break;
-        case 'info':
-        default:
-          toast.classList.add('bg-blue-50', 'border-l-4', 'border-blue-600', 'text-blue-800');
-          iconPath.setAttribute('d', 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z');
-          break;
-      }
+      // Validate app range format
+      validateAppRange: function(value) {
+        if (!value) return true; // Empty is valid
+        
+        // Format: 1-3,5,7-9
+        const regex = /^(\d+(-\d+)?)(,\d+(-\d+)?)*$/;
+        return regex.test(value);
+      },
       
-      // Add close button event listener
-      const closeButton = template.querySelector('.toast-close');
-      closeButton.addEventListener('click', () => {
-        toast.classList.add('translate-x-full', 'opacity-0');
+      // Count visible rows in a table
+      countVisibleRows: function(tableBody, rowClass) {
+        let visibleCount = 0;
+        if (!tableBody) return visibleCount;
+        
+        const rows = tableBody.querySelectorAll(rowClass);
+        
+        rows.forEach(row => {
+          if (row.style.display !== 'none') {
+            visibleCount++;
+          }
+        });
+        
+        return visibleCount;
+      },
+      
+      // Add event listener with tracking for easier cleanup
+      addEventListenerWithTracking: function(element, eventType, handler, identifier) {
+        if (!element) return;
+        
+        // Create unique identifier if not provided
+        const id = identifier || `${eventType}-${Math.random().toString(36).substr(2, 9)}`;
+        
+        // Remove any existing handler with this ID
+        this.removeEventListener(id);
+        
+        // Create wrapped handler that logs errors
+        const wrappedHandler = function(event) {
+          try {
+            handler.call(this, event);
+          } catch (error) {
+            console.error(`Error in ${eventType} handler:`, error);
+          }
+        };
+        
+        // Store reference to the handler
+        eventListeners[id] = {
+          element: element,
+          eventType: eventType,
+          handler: wrappedHandler
+        };
+        
+        // Add the event listener
+        element.addEventListener(eventType, wrappedHandler);
+        
+        return id;
+      },
+      
+      // Remove event listener by ID
+      removeEventListener: function(id) {
+        const listener = eventListeners[id];
+        if (listener) {
+          const { element, eventType, handler } = listener;
+          if (element) {
+            element.removeEventListener(eventType, handler);
+          }
+          delete eventListeners[id];
+        }
+      },
+      
+      // Clean up all event listeners for a specific element
+      cleanupElementListeners: function(element) {
+        if (!element) return;
+        
+        Object.keys(eventListeners).forEach(id => {
+          if (eventListeners[id].element === element) {
+            this.removeEventListener(id);
+          }
+        });
+      },
+      
+      // Clean up all event listeners
+      cleanupAllListeners: function() {
+        Object.keys(eventListeners).forEach(id => {
+          this.removeEventListener(id);
+        });
+      },
+      
+      // Show toast notification
+      showToast: function(type, title, message, duration = 3000) {
+        if (!elements.toastTpl || !elements.toastContainer) return null;
+        
+        const template = elements.toastTpl.content.cloneNode(true);
+        const toast = template.querySelector('.toast-notification');
+        
+        // Set content
+        template.querySelector('.toast-title').textContent = title;
+        template.querySelector('.toast-message').textContent = message;
+        
+        // Set styles based on type
+        const iconPath = template.querySelector('.toast-icon svg path');
+        iconPath.setAttribute('stroke-linecap', 'round');
+        iconPath.setAttribute('stroke-linejoin', 'round');
+        iconPath.setAttribute('stroke-width', '2');
+        
+        switch (type) {
+          case 'success':
+            toast.classList.add('bg-green-50', 'border-l-4', 'border-green-600', 'text-green-800');
+            iconPath.setAttribute('d', 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z');
+            break;
+          case 'error':
+            toast.classList.add('bg-red-50', 'border-l-4', 'border-red-600', 'text-red-800');
+            iconPath.setAttribute('d', 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z');
+            break;
+          case 'warning':
+            toast.classList.add('bg-yellow-50', 'border-l-4', 'border-yellow-600', 'text-yellow-800');
+            iconPath.setAttribute('d', 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z');
+            break;
+          case 'info':
+          default:
+            toast.classList.add('bg-blue-50', 'border-l-4', 'border-blue-600', 'text-blue-800');
+            iconPath.setAttribute('d', 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z');
+            break;
+        }
+        
+        // Add close button event listener
+        const closeButton = template.querySelector('.toast-close');
+        this.addEventListenerWithTracking(closeButton, 'click', () => {
+          toast.classList.add('translate-x-full', 'opacity-0');
+          setTimeout(() => {
+            if (toast.parentNode) {
+              elements.toastContainer.removeChild(toast);
+            }
+          }, 300);
+        }, `toast-close-${Date.now()}`);
+        
+        // Add to container
+        elements.toastContainer.appendChild(template);
+        
+        // Animate in
         setTimeout(() => {
-          elements.toastContainer.removeChild(toast);
-        }, 300);
-      });
+          toast.classList.remove('translate-x-full', 'opacity-0');
+        }, 10);
+        
+        // Auto-dismiss
+        if (duration > 0) {
+          setTimeout(() => {
+            if (toast.parentNode) {
+              toast.classList.add('translate-x-full', 'opacity-0');
+              setTimeout(() => {
+                if (toast.parentNode) {
+                  elements.toastContainer.removeChild(toast);
+                }
+              }, 300);
+            }
+          }, duration);
+        }
+        
+        return toast;
+      },
       
-      // Add to container
-      elements.toastContainer.appendChild(template);
-      
-      // Animate in
-      setTimeout(() => {
-        toast.classList.remove('translate-x-full', 'opacity-0');
-      }, 10);
-      
-      // Auto-dismiss
-      if (duration > 0) {
+      // Export data to CSV
+      exportToCSV: function(data, filename) {
+        if (!data || !data.length) return;
+        
+        const csvContent = data.map(row => {
+          return Object.values(row).map(value => {
+            // Wrap strings with commas in quotes
+            if (typeof value === 'string' && value.includes(',')) {
+              return `"${value}"`;
+            }
+            return value;
+          }).join(',');
+        }).join('\n');
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up
         setTimeout(() => {
-          if (toast.parentNode) {
-            toast.classList.add('translate-x-full', 'opacity-0');
-            setTimeout(() => {
-              if (toast.parentNode) {
-                elements.toastContainer.removeChild(toast);
+          URL.revokeObjectURL(url);
+        }, 100);
+      },
+      
+      // Trap focus within a modal for accessibility
+      trapFocus: function(element) {
+        if (!element) return;
+        
+        // Save last focused element
+        lastFocusedElement = document.activeElement;
+        
+        // Find focusable elements
+        const focusableElements = element.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        
+        if (focusableElements.length === 0) return;
+        
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+        
+        // Focus first element
+        firstElement.focus();
+        
+        // Handle keydown for tab key
+        const handleTabKey = function(e) {
+          if (e.key === 'Tab') {
+            if (e.shiftKey && document.activeElement === firstElement) {
+              e.preventDefault();
+              lastElement.focus();
+            } else if (!e.shiftKey && document.activeElement === lastElement) {
+              e.preventDefault();
+              firstElement.focus();
+            }
+          } else if (e.key === 'Escape') {
+            // Close the modal on Escape
+            if (element === elements.jobDetailsSection) {
+              elements.closeJobDetails.click();
+            } else if (element === elements.resultDetailsSection) {
+              elements.closeResultDetails.click();
+            }
+          }
+        };
+        
+        // Add event listener for keydown
+        this.addEventListenerWithTracking(element, 'keydown', handleTabKey, `trap-focus-${element.id}`);
+      },
+      
+      // Restore focus when modal is closed
+      restoreFocus: function() {
+        if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+          lastFocusedElement.focus();
+        }
+      },
+      
+      // Debounce function for input handlers
+      debounce: function(func, wait = DEBOUNCE_DELAY) {
+        let timeout;
+        return function(...args) {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+      },
+      
+      // Handle API errors consistently
+      handleApiError: function(error, retryCallback = null) {
+        console.error('API Error:', error);
+        
+        let errorMessage = 'An unexpected error occurred.';
+        
+        if (error.response) {
+          // Server returned an error response
+          errorMessage = `Server error: ${error.response.status} ${error.response.statusText}`;
+        } else if (error.request) {
+          // Request made but no response received
+          errorMessage = 'No response from server. Please check your connection.';
+        } else {
+          // Error setting up the request
+          errorMessage = error.message || errorMessage;
+        }
+        
+        const errorHtml = `
+          <div class="p-4 text-center">
+            <div class="inline-block border border-red-700 bg-red-50 p-2 rounded-md">
+              <p class="text-xs font-bold text-red-700">${errorMessage}</p>
+              ${retryCallback ? `
+                <button id="retryBtn" class="mt-2 px-3 py-1 text-xs bg-red-700 text-white rounded hover:bg-red-800 transition">
+                  Retry
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        
+        return { message: errorMessage, html: errorHtml, addRetryButton: retryCallback };
+      },
+      
+      // Stop job polling safely
+      stopJobPolling: function() {
+        if (activeJobPollingInterval) {
+          clearInterval(activeJobPollingInterval);
+          activeJobPollingInterval = null;
+          pollingErrorCount = 0;
+        }
+      },
+      
+      // Parse app ranges safely
+      parseAppRanges: function(rangeStr) {
+        if (!rangeStr || typeof rangeStr !== 'string' || rangeStr.trim() === '') {
+          return null; // No specific ranges, use all apps
+        }
+        
+        try {
+          // Split by commas
+          const parts = rangeStr.split(',');
+          let ranges = [];
+          
+          for (const part of parts) {
+            // Check if it's a range (contains a hyphen)
+            if (part.includes('-')) {
+              const [start, end] = part.split('-').map(num => parseInt(num.trim(), 10));
+              if (isNaN(start) || isNaN(end)) continue;
+              
+              // Add all numbers in the range
+              for (let i = start; i <= end; i++) {
+                ranges.push(i);
               }
-            }, 300);
+            } else {
+              // Single number
+              const num = parseInt(part.trim(), 10);
+              if (!isNaN(num)) {
+                ranges.push(num);
+              }
+            }
           }
-        }, duration);
+          
+          // Remove duplicates and sort
+          return [...new Set(ranges)].sort((a, b) => a - b);
+        } catch (error) {
+          console.warn('Error parsing app ranges:', error);
+          return null;
+        }
       }
-      
-      return toast;
-    },
+    };
     
-    // Export data to CSV
-    exportToCSV: function(data, filename) {
-      const csvContent = data.map(row => {
-        return Object.values(row).map(value => {
-          // Wrap strings with commas in quotes
-          if (typeof value === 'string' && value.includes(',')) {
-            return `"${value}"`;
+    // Centralized filter function - works for jobs, results, and issues
+    function setupFilter(options) {
+      const { 
+        searchInput, 
+        filters, 
+        container, 
+        itemSelector, 
+        counterElement, 
+        totalCountElement,
+        visibleCountElement,
+        noResultsElement,
+        getSearchData
+      } = options;
+      
+      // Initialize filter values
+      const filterValues = {};
+      filters.forEach(filter => {
+        filterValues[filter.id] = filter.element?.value || 'all';
+      });
+      
+      // Create debounced filter function
+      const debouncedFilter = utils.debounce(() => {
+        if (!container) return;
+        
+        // Get current search text
+        const searchText = searchInput?.value?.toLowerCase() || '';
+        
+        // Get current filter values
+        filters.forEach(filter => {
+          if (filter.element) {
+            filterValues[filter.id] = filter.element.value;
           }
-          return value;
-        }).join(',');
-      }).join('\n');
-      
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', filename);
-      link.style.visibility = 'hidden';
-      
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    },
-    
-    // Trap focus within a modal
-    trapFocus: function(element) {
-      if (!element) return;
-      
-      // Save last focused element
-      lastFocusedElement = document.activeElement;
-      
-      // Find focusable elements
-      const focusableElements = element.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      
-      if (focusableElements.length === 0) return;
-      
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
-      
-      // Focus first element
-      firstElement.focus();
-      
-      // Trap focus inside the element
-      element.addEventListener('keydown', function(e) {
-        if (e.key === 'Tab') {
-          if (e.shiftKey && document.activeElement === firstElement) {
-            e.preventDefault();
-            lastElement.focus();
-          } else if (!e.shiftKey && document.activeElement === lastElement) {
-            e.preventDefault();
-            firstElement.focus();
-          }
-        } else if (e.key === 'Escape') {
-          // Close the modal on Escape
-          if (element === elements.jobDetailsSection) {
-            document.getElementById('closeJobDetails').click();
-          } else if (element === elements.resultDetailsSection) {
-            document.getElementById('closeResultDetails').click();
-          }
+        });
+        
+        // Apply filters to items
+        const items = container.querySelectorAll(itemSelector);
+        let visibleCount = 0;
+        
+        items.forEach(item => {
+          // Check if item matches search
+          const itemText = getSearchData ? getSearchData(item) : item.textContent.toLowerCase();
+          const matchesSearch = !searchText || itemText.includes(searchText);
+          
+          // Check if item matches all filters
+          let matchesAllFilters = true;
+          filters.forEach(filter => {
+            if (filter.getValue) {
+              const filterValue = filterValues[filter.id];
+              if (filterValue !== 'all') {
+                const itemValue = filter.getValue(item);
+                matchesAllFilters = matchesAllFilters && (itemValue === filterValue);
+              }
+            }
+          });
+          
+          // Update visibility
+          const isVisible = matchesSearch && matchesAllFilters;
+          item.style.display = isVisible ? '' : 'none';
+          
+          if (isVisible) visibleCount++;
+        });
+        
+        // Update counter if provided
+        if (visibleCountElement) {
+          visibleCountElement.textContent = visibleCount;
+        }
+        
+        if (totalCountElement) {
+          totalCountElement.textContent = items.length;
+        }
+        
+        // Show/hide no results message
+        if (noResultsElement) {
+          noResultsElement.style.display = visibleCount === 0 ? '' : 'none';
+        }
+        
+        // Update counter element if provided
+        if (counterElement) {
+          counterElement.textContent = `Showing ${visibleCount} of ${items.length} ${options.itemName || 'items'}`;
         }
       });
-    },
-    
-    // Restore focus when modal is closed
-    restoreFocus: function() {
-      if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
-        lastFocusedElement.focus();
+      
+      // Add event listeners
+      if (searchInput) {
+        utils.addEventListenerWithTracking(searchInput, 'input', debouncedFilter, `filter-search-${searchInput.id}`);
       }
-    },
-    
-    // Debounce function for input handlers
-    debounce: function(func, wait) {
-      let timeout;
-      return function(...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
+      
+      filters.forEach(filter => {
+        if (filter.element) {
+          utils.addEventListenerWithTracking(filter.element, 'change', debouncedFilter, `filter-${filter.id}`);
+        }
+      });
+      
+      // Initial filter
+      debouncedFilter();
+      
+      // Return control methods
+      return {
+        filter: debouncedFilter,
+        reset: function() {
+          if (searchInput) searchInput.value = '';
+          
+          filters.forEach(filter => {
+            if (filter.element) {
+              filter.element.value = 'all';
+            }
+          });
+          
+          debouncedFilter();
+        }
       };
     }
-  };
-  
-  // Event handlers for form toggle and submission
-  function setupFormEvents() {
-    // Toggle create form visibility
-    if (elements.toggleCreateForm) {
-      utils.addEventListenerWithCleanup(elements.toggleCreateForm, 'click', () => {
-        const isHidden = elements.createJobForm.classList.contains('hidden');
-        
-        // Toggle visibility
-        elements.createJobForm.classList.toggle('hidden');
-        elements.toggleCreateForm.textContent = isHidden ? 'Cancel' : 'New Batch Job';
-        
-        // Update ARIA attributes
-        elements.toggleCreateForm.setAttribute('aria-expanded', isHidden);
-        elements.createJobForm.setAttribute('aria-hidden', !isHidden);
-        
-        // Focus first input if showing form
-        if (isHidden) {
+    
+    // Event handlers for form toggle and submission
+    function setupFormEvents() {
+      // Toggle create form visibility
+      if (elements.toggleCreateForm) {
+        utils.addEventListenerWithTracking(elements.toggleCreateForm, 'click', () => {
+          const isHidden = elements.createJobForm.classList.contains('hidden');
+          
+          // Toggle visibility
+          elements.createJobForm.classList.toggle('hidden');
+          elements.toggleCreateForm.innerHTML = isHidden ? `
+            <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>Cancel` 
+            : `
+            <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>New Batch Job`;
+          
+          // Update ARIA attributes
+          elements.toggleCreateForm.setAttribute('aria-expanded', isHidden);
+          elements.createJobForm.setAttribute('aria-hidden', !isHidden);
+          
+          // Focus first input if showing form
+          if (isHidden) {
+            setTimeout(() => {
+              const firstInput = elements.createJobForm.querySelector('input, select, textarea');
+              if (firstInput) firstInput.focus();
+            }, 100);
+          }
+        }, 'toggle-create-form');
+      }
+      
+      // Cancel button in form
+      if (elements.cancelCreateForm) {
+        utils.addEventListenerWithTracking(elements.cancelCreateForm, 'click', () => {
+          elements.createJobForm.classList.add('hidden');
+          elements.toggleCreateForm.innerHTML = `
+            <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>New Batch Job`;
+          elements.toggleCreateForm.setAttribute('aria-expanded', 'false');
+          elements.createJobForm.setAttribute('aria-hidden', 'true');
+          elements.toggleCreateForm.focus();
+        }, 'cancel-create-form');
+      }
+      
+      // No jobs create button
+      if (elements.noJobsCreateBtn) {
+        utils.addEventListenerWithTracking(elements.noJobsCreateBtn, 'click', () => {
+          elements.createJobForm.classList.remove('hidden');
+          elements.toggleCreateForm.innerHTML = `
+            <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>Cancel`;
+          elements.toggleCreateForm.setAttribute('aria-expanded', 'true');
+          elements.createJobForm.setAttribute('aria-hidden', 'false');
+          
           setTimeout(() => {
             const firstInput = elements.createJobForm.querySelector('input, select, textarea');
             if (firstInput) firstInput.focus();
           }, 100);
-        }
-      });
-    }
-    
-    // Cancel button in form
-    if (elements.cancelCreateForm) {
-      utils.addEventListenerWithCleanup(elements.cancelCreateForm, 'click', () => {
-        elements.createJobForm.classList.add('hidden');
-        elements.toggleCreateForm.textContent = 'New Batch Job';
-        elements.toggleCreateForm.setAttribute('aria-expanded', 'false');
-        elements.createJobForm.setAttribute('aria-hidden', 'true');
-        elements.toggleCreateForm.focus();
-      });
-    }
-    
-    // No jobs create button
-    if (elements.noJobsCreateBtn) {
-      utils.addEventListenerWithCleanup(elements.noJobsCreateBtn, 'click', () => {
-        elements.createJobForm.classList.remove('hidden');
-        elements.toggleCreateForm.textContent = 'Cancel';
-        elements.toggleCreateForm.setAttribute('aria-expanded', 'true');
-        elements.createJobForm.setAttribute('aria-hidden', 'false');
-        
-        setTimeout(() => {
-          const firstInput = elements.createJobForm.querySelector('input, select, textarea');
-          if (firstInput) firstInput.focus();
-        }, 100);
-      });
-    }
-    
-    // Form validation and submission
-    if (elements.batchJobForm) {
-      // Validate model checkboxes
-      const validateModels = () => {
-        const modelCheckboxes = document.querySelectorAll('.model-checkbox');
-        const isValid = Array.from(modelCheckboxes).some(cb => cb.checked);
-        const errorMsg = document.querySelector('.models-error-msg');
-        
-        if (errorMsg) {
-          errorMsg.classList.toggle('hidden', isValid);
-        }
-        
-        return isValid;
-      };
-      
-      // Validate app ranges
-      const validateAppRanges = () => {
-        const visibleAppRanges = document.querySelectorAll('.app-range-field:not(.hidden) input');
-        let isValid = true;
-        
-        visibleAppRanges.forEach(input => {
-          const value = input.value.trim();
-          const errorMsg = input.parentNode.nextElementSibling;
-          const validFormat = utils.validateAppRange(value);
-          
-          if (errorMsg) {
-            errorMsg.classList.toggle('hidden', validFormat);
-          }
-          
-          isValid = isValid && validFormat;
-        });
-        
-        return isValid;
-      };
-      
-      // Handle form submission
-      utils.addEventListenerWithCleanup(elements.batchJobForm, 'submit', function(e) {
-        // Validate models
-        if (!validateModels()) {
-          e.preventDefault();
-          document.querySelector('.models-error-msg').scrollIntoView({ behavior: 'smooth', block: 'center' });
-          return;
-        }
-        
-        // Validate app ranges
-        if (!validateAppRanges()) {
-          e.preventDefault();
-          const firstError = document.querySelector('.app-range-error:not(.hidden)');
-          if (firstError) {
-            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-          return;
-        }
-        
-        // Set create button to loading state
-        const submitBtn = this.querySelector('button[type="submit"]');
-        if (submitBtn) {
-          submitBtn.disabled = true;
-          submitBtn.innerHTML = `
-            <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>Creating...`;
-        }
-      });
-      
-      // Monitor model checkboxes to show/hide app range fields
-      const modelCheckboxes = document.querySelectorAll('input[name="models"]');
-      const appRangeFields = document.querySelectorAll('.app-range-field');
-      
-      function updateAppRangeFields() {
-        const selectedModels = Array.from(modelCheckboxes)
-          .filter(cb => cb.checked)
-          .map(cb => cb.value);
-        
-        appRangeFields.forEach(field => {
-          const model = field.dataset.model;
-          field.classList.toggle('hidden', !selectedModels.includes(model));
-        });
-        
-        // Validate models whenever selection changes
-        validateModels();
+        }, 'no-jobs-create-btn');
       }
       
-      modelCheckboxes.forEach(cb => {
-        utils.addEventListenerWithCleanup(cb, 'change', updateAppRangeFields);
-      });
-      
-      // Validate app ranges when inputs change
-      appRangeFields.forEach(field => {
-        const input = field.querySelector('input');
-        if (input) {
-          utils.addEventListenerWithCleanup(input, 'input', () => {
+      // Form validation and submission
+      if (elements.batchJobForm) {
+        // Validate model checkboxes
+        const validateModels = () => {
+          const modelCheckboxes = document.querySelectorAll('.model-checkbox');
+          const isValid = Array.from(modelCheckboxes).some(cb => cb.checked);
+          const errorMsg = document.querySelector('.models-error-msg');
+          
+          if (errorMsg) {
+            errorMsg.classList.toggle('hidden', isValid);
+          }
+          
+          return isValid;
+        };
+        
+        // Validate app ranges
+        const validateAppRanges = () => {
+          const visibleAppRanges = document.querySelectorAll('.app-range-field:not(.hidden) input');
+          let isValid = true;
+          
+          visibleAppRanges.forEach(input => {
             const value = input.value.trim();
             const errorMsg = input.parentNode.nextElementSibling;
             const validFormat = utils.validateAppRange(value);
@@ -1204,140 +1496,1265 @@ document.addEventListener('DOMContentLoaded', function() {
             if (errorMsg) {
               errorMsg.classList.toggle('hidden', validFormat);
             }
+            
+            isValid = isValid && validFormat;
+          });
+          
+          return isValid;
+        };
+        
+        // Handle form submission
+        utils.addEventListenerWithTracking(elements.batchJobForm, 'submit', function(e) {
+          // Validate models
+          if (!validateModels()) {
+            e.preventDefault();
+            document.querySelector('.models-error-msg').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+          
+          // Validate app ranges
+          if (!validateAppRanges()) {
+            e.preventDefault();
+            const firstError = document.querySelector('.app-range-error:not(.hidden)');
+            if (firstError) {
+              firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
+          }
+          
+          // Set create button to loading state
+          const submitBtn = this.querySelector('button[type="submit"]');
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+              <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>Creating...`;
+          }
+        }, 'batch-job-form-submit');
+        
+        // Monitor model checkboxes to show/hide app range fields
+        const modelCheckboxes = document.querySelectorAll('input[name="models"]');
+        const appRangeFields = document.querySelectorAll('.app-range-field');
+        
+        function updateAppRangeFields() {
+          const selectedModels = Array.from(modelCheckboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+          
+          appRangeFields.forEach(field => {
+            const model = field.dataset.model;
+            field.classList.toggle('hidden', !selectedModels.includes(model));
+          });
+          
+          // Validate models whenever selection changes
+          validateModels();
+        }
+        
+        modelCheckboxes.forEach((cb, index) => {
+          utils.addEventListenerWithTracking(cb, 'change', updateAppRangeFields, `model-checkbox-${index}`);
+        });
+        
+        // Validate app ranges when inputs change
+        appRangeFields.forEach((field, index) => {
+          const input = field.querySelector('input');
+          if (input) {
+            utils.addEventListenerWithTracking(input, 'input', () => {
+              const value = input.value.trim();
+              const errorMsg = input.parentNode.nextElementSibling;
+              const validFormat = utils.validateAppRange(value);
+              
+              if (errorMsg) {
+                errorMsg.classList.toggle('hidden', validFormat);
+              }
+            }, `app-range-${index}`);
+          }
+        });
+        
+        // Initial update
+        updateAppRangeFields();
+      }
+    }
+    
+    // Set up job/result section toggle and close buttons
+    function setupSectionToggles() {
+      // Job details close button
+      if (elements.closeJobDetails) {
+        utils.addEventListenerWithTracking(elements.closeJobDetails, 'click', () => {
+          elements.jobDetailsSection.classList.add('hidden');
+          elements.jobDetailsSection.setAttribute('aria-hidden', 'true');
+          
+          // Stop polling if active
+          utils.stopJobPolling();
+          
+          // Restore focus
+          utils.restoreFocus();
+        }, 'close-job-details');
+      }
+      
+      // Result details close button
+      if (elements.closeResultDetails) {
+        utils.addEventListenerWithTracking(elements.closeResultDetails, 'click', () => {
+          elements.resultDetailsSection.classList.add('hidden');
+          elements.resultDetailsSection.setAttribute('aria-hidden', 'true');
+          
+          // Restore focus
+          utils.restoreFocus();
+        }, 'close-result-details');
+      }
+      
+      // Global click handler for dynamic buttons
+      document.addEventListener('click', function(e) {
+        // View job button clicked
+        if (e.target.classList.contains('view-job-btn') || e.target.closest('.view-job-btn')) {
+          e.preventDefault();
+          
+          const button = e.target.classList.contains('view-job-btn') ? e.target : e.target.closest('.view-job-btn');
+          const jobId = button.dataset.jobId;
+          if (jobId) {
+            // Store the button as last focused element
+            lastFocusedElement = button;
+            loadJobDetails(jobId);
+          }
+        }
+        
+        // Cancel job button clicked
+        if (e.target.classList.contains('cancel-job-btn') || e.target.closest('.cancel-job-btn')) {
+          const button = e.target.classList.contains('cancel-job-btn') ? e.target : e.target.closest('.cancel-job-btn');
+          const jobId = button.dataset.jobId;
+          if (jobId) {
+            cancelJob(jobId, button);
+          }
+        }
+        
+        // View result button clicked
+        if (e.target.classList.contains('view-result-btn') || e.target.closest('.view-result-btn')) {
+          const button = e.target.classList.contains('view-result-btn') ? e.target : e.target.closest('.view-result-btn');
+          const resultId = button.dataset.resultId;
+          if (resultId) {
+            // Store the button as last focused element
+            lastFocusedElement = button;
+            loadResultDetails(resultId);
+          }
+        }
+        
+        // Toggle issue details button
+        if (e.target.classList.contains('toggle-issue') || e.target.closest('.toggle-issue')) {
+          const button = e.target.classList.contains('toggle-issue') ? e.target : e.target.closest('.toggle-issue');
+          const issueDetails = button.closest('.space-y-2').querySelector('.issue-details');
+          
+          if (issueDetails) {
+            const isExpanded = !issueDetails.classList.contains('hidden');
+            issueDetails.classList.toggle('hidden');
+            button.textContent = isExpanded ? 'Expand' : 'Collapse';
+            button.setAttribute('aria-expanded', !isExpanded);
+          }
+        }
+        
+        // Export results button
+        if (e.target.id === 'exportResultsBtn' || e.target.closest('#exportResultsBtn')) {
+          const jobId = document.querySelector('#job-id')?.textContent;
+          if (jobId) {
+            exportJobResults(jobId);
+          }
+        }
+        
+        // Expand all issues button
+        if (e.target.id === 'expandAllIssues' || e.target.closest('#expandAllIssues')) {
+          const button = e.target.id === 'expandAllIssues' ? e.target : e.target.closest('#expandAllIssues');
+          const issueContainer = button.closest('#issues-container');
+          
+          if (issueContainer) {
+            const issuesToggles = issueContainer.querySelectorAll('.toggle-issue');
+            const allExpanded = Array.from(issuesToggles).every(btn => btn.textContent === 'Collapse');
+            
+            issuesToggles.forEach(toggle => {
+              const issueDetails = toggle.closest('.space-y-2').querySelector('.issue-details');
+              if (issueDetails) {
+                if (allExpanded) {
+                  // Collapse all
+                  issueDetails.classList.add('hidden');
+                  toggle.textContent = 'Expand';
+                  toggle.setAttribute('aria-expanded', 'false');
+                } else {
+                  // Expand all
+                  issueDetails.classList.remove('hidden');
+                  toggle.textContent = 'Collapse';
+                  toggle.setAttribute('aria-expanded', 'true');
+                }
+              }
+            });
+            
+            // Update button text
+            button.textContent = allExpanded ? 'Expand All' : 'Collapse All';
+          }
+        }
+      });
+    }
+    
+    // Filter functionality for job list
+    function setupJobFilters() {
+      if (!elements.searchJobs || !elements.modelFilter || !elements.statusFilter || !elements.scanTypeFilter) return;
+      
+      const jobFilters = setupFilter({
+        searchInput: elements.searchJobs,
+        filters: [
+          {
+            id: 'model',
+            element: elements.modelFilter,
+            getValue: (item) => {
+              return item.dataset.models ? item.dataset.models.toLowerCase() : '';
+            }
+          },
+          {
+            id: 'scanType',
+            element: elements.scanTypeFilter,
+            getValue: (item) => {
+              return item.dataset.scanType ? item.dataset.scanType.toLowerCase() : '';
+            }
+          },
+          {
+            id: 'status',
+            element: elements.statusFilter,
+            getValue: (item) => {
+              return item.dataset.status ? item.dataset.status.toLowerCase() : '';
+            }
+          }
+        ],
+        container: elements.jobsTableBody,
+        itemSelector: '.job-row',
+        visibleCountElement: elements.visibleJobsCount,
+        noResultsElement: document.getElementById('noResultsRow'),
+        getSearchData: (item) => {
+          return [
+            item.dataset.name || '',
+            item.dataset.models || '',
+            item.dataset.scanType || '',
+            item.textContent
+          ].join(' ').toLowerCase();
+        },
+        itemName: 'jobs'
+      });
+      
+      // Clear filters button
+      if (elements.clearFilters) {
+        utils.addEventListenerWithTracking(elements.clearFilters, 'click', () => {
+          jobFilters.reset();
+          
+          // Focus search input after clearing
+          elements.searchJobs.focus();
+        }, 'clear-job-filters');
+      }
+    }
+    
+    // Load job details and populate the details panel
+    async function loadJobDetails(jobId) {
+      // Stop any existing polling
+      utils.stopJobPolling();
+      
+      // Show the job details section and set loading state
+      elements.jobDetailsSection.classList.remove('hidden');
+      elements.jobDetailsSection.setAttribute('aria-hidden', 'false');
+      elements.jobDetailsTitle.textContent = `Job Details: #${jobId}`;
+      elements.jobDetailsContent.innerHTML = `
+        <div class="flex justify-center p-4">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      `;
+      
+      // Trap focus in the modal
+      utils.trapFocus(elements.jobDetailsSection);
+      
+      try {
+        // Fetch job details from API
+        const response = await fetch(`/batch-analysis/job/${jobId}/status`);
+        if (!response.ok) {
+          throw new Error(`Failed to load job details: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        // Clone the template
+        const template = elements.jobDetailsTpl.content.cloneNode(true);
+        
+        // Populate job information
+        template.getElementById('job-id').textContent = data.id;
+        template.getElementById('job-name').textContent = data.name || `Job #${data.id}`;
+        
+        // Status with correct styling
+        const statusElement = template.getElementById('job-status');
+        statusElement.textContent = data.status;
+        statusElement.className = `px-2 py-0.5 rounded-md text-white ${utils.getStatusClass(data.status)}`;
+        
+        // Scan type with correct styling
+        const scanTypeElement = template.getElementById('job-scan-type');
+        scanTypeElement.textContent = data.scan_type || 'frontend';
+        scanTypeElement.className = `px-2 py-0.5 rounded-md ${utils.getScanTypeClass(data.scan_type)}`;
+        
+        template.getElementById('job-created').textContent = utils.formatDateTime(data.created_at);
+        template.getElementById('job-started').textContent = utils.formatDateTime(data.started_at);
+        template.getElementById('job-completed').textContent = utils.formatDateTime(data.completed_at);
+        template.getElementById('job-models').textContent = Array.isArray(data.models) ? data.models.join(', ') : 'None';
+        template.getElementById('job-full-scan').textContent = data.scan_options?.full_scan ? 'Yes' : 'No (Quick Scan)';
+        
+        // Progress information
+        const progressBar = template.getElementById('progress-bar');
+        const progress = data.progress?.percent || 0;
+        progressBar.style.width = `${progress}%`;
+        progressBar.textContent = `${progress}%`;
+        
+        template.getElementById('completed-tasks').textContent = `${data.progress?.completed || 0}/${data.progress?.total || 0} tasks`;
+        
+        // Calculate and set runtime
+        const runtime = utils.calculateRuntime(data);
+        template.getElementById('runtime').textContent = runtime;
+        
+        // Issue counts
+        template.getElementById('high-issues').textContent = data.results_summary?.issues?.high || 0;
+        template.getElementById('medium-issues').textContent = data.results_summary?.issues?.medium || 0;
+        template.getElementById('low-issues').textContent = data.results_summary?.issues?.low || 0;
+        template.getElementById('total-issues').textContent = data.results_summary?.issues?.total || 0;
+        
+        // Show scan type-specific stats for "both" scan type
+        const scanTypeStats = template.getElementById('scan-type-stats');
+        if (data.scan_type === 'both') {
+          scanTypeStats.classList.remove('hidden');
+          
+          // Frontend issues
+          template.getElementById('frontend-high-issues').textContent = data.results_summary?.frontend?.issues?.high || 0;
+          template.getElementById('frontend-medium-issues').textContent = data.results_summary?.frontend?.issues?.medium || 0;
+          template.getElementById('frontend-low-issues').textContent = data.results_summary?.frontend?.issues?.low || 0;
+          template.getElementById('frontend-total-issues').textContent = `${data.results_summary?.frontend?.issues?.total || 0} total`;
+          
+          // Backend issues
+          template.getElementById('backend-high-issues').textContent = data.results_summary?.backend?.issues?.high || 0;
+          template.getElementById('backend-medium-issues').textContent = data.results_summary?.backend?.issues?.medium || 0;
+          template.getElementById('backend-low-issues').textContent = data.results_summary?.backend?.issues?.low || 0;
+          template.getElementById('backend-total-issues').textContent = `${data.results_summary?.backend?.issues?.total || 0} total`;
+        }
+        
+        // Populate results table
+        await loadJobResults(jobId, template.getElementById('results-table-body'), 
+                            template.getElementById('resultModelFilter'),
+                            template.getElementById('resultScanTypeFilter'));
+        
+        // Show/hide errors section
+        const errorsSection = template.getElementById('errors-section');
+        const errorsList = template.getElementById('errors-list');
+        
+        if (data.errors && data.errors.length > 0) {
+          errorsSection.classList.remove('hidden');
+          errorsList.innerHTML = '';
+          
+          data.errors.forEach(error => {
+            const li = document.createElement('li');
+            li.textContent = error;
+            errorsList.appendChild(li);
           });
         }
-      });
-      
-      // Initial update
-      updateAppRangeFields();
-    }
-  }
-  
-  // Set up job/result section toggle and close buttons
-  function setupSectionToggles() {
-    // Job details close button
-    if (elements.closeJobDetails) {
-      utils.addEventListenerWithCleanup(elements.closeJobDetails, 'click', () => {
-        elements.jobDetailsSection.classList.add('hidden');
-        elements.jobDetailsSection.setAttribute('aria-hidden', 'true');
         
-        // Stop polling if active
-        if (activeJobPollingInterval) {
-          clearInterval(activeJobPollingInterval);
-          activeJobPollingInterval = null;
-        }
+        // Replace the content with the populated template
+        elements.jobDetailsContent.innerHTML = '';
+        elements.jobDetailsContent.appendChild(template);
         
-        // Restore focus
-        utils.restoreFocus();
-      });
-    }
-    
-    // Result details close button
-    if (elements.closeResultDetails) {
-      utils.addEventListenerWithCleanup(elements.closeResultDetails, 'click', () => {
-        elements.resultDetailsSection.classList.add('hidden');
-        elements.resultDetailsSection.setAttribute('aria-hidden', 'true');
+        // Set up result filters
+        setupResultFilters();
         
-        // Restore focus
-        utils.restoreFocus();
-      });
-    }
-    
-    // Global click handler for dynamic buttons
-    document.addEventListener('click', function(e) {
-      // View job button clicked
-      if (e.target.classList.contains('view-job-btn') || e.target.closest('.view-job-btn')) {
-        e.preventDefault();
-        
-        const button = e.target.classList.contains('view-job-btn') ? e.target : e.target.closest('.view-job-btn');
-        const jobId = button.dataset.jobId;
-        if (jobId) {
-          // Store the button as last focused element
-          lastFocusedElement = button;
-          loadJobDetails(jobId);
-        }
-      }
-      
-      // Cancel job button clicked
-      if (e.target.classList.contains('cancel-job-btn') || e.target.closest('.cancel-job-btn')) {
-        const button = e.target.classList.contains('cancel-job-btn') ? e.target : e.target.closest('.cancel-job-btn');
-        const jobId = button.dataset.jobId;
-        if (jobId) {
-          cancelJob(jobId, button);
-        }
-      }
-      
-      // View result button clicked
-      if (e.target.classList.contains('view-result-btn') || e.target.closest('.view-result-btn')) {
-        const button = e.target.classList.contains('view-result-btn') ? e.target : e.target.closest('.view-result-btn');
-        const resultId = button.dataset.resultId;
-        if (resultId) {
-          // Store the button as last focused element
-          lastFocusedElement = button;
-          loadResultDetails(resultId);
-        }
-      }
-      
-      // Toggle issue details button
-      if (e.target.classList.contains('toggle-issue') || e.target.closest('.toggle-issue')) {
-        const button = e.target.classList.contains('toggle-issue') ? e.target : e.target.closest('.toggle-issue');
-        const issueDetails = button.closest('.space-y-2').querySelector('.issue-details');
-        
-        if (issueDetails) {
-          const isExpanded = !issueDetails.classList.contains('hidden');
-          issueDetails.classList.toggle('hidden');
-          button.textContent = isExpanded ? 'Expand' : 'Collapse';
-          button.setAttribute('aria-expanded', !isExpanded);
-        }
-      }
-      
-      // Export results button
-      if (e.target.id === 'exportResultsBtn' || e.target.closest('#exportResultsBtn')) {
-        const jobId = document.querySelector('#job-id')?.textContent;
-        if (jobId) {
-          exportJobResults(jobId);
-        }
-      }
-      
-      // Expand all issues button
-      if (e.target.id === 'expandAllIssues' || e.target.closest('#expandAllIssues')) {
-        const button = e.target.id === 'expandAllIssues' ? e.target : e.target.closest('#expandAllIssues');
-        const issueContainer = button.closest('#issues-container');
-        
-        if (issueContainer) {
-          const issuesToggles = issueContainer.querySelectorAll('.toggle-issue');
-          const allExpanded = Array.from(issuesToggles).every(btn => btn.textContent === 'Collapse');
+        // If job is still running, set up polling
+        if (data.status === 'running') {
+          // Reset error count
+          pollingErrorCount = 0;
           
-          issuesToggles.forEach(toggle => {
-            const issueDetails = toggle.closest('.space-y-2').querySelector('.issue-details');
-            if (issueDetails) {
-              if (allExpanded) {
-                // Collapse all
-                issueDetails.classList.add('hidden');
-                toggle.textContent = 'Expand';
-                toggle.setAttribute('aria-expanded', 'false');
-              } else {
-                // Expand all
-                issueDetails.classList.remove('hidden');
-                toggle.textContent = 'Collapse';
-                toggle.setAttribute('aria-expanded', 'true');
+          // Set up new polling interval
+          activeJobPollingInterval = setInterval(() => {
+            refreshJobDetails(jobId);
+          }, POLLING_INTERVAL);
+        }
+        
+      } catch (error) {
+        console.error('Error loading job details:', error);
+        
+        const errorResult = utils.handleApiError(error, () => loadJobDetails(jobId));
+        
+        elements.jobDetailsContent.innerHTML = errorResult.html;
+        
+        // Add retry button functionality
+        const retryBtn = document.getElementById('retryBtn');
+        if (retryBtn && errorResult.addRetryButton) {
+          utils.addEventListenerWithTracking(retryBtn, 'click', errorResult.addRetryButton, 'retry-job-details');
+        }
+      }
+    }
+    
+    // Load job results for the given job ID
+    async function loadJobResults(jobId, tableBody, modelFilterSelect, scanTypeFilterSelect) {
+      if (!tableBody) return;
+      
+      try {
+        // Fetch results from API
+        const response = await fetch(`/batch-analysis/job/${jobId}/results`);
+        if (!response.ok) {
+          throw new Error(`Failed to load job results: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        const results = data.results || [];
+        
+        if (results.length === 0) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="10" class="border border-gray-300 px-2 py-4 text-xs text-center text-gray-500">
+                No results available yet
+              </td>
+            </tr>
+          `;
+          
+          // Update result counter
+          updateResultsCounter(0, 0);
+          return;
+        }
+        
+        // Clear table and filter options
+        tableBody.innerHTML = '';
+        
+        // Set up model filter options
+        if (modelFilterSelect) {
+          // Keep the "All Models" option
+          modelFilterSelect.innerHTML = '<option value="all">All Models</option>';
+          
+          // Add unique model options
+          const models = [...new Set(results.map(r => r.model))].sort();
+          models.forEach(model => {
+            const option = document.createElement('option');
+            option.value = model;
+            option.textContent = model;
+            modelFilterSelect.appendChild(option);
+          });
+        }
+        
+        // Set up scan type filter options (if both frontend and backend results exist)
+        if (scanTypeFilterSelect) {
+          // Keep the "All Scan Types" option
+          scanTypeFilterSelect.innerHTML = '<option value="all">All Scan Types</option>';
+          
+          // Get unique scan types
+          const scanTypes = [...new Set(results.map(r => r.scan_type))].sort();
+          
+          // Only add options if there are multiple scan types
+          if (scanTypes.length > 0) {
+            scanTypes.forEach(scanType => {
+              const option = document.createElement('option');
+              option.value = scanType;
+              option.textContent = scanType.charAt(0).toUpperCase() + scanType.slice(1); // Capitalize
+              scanTypeFilterSelect.appendChild(option);
+            });
+          }
+        }
+        
+        // Add each result to the table
+        results.forEach(result => {
+          const template = elements.resultItemTpl.content.cloneNode(true);
+          const row = template.querySelector('tr');
+          
+          // Set data attributes for filtering
+          row.dataset.model = result.model || '';
+          row.dataset.status = result.status || '';
+          row.dataset.scanType = result.scan_type || 'frontend';
+          row.dataset.searchText = `${result.model} app ${result.app_num} ${result.scan_type}`.toLowerCase();
+          
+          // Set content
+          template.querySelector('.result-model').textContent = result.model || 'Unknown';
+          template.querySelector('.result-app-num').textContent = result.app_num || 'N/A';
+          
+          // Scan type with appropriate styling
+          const scanTypeElement = template.querySelector('.result-scan-type');
+          scanTypeElement.textContent = result.scan_type || 'frontend';
+          scanTypeElement.className = `px-2 py-0.5 rounded-md ${utils.getScanTypeClass(result.scan_type)}`;
+          
+          // Status with appropriate styling
+          const statusElement = template.querySelector('.result-status');
+          statusElement.textContent = result.status || 'Unknown';
+          statusElement.className = `px-2 py-0.5 rounded-md ${utils.getResultStatusClass(result.status)}`;
+          
+          // Issues counts
+          template.querySelector('.result-high').textContent = result.high_severity || 0;
+          template.querySelector('.result-medium').textContent = result.medium_severity || 0;
+          template.querySelector('.result-low').textContent = result.low_severity || 0;
+          template.querySelector('.result-total').textContent = result.issues_count || 0;
+          
+          // Scan time
+          template.querySelector('.result-time').textContent = utils.formatDateTime(result.scan_time);
+          
+          // Set result ID on the view button
+          const viewButton = template.querySelector('.view-result-btn');
+          viewButton.dataset.resultId = result.id;
+          viewButton.setAttribute('aria-label', `View details for ${result.model} App ${result.app_num} (${result.scan_type})`);
+          
+          tableBody.appendChild(template);
+        });
+        
+        // Update results counter
+        updateResultsCounter(results.length, results.length);
+        
+      } catch (error) {
+        console.error('Error loading job results:', error);
+        
+        const errorResult = utils.handleApiError(error, () => loadJobResults(jobId, tableBody, modelFilterSelect, scanTypeFilterSelect));
+        
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="10" class="border border-gray-300 px-2 py-4 text-xs text-center text-red-600">
+              ${errorResult.message}
+              <button class="retry-results-btn ml-2 px-2 py-0.5 bg-red-600 text-white rounded hover:bg-red-700 transition" data-job-id="${jobId}">
+                Retry
+              </button>
+            </td>
+          </tr>
+        `;
+        
+        // Add retry button functionality
+        const retryBtn = tableBody.querySelector('.retry-results-btn');
+        if (retryBtn) {
+          utils.addEventListenerWithTracking(retryBtn, 'click', () => {
+            loadJobResults(jobId, tableBody, modelFilterSelect, scanTypeFilterSelect);
+          }, `retry-results-${jobId}`);
+        }
+        
+        // Update results counter
+        updateResultsCounter(0, 0);
+      }
+    }
+    
+    // Update results counter
+    function updateResultsCounter(visibleCount, totalCount) {
+      const visibleCountElement = document.getElementById('visibleResultsCount');
+      const totalCountElement = document.getElementById('totalResultsCount');
+      
+      if (visibleCountElement) {
+        visibleCountElement.textContent = visibleCount;
+      }
+      
+      if (totalCountElement) {
+        totalCountElement.textContent = totalCount;
+      }
+    }
+    
+    // Update issues counter
+    function updateIssuesCounter(visibleCount, totalCount) {
+      const visibleCountElement = document.getElementById('visibleIssuesCount');
+      const totalCountElement = document.getElementById('totalIssuesCount');
+      
+      if (visibleCountElement) {
+        visibleCountElement.textContent = visibleCount;
+      }
+      
+      if (totalCountElement) {
+        totalCountElement.textContent = totalCount;
+      }
+    }
+    
+    // Set up filters for results table
+    function setupResultFilters() {
+      const searchInput = document.getElementById('searchResults');
+      const statusFilter = document.getElementById('resultStatusFilter');
+      const modelFilter = document.getElementById('resultModelFilter');
+      const scanTypeFilter = document.getElementById('resultScanTypeFilter');
+      
+      if (!searchInput || !statusFilter || !modelFilter) return;
+      
+      const filters = [
+        {
+          id: 'status',
+          element: statusFilter,
+          getValue: (item) => item.dataset.status || ''
+        },
+        {
+          id: 'model',
+          element: modelFilter,
+          getValue: (item) => item.dataset.model || ''
+        }
+      ];
+      
+      // Add scan type filter if it exists
+      if (scanTypeFilter) {
+        filters.push({
+          id: 'scanType',
+          element: scanTypeFilter,
+          getValue: (item) => item.dataset.scanType || ''
+        });
+      }
+      
+      setupFilter({
+        searchInput: searchInput,
+        filters: filters,
+        container: document.getElementById('results-table-body'),
+        itemSelector: '.result-row',
+        visibleCountElement: document.getElementById('visibleResultsCount'),
+        totalCountElement: document.getElementById('totalResultsCount'),
+        getSearchData: (item) => item.dataset.searchText || item.textContent.toLowerCase(),
+        itemName: 'results'
+      });
+    }
+    
+    // Set up filters for issues list
+    function setupIssueFilters() {
+      const searchInput = document.getElementById('searchIssues');
+      const severityFilter = document.getElementById('severityFilter');
+      const fileFilter = document.getElementById('fileFilter');
+      const toolFilter = document.getElementById('toolFilter');
+      
+      if (!searchInput || !severityFilter || !fileFilter) return;
+      
+      const filters = [
+        {
+          id: 'severity',
+          element: severityFilter,
+          getValue: (item) => item.dataset.severity || ''
+        },
+        {
+          id: 'file',
+          element: fileFilter,
+          getValue: (item) => item.dataset.file || ''
+        }
+      ];
+      
+      // Add tool filter if it exists
+      if (toolFilter) {
+        filters.push({
+          id: 'tool',
+          element: toolFilter,
+          getValue: (item) => item.dataset.tool || ''
+        });
+      }
+      
+      setupFilter({
+        searchInput: searchInput,
+        filters: filters,
+        container: document.getElementById('issueList'),
+        itemSelector: '.issue-item',
+        visibleCountElement: document.getElementById('visibleIssuesCount'),
+        totalCountElement: document.getElementById('totalIssuesCount'),
+        getSearchData: (item) => item.dataset.searchable || item.textContent.toLowerCase(),
+        itemName: 'issues'
+      });
+    }
+    
+    // Export job results to CSV
+    async function exportJobResults(jobId) {
+      try {
+        // Show loading toast
+        const loadingToast = utils.showToast('info', 'Preparing Export', 'Generating CSV file...', 0);
+        
+        // Fetch results from API
+        const response = await fetch(`/batch-analysis/job/${jobId}/results`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch results for export: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        const results = data.results || [];
+        
+        if (results.length === 0) {
+          utils.showToast('warning', 'Export Failed', 'No results available to export');
+          if (loadingToast && loadingToast.parentNode) {
+            elements.toastContainer.removeChild(loadingToast);
+          }
+          return;
+        }
+        
+        // Prepare CSV data
+        const csvData = [
+          // Header row
+          {
+            Model: 'Model',
+            App: 'App',
+            ScanType: 'Scan Type',
+            Status: 'Status',
+            High: 'High Issues',
+            Medium: 'Medium Issues',
+            Low: 'Low Issues',
+            Total: 'Total Issues',
+            ScanTime: 'Scan Time'
+          }
+        ];
+        
+        // Add result rows
+        results.forEach(result => {
+          csvData.push({
+            Model: result.model || '',
+            App: `App ${result.app_num || ''}`,
+            ScanType: result.scan_type || 'frontend',
+            Status: result.status || '',
+            High: result.high_severity || 0,
+            Medium: result.medium_severity || 0,
+            Low: result.low_severity || 0,
+            Total: result.issues_count || 0,
+            ScanTime: utils.formatDateTime(result.scan_time)
+          });
+        });
+        
+        // Generate filename
+        const jobName = document.getElementById('job-name')?.textContent || `Job-${jobId}`;
+        const dateStr = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        const filename = `${jobName.replace(/[^a-z0-9]/gi, '-')}-results-${dateStr}.csv`;
+        
+        // Export to CSV
+        utils.exportToCSV(csvData, filename);
+        
+        // Remove loading toast and show success
+        if (loadingToast && loadingToast.parentNode) {
+          elements.toastContainer.removeChild(loadingToast);
+        }
+        
+        utils.showToast('success', 'Export Complete', `Results exported to ${filename}`);
+        
+      } catch (error) {
+        console.error('Error exporting results:', error);
+        utils.showToast('error', 'Export Failed', `Error: ${error.message}`);
+      }
+    }
+    
+    // Refresh job details for active polling
+    async function refreshJobDetails(jobId) {
+      try {
+        const response = await fetch(`/batch-analysis/job/${jobId}/status`);
+        if (!response.ok) {
+          throw new Error(`Failed to refresh job status: ${response.statusText}`);
+        }
+        
+        // Reset error count on successful request
+        pollingErrorCount = 0;
+        
+        const data = await response.json();
+        
+        // Update progress information
+        const progressBar = document.getElementById('progress-bar');
+        if (progressBar) {
+          const progress = data.progress?.percent || 0;
+          progressBar.style.width = `${progress}%`;
+          progressBar.textContent = `${progress}%`;
+        }
+        
+        // Update completed tasks
+        const completedTasks = document.getElementById('completed-tasks');
+        if (completedTasks) {
+          completedTasks.textContent = `${data.progress?.completed || 0}/${data.progress?.total || 0} tasks`;
+        }
+        
+        // Update runtime
+        const runtimeElement = document.getElementById('runtime');
+        if (runtimeElement) {
+          runtimeElement.textContent = utils.calculateRuntime(data);
+        }
+        
+        // Update issue counts
+        const highIssues = document.getElementById('high-issues');
+        const mediumIssues = document.getElementById('medium-issues');
+        const lowIssues = document.getElementById('low-issues');
+        const totalIssues = document.getElementById('total-issues');
+        
+        if (highIssues) highIssues.textContent = data.results_summary?.issues?.high || 0;
+        if (mediumIssues) mediumIssues.textContent = data.results_summary?.issues?.medium || 0;
+        if (lowIssues) lowIssues.textContent = data.results_summary?.issues?.low || 0;
+        if (totalIssues) totalIssues.textContent = data.results_summary?.issues?.total || 0;
+        
+        // Update scan type-specific issues for 'both' scan type
+        if (data.scan_type === 'both') {
+          const frontendHighIssues = document.getElementById('frontend-high-issues');
+          const frontendMediumIssues = document.getElementById('frontend-medium-issues');
+          const frontendLowIssues = document.getElementById('frontend-low-issues');
+          const frontendTotalIssues = document.getElementById('frontend-total-issues');
+          
+          if (frontendHighIssues) frontendHighIssues.textContent = data.results_summary?.frontend?.issues?.high || 0;
+          if (frontendMediumIssues) frontendMediumIssues.textContent = data.results_summary?.frontend?.issues?.medium || 0;
+          if (frontendLowIssues) frontendLowIssues.textContent = data.results_summary?.frontend?.issues?.low || 0;
+          if (frontendTotalIssues) frontendTotalIssues.textContent = `${data.results_summary?.frontend?.issues?.total || 0} total`;
+          
+          const backendHighIssues = document.getElementById('backend-high-issues');
+          const backendMediumIssues = document.getElementById('backend-medium-issues');
+          const backendLowIssues = document.getElementById('backend-low-issues');
+          const backendTotalIssues = document.getElementById('backend-total-issues');
+          
+          if (backendHighIssues) backendHighIssues.textContent = data.results_summary?.backend?.issues?.high || 0;
+          if (backendMediumIssues) backendMediumIssues.textContent = data.results_summary?.backend?.issues?.medium || 0;
+          if (backendLowIssues) backendLowIssues.textContent = data.results_summary?.backend?.issues?.low || 0;
+          if (backendTotalIssues) backendTotalIssues.textContent = `${data.results_summary?.backend?.issues?.total || 0} total`;
+        }
+        
+        // Update job status
+        const statusElement = document.getElementById('job-status');
+        if (statusElement) {
+          statusElement.textContent = data.status;
+          statusElement.className = `px-2 py-0.5 rounded-md text-white ${utils.getStatusClass(data.status)}`;
+        }
+        
+        // If job is no longer running
+        if (data.status !== 'running') {
+          // Update completed time
+          const completedElement = document.getElementById('job-completed');
+          if (completedElement) {
+            completedElement.textContent = utils.formatDateTime(data.completed_at);
+          }
+          
+          // Refresh the results table
+          const resultsTableBody = document.getElementById('results-table-body');
+          const modelFilterSelect = document.getElementById('resultModelFilter');
+          const scanTypeFilterSelect = document.getElementById('resultScanTypeFilter');
+          if (resultsTableBody) {
+            await loadJobResults(jobId, resultsTableBody, modelFilterSelect, scanTypeFilterSelect);
+            setupResultFilters();
+          }
+          
+          // Stop polling
+          utils.stopJobPolling();
+          
+          // Show toast notification
+          utils.showToast(
+            data.status === 'completed' ? 'success' : 'warning',
+            'Job Update',
+            `Job #${jobId} ${data.status}`,
+            5000
+          );
+          
+          // Update main job list if it exists
+          const jobRow = document.querySelector(`.job-row[data-job-id="${jobId}"]`);
+          if (jobRow) {
+            // Update status cell
+            const statusCell = jobRow.querySelector('td:nth-child(3) span');
+            if (statusCell) {
+              statusCell.textContent = data.status;
+              statusCell.className = `px-2 py-0.5 rounded-md text-white ${utils.getStatusClass(data.status)}`;
+            }
+            
+            // Update progress bar
+            const progressBar = jobRow.querySelector('td:nth-child(7) .bg-blue-600');
+            const progressText = jobRow.querySelector('td:nth-child(7) .text-xs.text-gray-600');
+            
+            if (progressBar) {
+              progressBar.style.width = `${data.progress?.percent || 0}%`;
+            }
+            
+            if (progressText) {
+              progressText.textContent = `${data.progress?.completed || 0}/${data.progress?.total || 0}`;
+            }
+            
+            // Update issues counts if completed
+            if (data.status === 'completed') {
+              const issuesCell = jobRow.querySelector('td:nth-child(8)');
+              if (issuesCell && data.results_summary?.issues) {
+                issuesCell.innerHTML = `
+                  <div class="flex space-x-1">
+                    <span class="px-1 bg-red-100 text-red-800 border border-red-700 rounded" title="High severity issues">${data.results_summary.issues.high || 0}</span>
+                    <span class="px-1 bg-yellow-100 text-yellow-800 border border-yellow-700 rounded" title="Medium severity issues">${data.results_summary.issues.medium || 0}</span>
+                    <span class="px-1 bg-blue-100 text-blue-800 border border-blue-700 rounded" title="Low severity issues">${data.results_summary.issues.low || 0}</span>
+                  </div>
+                `;
               }
             }
-          });
+            
+            // Remove cancel button if present
+            const cancelBtn = jobRow.querySelector('.cancel-job-btn');
+            if (cancelBtn) {
+              cancelBtn.remove();
+            }
+            
+            // Update dataset status
+            jobRow.dataset.status = data.status;
+            
+            // Reapply filters
+            filterJobs();
+          }
+        }
+        
+      } catch (error) {
+        console.error('Error refreshing job details:', error);
+        
+        // Increment error count
+        pollingErrorCount++;
+        
+        // Stop polling if there are persistent errors
+        if (pollingErrorCount >= MAX_POLLING_ERRORS) {
+          console.warn(`Stopping polling after ${MAX_POLLING_ERRORS} consecutive errors`);
           
-          // Update button text
-          button.textContent = allExpanded ? 'Expand All' : 'Collapse All';
+          utils.stopJobPolling();
+          
+          // Show error toast
+          utils.showToast('error', 'Connection Lost', 'Failed to update job status. Please refresh the page.');
         }
       }
-    });
-  }
-  
-  // Filter functionality
-  function setupFilters() {
-    const updateJobsCounter = () => {
-      const visibleCount = utils.countVisibleRows(elements.jobsTableBody, '.job-row');
-      const totalRows = document.querySelectorAll('.job-row').length;
+    }
+    
+    // Cancel a running job
+    async function cancelJob(jobId, button) {
+      if (!confirm('Are you sure you want to cancel this job?')) {
+        return;
+      }
       
+      // Set button to loading state
+      const originalText = button.textContent;
+      button.disabled = true;
+      button.innerHTML = `
+        <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>Canceling...`;
+      
+      try {
+        // Send cancel request to API
+        const response = await fetch(`/batch-analysis/job/${jobId}/cancel`, {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to cancel job: ${response.statusText}`);
+        }
+        
+        // Update the UI
+        const data = await response.json();
+        
+        if (data.status === 'canceled' || data.status === 'cancelled') {
+          // Update job row status
+          const jobRow = document.querySelector(`.job-row[data-job-id="${jobId}"]`);
+          if (jobRow) {
+            const statusCell = jobRow.querySelector('td:nth-child(3) span');
+            if (statusCell) {
+              statusCell.textContent = 'canceled';
+              statusCell.className = 'px-2 py-0.5 rounded-md text-white bg-red-600';
+            }
+            
+            jobRow.dataset.status = 'canceled';
+            
+            // Remove the cancel button
+            button.remove();
+          }
+          
+          // If job details are open, update them
+          if (elements.jobDetailsSection && !elements.jobDetailsSection.classList.contains('hidden')) {
+            // Refresh job details
+            loadJobDetails(jobId);
+          }
+          
+          // Show success toast
+          utils.showToast('success', 'Job Canceled', `Job #${jobId} has been successfully canceled`);
+        } else {
+          utils.showToast('error', 'Cancel Failed', data.error || 'Failed to cancel job');
+          
+          // Reset button state if it still exists
+          if (button.parentNode) {
+            button.disabled = false;
+            button.textContent = originalText;
+          }
+        }
+        
+      } catch (error) {
+        console.error('Error canceling job:', error);
+        utils.showToast('error', 'Cancel Failed', `Error: ${error.message}`);
+        
+        // Reset button state if it still exists
+        if (button.parentNode) {
+          button.disabled = false;
+          button.textContent = originalText;
+        }
+      }
+    }
+    
+    // Load result details
+    async function loadResultDetails(resultId) {
+      // Show the result details section and set loading state
+      elements.resultDetailsSection.classList.remove('hidden');
+      elements.resultDetailsSection.setAttribute('aria-hidden', 'false');
+      elements.resultDetailsTitle.textContent = `Result Details: #${resultId}`;
+      elements.resultDetailsContent.innerHTML = `
+        <div class="flex justify-center p-4">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      `;
+      
+      // Trap focus in the modal
+      utils.trapFocus(elements.resultDetailsSection);
+      
+      try {
+        // Fetch result details from API
+        const response = await fetch(`/batch-analysis/result/${resultId}/data`);
+        if (!response.ok) {
+          throw new Error(`Failed to load result details: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        
+        // Clone the template
+        const template = elements.resultDetailsTpl.content.cloneNode(true);
+        
+        // Populate result information
+        template.getElementById('result-id').textContent = result.id;
+        template.getElementById('result-model').textContent = result.model || 'Unknown';
+        template.getElementById('result-app-num').textContent = result.app_num || 'N/A';
+        
+        // Scan type with correct styling
+        const scanTypeElement = template.getElementById('result-scan-type');
+        scanTypeElement.textContent = result.scan_type || 'frontend';
+        scanTypeElement.className = `px-2 py-0.5 rounded-md ${utils.getScanTypeClass(result.scan_type)}`;
+        
+        // Status with correct styling
+        const statusElement = template.getElementById('result-status');
+        statusElement.textContent = result.status || 'Unknown';
+        statusElement.className = `px-2 py-0.5 rounded-md ${utils.getResultStatusClass(result.status)}`;
+        
+        template.getElementById('result-scan-time').textContent = utils.formatDateTime(result.scan_time);
+        template.getElementById('result-issues-count').textContent = result.issues_count || 0;
+        
+        // Issue counts
+        template.getElementById('result-high-severity').textContent = result.high_severity || 0;
+        template.getElementById('result-medium-severity').textContent = result.medium_severity || 0;
+        template.getElementById('result-low-severity').textContent = result.low_severity || 0;
+        
+        // Tool status
+        const toolStatusContainer = template.getElementById('tool-status-container');
+        toolStatusContainer.innerHTML = '';
+        
+        if (result.details && result.details.tool_status) {
+          Object.entries(result.details.tool_status).forEach(([tool, status]) => {
+            const div = document.createElement('div');
+            div.className = 'flex justify-between text-xs';
+            
+            const toolSpan = document.createElement('span');
+            toolSpan.textContent = tool;
+            
+            const statusSpan = document.createElement('span');
+            statusSpan.textContent = status;
+            statusSpan.className = 
+              status.includes('No issues') ? 'text-green-700' :
+              status.includes('Not run') ? 'text-gray-600' :
+              status.includes('Error') ? 'text-red-700' :
+              'text-yellow-700';
+            
+            div.appendChild(toolSpan);
+            div.appendChild(statusSpan);
+            toolStatusContainer.appendChild(div);
+          });
+        }
+        
+        // Determine which containers to show based on result status
+        const issuesContainer = template.getElementById('issues-container');
+        const analysisErrorContainer = template.getElementById('analysis-error-container');
+        const noIssuesContainer = template.getElementById('no-issues-container');
+        
+        if (result.status === 'failed') {
+          // Show error message
+          issuesContainer.classList.add('hidden');
+          noIssuesContainer.classList.add('hidden');
+          analysisErrorContainer.classList.remove('hidden');
+          
+          const errorMessage = template.getElementById('analysis-error-message');
+          errorMessage.textContent = result.details?.error || 'Unknown error occurred during analysis';
+        } else if (result.issues_count === 0) {
+          // Show no issues message
+          issuesContainer.classList.add('hidden');
+          analysisErrorContainer.classList.add('hidden');
+          noIssuesContainer.classList.remove('hidden');
+        } else {
+          // Show issues list
+          analysisErrorContainer.classList.add('hidden');
+          noIssuesContainer.classList.add('hidden');
+          issuesContainer.classList.remove('hidden');
+          
+          // Get unique tools for tool filter
+          const issues = result.details?.issues || [];
+          const tools = [...new Set(issues.map(issue => issue.tool))].filter(Boolean);
+          
+          // Set up tool filter if there are multiple tools
+          const toolFilter = template.getElementById('toolFilter');
+          if (toolFilter && tools.length > 1) {
+            toolFilter.innerHTML = '<option value="all">All Tools</option>';
+            tools.forEach(tool => {
+              const option = document.createElement('option');
+              option.value = tool;
+              option.textContent = tool;
+              toolFilter.appendChild(option);
+            });
+          }
+          
+          // Populate issues list
+          await populateIssuesList(
+            issues, 
+            template.getElementById('issueList'),
+            template.getElementById('fileFilter')
+          );
+        }
+        
+        // Replace the content with the populated template
+        elements.resultDetailsContent.innerHTML = '';
+        elements.resultDetailsContent.appendChild(template);
+        
+        // Set up issue filters
+        setupIssueFilters();
+        
+      } catch (error) {
+        console.error('Error loading result details:', error);
+        
+        const errorResult = utils.handleApiError(error, () => loadResultDetails(resultId));
+        
+        elements.resultDetailsContent.innerHTML = errorResult.html;
+        
+        // Add retry button functionality
+        const retryBtn = document.getElementById('retryBtn');
+        if (retryBtn && errorResult.addRetryButton) {
+          utils.addEventListenerWithTracking(retryBtn, 'click', errorResult.addRetryButton, 'retry-result-details');
+        }
+      }
+    }
+    
+    // Populate issues list for a result
+    async function populateIssuesList(issues, issuesList, fileFilterSelect) {
+      if (!issuesList) return;
+      
+      // Clear current issues
+      issuesList.innerHTML = '';
+      
+      // Set up file filter
+      if (fileFilterSelect) {
+        // Keep the "All Files" option
+        fileFilterSelect.innerHTML = '<option value="all">All Files</option>';
+        
+        // Get unique filenames
+        const files = [...new Set(issues.map(issue => issue.filename))].sort();
+        
+        // Add file options
+        files.forEach(file => {
+          const option = document.createElement('option');
+          option.value = file;
+          option.textContent = file;
+          fileFilterSelect.appendChild(option);
+        });
+      }
+      
+      // Sort issues by severity (high to low)
+      const sortedIssues = [...issues].sort((a, b) => {
+        const severityOrder = { 'HIGH': 0, 'MEDIUM': 1, 'LOW': 2 };
+        return severityOrder[a.severity || 'LOW'] - severityOrder[b.severity || 'LOW'];
+      });
+      
+      // Add each issue
+      sortedIssues.forEach((issue, index) => {
+        const template = elements.issueItemTpl.content.cloneNode(true);
+        const issueItem = template.querySelector('.issue-item');
+        
+        // Generate unique ID for this issue
+        const issueId = `issue-${index}-${Date.now()}`;
+        
+        // Set data attributes for filtering
+        issueItem.dataset.severity = issue.severity || 'LOW';
+        issueItem.dataset.file = issue.filename || '';
+        issueItem.dataset.tool = issue.tool || '';
+        issueItem.dataset.searchable = `${issue.issue_type || ''} ${issue.issue_text || ''} ${issue.filename || ''} ${issue.tool || ''}`.toLowerCase();
+        
+        // Set background color based on severity
+        const severity = issue.severity || 'LOW';
+        if (severity === 'HIGH') {
+          issueItem.classList.add('bg-red-50');
+        } else if (severity === 'MEDIUM') {
+          issueItem.classList.add('bg-yellow-50');
+        } else {
+          issueItem.classList.add('bg-blue-50');
+        }
+        
+        // Severity badge
+        const severityBadge = template.querySelector('.issue-severity');
+        severityBadge.textContent = severity;
+        severityBadge.className = `text-xs px-2 py-0.5 border rounded-md ${
+          severity === 'HIGH' ? 'bg-red-100 text-red-800 border-red-700' :
+          severity === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800 border-yellow-700' :
+          'bg-blue-100 text-blue-800 border-blue-700'
+        }`;
+        
+        // Tool and confidence badges
+        template.querySelector('.issue-tool').textContent = issue.tool || 'Unknown';
+        template.querySelector('.issue-confidence').textContent = issue.confidence || 'Unknown';
+        
+        // Issue content
+        template.querySelector('.issue-type').textContent = issue.issue_type || 'Unknown Issue';
+        template.querySelector('.issue-text').textContent = issue.issue_text || 'No description available';
+        
+        // Fix suggestion (if available)
+        const fixContainer = template.querySelector('.fix-suggestion-container');
+        const fixText = template.querySelector('.fix-suggestion');
+        
+        if (issue.fix_suggestion) {
+          fixContainer.classList.remove('hidden');
+          fixText.textContent = issue.fix_suggestion;
+        }
+        
+        // File information
+        const filenameElement = template.querySelector('.issue-filename');
+        filenameElement.textContent = `${issue.filename || 'Unknown file'}${issue.line_number > 0 ? ':' + issue.line_number : ''}`;
+        
+        // Code sample
+        template.querySelector('.issue-code').textContent = issue.code || 'No code sample available';
+        
+        // Make toggle button accessible
+        const toggleButton = template.querySelector('.toggle-issue');
+        toggleButton.setAttribute('aria-controls', `issue-details-${issueId}`);
+        
+        // Set ID for details section
+        const detailsSection = template.querySelector('.issue-details');
+        detailsSection.id = `issue-details-${issueId}`;
+        
+        issuesList.appendChild(template);
+      });
+      
+      // If no issues, show a message
+      if (sortedIssues.length === 0) {
+        const message = document.createElement('div');
+        message.className = 'p-4 text-center';
+        message.innerHTML = `
+          <div class="inline-block border border-green-700 bg-green-50 p-2 rounded-md">
+            <p class="text-xs font-bold text-green-700">No security issues found.</p>
+          </div>
+        `;
+        issuesList.appendChild(message);
+      }
+      
+      // Update issues counter
+      updateIssuesCounter(sortedIssues.length, sortedIssues.length);
+    }
+    
+    // Filter jobs based on active filters (kept for backwards compatibility)
+    function filterJobs() {
+      if (!elements.jobsTableBody) return;
+      
+      const searchText = elements.searchJobs?.value?.toLowerCase() || '';
+      const selectedModel = elements.modelFilter?.value || 'all';
+      const selectedScanType = elements.scanTypeFilter?.value || 'all';
+      const selectedStatus = elements.statusFilter?.value || 'all';
+      
+      const jobRows = elements.jobsTableBody.querySelectorAll('.job-row');
+      let visibleCount = 0;
+      
+      jobRows.forEach(row => {
+        // Get row data
+        const models = (row.dataset.models || '').toLowerCase();
+        const scanType = (row.dataset.scanType || '').toLowerCase();
+        const status = (row.dataset.status || '').toLowerCase();
+        const name = (row.dataset.name || '').toLowerCase();
+        const text = row.textContent.toLowerCase();
+        
+        // Apply filters
+        const matchesSearch = !searchText || text.includes(searchText) || name.includes(searchText);
+        const matchesModel = selectedModel === 'all' || models.includes(selectedModel.toLowerCase());
+        const matchesScanType = selectedScanType === 'all' || scanType === selectedScanType;
+        const matchesStatus = selectedStatus === 'all' || status === selectedStatus;
+        
+        // Update visibility
+        row.style.display = matchesSearch && matchesModel && matchesScanType && matchesStatus ? '' : 'none';
+        if (matchesSearch && matchesModel && matchesScanType && matchesStatus) visibleCount++;
+      });
+      
+      // Update counter
       if (elements.visibleJobsCount) {
         elements.visibleJobsCount.textContent = visibleCount;
       }
@@ -1347,1041 +2764,82 @@ document.addEventListener('DOMContentLoaded', function() {
       if (noResultsRow) {
         noResultsRow.style.display = visibleCount === 0 ? '' : 'none';
       }
-    };
-    
-    // Debounced filter function
-    const debouncedFilterJobs = utils.debounce(() => {
-      filterJobs();
-      updateJobsCounter();
-    }, 200);
-    
-    // Search jobs
-    if (elements.searchJobs) {
-      utils.addEventListenerWithCleanup(elements.searchJobs, 'input', () => {
-        activeFilters.search = elements.searchJobs.value.toLowerCase();
-        debouncedFilterJobs();
-      });
     }
     
-    // Model filter
-    if (elements.modelFilter) {
-      utils.addEventListenerWithCleanup(elements.modelFilter, 'change', () => {
-        activeFilters.model = elements.modelFilter.value;
-        debouncedFilterJobs();
-      });
-    }
-    
-    // Status filter
-    if (elements.statusFilter) {
-      utils.addEventListenerWithCleanup(elements.statusFilter, 'change', () => {
-        activeFilters.status = elements.statusFilter.value;
-        debouncedFilterJobs();
-      });
-    }
-    
-    // Clear filters button
-    if (elements.clearFilters) {
-      utils.addEventListenerWithCleanup(elements.clearFilters, 'click', () => {
-        elements.searchJobs.value = '';
-        elements.modelFilter.value = 'all';
-        elements.statusFilter.value = 'all';
-        
-        activeFilters = {
-          search: '',
-          model: 'all',
-          status: 'all'
-        };
-        
-        debouncedFilterJobs();
-        
-        // Focus search input after clearing
-        elements.searchJobs.focus();
-      });
-    }
-    
-    // Initial count
-    updateJobsCounter();
-  }
-  
-  // Filter job rows based on active filters
-  function filterJobs() {
-    const jobRows = document.querySelectorAll('.job-row');
-    
-    jobRows.forEach(row => {
-      // Get row data
-      const models = (row.dataset.models || '').toLowerCase();
-      const status = (row.dataset.status || '').toLowerCase();
-      const name = (row.dataset.name || '').toLowerCase();
-      const text = row.textContent.toLowerCase();
+    // Initialize all components
+    function init() {
+      // Set up form events
+      setupFormEvents();
       
-      // Apply filters
-      const matchesSearch = activeFilters.search === '' || 
-                          text.includes(activeFilters.search) || 
-                          name.includes(activeFilters.search);
-      const matchesModel = activeFilters.model === 'all' || models.includes(activeFilters.model.toLowerCase());
-      const matchesStatus = activeFilters.status === 'all' || status === activeFilters.status;
+      // Set up section toggles
+      setupSectionToggles();
       
-      // Update visibility
-      row.style.display = matchesSearch && matchesModel && matchesStatus ? '' : 'none';
-    });
-  }
-  
-  // Load job details and populate the details panel
-  async function loadJobDetails(jobId) {
-    // Show the job details section and set loading state
-    elements.jobDetailsSection.classList.remove('hidden');
-    elements.jobDetailsSection.setAttribute('aria-hidden', 'false');
-    elements.jobDetailsTitle.textContent = `Job Details: #${jobId}`;
-    elements.jobDetailsContent.innerHTML = `
-      <div class="flex justify-center p-4">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    `;
-    
-    // Trap focus in the modal
-    utils.trapFocus(elements.jobDetailsSection);
-    
-    try {
-      // Fetch job details from API
-      const response = await fetch(`/batch-analysis/job/${jobId}/status`);
-      if (!response.ok) {
-        throw new Error(`Failed to load job details: ${response.statusText}`);
-      }
+      // Set up job filters
+      setupJobFilters();
       
-      const data = await response.json();
+      // Check for URL parameters to pre-populate form
+      const urlParams = new URLSearchParams(window.location.search);
+      const model = urlParams.get('model');
+      const app = urlParams.get('app');
       
-      // Clone the template
-      const template = elements.jobDetailsTpl.content.cloneNode(true);
-      
-      // Populate job information
-      template.getElementById('job-id').textContent = data.id;
-      template.getElementById('job-name').textContent = data.name || `Job #${data.id}`;
-      
-      // Status with correct styling
-      const statusElement = template.getElementById('job-status');
-      statusElement.textContent = data.status;
-      statusElement.className = `px-2 py-0.5 rounded-md text-white ${utils.getStatusClass(data.status)}`;
-      
-      template.getElementById('job-created').textContent = utils.formatDateTime(data.created_at);
-      template.getElementById('job-started').textContent = utils.formatDateTime(data.started_at);
-      template.getElementById('job-completed').textContent = utils.formatDateTime(data.completed_at);
-      template.getElementById('job-models').textContent = Array.isArray(data.models) ? data.models.join(', ') : 'None';
-      template.getElementById('job-full-scan').textContent = data.scan_options?.full_scan ? 'Yes' : 'No (Quick Scan)';
-      
-      // Progress information
-      const progressBar = template.getElementById('progress-bar');
-      const progress = data.progress?.percent || 0;
-      progressBar.style.width = `${progress}%`;
-      progressBar.textContent = `${progress}%`;
-      
-      template.getElementById('completed-tasks').textContent = `${data.progress?.completed || 0}/${data.progress?.total || 0} tasks`;
-      
-      // Calculate and set runtime
-      const runtime = utils.calculateRuntime(data);
-      template.getElementById('runtime').textContent = runtime;
-      
-      // Issue counts
-      template.getElementById('high-issues').textContent = data.results_summary?.issues?.high || 0;
-      template.getElementById('medium-issues').textContent = data.results_summary?.issues?.medium || 0;
-      template.getElementById('low-issues').textContent = data.results_summary?.issues?.low || 0;
-      template.getElementById('total-issues').textContent = data.results_summary?.issues?.total || 0;
-      
-      // Populate results table
-      await loadJobResults(jobId, template.getElementById('results-table-body'), template.getElementById('resultModelFilter'));
-      
-      // Show/hide errors section
-      const errorsSection = template.getElementById('errors-section');
-      const errorsList = template.getElementById('errors-list');
-      
-      if (data.errors && data.errors.length > 0) {
-        errorsSection.classList.remove('hidden');
-        errorsList.innerHTML = '';
-        
-        data.errors.forEach(error => {
-          const li = document.createElement('li');
-          li.textContent = error;
-          errorsList.appendChild(li);
-        });
-      }
-      
-      // Replace the content with the populated template
-      elements.jobDetailsContent.innerHTML = '';
-      elements.jobDetailsContent.appendChild(template);
-      
-      // Set up result filters
-      setupResultFilters();
-      
-      // Set up export button
-      const exportBtn = document.getElementById('exportResultsBtn');
-      if (exportBtn) {
-        utils.addEventListenerWithCleanup(exportBtn, 'click', () => {
-          exportJobResults(jobId);
-        });
-      }
-      
-      // If job is still running, set up polling
-      if (data.status === 'running') {
-        // Clear any existing interval
-        if (activeJobPollingInterval) {
-          clearInterval(activeJobPollingInterval);
-        }
-        
-        // Reset error count
-        pollingErrorCount = 0;
-        
-        // Set up new polling interval
-        activeJobPollingInterval = setInterval(() => {
-          refreshJobDetails(jobId);
-        }, POLLING_INTERVAL);
-      }
-      
-    } catch (error) {
-      console.error('Error loading job details:', error);
-      elements.jobDetailsContent.innerHTML = `
-        <div class="p-4 text-center">
-          <div class="inline-block border border-red-700 bg-red-50 p-2 rounded-md">
-            <p class="text-xs font-bold text-red-700">Error loading job details: ${error.message}</p>
-            <button id="retryJobDetails" class="mt-2 px-3 py-1 text-xs bg-red-700 text-white rounded hover:bg-red-800 transition">
-              Retry
-            </button>
-          </div>
-        </div>
-      `;
-      
-      // Add retry button functionality
-      const retryBtn = document.getElementById('retryJobDetails');
-      if (retryBtn) {
-        utils.addEventListenerWithCleanup(retryBtn, 'click', () => {
-          loadJobDetails(jobId);
-        });
-      }
-    }
-  }
-  
-  // Load job results for the given job ID
-  async function loadJobResults(jobId, tableBody, modelFilterSelect) {
-    try {
-      // Fetch results from API
-      const response = await fetch(`/batch-analysis/job/${jobId}/results`);
-      if (!response.ok) {
-        throw new Error(`Failed to load job results: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      const results = data.results || [];
-      
-      if (results.length === 0) {
-        tableBody.innerHTML = `
-          <tr>
-            <td colspan="9" class="border border-gray-300 px-2 py-4 text-xs text-center text-gray-500">
-              No results available yet
-            </td>
-          </tr>
-        `;
-        
-        // Update result counter
-        updateResultsCounter(0, 0);
-        return;
-      }
-      
-      // Clear table and model filter options
-      tableBody.innerHTML = '';
-      
-      // Set up model filter options
-      if (modelFilterSelect) {
-        // Keep the "All Models" option
-        modelFilterSelect.innerHTML = '<option value="all">All Models</option>';
-        
-        // Add unique model options
-        const models = [...new Set(results.map(r => r.model))].sort();
-        models.forEach(model => {
-          const option = document.createElement('option');
-          option.value = model;
-          option.textContent = model;
-          modelFilterSelect.appendChild(option);
-        });
-      }
-      
-      // Add each result to the table
-      results.forEach(result => {
-        const template = elements.resultItemTpl.content.cloneNode(true);
-        const row = template.querySelector('tr');
-        
-        // Set data attributes for filtering
-        row.dataset.model = result.model || '';
-        row.dataset.status = result.status || '';
-        row.dataset.searchText = `${result.model} app ${result.app_num}`.toLowerCase();
-        
-        // Set content
-        template.querySelector('.result-model').textContent = result.model || 'Unknown';
-        template.querySelector('.result-app-num').textContent = result.app_num || 'N/A';
-        
-        // Status with appropriate styling
-        const statusElement = template.querySelector('.result-status');
-        statusElement.textContent = result.status || 'Unknown';
-        statusElement.className = `px-2 py-0.5 rounded-md ${utils.getResultStatusClass(result.status)}`;
-        
-        // Issues counts
-        template.querySelector('.result-high').textContent = result.high_severity || 0;
-        template.querySelector('.result-medium').textContent = result.medium_severity || 0;
-        template.querySelector('.result-low').textContent = result.low_severity || 0;
-        template.querySelector('.result-total').textContent = result.issues_count || 0;
-        
-        // Scan time
-        template.querySelector('.result-time').textContent = utils.formatDateTime(result.scan_time);
-        
-        // Set result ID on the view button
-        const viewButton = template.querySelector('.view-result-btn');
-        viewButton.dataset.resultId = result.id;
-        viewButton.setAttribute('aria-label', `View details for ${result.model} App ${result.app_num}`);
-        
-        tableBody.appendChild(template);
-      });
-      
-      // Update results counter
-      updateResultsCounter(results.length, results.length);
-      
-    } catch (error) {
-      console.error('Error loading job results:', error);
-      tableBody.innerHTML = `
-        <tr>
-          <td colspan="9" class="border border-gray-300 px-2 py-4 text-xs text-center text-red-600">
-            Error loading results: ${error.message}
-            <button class="retry-results-btn ml-2 px-2 py-0.5 bg-red-600 text-white rounded hover:bg-red-700 transition" data-job-id="${jobId}">
-              Retry
-            </button>
-          </td>
-        </tr>
-      `;
-      
-      // Add retry button functionality
-      const retryBtn = tableBody.querySelector('.retry-results-btn');
-      if (retryBtn) {
-        utils.addEventListenerWithCleanup(retryBtn, 'click', () => {
-          loadJobResults(jobId, tableBody, modelFilterSelect);
-        });
-      }
-      
-      // Update results counter
-      updateResultsCounter(0, 0);
-    }
-  }
-  
-  // Update results counter
-  function updateResultsCounter(visibleCount, totalCount) {
-    const visibleCountElement = document.getElementById('visibleResultsCount');
-    const totalCountElement = document.getElementById('totalResultsCount');
-    
-    if (visibleCountElement) {
-      visibleCountElement.textContent = visibleCount;
-    }
-    
-    if (totalCountElement) {
-      totalCountElement.textContent = totalCount;
-    }
-  }
-  
-  // Update issues counter
-  function updateIssuesCounter(visibleCount, totalCount) {
-    const visibleCountElement = document.getElementById('visibleIssuesCount');
-    const totalCountElement = document.getElementById('totalIssuesCount');
-    
-    if (visibleCountElement) {
-      visibleCountElement.textContent = visibleCount;
-    }
-    
-    if (totalCountElement) {
-      totalCountElement.textContent = totalCount;
-    }
-  }
-  
-  // Export job results to CSV
-  async function exportJobResults(jobId) {
-    try {
-      // Show loading toast
-      const loadingToast = utils.showToast('info', 'Preparing Export', 'Generating CSV file...', 0);
-      
-      // Fetch results from API
-      const response = await fetch(`/batch-analysis/job/${jobId}/results`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch results for export: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      const results = data.results || [];
-      
-      if (results.length === 0) {
-        utils.showToast('warning', 'Export Failed', 'No results available to export');
-        return;
-      }
-      
-      // Prepare CSV data
-      const csvData = [
-        // Header row
-        {
-          Model: 'Model',
-          App: 'App',
-          Status: 'Status',
-          High: 'High Issues',
-          Medium: 'Medium Issues',
-          Low: 'Low Issues',
-          Total: 'Total Issues',
-          ScanTime: 'Scan Time'
-        }
-      ];
-      
-      // Add result rows
-      results.forEach(result => {
-        csvData.push({
-          Model: result.model || '',
-          App: `App ${result.app_num || ''}`,
-          Status: result.status || '',
-          High: result.high_severity || 0,
-          Medium: result.medium_severity || 0,
-          Low: result.low_severity || 0,
-          Total: result.issues_count || 0,
-          ScanTime: utils.formatDateTime(result.scan_time)
-        });
-      });
-      
-      // Generate filename
-      const jobName = document.getElementById('job-name')?.textContent || `Job-${jobId}`;
-      const dateStr = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-      const filename = `${jobName.replace(/[^a-z0-9]/gi, '-')}-results-${dateStr}.csv`;
-      
-      // Export to CSV
-      utils.exportToCSV(csvData, filename);
-      
-      // Remove loading toast and show success
-      if (loadingToast.parentNode) {
-        elements.toastContainer.removeChild(loadingToast);
-      }
-      
-      utils.showToast('success', 'Export Complete', `Results exported to ${filename}`);
-      
-    } catch (error) {
-      console.error('Error exporting results:', error);
-      utils.showToast('error', 'Export Failed', `Error: ${error.message}`);
-    }
-  }
-  
-  // Refresh job details for active polling
-  async function refreshJobDetails(jobId) {
-    try {
-      const response = await fetch(`/batch-analysis/job/${jobId}/status`);
-      if (!response.ok) {
-        throw new Error(`Failed to refresh job status: ${response.statusText}`);
-      }
-      
-      // Reset error count on successful request
-      pollingErrorCount = 0;
-      
-      const data = await response.json();
-      
-      // Update progress information
-      const progressBar = document.getElementById('progress-bar');
-      if (progressBar) {
-        const progress = data.progress?.percent || 0;
-        progressBar.style.width = `${progress}%`;
-        progressBar.textContent = `${progress}%`;
-      }
-      
-      // Update completed tasks
-      const completedTasks = document.getElementById('completed-tasks');
-      if (completedTasks) {
-        completedTasks.textContent = `${data.progress?.completed || 0}/${data.progress?.total || 0} tasks`;
-      }
-      
-      // Update runtime
-      const runtimeElement = document.getElementById('runtime');
-      if (runtimeElement) {
-        runtimeElement.textContent = utils.calculateRuntime(data);
-      }
-      
-      // Update issue counts
-      const highIssues = document.getElementById('high-issues');
-      const mediumIssues = document.getElementById('medium-issues');
-      const lowIssues = document.getElementById('low-issues');
-      const totalIssues = document.getElementById('total-issues');
-      
-      if (highIssues) highIssues.textContent = data.results_summary?.issues?.high || 0;
-      if (mediumIssues) mediumIssues.textContent = data.results_summary?.issues?.medium || 0;
-      if (lowIssues) lowIssues.textContent = data.results_summary?.issues?.low || 0;
-      if (totalIssues) totalIssues.textContent = data.results_summary?.issues?.total || 0;
-      
-      // Update job status
-      const statusElement = document.getElementById('job-status');
-      if (statusElement) {
-        statusElement.textContent = data.status;
-        statusElement.className = `px-2 py-0.5 rounded-md text-white ${utils.getStatusClass(data.status)}`;
-      }
-      
-      // If job is no longer running
-      if (data.status !== 'running') {
-        // Update completed time
-        const completedElement = document.getElementById('job-completed');
-        if (completedElement) {
-          completedElement.textContent = utils.formatDateTime(data.completed_at);
-        }
-        
-        // Refresh the results table
-        const resultsTableBody = document.getElementById('results-table-body');
-        const modelFilterSelect = document.getElementById('resultModelFilter');
-        if (resultsTableBody) {
-          await loadJobResults(jobId, resultsTableBody, modelFilterSelect);
-          setupResultFilters();
-        }
-        
-        // Stop polling
-        if (activeJobPollingInterval) {
-          clearInterval(activeJobPollingInterval);
-          activeJobPollingInterval = null;
-        }
-        
-        // Show toast notification
-        utils.showToast(
-          data.status === 'completed' ? 'success' : 'warning',
-          'Job Update',
-          `Job #${jobId} ${data.status}`,
-          5000
-        );
-        
-        // Update main job list if it exists
-        const jobRow = document.querySelector(`.job-row[data-job-id="${jobId}"]`);
-        if (jobRow) {
-          // Update status cell
-          const statusCell = jobRow.querySelector('td:nth-child(3) span');
-          if (statusCell) {
-            statusCell.textContent = data.status;
-            statusCell.className = `px-2 py-0.5 rounded-md text-white ${utils.getStatusClass(data.status)}`;
+      if (model) {
+        // Pre-select the model checkbox
+        const modelCheckbox = document.querySelector(`input[name="models"][value="${model}"]`);
+        if (modelCheckbox) {
+          modelCheckbox.checked = true;
+          
+          // Show the app range field
+          const appRangeField = document.querySelector(`.app-range-field[data-model="${model}"]`);
+          if (appRangeField) {
+            appRangeField.classList.remove('hidden');
           }
           
-          // Update progress bar
-          const progressBar = jobRow.querySelector('td:nth-child(6) .bg-blue-600');
-          const progressText = jobRow.querySelector('td:nth-child(6) .text-xs.text-gray-600');
-          
-          if (progressBar) {
-            progressBar.style.width = `${data.progress?.percent || 0}%`;
-          }
-          
-          if (progressText) {
-            progressText.textContent = `${data.progress?.completed || 0}/${data.progress?.total || 0}`;
-          }
-          
-          // Update issues counts if completed
-          if (data.status === 'completed') {
-            const issuesCell = jobRow.querySelector('td:nth-child(7)');
-            if (issuesCell && data.results_summary?.issues) {
-              issuesCell.innerHTML = `
-                <div class="flex space-x-1">
-                  <span class="px-1 bg-red-100 text-red-800 border border-red-700 rounded" title="High severity issues">${data.results_summary.issues.high || 0}</span>
-                  <span class="px-1 bg-yellow-100 text-yellow-800 border border-yellow-700 rounded" title="Medium severity issues">${data.results_summary.issues.medium || 0}</span>
-                  <span class="px-1 bg-blue-100 text-blue-800 border border-blue-700 rounded" title="Low severity issues">${data.results_summary.issues.low || 0}</span>
-                </div>
-              `;
+          // If app number is specified, pre-fill the range
+          if (app) {
+            const appRangeInput = document.querySelector(`#app_range_${model}`);
+            if (appRangeInput) {
+              appRangeInput.value = app;
             }
           }
           
-          // Remove cancel button if present
-          const cancelBtn = jobRow.querySelector('.cancel-job-btn');
-          if (cancelBtn) {
-            cancelBtn.remove();
-          }
+          // Show the form
+          elements.createJobForm.classList.remove('hidden');
+          elements.createJobForm.setAttribute('aria-hidden', 'false');
           
-          // Update dataset status
-          jobRow.dataset.status = data.status;
-        }
-      }
-      
-    } catch (error) {
-      console.error('Error refreshing job details:', error);
-      
-      // Increment error count
-      pollingErrorCount++;
-      
-      // Stop polling if there are persistent errors
-      if (pollingErrorCount >= MAX_POLLING_ERRORS) {
-        console.warn(`Stopping polling after ${MAX_POLLING_ERRORS} consecutive errors`);
-        
-        if (activeJobPollingInterval) {
-          clearInterval(activeJobPollingInterval);
-          activeJobPollingInterval = null;
-          
-          // Show error toast
-          utils.showToast('error', 'Connection Lost', 'Failed to update job status. Please refresh the page.');
-        }
-      }
-    }
-  }
-  
-  // Cancel a running job
-  async function cancelJob(jobId, button) {
-    if (!confirm('Are you sure you want to cancel this job?')) {
-      return;
-    }
-    
-    // Set button to loading state
-    const originalText = button.textContent;
-    button.disabled = true;
-    button.innerHTML = `
-      <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>Canceling...`;
-    
-    try {
-      // Send cancel request to API
-      const response = await fetch(`/batch-analysis/job/${jobId}/cancel`, {
-        method: 'POST',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to cancel job: ${response.statusText}`);
-      }
-      
-      // Update the UI
-      const data = await response.json();
-      
-      if (data.status === 'canceled' || data.status === 'cancelled') {
-        // Update job row status
-        const jobRow = document.querySelector(`.job-row[data-job-id="${jobId}"]`);
-        if (jobRow) {
-          const statusCell = jobRow.querySelector('td:nth-child(3) span');
-          if (statusCell) {
-            statusCell.textContent = 'canceled';
-            statusCell.className = 'px-2 py-0.5 rounded-md text-white bg-red-600';
-          }
-          
-          jobRow.dataset.status = 'canceled';
-          
-          // Remove the cancel button
-          button.remove();
-        }
-        
-        // If job details are open, update them
-        if (elements.jobDetailsSection && !elements.jobDetailsSection.classList.contains('hidden')) {
-          // Refresh job details
-          loadJobDetails(jobId);
-        }
-        
-        // Show success toast
-        utils.showToast('success', 'Job Canceled', `Job #${jobId} has been successfully canceled`);
-      } else {
-        utils.showToast('error', 'Cancel Failed', data.error || 'Failed to cancel job');
-      }
-      
-    } catch (error) {
-      console.error('Error canceling job:', error);
-      utils.showToast('error', 'Cancel Failed', `Error: ${error.message}`);
-      
-      // Reset button state if it still exists
-      if (button.parentNode) {
-        button.disabled = false;
-        button.textContent = originalText;
-      }
-    }
-  }
-  
-  // Load result details
-  async function loadResultDetails(resultId) {
-    // Show the result details section and set loading state
-    elements.resultDetailsSection.classList.remove('hidden');
-    elements.resultDetailsSection.setAttribute('aria-hidden', 'false');
-    elements.resultDetailsTitle.textContent = `Result Details: #${resultId}`;
-    elements.resultDetailsContent.innerHTML = `
-      <div class="flex justify-center p-4">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    `;
-    
-    // Trap focus in the modal
-    utils.trapFocus(elements.resultDetailsSection);
-    
-    try {
-      // Fetch result details from API
-      const response = await fetch(`/batch-analysis/result/${resultId}/data`);
-      if (!response.ok) {
-        throw new Error(`Failed to load result details: ${response.statusText}`);
-      }
-      
-      const result = await response.json();
-      
-      // Clone the template
-      const template = elements.resultDetailsTpl.content.cloneNode(true);
-      
-      // Populate result information
-      template.getElementById('result-id').textContent = result.id;
-      template.getElementById('result-model').textContent = result.model || 'Unknown';
-      template.getElementById('result-app-num').textContent = result.app_num || 'N/A';
-      
-      // Status with correct styling
-      const statusElement = template.getElementById('result-status');
-      statusElement.textContent = result.status || 'Unknown';
-      statusElement.className = `px-2 py-0.5 rounded-md ${utils.getResultStatusClass(result.status)}`;
-      
-      template.getElementById('result-scan-time').textContent = utils.formatDateTime(result.scan_time);
-      template.getElementById('result-issues-count').textContent = result.issues_count || 0;
-      
-      // Issue counts
-      template.getElementById('result-high-severity').textContent = result.high_severity || 0;
-      template.getElementById('result-medium-severity').textContent = result.medium_severity || 0;
-      template.getElementById('result-low-severity').textContent = result.low_severity || 0;
-      
-      // Tool status
-      const toolStatusContainer = template.getElementById('tool-status-container');
-      toolStatusContainer.innerHTML = '';
-      
-      if (result.details && result.details.tool_status) {
-        Object.entries(result.details.tool_status).forEach(([tool, status]) => {
-          const div = document.createElement('div');
-          div.className = 'flex justify-between text-xs';
-          
-          const toolSpan = document.createElement('span');
-          toolSpan.textContent = tool;
-          
-          const statusSpan = document.createElement('span');
-          statusSpan.textContent = status;
-          statusSpan.className = 
-            status.includes('No issues') ? 'text-green-700' :
-            status.includes('Not run') ? 'text-gray-600' :
-            status.includes('Error') ? 'text-red-700' :
-            'text-yellow-700';
-          
-          div.appendChild(toolSpan);
-          div.appendChild(statusSpan);
-          toolStatusContainer.appendChild(div);
-        });
-      }
-      
-      // Determine which containers to show based on result status
-      const issuesContainer = template.getElementById('issues-container');
-      const analysisErrorContainer = template.getElementById('analysis-error-container');
-      const noIssuesContainer = template.getElementById('no-issues-container');
-      
-      if (result.status === 'failed') {
-        // Show error message
-        issuesContainer.classList.add('hidden');
-        noIssuesContainer.classList.add('hidden');
-        analysisErrorContainer.classList.remove('hidden');
-        
-        const errorMessage = template.getElementById('analysis-error-message');
-        errorMessage.textContent = result.details?.error || 'Unknown error occurred during analysis';
-      } else if (result.issues_count === 0) {
-        // Show no issues message
-        issuesContainer.classList.add('hidden');
-        analysisErrorContainer.classList.add('hidden');
-        noIssuesContainer.classList.remove('hidden');
-      } else {
-        // Show issues list
-        analysisErrorContainer.classList.add('hidden');
-        noIssuesContainer.classList.add('hidden');
-        issuesContainer.classList.remove('hidden');
-        
-        // Populate issues list
-        await populateIssuesList(
-          result.details?.issues || [], 
-          template.getElementById('issueList'),
-          template.getElementById('fileFilter')
-        );
-      }
-      
-      // Replace the content with the populated template
-      elements.resultDetailsContent.innerHTML = '';
-      elements.resultDetailsContent.appendChild(template);
-      
-      // Set up issue filters
-      setupIssueFilters();
-      
-    } catch (error) {
-      console.error('Error loading result details:', error);
-      elements.resultDetailsContent.innerHTML = `
-        <div class="p-4 text-center">
-          <div class="inline-block border border-red-700 bg-red-50 p-2 rounded-md">
-            <p class="text-xs font-bold text-red-700">Error loading result details: ${error.message}</p>
-            <button id="retryResultDetails" class="mt-2 px-3 py-1 text-xs bg-red-700 text-white rounded hover:bg-red-800 transition">
-              Retry
-            </button>
-          </div>
-        </div>
-      `;
-      
-      // Add retry button functionality
-      const retryBtn = document.getElementById('retryResultDetails');
-      if (retryBtn) {
-        utils.addEventListenerWithCleanup(retryBtn, 'click', () => {
-          loadResultDetails(resultId);
-        });
-      }
-    }
-  }
-  
-  // Populate issues list for a result
-  async function populateIssuesList(issues, issuesList, fileFilterSelect) {
-    // Clear current issues
-    issuesList.innerHTML = '';
-    
-    // Set up file filter
-    if (fileFilterSelect) {
-      // Keep the "All Files" option
-      fileFilterSelect.innerHTML = '<option value="all">All Files</option>';
-      
-      // Get unique filenames
-      const files = [...new Set(issues.map(issue => issue.filename))].sort();
-      
-      // Add file options
-      files.forEach(file => {
-        const option = document.createElement('option');
-        option.value = file;
-        option.textContent = file;
-        fileFilterSelect.appendChild(option);
-      });
-    }
-    
-    // Sort issues by severity (high to low)
-    const sortedIssues = [...issues].sort((a, b) => {
-      const severityOrder = { 'HIGH': 0, 'MEDIUM': 1, 'LOW': 2 };
-      return severityOrder[a.severity || 'LOW'] - severityOrder[b.severity || 'LOW'];
-    });
-    
-    // Add each issue
-    sortedIssues.forEach(issue => {
-      const template = elements.issueItemTpl.content.cloneNode(true);
-      const issueItem = template.querySelector('.issue-item');
-      
-      // Set data attributes for filtering
-      issueItem.dataset.severity = issue.severity || 'LOW';
-      issueItem.dataset.file = issue.filename || '';
-      issueItem.dataset.searchable = `${issue.issue_type || ''} ${issue.issue_text || ''} ${issue.filename || ''}`.toLowerCase();
-      
-      // Set background color based on severity
-      const severity = issue.severity || 'LOW';
-      if (severity === 'HIGH') {
-        issueItem.classList.add('bg-red-50');
-      } else if (severity === 'MEDIUM') {
-        issueItem.classList.add('bg-yellow-50');
-      } else {
-        issueItem.classList.add('bg-blue-50');
-      }
-      
-      // Severity badge
-      const severityBadge = template.querySelector('.issue-severity');
-      severityBadge.textContent = severity;
-      severityBadge.className = `text-xs px-2 py-0.5 border rounded-md ${
-        severity === 'HIGH' ? 'bg-red-100 text-red-800 border-red-700' :
-        severity === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800 border-yellow-700' :
-        'bg-blue-100 text-blue-800 border-blue-700'
-      }`;
-      
-      // Tool and confidence badges
-      template.querySelector('.issue-tool').textContent = issue.tool || 'Unknown';
-      template.querySelector('.issue-confidence').textContent = issue.confidence || 'Unknown';
-      
-      // Issue content
-      template.querySelector('.issue-type').textContent = issue.issue_type || 'Unknown Issue';
-      template.querySelector('.issue-text').textContent = issue.issue_text || 'No description available';
-      
-      // Fix suggestion (if available)
-      const fixContainer = template.querySelector('.fix-suggestion-container');
-      const fixText = template.querySelector('.fix-suggestion');
-      
-      if (issue.fix_suggestion) {
-        fixContainer.classList.remove('hidden');
-        fixText.textContent = issue.fix_suggestion;
-      }
-      
-      // File information
-      const filenameElement = template.querySelector('.issue-filename');
-      filenameElement.textContent = `${issue.filename || 'Unknown file'}${issue.line_number > 0 ? ':' + issue.line_number : ''}`;
-      
-      // Code sample
-      template.querySelector('.issue-code').textContent = issue.code || 'No code sample available';
-      
-      // Make toggle button accessible
-      const toggleButton = template.querySelector('.toggle-issue');
-      toggleButton.setAttribute('aria-controls', `issue-details-${issue.id || Math.random().toString(36).substr(2, 9)}`);
-      
-      // Set ID for details section
-      const detailsSection = template.querySelector('.issue-details');
-      detailsSection.id = toggleButton.getAttribute('aria-controls');
-      
-      issuesList.appendChild(template);
-    });
-    
-    // If no issues, show a message
-    if (issues.length === 0) {
-      const message = document.createElement('div');
-      message.className = 'p-4 text-center';
-      message.innerHTML = `
-        <div class="inline-block border border-green-700 bg-green-50 p-2 rounded-md">
-          <p class="text-xs font-bold text-green-700">No security issues found.</p>
-        </div>
-      `;
-      issuesList.appendChild(message);
-    }
-    
-    // Update issues counter
-    updateIssuesCounter(issues.length, issues.length);
-  }
-  
-  // Set up result filters
-  function setupResultFilters() {
-    const searchInput = document.getElementById('searchResults');
-    const statusFilter = document.getElementById('resultStatusFilter');
-    const modelFilter = document.getElementById('resultModelFilter');
-    
-    if (!searchInput || !statusFilter || !modelFilter) return;
-    
-    // Debounced filter function
-    const debouncedFilterResults = utils.debounce(() => {
-      filterResults();
-      
-      // Update counter
-      const tableBody = document.getElementById('results-table-body');
-      if (tableBody) {
-        const visibleCount = utils.countVisibleRows(tableBody, '.result-row');
-        const totalCount = tableBody.querySelectorAll('.result-row').length;
-        updateResultsCounter(visibleCount, totalCount);
-      }
-    }, 200);
-    
-    function filterResults() {
-      const searchText = searchInput.value.toLowerCase();
-      const statusValue = statusFilter.value;
-      const modelValue = modelFilter.value;
-      
-      document.querySelectorAll('#results-table-body tr').forEach(row => {
-        if (!row.classList.contains('result-row')) return;
-        
-        const rowModel = row.dataset.model || '';
-        const rowStatus = row.dataset.status || '';
-        const rowText = row.dataset.searchText || row.textContent.toLowerCase();
-        
-        const modelMatch = modelValue === 'all' || rowModel === modelValue;
-        const statusMatch = statusValue === 'all' || rowStatus === statusValue;
-        const textMatch = !searchText || rowText.includes(searchText);
-        
-        row.style.display = modelMatch && statusMatch && textMatch ? '' : 'none';
-      });
-    }
-    
-    // Add event listeners
-    utils.addEventListenerWithCleanup(searchInput, 'input', debouncedFilterResults);
-    utils.addEventListenerWithCleanup(statusFilter, 'change', debouncedFilterResults);
-    utils.addEventListenerWithCleanup(modelFilter, 'change', debouncedFilterResults);
-    
-    // Initial filter
-    debouncedFilterResults();
-  }
-  
-  // Set up issue filters
-  function setupIssueFilters() {
-    const searchInput = document.getElementById('searchIssues');
-    const severityFilter = document.getElementById('severityFilter');
-    const fileFilter = document.getElementById('fileFilter');
-    
-    if (!searchInput || !severityFilter || !fileFilter) return;
-    
-    // Debounced filter function
-    const debouncedFilterIssues = utils.debounce(() => {
-      filterIssues();
-      
-      // Update counter
-      const issueList = document.getElementById('issueList');
-      if (issueList) {
-        const visibleCount = utils.countVisibleRows(issueList, '.issue-item');
-        const totalCount = issueList.querySelectorAll('.issue-item').length;
-        updateIssuesCounter(visibleCount, totalCount);
-      }
-    }, 200);
-    
-    function filterIssues() {
-      const searchText = searchInput.value.toLowerCase();
-      const selectedSeverity = severityFilter.value;
-      const selectedFile = fileFilter.value;
-      
-      document.querySelectorAll('#issueList > div').forEach(issue => {
-        if (!issue.classList.contains('issue-item')) return;
-        
-        const severityMatch = selectedSeverity === 'all' || issue.dataset.severity === selectedSeverity;
-        const fileMatch = selectedFile === 'all' || issue.dataset.file === selectedFile;
-        const searchMatch = !searchText || issue.dataset.searchable.includes(searchText);
-        
-        issue.style.display = severityMatch && fileMatch && searchMatch ? 'block' : 'none';
-      });
-    }
-    
-    // Add event listeners
-    utils.addEventListenerWithCleanup(searchInput, 'input', debouncedFilterIssues);
-    utils.addEventListenerWithCleanup(severityFilter, 'change', debouncedFilterIssues);
-    utils.addEventListenerWithCleanup(fileFilter, 'change', debouncedFilterIssues);
-    
-    // Initial filter
-    debouncedFilterIssues();
-  }
-  
-  // Initialize all components
-  function init() {
-    setupFormEvents();
-    setupSectionToggles();
-    setupFilters();
-    
-    // Check for URL parameters to pre-populate form
-    const urlParams = new URLSearchParams(window.location.search);
-    const model = urlParams.get('model');
-    const app = urlParams.get('app');
-    
-    if (model) {
-      // Pre-select the model checkbox
-      const modelCheckbox = document.querySelector(`input[name="models"][value="${model}"]`);
-      if (modelCheckbox) {
-        modelCheckbox.checked = true;
-        
-        // Show the app range field
-        const appRangeField = document.querySelector(`.app-range-field[data-model="${model}"]`);
-        if (appRangeField) {
-          appRangeField.classList.remove('hidden');
-        }
-        
-        // If app number is specified, pre-fill the range
-        if (app) {
-          const appRangeInput = document.querySelector(`#app_range_${model}`);
-          if (appRangeInput) {
-            appRangeInput.value = app;
+          if (elements.toggleCreateForm) {
+            elements.toggleCreateForm.innerHTML = `
+              <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>Cancel`;
+            elements.toggleCreateForm.setAttribute('aria-expanded', 'true');
           }
         }
-        
-        // Show the form
-        elements.createJobForm.classList.remove('hidden');
-        elements.createJobForm.setAttribute('aria-hidden', 'false');
-        
-        if (elements.toggleCreateForm) {
-          elements.toggleCreateForm.textContent = 'Cancel';
-          elements.toggleCreateForm.setAttribute('aria-expanded', 'true');
-        }
       }
+      
+      // Set up keyboard navigation and accessibility
+      document.addEventListener('keydown', function(e) {
+        // Close modals on Escape
+        if (e.key === 'Escape') {
+          if (!elements.jobDetailsSection.classList.contains('hidden')) {
+            elements.closeJobDetails.click();
+          } else if (!elements.resultDetailsSection.classList.contains('hidden')) {
+            elements.closeResultDetails.click();
+          } else if (!elements.createJobForm.classList.contains('hidden')) {
+            elements.cancelCreateForm.click();
+          }
+        }
+      });
+      
+      // Clean up event listeners on page unload
+      window.addEventListener('beforeunload', function() {
+        utils.stopJobPolling();
+        utils.cleanupAllListeners();
+      });
     }
     
-    // Set up keyboard navigation and accessibility
-    document.addEventListener('keydown', function(e) {
-      // Close modals on Escape
-      if (e.key === 'Escape') {
-        if (!elements.jobDetailsSection.classList.contains('hidden')) {
-          elements.closeJobDetails.click();
-        } else if (!elements.resultDetailsSection.classList.contains('hidden')) {
-          elements.closeResultDetails.click();
-        } else if (!elements.createJobForm.classList.contains('hidden')) {
-          elements.cancelCreateForm.click();
-        }
-      }
-    });
-  }
-  
-  // Start initialization when DOM is ready
-  init();
-});
-</script>
-{% endblock %}
+    // Start initialization when DOM is ready
+    init();
+  });
+  </script>
+
+  {% endblock %}

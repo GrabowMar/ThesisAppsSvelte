@@ -561,4 +561,247 @@ function BookReservation({ onNavigate }) {
               >
                 <p className="time">{slot.start_time} - {slot.end_time}</p>
                 <p className="status">
-                  {slot.is_available
+                                    {slot.is_available 
+                    ? 'Available' 
+                    : 'Booked'}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      
+      {selectedSlot && (
+        <div className="booking-form">
+          <h3>Reservation Details</h3>
+          
+          <div className="form-group">
+            <label htmlFor="notes">Notes (optional):</label>
+            <textarea
+              id="notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Any special requests or notes for your reservation"
+              rows="3"
+            ></textarea>
+          </div>
+          
+          <div className="booking-actions">
+            <button 
+              className="cancel-button" 
+              onClick={() => setSelectedSlot(null)}
+              disabled={bookingInProgress}
+            >
+              Cancel
+            </button>
+            <button 
+              className="confirm-button" 
+              onClick={handleBookSlot}
+              disabled={bookingInProgress}
+            >
+              {bookingInProgress ? 'Booking...' : 'Confirm Booking'}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// My Reservations Component
+function MyReservations({ onNavigate }) {
+  const [reservations, setReservations] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [filter, setFilter] = useState('all');
+  
+  const { token, showMessage } = useContext(AuthContext);
+  
+  // Fetch reservations
+  useEffect(() => {
+    const fetchReservations = async () => {
+      setIsLoading(true);
+      setError('');
+      
+      try {
+        const response = await fetch(`/api/user/reservations${filter !== 'all' ? `?status=${filter}` : ''}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to fetch reservations');
+        }
+        
+        setReservations(data.reservations);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchReservations();
+  }, [token, filter]);
+  
+  // Handle cancelling a reservation
+  const handleCancelReservation = async (reservationId) => {
+    try {
+      const response = await fetch(`/api/reservations/${reservationId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          status: 'cancelled',
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to cancel reservation');
+      }
+      
+      // Update reservations list
+      setReservations(reservations.map(res => 
+        res.id === reservationId 
+          ? {...res, status: 'cancelled'} 
+          : res
+      ));
+      
+      showMessage('Reservation cancelled successfully!', 'success');
+    } catch (err) {
+      showMessage(err.message, 'error');
+    }
+  };
+  
+  return (
+    <div className="my-reservations-container">
+      <div className="my-reservations-header">
+        <h2>My Reservations</h2>
+        
+        <div className="filter-controls">
+          <button 
+            className={`filter-button ${filter === 'all' ? 'active' : ''}`}
+            onClick={() => setFilter('all')}
+          >
+            All
+          </button>
+          <button 
+            className={`filter-button ${filter === 'confirmed' ? 'active' : ''}`}
+            onClick={() => setFilter('confirmed')}
+          >
+            Confirmed
+          </button>
+          <button 
+            className={`filter-button ${filter === 'cancelled' ? 'active' : ''}`}
+            onClick={() => setFilter('cancelled')}
+          >
+            Cancelled
+          </button>
+        </div>
+        
+        <button 
+          className="book-new-button" 
+          onClick={() => onNavigate('bookReservation')}
+        >
+          Book New Reservation
+        </button>
+      </div>
+      
+      {isLoading ? (
+        <p>Loading your reservations...</p>
+      ) : error ? (
+        <p className="error-message">{error}</p>
+      ) : reservations.length === 0 ? (
+        <div className="no-reservations">
+          <p>You don't have any reservations{filter !== 'all' ? ` with status: ${filter}` : ''}.</p>
+          <button 
+            className="book-new-button" 
+            onClick={() => onNavigate('bookReservation')}
+          >
+            Book a Reservation
+          </button>
+        </div>
+      ) : (
+        <div className="reservations-grid">
+          {reservations.map((reservation) => (
+            <ReservationCard 
+              key={reservation.id} 
+              reservation={reservation} 
+              showActions={true} 
+              onCancel={handleCancelReservation}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Reservation Card Component
+function ReservationCard({ reservation, showActions, onCancel }) {
+  const date = new Date(reservation.time_slot.date);
+  
+  // Format the date in a user-friendly way
+  const formattedDate = date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  
+  const isUpcoming = reservation.status === 'confirmed' && date >= new Date();
+  const isPast = date < new Date();
+  
+  return (
+    <div className={`reservation-card ${reservation.status}`}>
+      <div className="reservation-header">
+        <h3>{formattedDate}</h3>
+        <span className={`status-badge ${reservation.status}`}>
+          {reservation.status.charAt(0).toUpperCase() + reservation.status.slice(1)}
+        </span>
+      </div>
+      
+      <div className="reservation-time">
+        <span>{reservation.time_slot.start_time} - {reservation.time_slot.end_time}</span>
+      </div>
+      
+      {reservation.notes && (
+        <div className="reservation-notes">
+          <p><strong>Notes:</strong> {reservation.notes}</p>
+        </div>
+      )}
+      
+      {showActions && isUpcoming && (
+        <div className="reservation-actions">
+          <button 
+            className="cancel-button" 
+            onClick={() => onCancel(reservation.id)}
+          >
+            Cancel Reservation
+          </button>
+        </div>
+      )}
+      
+      {isPast && reservation.status === 'confirmed' && (
+        <div className="reservation-completed">
+          <p>This reservation has passed</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Render the app
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+
+export default App;
+
+

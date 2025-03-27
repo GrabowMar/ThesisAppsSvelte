@@ -619,3 +619,166 @@ function App() {
       </div>
     </div>
   );
+  const UploadImageModal = () => (
+    <div className="modal-overlay">
+      <div className="modal">
+        <h2>Upload Image</h2>
+        <form onSubmit={uploadImage}>
+          <div className="form-group">
+            <label htmlFor="image-file">Select Image *</label>
+            <input 
+              id="image-file"
+              type="file" 
+              accept=".jpg,.jpeg,.png,.gif,.webp"
+              onChange={handleFileChange}
+              required
+            />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="image-title">Title (optional)</label>
+            <input 
+              id="image-title"
+              type="text" 
+              value={imageTitle}
+              onChange={(e) => setImageTitle(e.target.value)}
+            />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="image-desc">Description (optional)</label>
+            <textarea 
+              id="image-desc"
+              value={imageDesc}
+              onChange={(e) => setImageDesc(e.target.value)}
+            />
+          </div>
+          
+          {uploadProgress > 0 && (
+            <div className="upload-progress">
+              <div 
+                className="progress-bar" 
+                style={{width: `${uploadProgress}%`}}
+              ></div>
+              <span>{uploadProgress}%</span>
+            </div>
+          )}
+          
+          <div className="modal-actions">
+            <button 
+              type="button" 
+              className="button"
+              onClick={() => setIsUploadModalOpen(false)}
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              className="primary-button"
+              disabled={!selectedFile || isLoading}
+            >
+              {isLoading ? 'Uploading...' : 'Upload Image'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+
+  const EditImageModal = () => (
+    <div className="modal-overlay">
+      <div className="modal">
+        <h2>Edit Image Details</h2>
+        <form onSubmit={(e) => { e.preventDefault(); updateImage(); }}>
+          <div className="form-group">
+            <label htmlFor="edit-image-title">Title</label>
+            <input 
+              id="edit-image-title"
+              type="text" 
+              value={imageTitle}
+              onChange={(e) => setImageTitle(e.target.value)}
+            />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="edit-image-desc">Description</label>
+            <textarea 
+              id="edit-image-desc"
+              value={imageDesc}
+              onChange={(e) => setImageDesc(e.target.value)}
+            />
+          </div>
+          
+          <div className="modal-actions">
+            <button 
+              type="button" 
+              className="button"
+              onClick={() => setIsEditImageModalOpen(false)}
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              className="primary-button"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+
+  // Helper functions
+  const formatFileSize = (bytes) => {
+    if (bytes < 1024) return bytes + ' bytes';
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
+    else return (bytes / 1048576).toFixed(2) + ' MB';
+  };
+
+  const formatDateTime = (isoString) => {
+    const date = new Date(isoString);
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+  };
+
+  // Main render
+  return (
+    <div className="app-container">
+      <Navigation />
+      
+      {error && (
+        <div className="error-message">
+          <span>{error}</span>
+          <button onClick={() => setError(null)}>✕</button>
+        </div>
+      )}
+      
+      {isLoading && view !== 'gallery' && (
+        <div className="loading-indicator">
+          <div className="spinner"></div>
+          <span>Loading...</span>
+        </div>
+      )}
+      
+      <main className="app-content">
+        {view === 'galleries' && <GalleriesView />}
+        {view === 'gallery' && currentGallery && <GalleryView />}
+        {view === 'imageDetails' && <ImageDetailsView />}
+      </main>
+      
+      {/* Modals */}
+      {isNewGalleryModalOpen && <NewGalleryModal />}
+      {isEditGalleryModalOpen && <EditGalleryModal />}
+      {isUploadModalOpen && <UploadImageModal />}
+      {isEditImageModalOpen && <EditImageModal />}
+    </div>
+  );
+}
+
+// Mount the App to the DOM
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+
+export default App;
+

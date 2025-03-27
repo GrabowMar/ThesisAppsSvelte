@@ -297,3 +297,294 @@ a:hover {
 .file-details {
   flex: 1;
   overflow: hidden;
+}
+.file-name {
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.8rem;
+  color: var(--dark-gray);
+}
+
+.file-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+.preview-btn {
+  color: var(--primary-color);
+}
+
+.download-btn {
+  color: var(--secondary-color);
+}
+
+.delete-btn {
+  color: var(--danger-color);
+}
+
+.action-btn:hover {
+  background-color: var(--light-gray);
+}
+
+/* Notification Component */
+.notification {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  padding: 1rem 1.5rem;
+  border-radius: 5px;
+  color: white;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notification.success {
+  background-color: var(--secondary-color);
+}
+
+.notification.error {
+  background-color: var(--danger-color);
+}
+
+/* Preview Modal */
+.preview-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.preview-content {
+  background-color: white;
+  width: 90%;
+  max-width: 900px;
+  max-height: 90vh;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.3s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--medium-gray);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--dark-gray);
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: var(--danger-color);
+}
+
+.preview-body {
+  flex: 1;
+  overflow: auto;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 500px;
+  object-fit: contain;
+}
+
+.preview-frame {
+  width: 100%;
+  height: 500px;
+  border: none;
+}
+
+.preview-unavailable {
+  text-align: center;
+  color: var(--dark-gray);
+}
+
+.preview-unavailable i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.preview-unavailable .download-btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 5px;
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.preview-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--medium-gray);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.preview-actions .action-btn {
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 5px;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* About Page */
+.about-page {
+  background-color: white;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: var(--card-shadow);
+}
+
+.about-page h1 {
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+}
+
+.about-content {
+  margin-bottom: 2rem;
+}
+
+.about-content h2 {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.about-content ul {
+  list-style: none;
+}
+
+.about-content li {
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.about-content li i {
+  color: var(--primary-color);
+}
+
+.back-link {
+  margin-top: 2rem;
+}
+
+.back-link a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 1rem;
+  }
+
+  .app-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .search-bar {
+    width: 100%;
+  }
+
+  .files-list {
+    grid-template-columns: 1fr;
+  }
+
+  .preview-content {
+    width: 95%;
+  }
+
+  .preview-footer {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+}
+
+

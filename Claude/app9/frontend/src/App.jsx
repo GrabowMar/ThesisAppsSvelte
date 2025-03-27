@@ -469,4 +469,380 @@ function App() {
               <button onClick={() => navigateTo('inventory')} className="btn primary">
                 Manage Inventory
               </button>
-              <button onClick={() => navigateTo('categories')} className="
+                            <button onClick={() => navigateTo('categories')} className="btn secondary">
+                Manage Categories
+              </button>
+            </div>
+          </div>
+        )}
+        
+        {/* Inventory Page */}
+        {page === 'inventory' && !loading && (
+          <div className="inventory">
+            <div className="page-header">
+              <h2>Inventory Items</h2>
+              <button onClick={() => openModal('addItem')} className="btn primary">
+                Add New Item
+              </button>
+            </div>
+            
+            <div className="filters">
+              <div className="filter-group">
+                <label>
+                  Search:
+                  <input 
+                    type="text" 
+                    name="search" 
+                    value={filters.search} 
+                    onChange={handleFilterChange} 
+                    placeholder="Search items..."
+                  />
+                </label>
+              </div>
+              
+              <div className="filter-group">
+                <label>
+                  Category:
+                  <select 
+                    name="category_id" 
+                    value={filters.category_id} 
+                    onChange={handleFilterChange}
+                  >
+                    <option value="">All Categories</option>
+                    {categories.map(category => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              
+              <div className="filter-group checkbox">
+                <label>
+                  <input 
+                    type="checkbox" 
+                    name="low_stock" 
+                    checked={filters.low_stock} 
+                    onChange={handleFilterChange}
+                  />
+                  Low Stock Only
+                </label>
+              </div>
+              
+              <button onClick={fetchItems} className="btn secondary">
+                Apply Filters
+              </button>
+            </div>
+            
+            {items.length === 0 ? (
+              <div className="empty-state">
+                <p>No items found. Try changing your filters or add a new item.</p>
+                <button onClick={() => openModal('addItem')} className="btn primary">
+                  Add New Item
+                </button>
+              </div>
+            ) : (
+              <div className="item-list">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Description</th>
+                      <th>Category</th>
+                      <th>Quantity</th>
+                      <th>Price</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {items.map(item => (
+                      <tr key={item.id} className={item.low_stock ? 'low-stock-row' : ''}>
+                        <td>{item.name}</td>
+                        <td>{item.description}</td>
+                        <td>{item.category_name || 'Uncategorized'}</td>
+                        <td className={item.low_stock ? 'low-stock' : ''}>
+                          {item.quantity}
+                          {item.low_stock && <span className="low-stock-indicator"> (Low)</span>}
+                        </td>
+                        <td>${item.price.toFixed(2)}</td>
+                        <td>
+                          <div className="action-buttons">
+                            <button 
+                              onClick={() => openModal('editItem', item)} 
+                              className="btn small"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => openModal('deleteItem', item)} 
+                              className="btn small danger"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+        
+        {/* Categories Page */}
+        {page === 'categories' && !loading && (
+          <div className="categories">
+            <div className="page-header">
+              <h2>Categories</h2>
+              <button onClick={() => openModal('addCategory')} className="btn primary">
+                Add New Category
+              </button>
+            </div>
+            
+            {categories.length === 0 ? (
+              <div className="empty-state">
+                <p>No categories found. Add a new category to get started.</p>
+                <button onClick={() => openModal('addCategory')} className="btn primary">
+                  Add New Category
+                </button>
+              </div>
+            ) : (
+              <div className="category-list">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Description</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {categories.map(category => (
+                      <tr key={category.id}>
+                        <td>{category.name}</td>
+                        <td>{category.description}</td>
+                        <td>
+                          <div className="action-buttons">
+                            <button 
+                              onClick={() => openModal('editCategory', null, category)} 
+                              className="btn small"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => openModal('deleteCategory', null, category)} 
+                              className="btn small danger"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+      </main>
+      
+      {/* Modal for forms */}
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <h3>
+                {modalType === 'addItem' && 'Add New Item'}
+                {modalType === 'editItem' && 'Edit Item'}
+                {modalType === 'deleteItem' && 'Delete Item'}
+                {modalType === 'addCategory' && 'Add New Category'}
+                {modalType === 'editCategory' && 'Edit Category'}
+                {modalType === 'deleteCategory' && 'Delete Category'}
+              </h3>
+              <button onClick={closeModal} className="close-btn">&times;</button>
+            </div>
+            
+            <div className="modal-body">
+              {/* Item Form */}
+              {(modalType === 'addItem' || modalType === 'editItem') && (
+                <form onSubmit={handleSubmit}>
+                  <div className="form-group">
+                    <label htmlFor="name">Name:</label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name || ''}
+                      onChange={handleFormChange}
+                      required
+                    />
+                    {formErrors.name && <div className="error-text">{formErrors.name}</div>}
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="description">Description:</label>
+                    <textarea
+                      id="description"
+                      name="description"
+                      value={formData.description || ''}
+                      onChange={handleFormChange}
+                      rows="3"
+                    />
+                  </div>
+                  
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="quantity">Quantity:</label>
+                      <input
+                        type="number"
+                        id="quantity"
+                        name="quantity"
+                        value={formData.quantity || 0}
+                        onChange={handleFormChange}
+                        required
+                        min="0"
+                      />
+                      {formErrors.quantity && <div className="error-text">{formErrors.quantity}</div>}
+                    </div>
+                    
+                    <div className="form-group">
+                      <label htmlFor="price">Price ($):</label>
+                      <input
+                        type="number"
+                        id="price"
+                        name="price"
+                        value={formData.price || 0}
+                        onChange={handleFormChange}
+                        required
+                        min="0"
+                        step="0.01"
+                      />
+                      {formErrors.price && <div className="error-text">{formErrors.price}</div>}
+                    </div>
+                  </div>
+                  
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="reorder_level">Reorder Level:</label>
+                      <input
+                        type="number"
+                        id="reorder_level"
+                        name="reorder_level"
+                        value={formData.reorder_level || 5}
+                        onChange={handleFormChange}
+                        required
+                        min="0"
+                      />
+                      {formErrors.reorder_level && <div className="error-text">{formErrors.reorder_level}</div>}
+                    </div>
+                    
+                    <div className="form-group">
+                      <label htmlFor="category_id">Category:</label>
+                      <select
+                        id="category_id"
+                        name="category_id"
+                        value={formData.category_id || ''}
+                        onChange={handleFormChange}
+                      >
+                        <option value="">- Select Category -</option>
+                        {categories.map(category => (
+                          <option key={category.id} value={category.id}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div className="form-actions">
+                    <button type="button" onClick={closeModal} className="btn secondary">
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn primary">
+                      {modalType === 'addItem' ? 'Add Item' : 'Save Changes'}
+                    </button>
+                  </div>
+                </form>
+              )}
+              
+              {/* Category Form */}
+              {(modalType === 'addCategory' || modalType === 'editCategory') && (
+                <form onSubmit={handleSubmit}>
+                  <div className="form-group">
+                    <label htmlFor="name">Name:</label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name || ''}
+                      onChange={handleFormChange}
+                      required
+                    />
+                    {formErrors.name && <div className="error-text">{formErrors.name}</div>}
+                  </div>
+                  
+                  <div className="form-group">
+                    <label htmlFor="description">Description:</label>
+                    <textarea
+                      id="description"
+                      name="description"
+                      value={formData.description || ''}
+                      onChange={handleFormChange}
+                      rows="3"
+                    />
+                  </div>
+                  
+                  <div className="form-actions">
+                    <button type="button" onClick={closeModal} className="btn secondary">
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn primary">
+                      {modalType === 'addCategory' ? 'Add Category' : 'Save Changes'}
+                    </button>
+                  </div>
+                </form>
+              )}
+              
+              {/* Delete Confirmation */}
+              {(modalType === 'deleteItem' || modalType === 'deleteCategory') && (
+                <div className="delete-confirmation">
+                  <p>
+                    {modalType === 'deleteItem' 
+                      ? `Are you sure you want to delete the item "${selectedItem?.name}"?` 
+                      : `Are you sure you want to delete the category "${selectedCategory?.name}"?`}
+                  </p>
+                  <p className="warning">This action cannot be undone.</p>
+                  
+                  <div className="form-actions">
+                    <button type="button" onClick={closeModal} className="btn secondary">
+                      Cancel
+                    </button>
+                    <button type="button" onClick={handleSubmit} className="btn danger">
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Footer */}
+      <footer className="footer">
+        <p>&copy; {new Date().getFullYear()} Inventory Management System</p>
+      </footer>
+    </div>
+  );
+}
+
+// Mount the application
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);
+
+export default App;
+
+

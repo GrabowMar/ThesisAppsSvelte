@@ -52,7 +52,7 @@ from frontend_security_analysis import FrontendSecurityAnalyzer
 from gpt4all_analysis import GPT4AllAnalyzer
 from performance_analysis import PerformanceTester
 from zap_scanner import ZAPScanner, create_scanner
-from batch_frontend_analysis import init_batch_analysis, batch_analysis_bp
+from batch_analysis import init_batch_analysis, batch_analysis_bp
 
 # =============================================================================
 # Module-Level Logger

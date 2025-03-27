@@ -1,8 +1,8 @@
 """
-Batch Frontend Analysis Module
+Batch Security Analysis Module
 
 This module provides functionality for running batch security analysis 
-on frontend code across multiple applications or models.
+on both frontend and backend code across multiple applications or models.
 """
 
 import asyncio
@@ -40,6 +40,13 @@ class JobStatus(str, Enum):
     CANCELED = "canceled"
 
 
+class ScanType(str, Enum):
+    """Scan type enum for batch analysis jobs"""
+    FRONTEND = "frontend"
+    BACKEND = "backend"
+    BOTH = "both"
+
+
 @dataclass
 class BatchAnalysisJob:
     """Represents a batch analysis job"""
@@ -51,6 +58,7 @@ class BatchAnalysisJob:
     models: List[str] = field(default_factory=list)
     app_ranges: Dict[str, List[int]] = field(default_factory=dict)
     scan_options: Dict[str, Any] = field(default_factory=dict)
+    scan_type: ScanType = ScanType.FRONTEND
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     total_tasks: int = 0
@@ -76,6 +84,7 @@ class BatchAnalysisResult:
     model: str
     app_num: int
     status: str
+    scan_type: ScanType
     issues_count: int = 0
     high_severity: int = 0
     medium_severity: int = 0
@@ -117,9 +126,10 @@ class InMemoryJobStorage:
                 models=job_data.get('models', []),
                 app_ranges=job_data.get('app_ranges', {}),
                 scan_options=job_data.get('scan_options', {}),
+                scan_type=job_data.get('scan_type', ScanType.FRONTEND),
             )
             
-            # Calculate total tasks
+            # Calculate total tasks based on scan type
             total_tasks = 0
             for model in job.models:
                 app_range = job.app_ranges.get(model, [])
@@ -129,7 +139,11 @@ class InMemoryJobStorage:
                     # For now, just use a placeholder
                     total_tasks += 10
                 else:
-                    total_tasks += len(app_range)
+                    app_count = len(app_range)
+                    # For BOTH scan type, we count each app twice (frontend + backend)
+                    if job.scan_type == ScanType.BOTH:
+                        app_count *= 2
+                    total_tasks += app_count
             
             job.total_tasks = total_tasks
             self.jobs[job_id] = job
@@ -170,6 +184,7 @@ class InMemoryJobStorage:
                 model=result_data.get('model', ''),
                 app_num=result_data.get('app_num', 0),
                 status=result_data.get('status', 'completed'),
+                scan_type=result_data.get('scan_type', ScanType.FRONTEND),
                 issues_count=result_data.get('issues_count', 0),
                 high_severity=result_data.get('high_severity', 0),
                 medium_severity=result_data.get('medium_severity', 0),
@@ -288,10 +303,16 @@ class BatchAnalysisService:
                     # Empty list means "all apps" - get apps from file system
                     apps = self._get_all_apps_for_model(model)
                     for app_num in apps:
-                        tasks.append((model, app_num))
+                        if job.scan_type == ScanType.FRONTEND or job.scan_type == ScanType.BOTH:
+                            tasks.append((model, app_num, ScanType.FRONTEND))
+                        if job.scan_type == ScanType.BACKEND or job.scan_type == ScanType.BOTH:
+                            tasks.append((model, app_num, ScanType.BACKEND))
                 else:
                     for app_num in app_range:
-                        tasks.append((model, app_num))
+                        if job.scan_type == ScanType.FRONTEND or job.scan_type == ScanType.BOTH:
+                            tasks.append((model, app_num, ScanType.FRONTEND))
+                        if job.scan_type == ScanType.BACKEND or job.scan_type == ScanType.BOTH:
+                            tasks.append((model, app_num, ScanType.BACKEND))
             
             # Update total tasks count
             total_tasks = len(tasks)
@@ -300,8 +321,8 @@ class BatchAnalysisService:
             # Execute tasks
             with ThreadPoolExecutor(max_workers=self.max_concurrent_tasks) as executor:
                 future_to_task = {
-                    executor.submit(self._analyze_app, job_id, model, app_num, job.scan_options): (model, app_num)
-                    for model, app_num in tasks
+                    executor.submit(self._analyze_app, job_id, model, app_num, scan_type, job.scan_options): (model, app_num, scan_type)
+                    for model, app_num, scan_type in tasks
                 }
                 
                 # Check for cancellation before waiting for results
@@ -319,8 +340,8 @@ class BatchAnalysisService:
                             self.storage.update_job(job_id, status=JobStatus.CANCELED)
                             break
                     except Exception as e:
-                        model, app_num = future_to_task[future]
-                        error_msg = f"Error analyzing {model}/app{app_num}: {str(e)}"
+                        model, app_num, scan_type = future_to_task[future]
+                        error_msg = f"Error analyzing {model}/app{app_num} ({scan_type}): {str(e)}"
                         logger.error(error_msg)
                         self.storage.update_job(
                             job_id,
@@ -368,13 +389,15 @@ class BatchAnalysisService:
         
         return sorted(app_nums)
     
-    def _analyze_app(self, job_id: int, model: str, app_num: int, scan_options: Dict[str, Any]) -> None:
-        """Run frontend security analysis for a single app"""
+    def _analyze_app(self, job_id: int, model: str, app_num: int, scan_type: ScanType, scan_options: Dict[str, Any]) -> None:
+        """
+        Run security analysis for a single app based on the scan type
+        """
         if job_id in self._cancel_flags:
-            logger.info(f"Skipping analysis of {model}/app{app_num} - job {job_id} was canceled")
+            logger.info(f"Skipping analysis of {model}/app{app_num} ({scan_type}) - job {job_id} was canceled")
             return
         
-        logger.info(f"Analyzing {model}/app{app_num} for job {job_id}")
+        logger.info(f"Analyzing {model}/app{app_num} ({scan_type}) for job {job_id}")
         
         try:
             # Check if we have the Flask app
@@ -383,19 +406,33 @@ class BatchAnalysisService:
                 
             # Use app context to access extensions
             with self.app.app_context():
-                # Get the frontend security analyzer
-                analyzer = self.app.frontend_security_analyzer
-                
                 # Determine scan mode from options
                 full_scan = scan_options.get("full_scan", False)
                 
-                # Run analysis
-                issues, tool_status, _ = analyzer.run_security_analysis(
-                    model, app_num, use_all_tools=full_scan
-                )
+                if scan_type == ScanType.FRONTEND:
+                    # Run frontend security analysis
+                    analyzer = self.app.frontend_security_analyzer
+                    issues, tool_status, _ = analyzer.run_security_analysis(
+                        model, app_num, use_all_tools=full_scan
+                    )
+                    summary = analyzer.get_analysis_summary(issues)
                 
-                # Generate summary
-                summary = analyzer.get_analysis_summary(issues)
+                elif scan_type == ScanType.BACKEND:
+                    # Run backend security analysis
+                    from backend_security_analysis import BackendSecurityAnalyzer
+                    
+                    # Create analyzer with the app's base path
+                    base_path = Path(self.app.config.get('APP_BASE_PATH', '.'))
+                    analyzer = BackendSecurityAnalyzer(base_path)
+                    
+                    # Run backend analysis
+                    issues, tool_status, _ = analyzer.run_security_analysis(
+                        model, app_num, use_all_tools=full_scan
+                    )
+                    summary = analyzer.get_analysis_summary(issues)
+                
+                else:
+                    raise ValueError(f"Unsupported scan type: {scan_type}")
             
             # Store result (outside app context)
             self.storage.add_result(
@@ -403,6 +440,7 @@ class BatchAnalysisService:
                 {
                     "model": model,
                     "app_num": app_num,
+                    "scan_type": scan_type,
                     "status": "completed",
                     "issues_count": len(issues),
                     "high_severity": summary["severity_counts"]["HIGH"],
@@ -417,10 +455,10 @@ class BatchAnalysisService:
                 }
             )
             
-            logger.info(f"Completed analysis of {model}/app{app_num} for job {job_id}")
+            logger.info(f"Completed analysis of {model}/app{app_num} ({scan_type}) for job {job_id}")
             
         except Exception as e:
-            logger.error(f"Error analyzing {model}/app{app_num} for job {job_id}: {e}")
+            logger.error(f"Error analyzing {model}/app{app_num} ({scan_type}) for job {job_id}: {e}")
             
             # Store error result
             self.storage.add_result(
@@ -428,6 +466,7 @@ class BatchAnalysisService:
                 {
                     "model": model,
                     "app_num": app_num,
+                    "scan_type": scan_type,
                     "status": "failed",
                     "scan_time": datetime.now(),
                     "details": {
@@ -463,11 +502,16 @@ class BatchAnalysisService:
         
         results = self.storage.get_results(job_id)
         
+        # Group results by scan type for the summary
+        frontend_results = [r for r in results if r.scan_type == ScanType.FRONTEND]
+        backend_results = [r for r in results if r.scan_type == ScanType.BACKEND]
+        
         return {
             "id": job.id,
             "name": job.name,
             "models": job.models,
             "status": job.status,
+            "scan_type": job.scan_type,
             "created_at": job.created_at.isoformat() if job.created_at else None,
             "started_at": job.started_at.isoformat() if job.started_at else None,
             "completed_at": job.completed_at.isoformat() if job.completed_at else None,
@@ -480,6 +524,28 @@ class BatchAnalysisService:
                 "total": len(results),
                 "completed": sum(1 for r in results if r.status == "completed"),
                 "failed": sum(1 for r in results if r.status == "failed"),
+                "frontend": {
+                    "total": len(frontend_results),
+                    "completed": sum(1 for r in frontend_results if r.status == "completed"),
+                    "failed": sum(1 for r in frontend_results if r.status == "failed"),
+                    "issues": {
+                        "total": sum(r.issues_count for r in frontend_results),
+                        "high": sum(r.high_severity for r in frontend_results),
+                        "medium": sum(r.medium_severity for r in frontend_results),
+                        "low": sum(r.low_severity for r in frontend_results)
+                    }
+                },
+                "backend": {
+                    "total": len(backend_results),
+                    "completed": sum(1 for r in backend_results if r.status == "completed"),
+                    "failed": sum(1 for r in backend_results if r.status == "failed"),
+                    "issues": {
+                        "total": sum(r.issues_count for r in backend_results),
+                        "high": sum(r.high_severity for r in backend_results),
+                        "medium": sum(r.medium_severity for r in backend_results),
+                        "low": sum(r.low_severity for r in backend_results)
+                    }
+                },
                 "issues": {
                     "total": sum(r.issues_count for r in results),
                     "high": sum(r.high_severity for r in results),
@@ -508,7 +574,7 @@ def error_handler(f):
         try:
             return f(*args, **kwargs)
         except Exception as e:
-            logger.error(f"Error in {f.__name__}: {e}", exc_info=True)  # Added exc_info
+            logger.error(f"Error in {f.__name__}: {e}", exc_info=True)
             if request.headers.get("X-Requested-With") == "XMLHttpRequest":
                 return jsonify({"error": str(e)}), 500
             flash(f"Error: {str(e)}", "error")
@@ -573,6 +639,7 @@ def create_batch_job():
                 "description": request.form.get("description", ""),
                 "models": models,
                 "app_ranges": {},
+                "scan_type": request.form.get("scan_type", ScanType.FRONTEND),
                 "scan_options": {
                     "full_scan": request.form.get("full_scan") == "on"
                 }
@@ -643,7 +710,7 @@ def view_job(job_id: int):
     results = job_storage.get_results(job_id)
     
     # Sort results by model and app number
-    results.sort(key=lambda r: (r.model, r.app_num))
+    results.sort(key=lambda r: (r.model, r.app_num, r.scan_type))
     
     # Get detailed status for the job
     job_status = batch_service.get_job_status(job_id)
@@ -654,7 +721,6 @@ def view_job(job_id: int):
         results=results,
         status=job_status
     )
-
 
 @batch_analysis_bp.route("/job/<int:job_id>/status")
 @error_handler

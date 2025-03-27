@@ -608,3 +608,34 @@ function ChatInterface({ token, user, handleLogout, setError }) {
                   </div>
                 ))
               )}
+              <div ref={messagesEndRef} />
+            </div>
+            
+            <form className="message-form" onSubmit={sendMessage}>
+              <input
+                type="text"
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                placeholder="Type a message..."
+                className="message-input"
+              />
+              <button type="submit" className="send-button">Send</button>
+            </form>
+          </>
+        ) : (
+          <div className="no-room-selected">
+            <h2>Welcome to the Chat App</h2>
+            <p>Select a room to start chatting</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Mount the React app
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+
+export default App;
+

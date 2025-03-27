@@ -482,4 +482,566 @@ const ThreadPage = ({ threadId, navigateTo }) => {
     }
   };
   
-  const handle
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm('Are you sure you want to delete this comment?')) {
+      return;
+    }
+    
+    try {
+      await axios.delete(`${API_URL}/comments/${commentId}`);
+      
+      // Remove comment from the UI
+      setThread(prevThread => ({
+        ...prevThread,
+        comments: prevThread.comments.filter(comment => comment.id !== commentId)
+      }));
+    } catch (err) {
+      console.error('Error deleting comment:', err);
+      alert('Failed to delete comment');
+    }
+  };
+  
+  const handleEditComment = (comment) => {
+    setEditingComment(comment);
+    setCommentText(comment.content);
+    
+    // Scroll to comment form
+    document.getElementById('comment-form').scrollIntoView({ behavior: 'smooth' });
+  };
+  
+  const handleDeleteThread = async () => {
+    if (!window.confirm('Are you sure you want to delete this thread?')) {
+      return;
+    }
+    
+    try {
+      await axios.delete(`${API_URL}/threads/${threadId}`);
+      navigateTo('home');
+    } catch (err) {
+      console.error('Error deleting thread:', err);
+      alert('Failed to delete thread');
+    }
+  };
+  
+  if (loading) return <LoadingSpinner />;
+  
+  if (error || !thread) return <ErrorMessage message={error || 'Thread not found'} />;
+  
+  return (
+    <div className="thread-page">
+      <div className="thread-header">
+        <div className="breadcrumbs">
+          <span onClick={() => navigateTo('home')}>Home</span> &gt;
+          <span onClick={() => navigateTo('category', { id: thread.category_id, name: thread.category_name })}>
+            {thread.category_name}
+          </span>
+        </div>
+        
+        <h1>{thread.title}</h1>
+        
+        <div className="thread-meta">
+          <div>
+            <span>Posted by {thread.author.username}</span>
+            <span>{formatDate(thread.created_at)}</span>
+            <span>{thread.views} views</span>
+          </div>
+          
+          {user && user.id === thread.author.id && (
+            <div className="thread-actions">
+              <button className="btn btn-danger" onClick={handleDeleteThread}>
+                Delete Thread
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      <div className="thread-content">
+        {thread.content.split('\n').map((paragraph, i) => (
+          <p key={i}>{paragraph}</p>
+        ))}
+      </div>
+      
+      <div className="comments-section">
+        <h2>{thread.comments.length} {thread.comments.length === 1 ? 'Comment' : 'Comments'}</h2>
+        
+        {thread.comments.length === 0 ? (
+          <p className="no-comments">No comments yet. Be the first to comment.</p>
+        ) : (
+          <div className="comments-list">
+            {thread.comments.map(comment => (
+              <div key={comment.id} className="comment-item">
+                <div className="comment-header">
+                  <div className="comment-author">
+                    <span>{comment.author.username}</span>
+                    <span className="comment-date">{formatDate(comment.created_at)}</span>
+                    {comment.updated_at !== comment.created_at && (
+                      <span className="comment-edited">(edited)</span>
+                    )}
+                  </div>
+                  
+                  {user && user.id === comment.author.id && (
+                    <div className="comment-actions">
+                      <button 
+                        className="btn-link" 
+                        onClick={() => handleEditComment(comment)}
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        className="btn-link text-danger" 
+                        onClick={() => handleDeleteComment(comment.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="comment-content">
+                  {comment.content.split('\n').map((paragraph, i) => (
+                    <p key={i}>{paragraph}</p>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        <div className="comment-form-container" id="comment-form">
+          <h3>{editingComment ? 'Edit Comment' : 'Add a Comment'}</h3>
+          
+          {!user ? (
+            <div className="login-prompt">
+              <p>Please <button className="btn-link" onClick={() => navigateTo('login')}>login</button> to add a comment.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmitComment} className="comment-form">
+              <textarea
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder="Write your comment..."
+                required
+                rows={4}
+              />
+              
+              <div className="form-actions">
+                {editingComment && (
+                  <button 
+                    type="button" 
+                    className="btn btn-outline" 
+                    onClick={() => {
+                      setEditingComment(null);
+                      setCommentText('');
+                    }}
+                  >
+                    Cancel
+                  </button>
+                )}
+                
+                <button 
+                  type="submit" 
+                  className="btn btn-primary" 
+                  disabled={submitting || !commentText.trim()}
+                >
+                  {submitting ? 'Submitting...' : editingComment ? 'Update Comment' : 'Post Comment'}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Create Thread Page Component
+const CreateThreadPage = ({ navigateTo }) => {
+  const { user } = React.useContext(AuthContext);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  
+  useEffect(() => {
+    // Redirect if not logged in
+    if (!user && !loading) {
+      navigateTo('login');
+      return;
+    }
+    
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/categories`);
+        setCategories(response.data);
+        if (response.data.length > 0) {
+          setCategoryId(response.data[0].id.toString());
+        }
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to fetch categories');
+        setLoading(false);
+        console.error('Error fetching categories:', err);
+      }
+    };
+    
+    fetchCategories();
+  }, [user, loading, navigateTo]);
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!title.trim() || !content.trim() || !categoryId) {
+      return;
+    }
+    
+    try {
+      setSubmitting(true);
+      const response = await axios.post(`${API_URL}/threads`, {
+        title,
+        content,
+        category_id: parseInt(categoryId)
+      });
+      
+      setSubmitting(false);
+      navigateTo('thread', response.data.thread.id);
+    } catch (err) {
+      console.error('Error creating thread:', err);
+      setError('Failed to create thread');
+      setSubmitting(false);
+    }
+  };
+  
+  if (loading) return <LoadingSpinner />;
+  
+  if (error) return <ErrorMessage message={error} />;
+  
+  return (
+    <div className="create-thread-page">
+      <h1>Create New Thread</h1>
+      
+      <form onSubmit={handleSubmit} className="thread-form">
+        <div className="form-group">
+          <label htmlFor="category">Category</label>
+          <select 
+            id="category" 
+            value={categoryId} 
+            onChange={(e) => setCategoryId(e.target.value)}
+            required
+          >
+            <option value="">Select a category</option>
+            {categories.map(category => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        
+        <div className="form-group">
+          <label htmlFor="title">Title</label>
+          <input 
+            type="text" 
+            id="title" 
+            value={title} 
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Thread title"
+            required
+            maxLength={100}
+          />
+        </div>
+        
+        <div className="form-group">
+          <label htmlFor="content">Content</label>
+          <textarea 
+            id="content" 
+            value={content} 
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="Write your post content here..."
+            required
+            rows={10}
+          />
+        </div>
+        
+        <div className="form-actions">
+          <button 
+            type="button" 
+            className="btn btn-outline" 
+            onClick={() => navigateTo('home')}
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            className="btn btn-primary" 
+            disabled={submitting || !title.trim() || !content.trim() || !categoryId}
+          >
+            {submitting ? 'Creating...' : 'Create Thread'}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+// Login Page Component
+const LoginPage = ({ navigateTo }) => {
+  const { login, user, loading } = React.useContext(AuthContext);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user && !loading) {
+      navigateTo('home');
+    }
+  }, [user, loading, navigateTo]);
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    
+    if (!username.trim() || !password.trim()) {
+      return;
+    }
+    
+    try {
+      setSubmitting(true);
+      const result = await login({ username, password });
+      
+      if (result.success) {
+        navigateTo('home');
+      } else {
+        setError(result.message);
+      }
+      
+      setSubmitting(false);
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('An unexpected error occurred');
+      setSubmitting(false);
+    }
+  };
+  
+  if (loading || user) return <LoadingSpinner />;
+  
+  return (
+    <div className="auth-page">
+      <div className="auth-card">
+        <h1>Login</h1>
+        
+        {error && <div className="error-message">{error}</div>}
+        
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
+            <input 
+              type="text" 
+              id="username" 
+              value={username} 
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input 
+              type="password" 
+              id="password" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          
+          <button 
+            type="submit" 
+            className="btn btn-primary btn-block" 
+            disabled={submitting}
+          >
+            {submitting ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
+        
+        <p className="auth-redirect">
+          Don't have an account?{' '}
+          <button className="btn-link" onClick={() => navigateTo('register')}>
+            Register
+          </button>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// Register Page Component
+const RegisterPage = ({ navigateTo }) => {
+  const { register, user, loading } = React.useContext(AuthContext);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user && !loading) {
+      navigateTo('home');
+    }
+  }, [user, loading, navigateTo]);
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    
+    if (!username.trim() || !password.trim()) {
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    
+    try {
+      setSubmitting(true);
+      const result = await register({ username, password });
+      
+      if (result.success) {
+        navigateTo('home');
+      } else {
+        setError(result.message);
+      }
+      
+      setSubmitting(false);
+    } catch (err) {
+      console.error('Registration error:', err);
+      setError('An unexpected error occurred');
+      setSubmitting(false);
+    }
+  };
+  
+  if (loading || user) return <LoadingSpinner />;
+  
+  return (
+    <div className="auth-page">
+      <div className="auth-card">
+        <h1>Register</h1>
+        
+        {error && <div className="error-message">{error}</div>}
+        
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
+            <input 
+              type="text" 
+              id="username" 
+              value={username} 
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              minLength={3}
+              maxLength={50}
+            />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input 
+              type="password" 
+              id="password" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+            />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirm Password</label>
+            <input 
+              type="password" 
+              id="confirmPassword" 
+              value={confirmPassword} 
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+          </div>
+          
+          <button 
+            type="submit" 
+            className="btn btn-primary btn-block" 
+            disabled={submitting}
+          >
+            {submitting ? 'Registering...' : 'Register'}
+          </button>
+        </form>
+        
+        <p className="auth-redirect">
+          Already have an account?{' '}
+          <button className="btn-link" onClick={() => navigateTo('login')}>
+            Login
+          </button>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+// Utility Components
+const LoadingSpinner = () => (
+  <div className="loading-spinner">
+    <div className="spinner"></div>
+    <p>Loading...</p>
+  </div>
+);
+
+const ErrorMessage = ({ message }) => (
+  <div className="error-container">
+    <h2>Error</h2>
+    <p>{message || 'Something went wrong.'}</p>
+    <button className="btn" onClick={() => window.location.reload()}>
+      Try Again
+    </button>
+  </div>
+);
+
+// Helper Functions
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffSecs = Math.floor(diffMs / 1000);
+  const diffMins = Math.floor(diffSecs / 60);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+  
+  if (diffSecs < 60) {
+    return 'just now';
+  } else if (diffMins < 60) {
+    return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+  } else if (diffHours < 24) {
+    return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+  } else if (diffDays < 7) {
+    return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+  } else {
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  }
+};
+
+// Mount the app
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+
+export default App;
+
+
