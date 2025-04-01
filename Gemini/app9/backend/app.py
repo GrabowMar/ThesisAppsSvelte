@@ -1,143 +1,108 @@
-```markdown
-# CRUD Inventory Application Template - Flask + react
-
-## Important Implementation Notes
-
-1. Generate web app with properly implemented key features mentioned below.
-2. Try to keep all changes within **app.py** , **App.jsx** and **App.css** files.
-3. Try to write feature complete production ready app, with comments, fails states, etc.
-4. **Note:** Multipage routing is possible within these files. On the backend, you can define multiple routes (e.g., `/login`, `/register`, `/dashboard`, etc.) in **app.py**. On the frontend, client-side routing can be managed within **App.jsx** using conditional rendering or a routing library, all within the single-file constraint.
-5. Mounting Logic: The App.jsx file must include mounting logic. This means it should import ReactDOM from react-dom/client and use it to attach the main App component to the DOM element with the id "root".
-## Project Description
-
-**CRUD Inventory System**  
-An inventory management system built with Flask and react, featuring CRUD operations.
-
-**Required Features:**
-- **Multipage Routing:** Extendable routing on both backend and frontend for additional pages/views
-- SImple and modern UI
-
-**Template Specific:**
-
-- Item management (CRUD)
-- Inventory tracking
-- Categorization
-- Stock level alerts
-- Search/filter items
-
-## Implementation Structure
-
-### Project Layout
-
-```plaintext
-app/
-├── backend/
-│   ├── app.py              # ALL backend logic
-│   ├── Dockerfile          # (optional)
-│   └── requirements.txt    # (generated if needed)
-│
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx      # ALL frontend logic (with potential multipage routing)
-│   │   └── App.css         # (optional)
-│   ├── Dockerfile          # (optional)
-│   ├── package.json        # (generated if needed)
-│   ├── index.html          # (optional)
-│   └── vite.config.js      # (required for port config)
-│
-└── docker-compose.yml      # (optional)
-```
-### Core Files Structure
-
-#### Backend (app.py)
-```python
-# 1. Imports Section
+# app/backend/app.py
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
 
-# 2. App Configuration
 app = Flask(__name__)
 CORS(app)
 
-# 3. Database Models (if needed)
-# 4. Authentication Logic (if needed)
-# 5. Utility Functions
-# 6. API Routes
-# 7. Error Handlers
+# Sample Inventory Data (replace with a database in a real application)
+inventory = [
+    {"id": 1, "name": "Laptop", "category": "Electronics", "stock": 5, "price": 1200},
+    {"id": 2, "name": "Notebook", "category": "Stationery", "stock": 50, "price": 2},
+    {"id": 3, "name": "Mouse", "category": "Electronics", "stock": 20, "price": 25}
+]
+
+next_id = 4  # To keep track of the next available ID
+
+
+# Utility Functions
+def find_item(item_id):
+    for item in inventory:
+        if item['id'] == item_id:
+            return item
+    return None
+
+
+# API Routes
+
+# Get all items
+@app.route('/api/inventory', methods=['GET'])
+def get_inventory():
+    return jsonify(inventory)
+
+
+# Get a specific item
+@app.route('/api/inventory/<int:item_id>', methods=['GET'])
+def get_item(item_id):
+    item = find_item(item_id)
+    if item:
+        return jsonify(item)
+    return jsonify({"message": "Item not found"}), 404
+
+
+# Create a new item
+@app.route('/api/inventory', methods=['POST'])
+def create_item():
+    global next_id
+    data = request.get_json()
+    if not all(key in data for key in ('name', 'category', 'stock', 'price')):
+        return jsonify({"message": "Missing required fields"}), 400
+
+    new_item = {
+        "id": next_id,
+        "name": data['name'],
+        "category": data['category'],
+        "stock": data['stock'],
+        "price": data['price']
+    }
+    inventory.append(new_item)
+    next_id += 1
+    return jsonify(new_item), 201
+
+
+# Update an existing item
+@app.route('/api/inventory/<int:item_id>', methods=['PUT'])
+def update_item(item_id):
+    item = find_item(item_id)
+    if not item:
+        return jsonify({"message": "Item not found"}), 404
+
+    data = request.get_json()
+    if 'name' in data:
+        item['name'] = data['name']
+    if 'category' in data:
+        item['category'] = data['category']
+    if 'stock' in data:
+        item['stock'] = data['stock']
+    if 'price' in data:
+        item['price'] = data['price']
+
+    return jsonify(item)
+
+
+# Delete an item
+@app.route('/api/inventory/<int:item_id>', methods=['DELETE'])
+def delete_item(item_id):
+    global inventory
+    item = find_item(item_id)
+    if not item:
+        return jsonify({"message": "Item not found"}), 404
+
+    inventory = [i for i in inventory if i['id'] != item_id]  # Create a new list excluding the item
+    return jsonify({"message": "Item deleted"})
+
+
+# Error Handlers
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({"message": "Resource not found"}), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    return jsonify({"message": "Internal server error"}), 500
+
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.getenv('PORT', '5417')))
-```
-
-#### Frontend (App.jsx)
-```react
-<script>
-  // 1. Imports
-  import { onMount } from 'react';
-
-  // 2. State Management
-  // 3. Lifecycle Functions
-  // 4. Event Handlers
-  // 5. API Calls
-</script>
-
-<!-- UI Components -->
-<main>
-  <!-- Component Structure -->
-</main>
-```
-
-#### Vite (vite.config.js)
-```js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    host: true,
-    port: 5917,
-    strictPort: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:port: 5417',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
-  }
-```
-#### Main page (index.html)
-```js
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/App.jsx"></script>
-  </body>
-</html>
-```
-
-
-## Response requirements
-
-1. **Port Configuration Prompt**
-   - Use `5917` (backend) and `5417` (frontend) ports.
-
-2. **Backend Generation Prompt**
-   - Must include all specified backend features.
-   - Must list required pip dependencies in form of requirements.txt.
-
-
-3. **Frontend Generation Prompt**
-   - Must include all specified frontend features.
-   - Must list required npm dependencies in form of package.json (and vite.config.js if necessary)
-
-
-**Very important:** Your app should be feature rich and production ready.
-```
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', '5417')), debug=True)

@@ -5,14 +5,14 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
-    port: 6147,  // Changed to match your frontend port
+    port: 5647,  // Frontend port as requested
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:port: 5647',
+        target: 'http://localhost:6147', // Proxy to Flask backend on port 6147
         changeOrigin: true,
-        secure: false,
+        secure: false
       }
     }
   }
-});
+})

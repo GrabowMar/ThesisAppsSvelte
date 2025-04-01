@@ -1,2 +1,7 @@
-flask
-flask-cors
+flask==3.0.0
+flask-cors==4.0.0
+flask-sqlalchemy==3.1.1
+pyjwt==2.8.0
+markdown==3.5.1
+python-dotenv==1.0.0
+werkzeug==3.0.1

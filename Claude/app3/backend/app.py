@@ -1,148 +1,205 @@
-```markdown
-# Feedback Form Application Template - Flask + react
-
-## Important Implementation Notes
-
-1. Generate web app with properly implemented key features mentioned below.
-2. Try to keep all changes within **app.py** , **App.jsx** and **App.css** files.
-3. Try to write feature complete production ready app, with comments, fails states, etc.
-4. **Note:** Multipage routing is possible within these files. On the backend, you can define multiple routes (e.g., `/login`, `/register`, `/dashboard`, etc.) in **app.py**. On the frontend, client-side routing can be managed within **App.jsx** using conditional rendering or a routing library, all within the single-file constraint.
-5. Mounting Logic: The App.jsx file must include mounting logic. This means it should import ReactDOM from react-dom/client and use it to attach the main App component to the DOM element with the id "root".
-## Introduction
-
-This template provides a feedback collection system built with Flask and react. The implementation focuses on form handling and data storage while maintaining clean, maintainable code.
-
-## Project Description
-
-**Feedback System**  
-A feedback collection application built with Flask and react, featuring form submission and response management capabilities.
-
-**Required Features:**
-- **Multipage Routing:** Extendable routing on both backend and frontend for additional pages/views
-- SImple and modern UI
-
-**Template Specific:**
-
-- Multi-field feedback form
-- Form validation
-- Submission handling
-- Response storage
-- Success notifications
-
-
-## Implementation Structure
-
-### Project Layout
-
-```plaintext
-app/
-├── backend/
-│   ├── app.py              # ALL backend logic
-│   ├── Dockerfile          # (optional)
-│   └── requirements.txt    # (generated if needed)
-│
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx      # ALL frontend logic (with potential multipage routing)
-│   │   └── App.css         # (optional)
-│   ├── Dockerfile          # (optional)
-│   ├── package.json        # (generated if needed)
-│   ├── index.html          # (optional)
-│   └── vite.config.js      # (required for port config)
-│
-└── docker-compose.yml      # (optional)
-```
-### Core Files Structure
-
-#### Backend (app.py)
-```python
 # 1. Imports Section
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 import os
+import json
+from datetime import datetime
+import uuid
+from functools import wraps
 
 # 2. App Configuration
 app = Flask(__name__)
 CORS(app)
 
-# 3. Database Models (if needed)
-# 4. Authentication Logic (if needed)
-# 5. Utility Functions
-# 6. API Routes
-# 7. Error Handlers
+# Simple file-based storage for feedback
+FEEDBACK_FILE = "feedback_data.json"
+
+# 3. Utility Functions
+def load_feedback():
+    """Load feedback data from file or return empty list if file doesn't exist"""
+    try:
+        with open(FEEDBACK_FILE, 'r') as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+def save_feedback(feedback_list):
+    """Save feedback data to file"""
+    with open(FEEDBACK_FILE, 'w') as f:
+        json.dump(feedback_list, f, indent=4)
+
+def validate_feedback(data):
+    """Validate feedback submission data"""
+    required_fields = ['name', 'email', 'rating', 'comment']
+    errors = {}
+    
+    # Check for required fields
+    for field in required_fields:
+        if field not in data or not data[field]:
+            errors[field] = f"{field.capitalize()} is required"
+    
+    # Email format validation
+    if 'email' in data and data['email'] and '@' not in data['email']:
+        errors['email'] = "Invalid email format"
+    
+    # Rating validation (1-5)
+    if 'rating' in data:
+        try:
+            rating = int(data['rating'])
+            if rating < 1 or rating > 5:
+                errors['rating'] = "Rating must be between 1 and 5"
+        except (ValueError, TypeError):
+            errors['rating'] = "Rating must be a number between 1 and 5"
+    
+    return errors
+
+def error_response(message, status_code):
+    """Return standardized error response"""
+    return jsonify({"success": False, "errors": message}), status_code
+
+# Simple API key authentication for admin routes
+API_KEY = os.getenv('API_KEY', 'admin_secret_key')  # In production, use env var
+
+def require_api_key(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        api_key = request.headers.get('X-API-Key')
+        if api_key and api_key == API_KEY:
+            return f(*args, **kwargs)
+        return error_response("Unauthorized", 401)
+    return decorated_function
+
+# 4. API Routes
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    """Simple health check endpoint"""
+    return jsonify({"status": "healthy", "time": datetime.now().isoformat()})
+
+@app.route('/api/feedback', methods=['POST'])
+def submit_feedback():
+    """Endpoint to submit new feedback"""
+    try:
+        data = request.json
+        validation_errors = validate_feedback(data)
+        
+        if validation_errors:
+            return error_response(validation_errors, 400)
+        
+        feedback_list = load_feedback()
+        
+        # Create new feedback entry
+        new_feedback = {
+            "id": str(uuid.uuid4()),
+            "name": data['name'],
+            "email": data['email'],
+            "rating": int(data['rating']),
+            "comment": data['comment'],
+            "category": data.get('category', 'General'),
+            "timestamp": datetime.now().isoformat(),
+        }
+        
+        feedback_list.append(new_feedback)
+        save_feedback(feedback_list)
+        
+        return jsonify({
+            "success": True,
+            "message": "Feedback submitted successfully",
+            "feedback_id": new_feedback["id"]
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Error submitting feedback: {str(e)}")
+        return error_response("An unexpected error occurred", 500)
+
+@app.route('/api/feedback', methods=['GET'])
+@require_api_key
+def get_all_feedback():
+    """Endpoint to retrieve all feedback (admin only)"""
+    try:
+        feedback_list = load_feedback()
+        return jsonify({
+            "success": True,
+            "count": len(feedback_list),
+            "feedback": feedback_list
+        })
+    except Exception as e:
+        app.logger.error(f"Error retrieving feedback: {str(e)}")
+        return error_response("An unexpected error occurred", 500)
+
+@app.route('/api/feedback/stats', methods=['GET'])
+def get_feedback_stats():
+    """Public endpoint to get feedback statistics"""
+    try:
+        feedback_list = load_feedback()
+        
+        if not feedback_list:
+            return jsonify({
+                "success": True,
+                "stats": {
+                    "count": 0,
+                    "avg_rating": 0,
+                    "categories": {}
+                }
+            })
+        
+        # Calculate stats
+        total_rating = sum(item['rating'] for item in feedback_list)
+        avg_rating = round(total_rating / len(feedback_list), 1)
+        
+        # Count by category
+        categories = {}
+        for item in feedback_list:
+            cat = item.get('category', 'General')
+            if cat in categories:
+                categories[cat] += 1
+            else:
+                categories[cat] = 1
+        
+        return jsonify({
+            "success": True,
+            "stats": {
+                "count": len(feedback_list),
+                "avg_rating": avg_rating,
+                "categories": categories
+            }
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Error retrieving feedback stats: {str(e)}")
+        return error_response("An unexpected error occurred", 500)
+
+@app.route('/api/feedback/<feedback_id>', methods=['DELETE'])
+@require_api_key
+def delete_feedback(feedback_id):
+    """Endpoint to delete specific feedback (admin only)"""
+    try:
+        feedback_list = load_feedback()
+        
+        # Find and remove the feedback with given ID
+        new_list = [f for f in feedback_list if f['id'] != feedback_id]
+        
+        if len(new_list) == len(feedback_list):
+            return error_response("Feedback not found", 404)
+        
+        save_feedback(new_list)
+        
+        return jsonify({
+            "success": True,
+            "message": "Feedback deleted successfully"
+        })
+        
+    except Exception as e:
+        app.logger.error(f"Error deleting feedback: {str(e)}")
+        return error_response("An unexpected error occurred", 500)
+
+# 5. Error Handlers
+@app.errorhandler(404)
+def not_found(error):
+    return error_response("Endpoint not found", 404)
+
+@app.errorhandler(500)
+def server_error(error):
+    return error_response("Internal server error", 500)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.getenv('PORT', '5325')))
-```
-
-#### Frontend (App.jsx)
-```react
-<script>
-  // 1. Imports
-  import { onMount } from 'react';
-
-  // 2. State Management
-  // 3. Lifecycle Functions
-  // 4. Event Handlers
-  // 5. API Calls
-</script>
-
-<!-- UI Components -->
-<main>
-  <!-- Component Structure -->
-</main>
-```
-
-#### Vite (vite.config.js)
-```js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    host: true,
-    port: 5825,
-    strictPort: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:port: 5325',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
-  }
-```
-#### Main page (index.html)
-```js
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/App.jsx"></script>
-  </body>
-</html>
-```
-
-
-## Response requirements
-
-1. **Port Configuration Prompt**
-   - Use `5825` (backend) and `5325` (frontend) ports.
-
-2. **Backend Generation Prompt**
-   - Must include all specified backend features.
-   - Must list required pip dependencies in form of requirements.txt.
-
-
-3. **Frontend Generation Prompt**
-   - Must include all specified frontend features.
-   - Must list required npm dependencies in form of package.json (and vite.config.js if necessary)
-
-
-**Very important:** Your app should be feature rich and production ready.
-```
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', '5325')), debug=True)

@@ -1,8 +1,7 @@
 {
-  "name": "react-r1-app",
+  "name": "ecommerce-cart",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -13,7 +12,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.0.0",
+    "@vitejs/plugin-react": "^4.2.1",
     "vite": "^5.0.8"
   }
 }

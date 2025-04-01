@@ -1,143 +1,91 @@
-```markdown
-# Polling Application Template - Flask + react
-
-## Important Implementation Notes
-
-1. Generate web app with properly implemented key features mentioned below.
-2. Try to keep all changes within **app.py** , **App.jsx** and **App.css** files.
-3. Try to write feature complete production ready app, with comments, fails states, etc.
-4. **Note:** Multipage routing is possible within these files. On the backend, you can define multiple routes (e.g., `/login`, `/register`, `/dashboard`, etc.) in **app.py**. On the frontend, client-side routing can be managed within **App.jsx** using conditional rendering or a routing library, all within the single-file constraint.
-5. Mounting Logic: The App.jsx file must include mounting logic. This means it should import ReactDOM from react-dom/client and use it to attach the main App component to the DOM element with the id "root".
-## Project Description
-
-**Polling System**  
-A voting application built with Flask and react, featuring poll creation and voting functionality.
-
-**Required Features:**
-- **Multipage Routing:** Extendable routing on both backend and frontend for additional pages/views
-- SImple and modern UI
-
-**Template Specific:**
-
-- Poll creation
-- Vote casting
-- Results display
-- Analytics
-- Time-limited polls
-
-## Implementation Structure
-
-### Project Layout
-
-```plaintext
-app/
-├── backend/
-│   ├── app.py              # ALL backend logic
-│   ├── Dockerfile          # (optional)
-│   └── requirements.txt    # (generated if needed)
-│
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx      # ALL frontend logic (with potential multipage routing)
-│   │   └── App.css         # (optional)
-│   ├── Dockerfile          # (optional)
-│   ├── package.json        # (generated if needed)
-│   ├── index.html          # (optional)
-│   └── vite.config.js      # (required for port config)
-│
-└── docker-compose.yml      # (optional)
-```
-### Core Files Structure
-
-#### Backend (app.py)
-```python
-# 1. Imports Section
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, abort
 from flask_cors import CORS
+from datetime import datetime
 import os
 
-# 2. App Configuration
 app = Flask(__name__)
 CORS(app)
 
-# 3. Database Models (if needed)
-# 4. Authentication Logic (if needed)
-# 5. Utility Functions
-# 6. API Routes
-# 7. Error Handlers
+# In-memory database (for demo purposes)
+polls = []
+vote_counts = {}
+
+# Utility Functions
+def find_poll(poll_id):
+    for poll in polls:
+        if poll['id'] == poll_id:
+            return poll
+    return None
+
+def calculate_analytics(poll_id):
+    poll = find_poll(poll_id)
+    if not poll:
+        return None
+    total_votes = sum(vote_counts.get(poll_id, {}).values(), 0)
+    analytics = {
+        "total_votes": total_votes,
+        "options": {option: vote_counts.get(poll_id, {}).get(option, 0) for option in poll['options']}
+    }
+    return analytics
+
+# API Routes
+@app.route('/api/polls', methods=['POST'])
+def create_poll():
+    data = request.json
+    if not data or not 'question' in data or not 'options' in data:
+        abort(400, description="Invalid request. 'question' and 'options' are required.")
+    
+    new_poll = {
+        "id": len(polls) + 1,
+        "question": data['question'],
+        "options": data['options'],
+        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "expires_at": data.get('expires_at', None)  # Optional: Set expiration
+    }
+    polls.append(new_poll)
+    vote_counts[new_poll['id']] = {option: 0 for option in data['options']}
+    return jsonify(new_poll), 201
+
+@app.route('/api/polls/<int:poll_id>', methods=['GET'])
+def get_poll(poll_id):
+    poll = find_poll(poll_id)
+    if not poll:
+        abort(404, description="Poll not found.")
+    return jsonify(poll)
+
+@app.route('/api/polls/<int:poll_id>/vote', methods=['POST'])
+def cast_vote(poll_id):
+    data = request.json
+    if not data or not 'option' in data:
+        abort(400, description="Invalid request. 'option' is required.")
+    
+    poll = find_poll(poll_id)
+    if not poll:
+        abort(404, description="Poll not found.")
+    if poll.get('expires_at') and datetime.now() > datetime.strptime(poll['expires_at'], "%Y-%m-%d %H:%M:%S"):
+        abort(400, description="Poll has expired.")
+    if data['option'] not in poll['options']:
+        abort(400, description="Invalid option.")
+    
+    vote_counts[poll_id][data['option']] += 1
+    return jsonify({"message": "Vote cast successfully."}), 200
+
+@app.route('/api/polls/<int:poll_id>/results', methods=['GET'])
+def get_results(poll_id):
+    poll = find_poll(poll_id)
+    if not poll:
+        abort(404, description="Poll not found.")
+    results = calculate_analytics(poll_id)
+    return jsonify(results)
+
+# Error Handlers
+@app.errorhandler(400)
+def bad_request(error):
+    return jsonify({"error": str(error)}), 400
+
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({"error": str(error)}), 404
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', '5181')))
-```
-
-#### Frontend (App.jsx)
-```react
-<script>
-  // 1. Imports
-  import { onMount } from 'react';
-
-  // 2. State Management
-  // 3. Lifecycle Functions
-  // 4. Event Handlers
-  // 5. API Calls
-</script>
-
-<!-- UI Components -->
-<main>
-  <!-- Component Structure -->
-</main>
-```
-
-#### Vite (vite.config.js)
-```js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    host: true,
-    port: 5681,
-    strictPort: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:port: 5181',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
-  }
-```
-#### Main page (index.html)
-```js
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/App.jsx"></script>
-  </body>
-</html>
-```
-
-
-## Response requirements
-
-1. **Port Configuration Prompt**
-   - Use `5681` (backend) and `5181` (frontend) ports.
-
-2. **Backend Generation Prompt**
-   - Must include all specified backend features.
-   - Must list required pip dependencies in form of requirements.txt.
-
-
-3. **Frontend Generation Prompt**
-   - Must include all specified frontend features.
-   - Must list required npm dependencies in form of package.json (and vite.config.js if necessary)
-
-
-**Very important:** Your app should be feature rich and production ready.
-```

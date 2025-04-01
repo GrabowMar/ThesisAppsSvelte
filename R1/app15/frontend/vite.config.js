@@ -5,14 +5,14 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
-    port: 6089,  // Changed to match your frontend port
+    port: 6089,
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:port: 5589',
+        target: 'http://localhost:5589',
         changeOrigin: true,
-        secure: false,
+        secure: false
       }
     }
   }
-});
+})

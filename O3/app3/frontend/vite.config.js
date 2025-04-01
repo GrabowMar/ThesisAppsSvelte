@@ -1,18 +1,20 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+// app/frontend/vite.config.js
+
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
-    port: 6145,  // Changed to match your frontend port
+    port: 5645, // Frontend Vite server running on port 5645
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:port: 5645',
+        target: 'http://localhost:6145', // Proxy API requests to Flask backend on port 6145
         changeOrigin: true,
         secure: false,
-      }
-    }
-  }
+      },
+    },
+  },
 });

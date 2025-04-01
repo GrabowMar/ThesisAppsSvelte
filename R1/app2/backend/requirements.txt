@@ -1,2 +1,4 @@
-flask
-flask-cors
+flask==3.0.2
+flask-socketio==5.3.6
+flask-cors==4.0.1
+python-dotenv==1.0.0
