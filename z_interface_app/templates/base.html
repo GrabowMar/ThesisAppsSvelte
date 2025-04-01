@@ -27,10 +27,53 @@
   <!-- Main Dashboard Script -->
   <script defer src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 
-  <!-- jquerry CDN -->
+  <!-- jQuery CDN -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   {% block extra_head %}{% endblock %}
+  
+  <style>
+    /* Custom Styles */
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .action-btn {
+      @apply h-7 px-2 text-xs bg-gray-200 hover:bg-gray-300 border border-gray-400 rounded transition-colors duration-150 flex items-center justify-center;
+    }
+    
+    .action-btn:focus {
+      @apply outline-none ring-2 ring-blue-500 ring-opacity-50;
+    }
+    
+    .action-btn:active {
+      @apply bg-gray-400;
+    }
+    
+    pre, code {
+      font-family: 'Roboto Mono', monospace;
+    }
+    
+    /* Improved scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #a1a1a1;
+    }
+  </style>
 </head>
 
 <body class="min-h-screen bg-gray-100 flex flex-col">
@@ -40,34 +83,34 @@
   </a>
 
   <!-- Header Navigation -->
-  <header class="bg-gray-200 border-b border-gray-400">
-    <nav class="px-2" aria-label="Main navigation">
-      <div class="flex justify-between h-8">
+  <header class="bg-gray-200 border-b border-gray-400 shadow-sm">
+    <nav class="px-4 max-w-8xl mx-auto" aria-label="Main navigation">
+      <div class="flex justify-between h-10">
         <div class="flex items-center">
-          <a href="{{ url_for('main.index') }}" class="flex items-center hover:bg-gray-300 px-2 rounded-sm" aria-label="Home">
-            <svg class="h-4 w-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <a href="{{ url_for('main.index') }}" class="flex items-center hover:bg-gray-300 px-3 py-1 rounded-md transition-colors duration-150" aria-label="Home">
+            <svg class="h-5 w-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                     d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
             </svg>
-            <span class="font-bold text-gray-900 ml-1">AI Model Manager</span>
+            <span class="font-bold text-gray-900 ml-2">AI Model Manager</span>
           </a>
         </div>
         <div id="statusIndicator" class="flex items-center" role="status" aria-live="polite">
-          <span class="h-2 w-2 rounded-full bg-green-600"></span>
-          <span class="ml-1 text-xs text-gray-600">System Active</span>
+          <span class="h-2.5 w-2.5 rounded-full bg-green-600 shadow-sm"></span>
+          <span class="ml-2 text-xs text-gray-600">System Active</span>
         </div>
       </div>
     </nav>
   </header>
 
   <!-- Main Content -->
-  <main id="main-content" class="flex-grow p-2">
+  <main id="main-content" class="flex-grow p-3 max-w-8xl mx-auto w-full">
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="space-y-1" aria-live="polite">
+        <div class="space-y-2 mb-3" aria-live="polite">
           {% for category, message in messages %}
-            <div class="border p-2 text-xs rounded
+            <div class="border p-3 text-sm rounded-md shadow-sm
                         {% if category == 'error' %}
                           border-red-700 bg-red-50 text-red-700
                         {% else %}
@@ -85,23 +128,23 @@
   </main>
 
   <!-- Footer -->
-  <footer class="bg-gray-200 border-t border-gray-400">
-    <div class="flex justify-between items-center px-2 h-6">
+  <footer class="bg-gray-200 border-t border-gray-400 mt-4">
+    <div class="flex justify-between items-center px-4 py-2 max-w-8xl mx-auto">
       <p class="text-xs text-gray-600">
         &copy; <span id="currentYear"></span> AI Model Management System
       </p>
-      <button id="showSystemInfo" class="text-xs hover:bg-gray-300 px-2 h-full" aria-haspopup="dialog">
+      <button id="showSystemInfo" class="text-xs hover:bg-gray-300 px-3 py-1 rounded-md transition-colors duration-150" aria-haspopup="dialog">
         System Information
       </button>
     </div>
   </footer>
 
   <!-- Modal (System Info / Misc) -->
-  <div id="modal" class="fixed inset-0 bg-black bg-opacity-30 hidden z-50" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 backdrop-filter backdrop-blur-sm" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
     <div class="flex items-center justify-center min-h-screen p-4">
-      <div class="bg-gray-100 border border-gray-400 shadow-md w-full max-w-md rounded">
+      <div class="bg-gray-100 border border-gray-400 shadow-lg w-full max-w-md rounded-md">
         <!-- Title Bar -->
-        <div class="bg-gray-200 border-b border-gray-400 px-2 py-1">
+        <div class="bg-gray-200 border-b border-gray-400 px-4 py-2 rounded-t-md">
           <h3 class="text-sm font-bold text-gray-900" id="modalTitle"></h3>
         </div>
         
@@ -109,8 +152,8 @@
         <div class="p-4" id="modalContent"></div>
         
         <!-- Button Bar -->
-        <div class="bg-gray-200 border-t border-gray-400 p-2 flex justify-end">
-          <button type="button" class="modal-close action-btn">Close</button>
+        <div class="bg-gray-200 border-t border-gray-400 p-3 flex justify-end rounded-b-md">
+          <button type="button" class="modal-close bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-1.5 rounded-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Close</button>
         </div>
       </div>
     </div>
@@ -132,21 +175,25 @@
         showSystemInfoBtn.addEventListener('click', function() {
           document.getElementById('modalTitle').textContent = 'System Information';
           document.getElementById('modalContent').innerHTML = `
-            <div class="space-y-2 text-xs">
-              <div class="flex justify-between">
-                <span class="font-medium">Application:</span>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between border-b border-gray-200 pb-2">
+                <span class="font-medium text-gray-700">Application:</span>
                 <span>AI Model Management System</span>
               </div>
-              <div class="flex justify-between">
-                <span class="font-medium">Version:</span>
+              <div class="flex justify-between border-b border-gray-200 pb-2">
+                <span class="font-medium text-gray-700">Version:</span>
                 <span>1.0.0</span>
               </div>
               <div class="flex justify-between">
-                <span class="font-medium">Last Updated:</span>
+                <span class="font-medium text-gray-700">Last Updated:</span>
                 <span>${new Date().toLocaleDateString()}</span>
               </div>
             </div>`;
           modal.classList.remove('hidden');
+          
+          // Add entrance animation
+          const modalContent = modal.querySelector('.bg-gray-100');
+          modalContent.classList.add('animate-fadeIn');
         });
       }
       

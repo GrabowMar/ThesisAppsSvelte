@@ -394,19 +394,24 @@
     }
     
     // Toggle issue details
-    const $toggleButtons = $('.toggle-issue');
-    $toggleButtons.each(function() {
-      $(this).on('click', function() {
-        const $issueDetails = $(this).closest('.space-y-2').find('.issue-details');
-        
-        if ($issueDetails.length) {
-          const isExpanded = !$issueDetails.hasClass('hidden');
-          $issueDetails.toggleClass('hidden');
-          $(this).text(isExpanded ? 'Expand' : 'Collapse');
-          $(this).attr('aria-expanded', !isExpanded);
-        }
-      });
-    });
+const $toggleButtons = $('.toggle-issue');
+$toggleButtons.each(function() {
+  $(this).on('click', function() {
+    // Find the most specific parent container (likely the issue item)
+    const $issueItem = $(this).closest('.issue-item');
+    
+    // Only find the issue details within this specific issue item
+    const $issueDetails = $issueItem.find('.issue-details');
+    
+    if ($issueDetails.length) {
+      const isExpanded = !$issueDetails.hasClass('hidden');
+      $issueDetails.toggleClass('hidden');
+      $(this).text(isExpanded ? 'Expand' : 'Collapse');
+      $(this).attr('aria-expanded', !isExpanded);
+    }
+  });
+});
+
     
     // Expand/collapse all issues
     const $expandAllButton = $('#expandAllIssues');

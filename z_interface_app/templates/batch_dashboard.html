@@ -793,7 +793,161 @@
 </template>
 
 <script>
-  // Initialize when DOM is ready
+// Add this function to your JavaScript
+function setupJobViewButtons() {
+  // Use event delegation for dynamically loaded content
+  $(document).on('click', '.view-job-btn', function() {
+    const jobId = $(this).data('job-id');
+    
+    // You can either navigate to a dedicated page:
+    window.location.href = `/batch-analysis/job/${jobId}`;
+    
+    // Or if you prefer to show in a modal:
+    /*
+    // Show loading state
+    $('#jobDetailsContent').html(`
+      <div class="flex justify-center p-4">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    `);
+    
+    // Show the modal
+    $('#jobDetailsTitle').text('Job Details');
+    $('#jobDetailsSection').removeClass('hidden');
+    
+    // Load job details via AJAX
+    $.ajax({
+      url: `/batch-analysis/job/${jobId}/details`,
+      method: 'GET',
+      success: function(data) {
+        $('#jobDetailsContent').html(data);
+      },
+      error: function() {
+        $('#jobDetailsContent').html(`
+          <div class="p-4 text-center">
+            <div class="text-red-600 font-medium mb-2">Failed to load job details</div>
+            <button id="retryLoadJob" class="action-btn h-6 px-2 text-xs" data-job-id="${jobId}">Retry</button>
+          </div>
+        `);
+      }
+    });
+    */
+  });
+  
+  // Also set up the result view buttons
+  $(document).on('click', '.view-result-btn', function() {
+    const resultId = $(this).data('result-id');
+    
+    // Similar to job viewing, you can navigate to a page:
+    window.location.href = `/batch-analysis/result/${resultId}`;
+    
+    // Or use a modal approach as shown above with the jobDetailsSection
+  });
+  
+  // Close modal handlers if using modals
+  $('#closeJobDetails').on('click', function() {
+    $('#jobDetailsSection').addClass('hidden');
+  });
+  
+  $('#closeResultDetails').on('click', function() {
+    $('#resultDetailsSection').addClass('hidden');
+  });
+  
+  // Add escape key handling for modals
+  $(document).on('keydown', function(e) {
+    if (e.key === 'Escape' || e.keyCode === 27) {
+      $('#jobDetailsSection, #resultDetailsSection').addClass('hidden');
+    }
+  });
+}
+
+// Update your setupJobHandling function to include the view button functionality
+function setupJobHandling() {
+  // View job functionality (direct approach)
+  $('.view-job-btn').on('click', function() {
+    const jobId = $(this).data('job-id');
+    window.location.href = `/batch-analysis/job/${jobId}`;
+  });
+  
+  // Cancel job functionality (your existing code)
+  $('.cancel-job-btn').on('click', function() {
+    if (!confirm('Are you sure you want to cancel this job?')) {
+      return;
+    }
+    
+    const jobId = $(this).data('job-id');
+    const $btn = $(this);
+    
+    $btn.prop('disabled', true);
+    $btn.html(`
+      <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>Canceling...`);
+    
+    $.ajax({
+      url: `/batch-analysis/job/${jobId}/cancel`,
+      method: 'POST',
+      success: function(response) {
+        showToast('success', 'Job cancelled successfully');
+        // Reload the page or update the UI as needed
+        setTimeout(() => window.location.reload(), 1000);
+      },
+      error: function(xhr) {
+        $btn.prop('disabled', false);
+        $btn.html('Cancel');
+        showToast('error', xhr.responseJSON?.message || 'Failed to cancel job');
+      }
+    });
+  });
+}
+
+// Make sure to call these setup functions when the document is ready
+$(document).ready(function() {
+  setupJobViewButtons();
+  setupJobHandling();
+  setupFilters();
+  // Other initialization functions...
+  
+  // Helper function for showing toast notifications
+  window.showToast = function(type, message) {
+    const toastId = 'toast-' + Date.now();
+    const toastHtml = `
+      <div id="${toastId}" class="flex items-center p-3 mb-2 rounded-md shadow-md ${type === 'success' ? 'bg-green-100 border border-green-500' : 'bg-red-100 border border-red-500'}" role="alert">
+        <div class="${type === 'success' ? 'text-green-700' : 'text-red-700'}">
+          <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            ${type === 'success' 
+              ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>'
+              : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>'}
+          </svg>
+          <span class="text-xs font-medium">${message}</span>
+        </div>
+        <button type="button" class="ml-auto text-gray-400 hover:text-gray-600" data-dismiss-toast>
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    `;
+    
+    $('#toastContainer').append(toastHtml);
+    
+    // Dismiss toast after 5 seconds
+    setTimeout(() => {
+      $(`#${toastId}`).fadeOut('slow', function() {
+        $(this).remove();
+      });
+    }, 5000);
+    
+    // Close button functionality
+    $(`#${toastId} [data-dismiss-toast]`).on('click', function() {
+      $(`#${toastId}`).fadeOut('fast', function() {
+        $(this).remove();
+      });
+    });
+  }
+});
+
 $(document).ready(function() {
   // Initialize form validation and controls
   setupBatchForm();
