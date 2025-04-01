@@ -28,9 +28,9 @@
           </select>
           <select id="severityFilter" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
             <option value="all">All Severities</option>
-            <option value="HIGH">High</option>
-            <option value="MEDIUM">Medium</option>
-            <option value="LOW">Low</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
           </select>
           <select id="fileFilter" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
             <option value="all">All Files</option>
@@ -48,34 +48,79 @@
 
     <!-- Analysis Content Area -->
     <div class="p-2 flex-1 overflow-auto space-y-2">
-      <!-- Analysis Stats Overview -->
-      <div class="grid grid-cols-4 gap-2">
-        <div class="border border-gray-400 bg-white p-2 rounded-sm shadow-sm">
-          <div class="text-xs text-gray-600">Total Issues</div>
-          <div class="text-xs font-bold">{{ summary.total_issues if summary else 0 }}</div>
+      <!-- Analysis Summary -->
+      <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+          <h2 class="font-bold text-sm">Security Analysis Summary</h2>
         </div>
-        <div class="border border-gray-400 bg-white p-2 rounded-sm shadow-sm">
-          <div class="text-xs text-red-800">High Severity</div>
-          <div class="text-xs font-bold text-red-700">{{ summary.severity_counts.HIGH if summary else 0 }}</div>
-        </div>
-        <div class="border border-gray-400 bg-white p-2 rounded-sm shadow-sm">
-          <div class="text-xs text-yellow-800">Medium Severity</div>
-          <div class="text-xs font-bold text-yellow-700">{{ summary.severity_counts.MEDIUM if summary else 0 }}</div>
-        </div>
-        <div class="border border-gray-400 bg-white p-2 rounded-sm shadow-sm">
-          <div class="text-xs text-blue-800">Low Severity</div>
-          <div class="text-xs font-bold text-blue-700">{{ summary.severity_counts.LOW if summary else 0 }}</div>
+        <div class="p-2">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+            <!-- Overall stats -->
+            <div class="border border-gray-300 p-2 rounded-sm">
+              <div class="text-xs font-bold mb-1">Overview</div>
+              <div class="grid grid-cols-2 gap-x-4 gap-y-1">
+                <div class="text-xs text-gray-600">Total Issues:</div>
+                <div class="text-xs font-medium">{{ summary.total_issues if summary else 0 }}</div>
+                <div class="text-xs text-gray-600">Files Affected:</div>
+                <div class="text-xs font-medium">{{ summary.files_affected if summary else 0 }}</div>
+                <div class="text-xs text-gray-600">Files Analyzed:</div>
+                <div class="text-xs font-medium">{{ summary.files_analyzed if summary else 0 }}</div>
+              </div>
+            </div>
+            
+            <!-- Severity distribution -->
+            <div class="border border-gray-300 p-2 rounded-sm">
+              <div class="text-xs font-bold mb-1">Severity</div>
+              <div class="flex flex-col space-y-1">
+                <div class="flex items-center">
+                  <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                  <div class="text-xs text-gray-700">High: {{ summary.severity_counts.high if summary and summary.severity_counts else 0 }}</div>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+                  <div class="text-xs text-gray-700">Medium: {{ summary.severity_counts.medium if summary and summary.severity_counts else 0 }}</div>
+                </div>
+                <div class="flex items-center">
+                  <div class="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
+                  <div class="text-xs text-gray-700">Low: {{ summary.severity_counts.low if summary and summary.severity_counts else 0 }}</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Tool breakdown -->
+            <div class="border border-gray-300 p-2 rounded-sm col-span-1 md:col-span-2">
+              <div class="text-xs font-bold mb-1">Issues by Tool</div>
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {% if summary and summary.tool_counts %}
+                  {% for tool, count in summary.tool_counts.items() %}
+                    {% if count > 0 %}
+                    <div class="flex items-center">
+                      <div class="w-3 h-3 mr-2 
+                        {% if tool == 'pattern_scan' %}bg-green-500
+                        {% elif tool == 'dependency_check' %}bg-purple-500
+                        {% elif tool == 'semgrep' %}bg-orange-500
+                        {% elif tool == 'jshint' %}bg-indigo-500
+                        {% else %}bg-gray-500{% endif %}"></div>
+                      <div class="text-xs text-gray-700">{{ tool }}: {{ count }}</div>
+                    </div>
+                    {% endif %}
+                  {% endfor %}
+                {% else %}
+                <div class="text-xs text-gray-700">No issues found</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Security Issues List -->
+      <!-- Issues List -->
       {% if issues %}
+      <div id="filterStatus" class="bg-blue-50 border border-blue-300 rounded-sm p-2 text-xs text-blue-800 mb-2 hidden"></div>
+      
       <div class="space-y-2" id="issueList">
         {% for issue in issues %}
-        <div class="border border-gray-400 bg-white rounded-sm shadow-sm 
-                  {% if issue.severity == 'HIGH' %}bg-red-50
-                  {% elif issue.severity == 'MEDIUM' %}bg-yellow-50
-                  {% else %}bg-blue-50{% endif %}"
+        <div class="border border-gray-400 bg-white rounded-sm shadow-sm"
              data-tool="{{ issue.tool }}" 
              data-severity="{{ issue.severity }}" 
              data-file="{{ issue.filename }}"
@@ -84,16 +129,26 @@
           <!-- Issue Header -->
           <div class="p-2">
             <div class="flex items-center space-x-2 mb-1">
+              <!-- Tool Badge -->
+              <span class="text-xs px-2 py-0.5 border rounded-sm
+                {% if issue.tool == 'pattern_scan' %}bg-green-100 text-green-800 border-green-700
+                {% elif issue.tool == 'dependency_check' %}bg-purple-100 text-purple-800 border-purple-700
+                {% elif issue.tool == 'semgrep' %}bg-orange-100 text-orange-800 border-orange-700
+                {% elif issue.tool == 'jshint' %}bg-indigo-100 text-indigo-800 border-indigo-700
+                {% else %}bg-gray-100 text-gray-800 border-gray-700{% endif %}">
+                {{ issue.tool }}
+              </span>
+              
               <!-- Severity Badge -->
               <span class="text-xs px-2 py-0.5 border rounded-sm
-                {% if issue.severity == 'HIGH' %}bg-red-100 text-red-800 border-red-700
-                {% elif issue.severity == 'MEDIUM' %}bg-yellow-100 text-yellow-800 border-yellow-700
-                {% else %}bg-blue-100 text-blue-800 border-blue-700{% endif %}">
+                {% if issue.severity == 'high' %}bg-red-100 text-red-800 border-red-700
+                {% elif issue.severity == 'medium' %}bg-yellow-100 text-yellow-800 border-yellow-700
+                {% elif issue.severity == 'low' %}bg-blue-100 text-blue-800 border-blue-700
+                {% else %}bg-gray-100 text-gray-800 border-gray-700{% endif %}">
                 {{ issue.severity }}
               </span>
               
-              <!-- Tool and Confidence Badges -->
-              <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400 rounded-sm">{{ issue.tool }}</span>
+              <!-- Confidence Badge -->
               <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400 rounded-sm">{{ issue.confidence }}</span>
               
               <!-- Expand Button -->
@@ -120,9 +175,11 @@
                   <div class="text-xs font-mono text-gray-600">
                     {{ issue.filename }}{% if issue.line_number > 0 %}:{{ issue.line_number }}{% endif %}
                   </div>
+                  {% if issue.code %}
                   <div class="mt-1">
                     <pre class="text-xs font-mono bg-gray-800 text-white p-1 overflow-x-auto rounded-sm"><code>{{ issue.code }}</code></pre>
                   </div>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -220,6 +277,28 @@
         </div>
       </div>
 
+      <!-- Security Help Card -->
+      <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+          <h2 class="font-bold text-xs">Security Resources</h2>
+        </div>
+        <div class="p-2 text-xs space-y-2">
+          <div class="font-medium">Common Security Resources:</div>
+          <ul class="list-disc pl-4 space-y-1">
+            <li><a href="https://owasp.org/www-project-top-ten/" target="_blank" class="text-blue-600 hover:underline">OWASP Top 10</a></li>
+            <li><a href="https://cheatsheetseries.owasp.org/" target="_blank" class="text-blue-600 hover:underline">OWASP Cheat Sheets</a></li>
+            <li><a href="https://developer.mozilla.org/en-US/docs/Web/Security" target="_blank" class="text-blue-600 hover:underline">MDN Web Security</a></li>
+          </ul>
+
+          <!-- Tool specific resources -->
+          <div class="font-medium">Tool Documentation:</div>
+          <ul class="list-disc pl-4 space-y-1">
+            <li><a href="https://semgrep.dev/docs/" target="_blank" class="text-blue-600 hover:underline">Semgrep Docs</a></li>
+            <li><a href="https://jshint.com/docs/" target="_blank" class="text-blue-600 hover:underline">JSHint Docs</a></li>
+          </ul>
+        </div>
+      </div>
+
       <!-- AI Analysis Card -->
       <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
@@ -265,6 +344,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const aiResponseSection = document.getElementById('aiResponse');
   const aiContentArea = document.getElementById('aiContent');
   const closeAiResponseBtn = document.getElementById('closeAiResponse');
+  const filterStatusEl = document.getElementById('filterStatus');
 
   /**
    * Handle expand/collapse functionality for issue details
@@ -304,46 +384,49 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchText = searchInput?.value.toLowerCase() || '';
 
     let visibleCount = 0;
-    let highCount = 0;
-    let mediumCount = 0;
-    let lowCount = 0;
+    let toolCounts = {};
+    let severityCounts = { high: 0, medium: 0, low: 0 };
 
     document.querySelectorAll('#issueList > div').forEach(issue => {
-      const toolMatch = selectedTool === 'all' || issue.dataset.tool === selectedTool;
-      const severityMatch = selectedSeverity === 'all' || issue.dataset.severity === selectedSeverity;
+      const tool = issue.dataset.tool;
+      const severity = issue.dataset.severity;
+      
+      const toolMatch = selectedTool === 'all' || tool === selectedTool;
+      const severityMatch = selectedSeverity === 'all' || severity === selectedSeverity;
       const fileMatch = selectedFile === 'all' || issue.dataset.file === selectedFile;
       const searchMatch = !searchText || issue.dataset.searchable.toLowerCase().includes(searchText);
-      const isVisible = toolMatch && severityMatch && fileMatch && searchMatch;
       
+      const isVisible = toolMatch && severityMatch && fileMatch && searchMatch;
       issue.style.display = isVisible ? 'block' : 'none';
       
       if (isVisible) {
         visibleCount++;
-        if (issue.dataset.severity === 'HIGH') highCount++;
-        else if (issue.dataset.severity === 'MEDIUM') mediumCount++;
-        else if (issue.dataset.severity === 'LOW') lowCount++;
+        toolCounts[tool] = (toolCounts[tool] || 0) + 1;
+        if (severity in severityCounts) {
+          severityCounts[severity]++;
+        }
       }
     });
 
-    // Update summary stats
-    updateSummaryStats(visibleCount, highCount, mediumCount, lowCount);
-  }
-
-  /**
-   * Update the summary statistics display
-   */
-  function updateSummaryStats(total, high, medium, low) {
-    const statsElements = {
-      total: document.querySelector('.text-xs.font-bold:not([class*="text-"])'),
-      high: document.querySelector('.text-xs.font-bold.text-red-700'),
-      medium: document.querySelector('.text-xs.font-bold.text-yellow-700'),
-      low: document.querySelector('.text-xs.font-bold.text-blue-700')
-    };
-
-    if (statsElements.total) statsElements.total.textContent = total;
-    if (statsElements.high) statsElements.high.textContent = high;
-    if (statsElements.medium) statsElements.medium.textContent = medium;
-    if (statsElements.low) statsElements.low.textContent = low;
+    // Update filter status indicator
+    if (filterStatusEl) {
+      if (selectedTool !== 'all' || selectedSeverity !== 'all' || selectedFile !== 'all' || searchText) {
+        // Create summary text for visible issues
+        const toolText = Object.entries(toolCounts)
+          .map(([tool, count]) => `${tool}: ${count}`)
+          .join(', ');
+        
+        const severityText = Object.entries(severityCounts)
+          .filter(([_, count]) => count > 0)
+          .map(([sev, count]) => `${sev}: ${count}`)
+          .join(', ');
+        
+        filterStatusEl.textContent = `Showing ${visibleCount} filtered issues (${toolText} | ${severityText})`;
+        filterStatusEl.classList.remove('hidden');
+      } else {
+        filterStatusEl.classList.add('hidden');
+      }
+    }
   }
 
   /**
@@ -386,7 +469,8 @@ document.addEventListener('DOMContentLoaded', function() {
           ).map(issue => ({
             type: issue.querySelector('.font-bold')?.textContent || 'Unknown',
             text: issue.querySelector('.text-gray-600')?.textContent || '',
-            severity: issue.dataset.severity || 'UNKNOWN',
+            severity: issue.dataset.severity || 'unknown',
+            tool: issue.dataset.tool || 'unknown',
             file: issue.dataset.file || 'unknown',
             code: issue.querySelector('code')?.textContent || ''
           }));
@@ -415,7 +499,7 @@ document.addEventListener('DOMContentLoaded', function() {
           aiContentArea.innerHTML = analysis.response.replace(/\n/g, '<br>');
           aiResponseSection.classList.remove('hidden');
         } catch (err) {
-          // Handle specific error cases with more user-friendly messages
+          // Handle specific error cases
           let errorMsg = err.message;
           if (errorMsg.includes('quota')) {
             errorMsg = 'API quota exceeded. Please try again later or use a different model.';
@@ -441,35 +525,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  /**
-   * Set up tooltips for elements with data-tooltip attribute
-   */
-  function setupTooltips() {
-    const tooltipElements = document.querySelectorAll('[data-tooltip]');
-    if (tooltipElements.length > 0) {
-      tooltipElements.forEach(el => {
-        el.addEventListener('mouseenter', function(e) {
-          const tooltip = document.createElement('div');
-          tooltip.className = 'absolute z-50 bg-gray-900 text-white text-xs rounded px-2 py-1';
-          tooltip.textContent = this.dataset.tooltip;
-          tooltip.style.top = `${e.pageY + 10}px`;
-          tooltip.style.left = `${e.pageX + 10}px`;
-          document.body.appendChild(tooltip);
-          
-          const removeTooltip = () => tooltip.remove();
-          this.addEventListener('mouseleave', removeTooltip, { once: true });
-          this.addEventListener('click', removeTooltip, { once: true });
-        });
-      });
-    }
-  }
-
   // Initialize all UI components
   setupExpandButtons();
   setupRefreshButton();
   setupFilters();
   setupAiAnalysis();
-  setupTooltips();
 });
 </script>
 {% endblock %}

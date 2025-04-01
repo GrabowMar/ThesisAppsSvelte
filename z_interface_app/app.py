@@ -1156,36 +1156,94 @@ def analyze_security_issues():
         data = request.get_json()
         if not data or "issues" not in data:
             raise BadRequest("No issues provided for analysis")
-        model = data.get("model", "default-model")
+        
+        model_name = data.get("model", "default-model")
         issues = data["issues"]
-        severity_groups = {"HIGH": [], "MEDIUM": [], "LOW": []}
+        
+        # Group issues by tool first
+        tool_groups = {}
         for issue in issues:
-            severity = issue.get("severity", "LOW").upper()
-            severity_groups.setdefault(severity, []).append(issue)
-        prompt = "Analyze the following security issues:\n\n"
-        for level in ["HIGH", "MEDIUM", "LOW"]:
-            if severity_groups.get(level):
-                prompt += f"\n{level} Severity Issues:\n"
-                for issue in severity_groups[level]:
-                    prompt += f"- {issue['type']}: {issue['text']}\n"
-                    if issue.get('code'):
-                        prompt += f"  Code: {issue['code']}\n"
-        prompt += (
-            "\nPlease provide:\n"
-            "1. A high-level summary of the security concerns\n"
-            "2. Prioritized recommendations\n"
-            "3. Potential security implications if unaddressed\n"
-            "4. Best practices to prevent future issues"
-        )
-        analysis_result = call_ai_service(model, prompt)
+            tool = issue.get("tool", "unknown")
+            if tool not in tool_groups:
+                tool_groups[tool] = []
+            tool_groups[tool].append(issue)
+        
+        # Build a structured prompt for the AI
+        prompt = "# Security Analysis of Frontend Code\n\n"
+        
+        # Add overall summary
+        prompt += f"## Overview\n"
+        prompt += f"Total issues detected: {len(issues)}\n"
+        
+        # Add tool-specific sections
+        for tool, tool_issues in tool_groups.items():
+            tool_display_name = {
+                "pattern_scan": "Pattern-based Security Scanner",
+                "dependency_check": "Dependency Vulnerability Checker",
+                "semgrep": "Semgrep Static Analysis",
+                "jshint": "JSHint Code Quality"
+            }.get(tool, tool.title())
+            
+            prompt += f"\n## Issues from {tool_display_name}\n"
+            
+            # Group by severity
+            severity_groups = {}
+            for issue in tool_issues:
+                severity = issue.get('severity', 'unknown')
+                if severity not in severity_groups:
+                    severity_groups[severity] = []
+                severity_groups[severity].append(issue)
+            
+            # Sort severities: high > medium > low > others
+            severity_order = ["high", "medium", "low"]
+            other_severities = [s for s in severity_groups.keys() if s not in severity_order]
+            ordered_severities = [s for s in severity_order if s in severity_groups] + other_severities
+            
+            # Add each severity group
+            for severity in ordered_severities:
+                issues_in_group = severity_groups[severity]
+                prompt += f"\n### {severity.title()} severity issues ({len(issues_in_group)})\n"
+                
+                for issue in issues_in_group:
+                    issue_type = issue.get('type', 'Unknown issue')
+                    issue_text = issue.get('text', '')
+                    file_name = issue.get('file', 'unknown file')
+                    
+                    prompt += f"- **{issue_type}**: {issue_text}\n"
+                    if file_name and file_name != "unknown file":
+                        prompt += f"  - File: {file_name}\n"
+                    
+                    code = issue.get('code', '')
+                    if code and len(code) > 0:
+                        # Truncate long code snippets
+                        if len(code) > 200:
+                            code = code[:197] + "..."
+                        prompt += f"  - Code: `{code}`\n"
+        
+        # Add guidance for the analysis
+        prompt += """
+## Analysis Request
+
+Please provide:
+
+1. A **tool-by-tool analysis** of the security issues found, with focus on the most critical issues
+2. A **prioritized list of recommendations** for addressing these issues, ordered by importance
+3. **Potential security implications** if these issues aren't addressed
+4. **Best practices** to prevent similar issues in frontend code
+
+Format your response with clear headings and concise explanations suitable for a technical team.
+"""
+        
+        # Call AI service for analysis
+        analysis_result = call_ai_service(model_name, prompt)
         return jsonify({"status": "success", "response": analysis_result})
+        
     except BadRequest as e:
         logger.warning(f"Bad request in security analysis: {e}")
         return jsonify({"error": str(e)}), 400
     except Exception as e:
         logger.error(f"Error in security analysis: {e}")
         return jsonify({"error": "Analysis failed"}), 500
-
 
 @analysis_bp.route("/security/summary/<string:model>/<int:app_num>")
 @error_handler
