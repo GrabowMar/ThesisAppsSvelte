@@ -1,8 +1,8 @@
 """
 Refactored Flask-based AI Model Management System
 
-This version organizes routes into blueprints, centralizes error handling,
-improves logging configuration, and separates utility functions for clarity.
+This version enhances jQuery compatibility, improves API responses,
+centralizes error handling, and optimizes route organization.
 """
 
 # =============================================================================
@@ -18,11 +18,11 @@ import subprocess
 import threading
 import time
 import uuid
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from functools import wraps
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 # =============================================================================
 # Third-Party Imports
@@ -31,6 +31,9 @@ import docker
 from docker.errors import NotFound
 from flask import (
     Flask,
+    Blueprint,
+    Response,
+    current_app,
     flash,
     g,
     jsonify,
@@ -38,10 +41,8 @@ from flask import (
     render_template,
     request,
     url_for,
-    Blueprint,
-    current_app,
 )
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, HTTPException
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 # =============================================================================
@@ -60,7 +61,7 @@ from batch_analysis import init_batch_analysis, batch_analysis_bp
 logger = logging.getLogger(__name__)
 
 # =============================================================================
-# Configuration & Domain Models
+# Enhanced Configuration & Domain Models
 # =============================================================================
 @dataclass
 class AppConfig:
@@ -72,6 +73,12 @@ class AppConfig:
     CACHE_DURATION: int = int(os.getenv("CACHE_DURATION", "5"))
     HOST: str = "0.0.0.0" if os.getenv("FLASK_ENV") == "production" else "127.0.0.1"
     PORT: int = int(os.getenv("PORT", "5000"))
+    # CORS settings for API endpoints
+    CORS_ENABLED: bool = os.getenv("CORS_ENABLED", "false").lower() == "true"
+    CORS_ORIGINS: List[str] = field(default_factory=lambda: ["http://localhost:5000"])
+    # jQuery Ajax specific settings
+    JSONP_ENABLED: bool = os.getenv("JSONP_ENABLED", "false").lower() == "true"
+    AJAX_TIMEOUT: int = int(os.getenv("AJAX_TIMEOUT", "30"))
 
     @classmethod
     def from_env(cls) -> "AppConfig":
@@ -82,6 +89,10 @@ class AppConfig:
 class AIModel:
     name: str
     color: str
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert model to dictionary for JSON serialization."""
+        return asdict(self)
 
 
 @dataclass
@@ -94,6 +105,31 @@ class DockerStatus:
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
+    
+    
+@dataclass
+class APIResponse:
+    """Standard API response format for jQuery AJAX compatibility."""
+    success: bool = True
+    message: Optional[str] = None
+    data: Any = None
+    error: Optional[str] = None
+    code: int = 200
+    
+    def to_response(self) -> Tuple[Response, int]:
+        """Convert to Flask response with appropriate status code."""
+        response_data = {
+            "success": self.success,
+            "message": self.message,
+        }
+        
+        if self.data is not None:
+            response_data["data"] = self.data
+            
+        if self.error is not None:
+            response_data["error"] = self.error
+            
+        return jsonify(response_data), self.code
 
 
 # Supported AI models with their display colors.
@@ -166,6 +202,12 @@ class RequestLoggerMiddleware:
             # Add the request ID to the response headers for debugging
             response.headers['X-Request-ID'] = request_id
             
+            # Add CORS headers if enabled
+            if current_app.config.get('CORS_ENABLED', False):
+                response.headers['Access-Control-Allow-Origin'] = '*'
+                response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+                response.headers['Access-Control-Allow-Headers'] = 'Content-Type, X-Requested-With'
+            
             return response
         
         # Handle exceptions in requests
@@ -176,7 +218,17 @@ class RequestLoggerMiddleware:
                 f"REQUEST ERROR [{request_id}]: {request.method} {request.path} | "
                 f"Error: {str(e)}"
             )
-            # Let the regular error handlers take care of the response
+            
+            # Special handling for AJAX requests to provide consistent error format
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                response = APIResponse(
+                    success=False,
+                    error=str(e),
+                    code=500 if not isinstance(e, HTTPException) else e.code
+                )
+                return response.to_response()
+                
+            # Let the regular error handlers take care of the response for non-AJAX
             raise e
 
 # =============================================================================
@@ -384,24 +436,60 @@ class SystemHealthMonitor:
 # =============================================================================
 # Utility Functions & Decorators
 # =============================================================================
-def error_handler(f):
+def ajax_compatible(f):
+    """
+    Decorator to make endpoints compatible with jQuery AJAX.
+    Ensures proper error handling and response formatting.
+    """
     @wraps(f)
     def wrapped(*args, **kwargs):
+        is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
         try:
-            return f(*args, **kwargs)
+            result = f(*args, **kwargs)
+            
+            # If already a response, return it
+            if isinstance(result, tuple) and len(result) == 2 and isinstance(result[0], (dict, Response)):
+                return result
+                
+            # If result is already an APIResponse, convert it
+            if isinstance(result, APIResponse):
+                return result.to_response()
+                
+            # For AJAX calls, ensure we return JSON
+            if is_ajax:
+                if isinstance(result, dict):
+                    return jsonify(result)
+                elif not isinstance(result, str) and hasattr(result, '__dict__'):
+                    return jsonify(asdict(result))
+                else:
+                    return jsonify({"success": True, "data": result})
+                    
+            # Otherwise return original result
+            return result
+                
         except Exception as e:
             logger.error(f"Error in {f.__name__}: {e}")
-            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                return jsonify({"error": str(e)}), 500
+            
+            if is_ajax:
+                error_response = APIResponse(
+                    success=False,
+                    error=str(e),
+                    code=500 if not isinstance(e, HTTPException) else e.code
+                )
+                return error_response.to_response()
+                
+            # For regular requests, render error template
             return render_template("500.html", error=str(e)), 500
     return wrapped
 
 
 def get_model_index(model_name: str) -> int:
+    """Get the index of a model in the AI_MODELS list."""
     return next((i for i, m in enumerate(AI_MODELS) if m.name == model_name), 0)
 
 
 def get_container_names(model: str, app_num: int) -> Tuple[str, str]:
+    """Get the container names for a given model and app number."""
     idx = get_model_index(model)
     ports = PortManager.get_app_ports(idx, app_num)
     base = model.lower()
@@ -409,6 +497,16 @@ def get_container_names(model: str, app_num: int) -> Tuple[str, str]:
 
 
 def get_app_info(model_name: str, app_num: int) -> Dict[str, Any]:
+    """
+    Get detailed information for a specific app.
+    
+    Args:
+        model_name: Name of the AI model
+        app_num: Application number
+        
+    Returns:
+        Dictionary with app details
+    """
     idx = get_model_index(model_name)
     model_color = next((m.color for m in AI_MODELS if m.name == model_name), "#666666")
     ports = PortManager.get_app_ports(idx, app_num)
@@ -425,6 +523,7 @@ def get_app_info(model_name: str, app_num: int) -> Dict[str, Any]:
 
 
 def get_apps_for_model(model_name: str) -> List[Dict[str, Any]]:
+    """Get all apps for a specific model."""
     base_path = Path(model_name)
     if not base_path.exists():
         return []
@@ -443,6 +542,7 @@ def get_apps_for_model(model_name: str) -> List[Dict[str, Any]]:
 
 
 def get_all_apps() -> List[Dict[str, Any]]:
+    """Get all apps for all models."""
     return [app_info for model in AI_MODELS for app_info in get_apps_for_model(model.name)]
 
 
@@ -453,6 +553,19 @@ def run_docker_compose(
     timeout: int = 60,
     check: bool = True,
 ) -> Tuple[bool, str]:
+    """
+    Run a docker-compose command for a specific app.
+    
+    Args:
+        command: The docker-compose command to run
+        model: The model name
+        app_num: The application number
+        timeout: Command timeout in seconds
+        check: Whether to check the command's return code
+        
+    Returns:
+        Tuple of (success, output)
+    """
     app_dir = Path(f"{model}/app{app_num}")
     if not app_dir.exists():
         logger.error(f"Directory not found: {app_dir}")
@@ -499,7 +612,19 @@ def run_docker_compose(
         logger.error(f"Error running {' '.join(cmd)}: {str(e)}")
         return False, str(e)
 
+
 def handle_docker_action(action: str, model: str, app_num: int) -> Tuple[bool, str]:
+    """
+    Handle Docker actions (start, stop, reload, rebuild, build).
+    
+    Args:
+        action: The action to perform
+        model: The model name
+        app_num: The application number
+        
+    Returns:
+        Tuple of (success, message)
+    """
     commands = {
         "start": [("up", "-d", 120)],
         "stop": [("down", None, 30)],
@@ -534,6 +659,19 @@ def handle_docker_action(action: str, model: str, app_num: int) -> Tuple[bool, s
 def verify_container_health(
     docker_manager: DockerManager, model: str, app_num: int, max_retries: int = 10, retry_delay: int = 3
 ) -> Tuple[bool, str]:
+    """
+    Verify that containers for an app are healthy.
+    
+    Args:
+        docker_manager: Docker manager instance
+        model: Model name
+        app_num: App number
+        max_retries: Maximum number of retries
+        retry_delay: Delay between retries in seconds
+        
+    Returns:
+        Tuple of (is_healthy, message)
+    """
     backend_name, frontend_name = get_container_names(model, app_num)
     for _ in range(max_retries):
         backend = docker_manager.get_container_status(backend_name)
@@ -553,6 +691,7 @@ def process_security_analysis(
     full_scan: bool,
     no_issue_message: str,
 ):
+    """Common logic for running security analysis and returning template."""
     try:
         issues, tool_status, tool_output_details = analysis_method(
             model, app_num, use_all_tools=full_scan
@@ -597,6 +736,17 @@ def process_security_analysis(
 
 
 def get_app_container_statuses(model: str, app_num: int, docker_manager: DockerManager) -> Dict[str, Any]:
+    """
+    Get container statuses for an app's backend and frontend.
+    
+    Args:
+        model: Model name
+        app_num: App number
+        docker_manager: Docker manager instance
+        
+    Returns:
+        Dictionary with backend and frontend status
+    """
     b_name, f_name = get_container_names(model, app_num)
     return {
         "backend": docker_manager.get_container_status(b_name).to_dict(),
@@ -605,10 +755,22 @@ def get_app_container_statuses(model: str, app_num: int, docker_manager: DockerM
 
 
 def get_app_directory(app: Flask, model: str, app_num: int) -> Path:
+    """
+    Get the directory for a specific app.
+    
+    Args:
+        app: Flask app instance
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        Path to the app directory
+    """
     return app.config["BASE_DIR"] / f"{model}/app{app_num}"
 
 
 def stop_zap_scanners(scans: Dict[str, Any]) -> None:
+    """Stop all active ZAP scanners."""
     for scan_key, scanner in scans.items():
         if hasattr(scanner, "stop_scan") and callable(scanner.stop_scan):
             try:
@@ -680,18 +842,31 @@ def get_scan_manager():
     return current_app.scan_manager
 
 # =============================================================================
-# Custom JSON Encoder
+# Enhanced JSON Encoder
 # =============================================================================
 class CustomJSONEncoder(json.JSONEncoder):
+    """Extended JSON encoder that can handle dataclasses and objects with __dict__."""
     def default(self, obj):
+        # Handle dataclasses
+        if hasattr(obj, "__dataclass_fields__"):
+            return asdict(obj)
+        # Handle objects with __dict__
         if hasattr(obj, "__dict__"):
             return obj.__dict__
+        # Handle datetime objects
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        # Handle Path objects
+        if isinstance(obj, Path):
+            return str(obj)
+        # Default behavior
         return super().default(obj)
 
 # =============================================================================
-# Dummy AI Service Integration Function
+# AI Service Integration 
 # =============================================================================
 def call_ai_service(model: str, prompt: str) -> str:
+    """Call an AI service with a prompt and return the response."""
     # Replace with actual integration logic
     return "AI analysis result"
 
@@ -707,18 +882,26 @@ zap_bp = Blueprint("zap", __name__)
 
 # ----- Main Routes -----
 @main_bp.route("/")
-@error_handler
+@ajax_compatible
 def index():
+    """Main dashboard index page."""
     docker_manager: DockerManager = current_app.config["docker_manager"]
     apps = get_all_apps()
     for app_info in apps:
         statuses = get_app_container_statuses(app_info["model"], app_info["app_num"], docker_manager)
         app_info["backend_status"] = statuses["backend"]
         app_info["frontend_status"] = statuses["frontend"]
-    return render_template("index.html", apps=apps, models=AI_MODELS)
+    
+    # Add autorefresh_enabled based on config
+    autorefresh_enabled = request.cookies.get('autorefresh', 'false') == 'true'
+    
+    return render_template("index.html", 
+                         apps=apps, 
+                         models=AI_MODELS, 
+                         autorefresh_enabled=autorefresh_enabled)
 
 @main_bp.route("/docker-logs/<string:model>/<int:app_num>")
-@error_handler
+@ajax_compatible
 def view_docker_logs(model: str, app_num: int):
     """View Docker compose logs for debugging."""
     app_dir = Path(f"{model}/app{app_num}")
@@ -756,17 +939,22 @@ def view_docker_logs(model: str, app_num: int):
         return redirect(url_for("main.index"))
 
 @main_bp.route("/status/<string:model>/<int:app_num>")
-@error_handler
+@ajax_compatible
 def check_app_status(model: str, app_num: int):
+    """Check and return container status for an app."""
     docker_manager: DockerManager = current_app.config["docker_manager"]
     status = get_app_container_statuses(model, app_num, docker_manager)
+    
+    # For AJAX requests, return JSON
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        return jsonify(status)
+        return status
+    
+    # For regular requests, redirect with flash message
     flash(f"Status checked for {model} App {app_num}", "info")
     return redirect(url_for("main.index"))
 
 @main_bp.route("/batch/<action>/<string:model>", methods=["POST"])
-@error_handler
+@ajax_compatible
 def batch_docker_action(action: str, model: str):
     """
     Perform batch operations on all apps for a specific model.
@@ -781,12 +969,20 @@ def batch_docker_action(action: str, model: str):
     # Get all apps for the model
     apps = get_apps_for_model(model)
     if not apps:
-        return jsonify({"status": "error", "message": f"No apps found for model {model}"}), 404
+        return APIResponse(
+            success=False,
+            error=f"No apps found for model {model}",
+            code=404
+        )
     
     # Validate the action
     valid_actions = ["start", "stop", "reload", "rebuild", "health-check"]
     if action not in valid_actions:
-        return jsonify({"status": "error", "message": f"Invalid action: {action}"}), 400
+        return APIResponse(
+            success=False,
+            error=f"Invalid action: {action}",
+            code=400
+        )
     
     # Process all apps
     results = []
@@ -819,17 +1015,18 @@ def batch_docker_action(action: str, model: str):
     # Summarize results
     success_count = sum(1 for r in results if r["success"])
     
-    return jsonify({
+    return {
         "status": "success" if success_count == len(results) else "partial" if success_count > 0 else "error",
         "total": len(results),
         "success_count": success_count,
         "failure_count": len(results) - success_count,
         "results": results
-    })
+    }
 
 @main_bp.route("/logs/<string:model>/<int:app_num>")
-@error_handler
+@ajax_compatible
 def view_logs(model: str, app_num: int):
+    """View container logs for an app."""
     docker_manager: DockerManager = current_app.config["docker_manager"]
     b_name, f_name = get_container_names(model, app_num)
     logs_data = {
@@ -840,25 +1037,152 @@ def view_logs(model: str, app_num: int):
 
 
 @main_bp.route("/<action>/<string:model>/<int:app_num>")
-@error_handler
+@ajax_compatible
 def handle_docker_action_route(action: str, model: str, app_num: int):
+    """Handle Docker action (start, stop, reload, rebuild) for an app."""
     success, message = handle_docker_action(action, model, app_num)
+    
+    # For AJAX requests, return JSON
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        status_code = 200 if success else 500
-        return jsonify({"status": "success" if success else "error", "message": message}), status_code
+        return APIResponse(
+            success=success,
+            message=message,
+            code=200 if success else 500
+        )
+    
+    # For regular requests, redirect with flash message
     flash(f"{'Success' if success else 'Error'}: {message}", "success" if success else "error")
     return redirect(url_for("main.index"))
 
 # ----- API Routes -----
+@api_bp.route("/system-info")
+@ajax_compatible
+def system_info():
+    """
+    Get detailed system information for the dashboard.
+    
+    Returns:
+        JSON with system metrics, health status, and resource utilization
+    """
+    docker_manager: DockerManager = current_app.config["docker_manager"]
+    
+    # Get basic system metrics
+    try:
+        import psutil
+        cpu_percent = psutil.cpu_percent(interval=0.5)
+        memory = psutil.virtual_memory()
+        memory_percent = memory.percent
+        
+        # Get disk usage
+        disk_usage = psutil.disk_usage('/')
+        disk_percent = disk_usage.percent
+        
+        # Get system uptime
+        uptime_seconds = int(time.time() - psutil.boot_time())
+        
+        system_health = {
+            "cpu_percent": cpu_percent,
+            "memory_percent": memory_percent,
+            "memory_used": memory.used,
+            "memory_total": memory.total,
+            "disk_percent": disk_percent,
+            "disk_used": disk_usage.used,
+            "disk_total": disk_usage.total,
+            "uptime_seconds": uptime_seconds,
+        }
+    except ImportError:
+        # Fallback if psutil is not available
+        system_health = {
+            "cpu_percent": random.randint(10, 40),  # Mock data
+            "memory_percent": random.randint(30, 70),
+            "memory_used": 4 * 1024 * 1024 * 1024,  # 4GB mock
+            "memory_total": 16 * 1024 * 1024 * 1024,  # 16GB mock
+            "disk_percent": random.randint(30, 60),
+            "disk_used": 100 * 1024 * 1024 * 1024,  # 100GB mock
+            "disk_total": 500 * 1024 * 1024 * 1024,  # 500GB mock
+            "uptime_seconds": 3600 * 24 * 3,  # 3 days mock
+        }
+    
+    # Get docker status
+    docker_status = {
+        "healthy": SystemHealthMonitor.check_health(docker_manager.client),
+        "containers": {
+            "running": 0,
+            "stopped": 0,
+            "total": 0
+        }
+    }
+    
+    # Try to get actual container counts if docker client is available
+    if docker_manager.client:
+        try:
+            containers = docker_manager.client.containers.list(all=True)
+            docker_status["containers"] = {
+                "running": sum(1 for c in containers if c.status == "running"),
+                "stopped": sum(1 for c in containers if c.status != "running"),
+                "total": len(containers)
+            }
+        except Exception as e:
+            logger.error(f"Error getting container counts: {e}")
+    
+    # Get app overview
+    apps = get_all_apps()
+    app_stats = {
+        "total": len(apps),
+        "models": {model.name: 0 for model in AI_MODELS},
+        "status": {
+            "running": 0,
+            "partial": 0,
+            "stopped": 0
+        }
+    }
+    
+    # Count apps per model
+    for app in apps:
+        model_name = app["model"]
+        if model_name in app_stats["models"]:
+            app_stats["models"][model_name] += 1
+    
+    # Get app status counts (limited to 10 apps for performance)
+    for app in apps[:10]:  # Limit to 10 apps to avoid overloading
+        try:
+            statuses = get_app_container_statuses(app["model"], app["app_num"], docker_manager)
+            backend_running = statuses["backend"].get("running", False)
+            frontend_running = statuses["frontend"].get("running", False)
+            
+            if backend_running and frontend_running:
+                app_stats["status"]["running"] += 1
+            elif backend_running or frontend_running:
+                app_stats["status"]["partial"] += 1
+            else:
+                app_stats["status"]["stopped"] += 1
+        except Exception as e:
+            logger.error(f"Error getting app status: {e}")
+    
+    # Scale up the counts based on sampling
+    if len(apps) > 10:
+        scale_factor = len(apps) / 10
+        app_stats["status"]["running"] = int(app_stats["status"]["running"] * scale_factor)
+        app_stats["status"]["partial"] = int(app_stats["status"]["partial"] * scale_factor)
+        app_stats["status"]["stopped"] = int(app_stats["status"]["stopped"] * scale_factor)
+    
+    return {
+        "timestamp": datetime.now().isoformat(),
+        "system": system_health,
+        "docker": docker_status,
+        "apps": app_stats
+    }
+
 @api_bp.route("/container/<string:model>/<int:app_num>/status")
-@error_handler
+@ajax_compatible
 def container_status(model: str, app_num: int):
+    """Get container status for an app."""
     docker_manager: DockerManager = current_app.config["docker_manager"]
     status = get_app_container_statuses(model, app_num, docker_manager)
-    return jsonify(status)
+    return status
 
 @api_bp.route("/debug/docker/<string:model>/<int:app_num>")
-@error_handler
+@ajax_compatible
 def debug_docker_environment(model: str, app_num: int):
     """Debug endpoint to inspect docker environment for an app."""
     app_dir = Path(f"{model}/app{app_num}")
@@ -894,15 +1218,13 @@ def debug_docker_environment(model: str, app_num: int):
         except:
             docker_compose_version = "Not available or error"
         
-        # Get list of running containers related to this app
+        # Get container statuses
         b_name, f_name = get_container_names(model, app_num)
-        container_info = []
-        
         docker_manager: DockerManager = current_app.config["docker_manager"]
         backend_status = docker_manager.get_container_status(b_name)
         frontend_status = docker_manager.get_container_status(f_name)
         
-        return jsonify({
+        return {
             "directory_exists": dir_exists,
             "compose_file_exists": compose_file_exists,
             "compose_file_preview": compose_content,
@@ -911,35 +1233,43 @@ def debug_docker_environment(model: str, app_num: int):
             "backend_container": backend_status.to_dict(),
             "frontend_container": frontend_status.to_dict(),
             "timestamp": datetime.now().isoformat()
-        })
+        }
     except Exception as e:
         logger.error(f"Error in debug endpoint: {e}")
-        return jsonify({"error": str(e)}), 500
+        return APIResponse(
+            success=False,
+            error=str(e),
+            code=500
+        )
 
 @api_bp.route("/health/<string:model>/<int:app_num>")
-@error_handler
+@ajax_compatible
 def check_container_health(model: str, app_num: int):
+    """Check if containers for an app are healthy."""
     docker_manager: DockerManager = current_app.config["docker_manager"]
     healthy, message = verify_container_health(docker_manager, model, app_num)
-    return jsonify({"healthy": healthy, "message": message})
+    return {"healthy": healthy, "message": message}
 
 
 @api_bp.route("/status")
-@error_handler
+@ajax_compatible
 def system_status():
+    """Get overall system status."""
     docker_manager: DockerManager = current_app.config["docker_manager"]
     disk_ok = SystemHealthMonitor.check_disk_space()
     docker_ok = SystemHealthMonitor.check_health(docker_manager.client)
-    return jsonify({
+    return {
         "status": "healthy" if (disk_ok and docker_ok) else "warning",
         "details": {"disk_space": disk_ok, "docker_health": docker_ok},
-    })
+        "timestamp": datetime.now().isoformat(),
+    }
 
 
 @api_bp.route("/model-info")
-@error_handler
+@ajax_compatible
 def get_model_info():
-    return jsonify([
+    """Get information about all AI models."""
+    return [
         {
             "name": model.name,
             "color": model.color,
@@ -947,11 +1277,11 @@ def get_model_info():
             "total_apps": len(get_apps_for_model(model.name)),
         }
         for idx, model in enumerate(AI_MODELS)
-    ])
+    ]
 
 # ----- Client-side Error Logging Endpoint -----
 @api_bp.route("/log-client-error", methods=["POST"])
-@error_handler
+@ajax_compatible
 def log_client_error():
     """
     Endpoint to log client-side errors that might be causing
@@ -960,7 +1290,11 @@ def log_client_error():
     try:
         data = request.get_json()
         if not data:
-            return jsonify({"status": "error", "message": "No error data provided"}), 400
+            return APIResponse(
+                success=False,
+                error="No error data provided",
+                code=400
+            )
             
         # Log the client error with detailed context
         logger.error(
@@ -974,15 +1308,20 @@ def log_client_error():
         if 'stack' in data:
             logger.debug(f"Error stack trace: {data.get('stack')}")
             
-        return jsonify({"status": "success"})
+        return {"status": "success"}
     except Exception as e:
         logger.error(f"Error in client error logger: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return APIResponse(
+            success=False,
+            error=str(e),
+            code=500
+        )
 
 # ----- ZAP Routes -----
 @zap_bp.route("/<string:model>/<int:app_num>")
-@error_handler
+@ajax_compatible
 def zap_scan(model: str, app_num: int):
+    """ZAP scanner page for a specific app."""
     base_dir: Path = current_app.config["BASE_DIR"]
     results_file = base_dir / f"{model}/app{app_num}/.zap_results.json"
     alerts = []
@@ -999,30 +1338,30 @@ def zap_scan(model: str, app_num: int):
 
 
 @zap_bp.route("/scan/<string:model>/<int:app_num>", methods=["POST"])
-@error_handler
+@ajax_compatible
 def start_zap_scan(model: str, app_num: int):
+    """Start a ZAP scan for a specific app."""
     data = request.get_json()
     base_dir: Path = current_app.config["BASE_DIR"]
     scan_manager = get_scan_manager()
     existing_scan = scan_manager.get_scan(model, app_num)
     if existing_scan and existing_scan["status"] not in ("Complete", "Failed", "Stopped"):
-        return jsonify({"error": "A scan is already running"}), 409
+        return APIResponse(
+            success=False,
+            error="A scan is already running",
+            code=409
+        )
+    
     scan_id = scan_manager.create_scan(model, app_num, data)
     def run_scan():
         try:
             scanner = create_scanner(base_dir)
             scan_manager.update_scan(scan_id, scanner=scanner)
             
-            # Fixed port calculation using PortManager-style logic
+            # Fixed port calculation using PortManager
             model_idx = get_model_index(model)
-            BASE_FRONTEND_PORT = 5501
-            PORTS_PER_APP = 2
-            BUFFER_PORTS = 20
-            APPS_PER_MODEL = 30
-            total_needed = APPS_PER_MODEL * PORTS_PER_APP + BUFFER_PORTS
-            
-            frontend_port_start = BASE_FRONTEND_PORT + (model_idx * total_needed)
-            frontend_port = frontend_port_start + ((app_num - 1) * PORTS_PER_APP)
+            ports = PortManager.get_app_ports(model_idx, int(app_num))
+            frontend_port = ports["frontend"]
             
             target_url = f"http://localhost:{frontend_port}"
             logger.info(f"Starting scan of target: {target_url}")
@@ -1043,38 +1382,19 @@ def start_zap_scan(model: str, app_num: int):
         finally:
             scanner._cleanup_existing_zap()
             scan_manager.cleanup_old_scans()
+    
     threading.Thread(target=run_scan, daemon=True).start()
-    return jsonify({"status": "started", "scan_id": scan_id})
+    return {"status": "started", "scan_id": scan_id}
 
-def get_model_index(model_name: str) -> int:
-    """
-    Get the index of a model in the AI_MODELS list.
-    
-    Args:
-        model_name: Name of the model
-    
-    Returns:
-        Index of the model (0-based) or 0 if not found
-    """
-    # Use the existing AI_MODELS list from app.py if available
-    # Otherwise define it here
-    try:
-        return next((i for i, m in enumerate(AI_MODELS) if m.name == model_name), 0)
-    except NameError:
-        # Fallback if AI_MODELS is not available in this scope
-        model_list = [
-            "Llama", "Mistral", "DeepSeek", "GPT4o", "Claude", 
-            "Gemini", "Grok", "R1", "O3"
-        ]
-        return next((i for i, m in enumerate(model_list) if m == model_name), 0)
-    
 @zap_bp.route("/scan/<string:model>/<int:app_num>/status")
-@error_handler
+@ajax_compatible
 def zap_scan_status(model: str, app_num: int):
+    """Get the status of a ZAP scan."""
     scan_manager = get_scan_manager()
     scan = scan_manager.get_scan(model, app_num)
     if not scan:
-        return jsonify({"status": "Not Started", "progress": 0})
+        return {"status": "Not Started", "progress": 0}
+    
     results_file = current_app.config["BASE_DIR"] / f"{model}/app{app_num}/.zap_results.json"
     counts = {"high": 0, "medium": 0, "low": 0, "info": 0}
     if results_file.exists():
@@ -1087,39 +1407,61 @@ def zap_scan_status(model: str, app_num: int):
                         counts[risk] += 1
         except Exception as e:
             logger.error(f"Error reading results file: {e}")
-    return jsonify({
+    
+    return {
         "status": scan["status"],
         "progress": scan["progress"],
         "high_count": counts["high"],
         "medium_count": counts["medium"],
         "low_count": counts["low"],
         "info_count": counts["info"],
-    })
+    }
 
 
 @zap_bp.route("/scan/<string:model>/<int:app_num>/stop", methods=["POST"])
-@error_handler
+@ajax_compatible
 def stop_zap_scan(model: str, app_num: int):
+    """Stop a running ZAP scan."""
     scan_manager = get_scan_manager()
     scan = scan_manager.get_scan(model, app_num)
     if not scan:
-        return jsonify({"error": "No running scan found"}), 404
+        return APIResponse(
+            success=False,
+            error="No running scan found",
+            code=404
+        )
+    
     if scan["status"] in ("Complete", "Failed", "Stopped"):
-        return jsonify({"error": "Scan is not running"}), 400
+        return APIResponse(
+            success=False,
+            error="Scan is not running",
+            code=400
+        )
+    
     try:
         if scan["scanner"]:
             scan["scanner"]._cleanup_existing_zap()
-        scan_manager.update_scan(next(sid for sid, s in scan_manager.scans.items() if s == scan),
-                                 status="Stopped", progress=0)
-        return jsonify({"status": "stopped"})
+        
+        scan_manager.update_scan(
+            next(sid for sid, s in scan_manager.scans.items() if s == scan),
+            status="Stopped", 
+            progress=0
+        )
+        
+        return {"status": "stopped"}
     except Exception as e:
         logger.error(f"Failed to stop scan: {e}")
-        return jsonify({"error": str(e)}), 500
+        return APIResponse(
+            success=False,
+            error=str(e),
+            code=500
+        )
 
 # ----- Analysis Routes -----
 @analysis_bp.route("/backend-security/<string:model>/<int:app_num>")
-@error_handler
+@ajax_compatible
 def security_analysis(model: str, app_num: int):
+    """Run backend security analysis for an app."""
     full_scan = request.args.get("full", "").lower() == "true"
     analyzer = current_app.backend_security_analyzer
     return process_security_analysis(
@@ -1134,8 +1476,9 @@ def security_analysis(model: str, app_num: int):
 
 
 @analysis_bp.route("/frontend-security/<string:model>/<int:app_num>")
-@error_handler
+@ajax_compatible
 def frontend_security_analysis(model: str, app_num: int):
+    """Run frontend security analysis for an app."""
     full_scan = request.args.get("full", "").lower() == "true"
     analyzer = current_app.frontend_security_analyzer
     return process_security_analysis(
@@ -1150,8 +1493,9 @@ def frontend_security_analysis(model: str, app_num: int):
 
 
 @api_bp.route("/analyze-security", methods=["POST"])
-@error_handler
+@ajax_compatible
 def analyze_security_issues():
+    """Analyze security issues with AI."""
     try:
         data = request.get_json()
         if not data or "issues" not in data:
@@ -1205,9 +1549,9 @@ def analyze_security_issues():
                 prompt += f"\n### {severity.title()} severity issues ({len(issues_in_group)})\n"
                 
                 for issue in issues_in_group:
-                    issue_type = issue.get('type', 'Unknown issue')
-                    issue_text = issue.get('text', '')
-                    file_name = issue.get('file', 'unknown file')
+                    issue_type = issue.get('issue_type', 'Unknown issue')
+                    issue_text = issue.get('issue_text', '')
+                    file_name = issue.get('filename', 'unknown file')
                     
                     prompt += f"- **{issue_type}**: {issue_text}\n"
                     if file_name and file_name != "unknown file":
@@ -1236,18 +1580,30 @@ Format your response with clear headings and concise explanations suitable for a
         
         # Call AI service for analysis
         analysis_result = call_ai_service(model_name, prompt)
-        return jsonify({"status": "success", "response": analysis_result})
+        return APIResponse(
+            success=True,
+            data={"response": analysis_result}
+        )
         
     except BadRequest as e:
         logger.warning(f"Bad request in security analysis: {e}")
-        return jsonify({"error": str(e)}), 400
+        return APIResponse(
+            success=False,
+            error=str(e),
+            code=400
+        )
     except Exception as e:
         logger.error(f"Error in security analysis: {e}")
-        return jsonify({"error": "Analysis failed"}), 500
+        return APIResponse(
+            success=False,
+            error="Analysis failed",
+            code=500
+        )
 
 @analysis_bp.route("/security/summary/<string:model>/<int:app_num>")
-@error_handler
+@ajax_compatible
 def get_security_summary(model: str, app_num: int):
+    """Get security analysis summary for an app."""
     try:
         backend_issues, backend_status, _ = current_app.backend_security_analyzer.analyze_security(
             model, app_num, use_all_tools=False
@@ -1268,43 +1624,61 @@ def get_security_summary(model: str, app_num: int):
             },
             "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
-        return jsonify(combined_summary)
+        return combined_summary
     except Exception as e:
         logger.error(f"Error getting security summary: {e}")
-        return jsonify({"error": "Failed to get security summary", "details": str(e)}), 500
+        return APIResponse(
+            success=False,
+            error="Failed to get security summary",
+            details=str(e),
+            code=500
+        )
 
 
 @analysis_bp.route("/security/analyze-file", methods=["POST"])
-@error_handler
+@ajax_compatible
 def analyze_single_file():
+    """Analyze a single file for security issues."""
     try:
         data = request.get_json()
         if not data or "file_path" not in data:
             raise BadRequest("No file path provided")
+        
         file_path = Path(data["file_path"])
         is_frontend = data.get("is_frontend", False)
         analyzer = current_app.frontend_security_analyzer if is_frontend else current_app.backend_security_analyzer
+        
         if is_frontend:
             issues, tool_status, tool_output = analyzer._run_eslint(file_path.parent)
         else:
             issues, tool_status, tool_output = analyzer._run_bandit(file_path.parent)
+            
         file_issues = [issue for issue in issues if Path(issue.filename).name == file_path.name]
-        return jsonify({
+        
+        return {
             "status": "success",
             "issues": [asdict(issue) for issue in file_issues],
             "tool_status": tool_status,
             "tool_output": tool_output,
-        })
+        }
     except BadRequest as e:
         logger.warning(f"Bad request in file analysis: {e}")
-        return jsonify({"error": str(e)}), 400
+        return APIResponse(
+            success=False,
+            error=str(e),
+            code=400
+        )
     except Exception as e:
         logger.error(f"Error analyzing file: {e}")
-        return jsonify({"error": "File analysis failed"}), 500
+        return APIResponse(
+            success=False,
+            error="File analysis failed",
+            code=500
+        )
 
 # ----- Performance Testing Routes -----
 @performance_bp.route("/<string:model>/<int:port>", methods=["GET", "POST"])
-@error_handler
+@ajax_compatible
 def performance_test(model: str, port: int):
     """
     Route for performance testing a specific model application.
@@ -1338,44 +1712,53 @@ def performance_test(model: str, port: int):
             
             if result:
                 # Convert the result object to a dictionary for JSON serialization
-                return jsonify({
+                return {
                     "status": "success",
                     "data": result.to_dict(),
                     "report_path": info.get("report_path", "")
-                })
+                }
             else:
-                return jsonify({
-                    "status": "error", 
-                    "error": info.get("error", "Unknown error"),
-                    "command": info.get("command", "")
-                }), 500
+                return APIResponse(
+                    success=False,
+                    error=info.get("error", "Unknown error"),
+                    data={"command": info.get("command", "")},
+                    code=500
+                )
         except Exception as e:
             logger.exception(f"Performance test error: {e}")
-            return jsonify({"status": "error", "error": str(e)}), 500
+            return APIResponse(
+                success=False,
+                error=str(e),
+                code=500
+            )
     
     return render_template("performance_test.html", model=model, port=port)
 
 
 @performance_bp.route("/<string:model>/<int:port>/stop", methods=["POST"])
-@error_handler
+@ajax_compatible
 def stop_performance_test(model: str, port: int):
     """Stop a running performance test."""
     try:
         # For now, we'll just return success
-        return jsonify({"status": "success", "message": "Test stopped successfully"})
+        return {"status": "success", "message": "Test stopped successfully"}
     except Exception as e:
         logger.exception(f"Error stopping performance test: {e}")
-        return jsonify({"status": "error", "error": str(e)}), 500
+        return APIResponse(
+            success=False,
+            error=str(e),
+            code=500
+        )
 
 
 @performance_bp.route("/<string:model>/<int:port>/reports", methods=["GET"])
-@error_handler
+@ajax_compatible
 def list_performance_reports(model: str, port: int):
     """List available performance reports for a specific model/port."""
     try:
         report_dir = current_app.config["BASE_DIR"] / "performance_reports"
         if not report_dir.exists():
-            return jsonify({"reports": []})
+            return {"reports": []}
             
         # Find all reports for this model/port
         reports = []
@@ -1388,14 +1771,18 @@ def list_performance_reports(model: str, port: int):
                 "created": datetime.fromtimestamp(report_file.stat().st_mtime).strftime("%Y-%m-%d %H:%M:%S")
             })
             
-        return jsonify({"reports": sorted(reports, key=lambda x: x["timestamp"], reverse=True)})
+        return {"reports": sorted(reports, key=lambda x: x["timestamp"], reverse=True)}
     except Exception as e:
         logger.exception(f"Error listing performance reports: {e}")
-        return jsonify({"status": "error", "error": str(e)}), 500
+        return APIResponse(
+            success=False,
+            error=str(e),
+            code=500
+        )
 
 
 @performance_bp.route("/<string:model>/<int:port>/reports/<path:report_name>", methods=["GET"])
-@error_handler
+@ajax_compatible
 def view_performance_report(model: str, port: int, report_name: str):
     """View a specific performance report."""
     try:
@@ -1423,8 +1810,9 @@ def view_performance_report(model: str, port: int, report_name: str):
 
 # ----- GPT4All Routes -----
 @gpt4all_bp.route("/analyze-gpt4all/<string:analysis_type>", methods=["POST"])
-@error_handler
+@ajax_compatible
 def analyze_gpt4all(analysis_type: str):
+    """Run GPT4All analysis on code."""
     try:
         data = request.get_json()
         directory = Path(data.get("directory", current_app.config["BASE_DIR"]))
@@ -1440,14 +1828,22 @@ def analyze_gpt4all(analysis_type: str):
         loop.close()
         
         if not isinstance(summary, dict):
-            summary = get_analysis_summary(issues)
-        return jsonify({"issues": [asdict(issue) for issue in issues], "summary": summary})
+            summary = analyzer.get_analysis_summary(issues)
+            
+        return {
+            "issues": [asdict(issue) for issue in issues], 
+            "summary": summary
+        }
     except Exception as e:
         logger.error(f"GPT4All analysis failed: {e}")
-        return jsonify({"error": str(e)}), 500
+        return APIResponse(
+            success=False,
+            error=str(e),
+            code=500
+        )
 
 @gpt4all_bp.route("/gpt4all-analysis", methods=["GET", "POST"])
-@error_handler
+@ajax_compatible
 def gpt4all_analysis():
     """Flask route for checking requirements against code."""
     try:
@@ -1522,28 +1918,41 @@ def gpt4all_analysis():
 # Error Handlers & Request Hooks
 # =============================================================================
 def register_error_handlers(app: Flask) -> None:
+    """Register Flask error handlers."""
     @app.errorhandler(404)
     def not_found(error):
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return jsonify({"error": "Not found"}), 404
+            return jsonify({
+                "success": False,
+                "error": "Not found",
+                "message": str(error)
+            }), 404
         return render_template("404.html", error=error), 404
 
     @app.errorhandler(500)
     def server_error(error):
         logger.error(f"Server error: {error}")
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return jsonify({"error": "Internal server error"}), 500
+            return jsonify({
+                "success": False,
+                "error": "Internal server error",
+                "message": str(error)
+            }), 500
         return render_template("500.html", error=error), 500
 
     @app.errorhandler(Exception)
     def handle_exception(error):
         logger.error(f"Unhandled exception: {error}")
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return jsonify({"error": str(error)}), 500
+            return jsonify({
+                "success": False,
+                "error": str(error),
+            }), 500
         return render_template("500.html", error=error), 500
 
 
 def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
+    """Register Flask request hooks."""
     @app.before_request
     def before():
         if random.random() < 0.01:
@@ -1553,12 +1962,20 @@ def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
 
     @app.after_request
     def after(response):
+        # Security headers
         response.headers.update({
             "X-Content-Type-Options": "nosniff",
             "X-Frame-Options": "SAMEORIGIN",
             "X-XSS-Protection": "1; mode=block",
             "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
         })
+        
+        # Add cache control for AJAX requests
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Expires"] = "0"
+            
         return response
 
     @app.teardown_appcontext
@@ -1570,6 +1987,7 @@ def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
 # Flask App Factory
 # =============================================================================
 def create_app(config: Optional[AppConfig] = None) -> Flask:
+    """Create and configure the Flask application."""
     app = Flask(__name__)
     app_config = config or AppConfig.from_env()
     app.config.from_object(app_config)
@@ -1581,6 +1999,7 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     # Apply request logger middleware
     RequestLoggerMiddleware(app)
     
+    # Use enhanced JSON encoder
     app.json_encoder = CustomJSONEncoder
 
     base_path = app_config.BASE_DIR.parent
@@ -1639,11 +2058,13 @@ if __name__ == "__main__":
 # Optional: Database Manager for Storing Scan Data
 # =============================================================================
 class DatabaseManager:
-    def __init__(self):
-        self.conn = sqlite3.connect("your_database.db")
+    def __init__(self, db_path="scans.db"):
+        """Initialize database connection and tables."""
+        self.conn = sqlite3.connect(db_path)
         self._create_tables()
 
     def _create_tables(self):
+        """Create database tables if they don't exist."""
         self.conn.executescript('''
             CREATE TABLE IF NOT EXISTS security_scans (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1653,4 +2074,53 @@ class DatabaseManager:
                 issues TEXT NOT NULL,
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
             );
+            
+            CREATE TABLE IF NOT EXISTS performance_tests (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                model TEXT NOT NULL,
+                port INTEGER NOT NULL,
+                num_users INTEGER NOT NULL,
+                duration INTEGER NOT NULL,
+                results TEXT NOT NULL,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
         ''')
+        
+    def store_security_scan(self, scan_type, model, app_num, issues):
+        """Store security scan results."""
+        issues_json = json.dumps(issues)
+        cursor = self.conn.cursor()
+        cursor.execute(
+            "INSERT INTO security_scans (scan_type, model, app_num, issues) VALUES (?, ?, ?, ?)",
+            (scan_type, model, app_num, issues_json)
+        )
+        self.conn.commit()
+        return cursor.lastrowid
+        
+    def get_security_scans(self, model=None, app_num=None, limit=10):
+        """Retrieve security scan results with optional filters."""
+        cursor = self.conn.cursor()
+        query = "SELECT * FROM security_scans"
+        params = []
+        
+        if model or app_num:
+            query += " WHERE"
+            if model:
+                query += " model = ?"
+                params.append(model)
+                if app_num:
+                    query += " AND"
+            if app_num:
+                query += " app_num = ?"
+                params.append(app_num)
+                
+        query += " ORDER BY timestamp DESC LIMIT ?"
+        params.append(limit)
+        
+        cursor.execute(query, params)
+        return cursor.fetchall()
+        
+    def __del__(self):
+        """Close database connection when object is deleted."""
+        if hasattr(self, 'conn'):
+            self.conn.close()

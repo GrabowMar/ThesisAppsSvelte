@@ -294,248 +294,61 @@
 
 {% block extra_scripts %}
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Core state variables
-    let autoRefreshTimer = null;
-    const AUTO_REFRESH_INTERVAL = 30000;
-    let currentAnalysis = null;
+  // Initialize when DOM is ready
+$(document).ready(function() {
+  // Initialize core App functionality
+  if (typeof App !== 'undefined') {
+    // Additional dashboard-specific functionality
+    setupModelSections();
+    setupSecurityFilters();
+  }
 
-    // Status styling mappings
-    const STATUS_CLASSES = {
-      running: 'bg-green-100 text-green-800 border-green-700',
-      partial: 'bg-yellow-100 text-yellow-800 border-yellow-700',
-      stopped: 'bg-red-100 text-red-800 border-red-700'
-    };
-
-    // Security status styling mappings
-    const SECURITY_CLASSES = {
-      high: 'bg-red-600',
-      medium: 'bg-yellow-600',
-      low: 'bg-blue-600',
-      none: 'bg-gray-600'
-    };
-
-    /**
-     * Control an app via API
-     * @param {string} model - Model name
-     * @param {string} appNum - App number
-     * @param {string} action - Action to perform
-     * @param {HTMLElement} button - Button element
-     */
-    async function controlApp(model, appNum, action, button) {
-      const originalText = button.textContent;
-      button.textContent = 'Working...';
-      button.disabled = true;
-
-      try {
-        const res = await fetch(`/${action}/${model}/${appNum}`, {
-          headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        });
-        if (!res.ok) throw new Error(`Failed to ${action}`);
-
-        await checkAppStatus(model, appNum);
-        showToast(`${action.charAt(0).toUpperCase() + action.slice(1)} successful`);
-      } catch (err) {
-        console.error(`Error during ${action}:`, err);
-        showToast(err.message, 'error');
-      } finally {
-        button.textContent = originalText;
-        button.disabled = false;
-      }
-    }
-
-    /**
-     * Get security summary for a specific app
-     * @param {string} model - Model name 
-     * @param {string} appNum - App number
-     * @returns {Promise<Object|null>} Security summary data
-     */
-    async function getSecuritySummary(model, appNum) {
-      try {
-        const response = await fetch(`/api/security/summary/${model}/${appNum}`);
-        if (!response.ok) throw new Error('Failed to get security summary');
-        return await response.json();
-      } catch (error) {
-        console.error('Security summary error:', error);
-        return null;
-      }
-    }
-
-    /**
-     * Run security analysis on an app
-     * @param {string} model - Model name
-     * @param {string} appNum - App number
-     * @param {Object} options - Analysis options
-     */
-    async function runSecurityAnalysis(model, appNum, options) {
-      const modal = document.getElementById('securityModal');
-      const resultsArea = document.getElementById('scanResults');
-      const loadingArea = document.getElementById('scanLoading');
-      const startButton = document.getElementById('startAnalysis');
-
-      try {
-        // Show loading state
-        resultsArea.classList.add('hidden');
-        loadingArea.classList.remove('hidden');
-        startButton.disabled = true;
-
-        // Run backend analysis
-        const response = await fetch(`/api/security/analyze-file`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: model,
-            app_num: appNum,
-            analysis_type: options.type,
-            ai_model: options.aiModel
-          })
-        });
-
-        if (!response.ok) throw new Error('Analysis failed');
-        const results = await response.json();
-
-        // Update results UI
-        document.getElementById('modalHighCount').textContent = results.counts.high;
-        document.getElementById('modalMediumCount').textContent = results.counts.medium;
-        document.getElementById('modalLowCount').textContent = results.counts.low;
-        document.getElementById('summaryDetails').textContent = results.summary;
-        document.getElementById('aiAnalysis').textContent = results.ai_analysis;
-
-        // Show results
-        loadingArea.classList.add('hidden');
-        resultsArea.classList.remove('hidden');
-
-        // Update security badges
-        updateSecurityBadges(model, appNum, results);
-
-      } catch (error) {
-        showToast('Analysis failed: ' + error.message, 'error');
-        loadingArea.classList.add('hidden');
-      } finally {
-        startButton.disabled = false;
-      }
-    }
-
-    /**
-     * Update security badges for an app
-     * @param {string} model - Model name
-     * @param {string} appNum - App number
-     * @param {Object} results - Security results data
-     */
-    function updateSecurityBadges(model, appNum, results) {
-      const app = document.querySelector(`[data-app-id="${appNum}"][data-model="${model}"]`);
-      if (!app) return;
-
-      const badge = app.querySelector('.security-badge');
-      const indicator = app.querySelector('.security-indicator');
-
-      if (results.total_issues > 0) {
-        // Determine severity level color coding
-        const securityLevel = results.counts.high > 0 ? 'high' :
-                             results.counts.medium > 0 ? 'medium' : 'low';
-        
-        // Update badge
-        badge.textContent = results.total_issues;
-        badge.classList.remove('hidden');
-        badge.className = `security-badge ml-1 px-1 rounded-full ${SECURITY_CLASSES[securityLevel]} text-white`;
-
-        // Update indicator
-        indicator.classList.remove('hidden');
-        indicator.className = `security-indicator text-xs px-1 rounded ${
-          securityLevel === 'high' ? 'bg-red-100 text-red-800' :
-          securityLevel === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-          'bg-blue-100 text-blue-800'
-        }`;
-        
-        indicator.textContent = `${results.total_issues} ${
-          securityLevel === 'high' ? 'High' :
-          securityLevel === 'medium' ? 'Med' : 'Low'
-        }`;
-      } else {
-        badge.classList.add('hidden');
-        indicator.classList.add('hidden');
-      }
-    }
-
-    /**
-     * Update global security statistics
-     */
-    async function updateGlobalSecurityStats() {
-      let totalHigh = 0, totalMedium = 0, totalLow = 0;
-      let lastScanTime = null;
-
-      document.querySelectorAll('[data-app-id]').forEach(app => {
-        const badge = app.querySelector('.security-badge');
-        if (badge && !badge.classList.contains('hidden')) {
-          const counts = {
-            high: parseInt(app.querySelector('#modalHighCount')?.textContent || '0'),
-            medium: parseInt(app.querySelector('#modalMediumCount')?.textContent || '0'),
-            low: parseInt(app.querySelector('#modalLowCount')?.textContent || '0')
-          };
-          totalHigh += counts.high;
-          totalMedium += counts.medium;
-          totalLow += counts.low;
-
-          const scanTime = app.querySelector('[data-scan-time]')?.dataset.scanTime;
-          if (scanTime && (!lastScanTime || scanTime > lastScanTime)) {
-            lastScanTime = scanTime;
-          }
-        }
-      });
-
-      // Update global stats
-      document.getElementById('totalHighIssues').textContent = totalHigh || '0';
-      document.getElementById('totalMediumIssues').textContent = totalMedium || '0';
-      document.getElementById('totalLowIssues').textContent = totalLow || '0';
-      document.getElementById('lastGlobalScan').textContent =
-        lastScanTime ? new Date(lastScanTime).toLocaleString() : 'Never';
-    }
-
-    // Event Listeners
-    document.querySelectorAll('.security-scan-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        currentAnalysis = {
-          model: btn.dataset.model,
-          appNum: btn.dataset.appNum
-        };
-        document.getElementById('securityModal').classList.remove('hidden');
-      });
+  function setupModelSections() {
+    // Handle model section toggles
+    $('.model-section-toggle').on('click', function() {
+      const targetId = $(this).data('target');
+      $(`#${targetId}`).slideToggle(200);
+      $(this).find('.toggle-icon').toggleClass('rotate-180');
     });
-
-    const startAnalysisBtn = document.getElementById('startAnalysis');
-    if (startAnalysisBtn) {
-      startAnalysisBtn.addEventListener('click', () => {
-        if (!currentAnalysis) return;
-
-        runSecurityAnalysis(
-          currentAnalysis.model,
-          currentAnalysis.appNum,
-          {
-            type: document.getElementById('analysisType').value,
-            aiModel: document.getElementById('aiModel').value
-          }
-        );
-      });
-    }
-
-    document.querySelectorAll('.modal-close').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const securityModal = document.getElementById('securityModal');
-        if (securityModal) {
-          securityModal.classList.add('hidden');
-          currentAnalysis = null;
-        }
-      });
+    
+    // Set up batch operation dropdowns (already handled in core App)
+    $('.batch-menu-button').each(function() {
+      // Additional model-specific initialization if needed
     });
-
-    // Initialize
-    updateGlobalSecurityStats();
-    const autorefreshToggle = document.getElementById('toggleAutorefresh');
-    if (autorefreshToggle && autorefreshToggle.dataset.enabled === 'true') {
-      if (typeof toggleAutoRefresh === 'function') {
-        toggleAutoRefresh(true);
+  }
+  
+  function setupSecurityFilters() {
+    $('#securitySummaryFilter').on('change', function() {
+      const value = $(this).val();
+      
+      switch (value) {
+        case 'high':
+          $('.security-badge:not(.high-risk)').closest('.app-card').hide();
+          $('.security-badge.high-risk').closest('.app-card').show();
+          break;
+        case 'critical':
+          $('.app-card').hide();
+          $('.security-badge.critical').closest('.app-card').show();
+          break;
+        default:
+          $('.app-card').show();
+          break;
       }
-    }
-  });
+      
+      // Update visible count
+      updateVisibleCount();
+    });
+  }
+  
+  function updateVisibleCount() {
+    const visibleApps = $('.app-card:visible').length;
+    const totalApps = $('.app-card').length;
+    $('#visibleAppCount').text(visibleApps);
+    $('#totalAppCount').text(totalApps);
+    
+    // Show/hide no results message
+    $('#noResultsMessage').toggle(visibleApps === 0);
+  }
+});
 </script>
 {% endblock %}{% endblock %}

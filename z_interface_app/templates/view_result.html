@@ -336,105 +336,110 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Set up issue filtering
-  const searchInput = document.getElementById('searchIssues');
-  const severityFilter = document.getElementById('severityFilter');
-  const fileFilter = document.getElementById('fileFilter');
-  const toolFilter = document.getElementById('toolFilter');
-  const issueItems = document.querySelectorAll('.issue-item');
-  const visibleIssuesCount = document.getElementById('visibleIssuesCount');
-  
-  function filterIssues() {
-    const searchText = searchInput?.value?.toLowerCase() || '';
-    const selectedSeverity = severityFilter?.value || 'all';
-    const selectedFile = fileFilter?.value || 'all';
-    const selectedTool = toolFilter?.value || 'all';
+  $(document).ready(function() {
+    // Set up issue filtering
+    const $searchInput = $('#searchIssues');
+    const $severityFilter = $('#severityFilter');
+    const $fileFilter = $('#fileFilter');
+    const $toolFilter = $('#toolFilter');
+    const $issueItems = $('.issue-item');
+    const $visibleIssuesCount = $('#visibleIssuesCount');
     
-    let visibleCount = 0;
-    
-    issueItems.forEach(item => {
-      const severity = item.dataset.severity?.toUpperCase() || '';
-      const file = item.dataset.file || '';
-      const tool = item.dataset.tool || '';
-      const searchableText = item.dataset.searchable?.toLowerCase() || item.textContent.toLowerCase();
+    function filterIssues() {
+      const searchText = $searchInput.val()?.toLowerCase() || '';
+      const selectedSeverity = $severityFilter.val() || 'all';
+      const selectedFile = $fileFilter.val() || 'all';
+      const selectedTool = $toolFilter.val() || 'all';
       
-      const matchesSearch = !searchText || searchableText.includes(searchText);
-      const matchesSeverity = selectedSeverity === 'all' || severity === selectedSeverity;
-      const matchesFile = selectedFile === 'all' || file === selectedFile;
-      const matchesTool = selectedTool === 'all' || tool === selectedTool;
+      let visibleCount = 0;
       
-      const isVisible = matchesSearch && matchesSeverity && matchesFile && matchesTool;
-      item.style.display = isVisible ? '' : 'none';
-      
-      if (isVisible) visibleCount++;
-    });
-    
-    if (visibleIssuesCount) {
-      visibleIssuesCount.textContent = visibleCount;
-    }
-  }
-  
-  // Add event listeners
-  if (searchInput) {
-    searchInput.addEventListener('input', filterIssues);
-  }
-  
-  if (severityFilter) {
-    severityFilter.addEventListener('change', filterIssues);
-  }
-  
-  if (fileFilter) {
-    fileFilter.addEventListener('change', filterIssues);
-  }
-  
-  if (toolFilter) {
-    toolFilter.addEventListener('change', filterIssues);
-  }
-  
-  // Toggle issue details
-  const toggleButtons = document.querySelectorAll('.toggle-issue');
-  toggleButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      const issueDetails = this.closest('.space-y-2').querySelector('.issue-details');
-      
-      if (issueDetails) {
-        const isExpanded = !issueDetails.classList.contains('hidden');
-        issueDetails.classList.toggle('hidden');
-        this.textContent = isExpanded ? 'Expand' : 'Collapse';
-        this.setAttribute('aria-expanded', !isExpanded);
-      }
-    });
-  });
-  
-  // Expand/collapse all issues
-  const expandAllButton = document.getElementById('expandAllIssues');
-  if (expandAllButton) {
-    expandAllButton.addEventListener('click', function() {
-      const issuesToggles = document.querySelectorAll('.toggle-issue');
-      const allExpanded = Array.from(issuesToggles).every(btn => btn.textContent === 'Collapse');
-      
-      issuesToggles.forEach(toggle => {
-        const issueDetails = toggle.closest('.space-y-2').querySelector('.issue-details');
-        if (issueDetails) {
-          if (allExpanded) {
-            // Collapse all
-            issueDetails.classList.add('hidden');
-            toggle.textContent = 'Expand';
-            toggle.setAttribute('aria-expanded', 'false');
-          } else {
-            // Expand all
-            issueDetails.classList.remove('hidden');
-            toggle.textContent = 'Collapse';
-            toggle.setAttribute('aria-expanded', 'true');
-          }
-        }
+      $issueItems.each(function() {
+        const $item = $(this);
+        const severity = $item.data('severity')?.toUpperCase() || '';
+        const file = $item.data('file') || '';
+        const tool = $item.data('tool') || '';
+        const searchableText = $item.data('searchable')?.toLowerCase() || $item.text().toLowerCase();
+        
+        const matchesSearch = !searchText || searchableText.includes(searchText);
+        const matchesSeverity = selectedSeverity === 'all' || severity === selectedSeverity;
+        const matchesFile = selectedFile === 'all' || file === selectedFile;
+        const matchesTool = selectedTool === 'all' || tool === selectedTool;
+        
+        const isVisible = matchesSearch && matchesSeverity && matchesFile && matchesTool;
+        $item.toggle(isVisible);
+        
+        if (isVisible) visibleCount++;
       });
       
-      // Update button text
-      this.textContent = allExpanded ? 'Expand All' : 'Collapse All';
+      if ($visibleIssuesCount.length) {
+        $visibleIssuesCount.text(visibleCount);
+      }
+    }
+    
+    // Add event listeners
+    if ($searchInput.length) {
+      $searchInput.on('input', filterIssues);
+    }
+    
+    if ($severityFilter.length) {
+      $severityFilter.on('change', filterIssues);
+    }
+    
+    if ($fileFilter.length) {
+      $fileFilter.on('change', filterIssues);
+    }
+    
+    if ($toolFilter.length) {
+      $toolFilter.on('change', filterIssues);
+    }
+    
+    // Toggle issue details
+    const $toggleButtons = $('.toggle-issue');
+    $toggleButtons.each(function() {
+      $(this).on('click', function() {
+        const $issueDetails = $(this).closest('.space-y-2').find('.issue-details');
+        
+        if ($issueDetails.length) {
+          const isExpanded = !$issueDetails.hasClass('hidden');
+          $issueDetails.toggleClass('hidden');
+          $(this).text(isExpanded ? 'Expand' : 'Collapse');
+          $(this).attr('aria-expanded', !isExpanded);
+        }
+      });
     });
-  }
-});
+    
+    // Expand/collapse all issues
+    const $expandAllButton = $('#expandAllIssues');
+    if ($expandAllButton.length) {
+      $expandAllButton.on('click', function() {
+        const $issuesToggles = $('.toggle-issue');
+        const allExpanded = $issuesToggles.filter(function() {
+          return $(this).text() === 'Collapse';
+        }).length === $issuesToggles.length;
+        
+        $issuesToggles.each(function() {
+          const $toggle = $(this);
+          const $issueDetails = $toggle.closest('.space-y-2').find('.issue-details');
+          
+          if ($issueDetails.length) {
+            if (allExpanded) {
+              // Collapse all
+              $issueDetails.addClass('hidden');
+              $toggle.text('Expand');
+              $toggle.attr('aria-expanded', 'false');
+            } else {
+              // Expand all
+              $issueDetails.removeClass('hidden');
+              $toggle.text('Collapse');
+              $toggle.attr('aria-expanded', 'true');
+            }
+          }
+        });
+        
+        // Update button text
+        $(this).text(allExpanded ? 'Expand All' : 'Collapse All');
+      });
+    }
+  });
 </script>
 {% endblock %}

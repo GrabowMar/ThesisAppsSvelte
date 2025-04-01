@@ -27,20 +27,37 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+// Initialize when DOM is ready
+// Initialize when DOM is ready
+$(document).ready(function() {
     // Adjust iframe height to fit content
-    const iframe = document.getElementById('reportFrame');
+    const $iframe = $('#reportFrame');
     
-    iframe.addEventListener('load', function() {
+    if ($iframe.length) {
+      $iframe.on('load', function() {
         // Try to set the height based on content
         try {
-            const frameContent = iframe.contentDocument || iframe.contentWindow.document;
-            const height = frameContent.body.scrollHeight;
-            iframe.style.height = (height + 50) + 'px';
+          const frameContent = this.contentDocument || this.contentWindow.document;
+          const height = frameContent.body.scrollHeight;
+          $iframe.css('height', (height + 50) + 'px');
         } catch(e) {
-            console.error('Error adjusting iframe height:', e);
+          console.error('Error adjusting iframe height:', e);
         }
-    });
-});
+      });
+      
+      // Add a refresh button to the toolbar
+      const $toolbarDiv = $('.flex.justify-between.items-center').first();
+      
+      if ($toolbarDiv.length) {
+        $('<button>', {
+          class: 'action-btn h-6 px-2 text-xs',
+          text: 'Refresh Report',
+          click: function() {
+            $iframe[0].contentWindow.location.reload();
+          }
+        }).appendTo($toolbarDiv.first());
+      }
+    }
+  });
 </script>
 {% endblock %}

@@ -337,13 +337,31 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+  // Initialize when DOM is ready
+$(document).ready(function() {
   // Calculate runtime for running jobs using JavaScript
+  updateRuntime();
+  
+  // Update runtime immediately and then every second
+  setInterval(updateRuntime, 1000);
+  
+  // Set up cancel job button
+  setupCancelJob();
+  
+  // Set up export results button
+  setupExportResults();
+  
+  // Set up results filtering
+  setupResultsFilters();
+  
+  // Set up auto-refresh for running jobs
+  setupJobStatusPolling();
+  
   function updateRuntime() {
-    const runtimeElements = document.querySelectorAll('.runtime-calculating');
-    
-    runtimeElements.forEach(element => {
-      const startedAt = new Date(element.dataset.started);
+    $('.runtime-calculating').each(function() {
+      const $element = $(this);
+      const startedAt = new Date($element.data('started'));
+      
       if (!isNaN(startedAt.getTime())) {
         const now = new Date();
         const runtimeSeconds = Math.floor((now - startedAt) / 1000);
@@ -357,232 +375,224 @@ document.addEventListener('DOMContentLoaded', function() {
         if (minutes > 0 || hours > 0) formattedRuntime += `${minutes}m `;
         formattedRuntime += `${seconds}s`;
         
-        element.textContent = formattedRuntime;
+        $element.text(formattedRuntime);
       }
     });
   }
   
-  // Update runtime immediately and then every second
-  updateRuntime();
-  setInterval(updateRuntime, 1000);
-
-  // Set up cancel job button
-  const cancelJobBtn = document.getElementById('cancelJobBtn');
-  if (cancelJobBtn) {
-    cancelJobBtn.addEventListener('click', function() {
+  function setupCancelJob() {
+    $('#cancelJobBtn').on('click', function() {
       if (!confirm('Are you sure you want to cancel this job?')) {
         return;
       }
       
-      const jobId = this.dataset.jobId;
-      this.disabled = true;
-      this.innerHTML = `
+      const jobId = $(this).data('job-id');
+      const $btn = $(this);
+      
+      $btn.prop('disabled', true);
+      $btn.html(`
         <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>Canceling...`;
+        </svg>Canceling...`);
       
-      fetch(`/batch-analysis/job/${jobId}/cancel`, {
+      $.ajax({
+        url: `/batch-analysis/job/${jobId}/cancel`,
         method: 'POST',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
           'Content-Type': 'application/json'
         }
       })
-      .then(response => response.json())
-      .then(data => {
+      .done(function(data) {
         if (data.status === 'canceled' || data.status === 'cancelled') {
           window.location.reload();
         } else {
           alert(data.error || 'Failed to cancel job');
-          cancelJobBtn.disabled = false;
-          cancelJobBtn.innerHTML = `
-            <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-            Cancel Job`;
+          resetCancelButton($btn);
         }
       })
-      .catch(error => {
-        console.error('Error canceling job:', error);
-        alert(`Error: ${error.message}`);
-        cancelJobBtn.disabled = false;
-        cancelJobBtn.innerHTML = `
-          <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-          Cancel Job`;
+      .fail(function(jqXHR) {
+        console.error('Error canceling job:', jqXHR.statusText);
+        alert(`Error: ${jqXHR.responseJSON?.error || jqXHR.statusText}`);
+        resetCancelButton($btn);
       });
     });
   }
   
-  // Set up export results button
-  const exportResultsBtn = document.getElementById('exportResultsBtn');
-  if (exportResultsBtn) {
-    exportResultsBtn.addEventListener('click', function() {
-      const jobId = this.dataset.jobId;
+  function resetCancelButton($btn) {
+    $btn.prop('disabled', false);
+    $btn.html(`
+      <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+      Cancel Job`);
+  }
+  
+  function setupExportResults() {
+    $('#exportResultsBtn').on('click', function() {
+      const jobId = $(this).data('job-id');
       const jobName = '{{ job.name }}'.replace(/[^a-z0-9]/gi, '-');
       const dateStr = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
       const filename = `${jobName}-results-${dateStr}.csv`;
       
       // Show loading state
-      this.disabled = true;
-      this.innerHTML = `
+      const $btn = $(this);
+      $btn.prop('disabled', true);
+      $btn.html(`
         <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>Exporting...`;
+        </svg>Exporting...`);
       
-      fetch(`/batch-analysis/job/${jobId}/results`)
-        .then(response => response.json())
-        .then(data => {
-          const results = data.results || [];
-          
-          if (results.length === 0) {
-            alert('No results available to export');
-            resetExportButton();
-            return;
+      $.ajax({
+        url: `/batch-analysis/job/${jobId}/results`,
+        method: 'GET'
+      })
+      .done(function(data) {
+        const results = data.results || [];
+        
+        if (results.length === 0) {
+          alert('No results available to export');
+          resetExportButton($btn);
+          return;
+        }
+        
+        // Prepare CSV data
+        const csvData = [
+          // Header row
+          {
+            Model: 'Model',
+            App: 'App',
+            ScanType: 'Scan Type',
+            Status: 'Status',
+            High: 'High Issues',
+            Medium: 'Medium Issues',
+            Low: 'Low Issues',
+            Total: 'Total Issues',
+            ScanTime: 'Scan Time'
           }
-          
-          // Prepare CSV data
-          const csvData = [
-            // Header row
-            {
-              Model: 'Model',
-              App: 'App',
-              ScanType: 'Scan Type',
-              Status: 'Status',
-              High: 'High Issues',
-              Medium: 'Medium Issues',
-              Low: 'Low Issues',
-              Total: 'Total Issues',
-              ScanTime: 'Scan Time'
-            }
-          ];
-          
-          // Add result rows
-          results.forEach(result => {
-            csvData.push({
-              Model: result.model || '',
-              App: `App ${result.app_num || ''}`,
-              ScanType: result.scan_type || 'frontend',
-              Status: result.status || '',
-              High: result.high_severity || 0,
-              Medium: result.medium_severity || 0,
-              Low: result.low_severity || 0,
-              Total: result.issues_count || 0,
-              ScanTime: new Date(result.scan_time).toLocaleString() || 'N/A'
-            });
+        ];
+        
+        // Add result rows
+        results.forEach(function(result) {
+          csvData.push({
+            Model: result.model || '',
+            App: `App ${result.app_num || ''}`,
+            ScanType: result.scan_type || 'frontend',
+            Status: result.status || '',
+            High: result.high_severity || 0,
+            Medium: result.medium_severity || 0,
+            Low: result.low_severity || 0,
+            Total: result.issues_count || 0,
+            ScanTime: new Date(result.scan_time).toLocaleString() || 'N/A'
           });
-          
-          // Convert to CSV content
-          const csvContent = csvData.map(row => {
-            return Object.values(row).map(value => {
-              // Wrap strings with commas in quotes
-              if (typeof value === 'string' && value.includes(',')) {
-                return `"${value}"`;
-              }
-              return value;
-            }).join(',');
-          }).join('\n');
-          
-          // Create and download the file
-          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-          const url = URL.createObjectURL(blob);
-          
-          const link = document.createElement('a');
-          link.setAttribute('href', url);
-          link.setAttribute('download', filename);
-          link.style.visibility = 'hidden';
-          
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          
-          // Clean up
-          setTimeout(() => {
-            URL.revokeObjectURL(url);
-            resetExportButton();
-          }, 100);
-        })
-        .catch(error => {
-          console.error('Error exporting results:', error);
-          alert(`Error: ${error.message}`);
-          resetExportButton();
         });
-      
-      function resetExportButton() {
-        exportResultsBtn.disabled = false;
-        exportResultsBtn.innerHTML = `
-          <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-          </svg>
-          Export Results`;
-      }
+        
+        // Convert to CSV content
+        const csvContent = csvData.map(function(row) {
+          return Object.values(row).map(function(value) {
+            // Wrap strings with commas in quotes
+            if (typeof value === 'string' && value.includes(',')) {
+              return `"${value}"`;
+            }
+            return value;
+          }).join(',');
+        }).join('\n');
+        
+        // Create and download the file
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up
+        setTimeout(function() {
+          URL.revokeObjectURL(url);
+          resetExportButton($btn);
+        }, 100);
+      })
+      .fail(function(jqXHR) {
+        console.error('Error exporting results:', jqXHR.statusText);
+        alert(`Error: ${jqXHR.responseJSON?.error || jqXHR.statusText}`);
+        resetExportButton($btn);
+      });
     });
   }
   
-  // Set up results filtering
-  const searchInput = document.getElementById('searchResults');
-  const statusFilter = document.getElementById('resultStatusFilter');
-  const modelFilter = document.getElementById('resultModelFilter');
-  const scanTypeFilter = document.getElementById('resultScanTypeFilter');
-  const resultRows = document.querySelectorAll('.result-row');
-  const visibleResultsCount = document.getElementById('visibleResultsCount');
+  function resetExportButton($btn) {
+    $btn.prop('disabled', false);
+    $btn.html(`
+      <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+      </svg>
+      Export Results`);
+  }
   
-  function filterResults() {
-    const searchText = searchInput?.value?.toLowerCase() || '';
-    const selectedStatus = statusFilter?.value || 'all';
-    const selectedModel = modelFilter?.value || 'all';
-    const selectedScanType = scanTypeFilter?.value || 'all';
+  function setupResultsFilters() {
+    const $searchInput = $('#searchResults');
+    const $statusFilter = $('#resultStatusFilter');
+    const $modelFilter = $('#resultModelFilter');
+    const $scanTypeFilter = $('#resultScanTypeFilter');
+    const $resultRows = $('.result-row');
+    const $visibleResultsCount = $('#visibleResultsCount');
     
-    let visibleCount = 0;
+    function filterResults() {
+      const searchText = $searchInput.val()?.toLowerCase() || '';
+      const selectedStatus = $statusFilter.val() || 'all';
+      const selectedModel = $modelFilter.val() || 'all';
+      const selectedScanType = $scanTypeFilter.val() || 'all';
+      
+      let visibleCount = 0;
+      
+      $resultRows.each(function() {
+        const $row = $(this);
+        const model = $row.data('model')?.toLowerCase() || '';
+        const status = $row.data('status')?.toLowerCase() || '';
+        const scanType = $row.data('scan-type')?.toLowerCase() || '';
+        const searchableText = $row.data('search-text')?.toLowerCase() || $row.text().toLowerCase();
+        
+        const matchesSearch = !searchText || searchableText.includes(searchText);
+        const matchesStatus = selectedStatus === 'all' || status === selectedStatus;
+        const matchesModel = selectedModel === 'all' || model === selectedModel.toLowerCase();
+        const matchesScanType = selectedScanType === 'all' || !$scanTypeFilter.length || scanType === selectedScanType;
+        
+        const isVisible = matchesSearch && matchesStatus && matchesModel && matchesScanType;
+        $row.toggle(isVisible);
+        
+        if (isVisible) visibleCount++;
+      });
+      
+      if ($visibleResultsCount.length) {
+        $visibleResultsCount.text(visibleCount);
+      }
+    }
     
-    resultRows.forEach(row => {
-      const model = row.dataset.model?.toLowerCase() || '';
-      const status = row.dataset.status?.toLowerCase() || '';
-      const scanType = row.dataset.scanType?.toLowerCase() || '';
-      const searchableText = row.dataset.searchText?.toLowerCase() || row.textContent.toLowerCase();
-      
-      const matchesSearch = !searchText || searchableText.includes(searchText);
-      const matchesStatus = selectedStatus === 'all' || status === selectedStatus;
-      const matchesModel = selectedModel === 'all' || model === selectedModel.toLowerCase();
-      const matchesScanType = selectedScanType === 'all' || !scanTypeFilter || scanType === selectedScanType;
-      
-      const isVisible = matchesSearch && matchesStatus && matchesModel && matchesScanType;
-      row.style.display = isVisible ? '' : 'none';
-      
-      if (isVisible) visibleCount++;
-    });
-    
-    if (visibleResultsCount) {
-      visibleResultsCount.textContent = visibleCount;
+    // Add event listeners
+    $searchInput.on('input', filterResults);
+    $statusFilter.on('change', filterResults);
+    $modelFilter.on('change', filterResults);
+    if ($scanTypeFilter.length) {
+      $scanTypeFilter.on('change', filterResults);
     }
   }
   
-  // Add event listeners
-  if (searchInput) {
-    searchInput.addEventListener('input', filterResults);
-  }
-  
-  if (statusFilter) {
-    statusFilter.addEventListener('change', filterResults);
-  }
-  
-  if (modelFilter) {
-    modelFilter.addEventListener('change', filterResults);
-  }
-  
-  if (scanTypeFilter) {
-    scanTypeFilter.addEventListener('change', filterResults);
-  }
-  
-  // Auto-refresh for running jobs
-  {% if job.status == 'running' %}
-    const refreshInterval = setInterval(function() {
-      fetch('/batch-analysis/job/{{ job.id }}/status')
-        .then(response => response.json())
-        .then(data => {
+  function setupJobStatusPolling() {
+    // Only set up polling for running jobs
+    if ('{{ job.status }}' === 'running') {
+      const refreshInterval = setInterval(function() {
+        $.ajax({
+          url: '/batch-analysis/job/{{ job.id }}/status',
+          method: 'GET'
+        })
+        .done(function(data) {
           // Check if job status has changed
           if (data.status !== 'running') {
             clearInterval(refreshInterval);
@@ -591,35 +601,36 @@ document.addEventListener('DOMContentLoaded', function() {
           }
           
           // Update progress bar
-          const progressBar = document.querySelector('.bg-blue-600.rounded-full');
-          if (progressBar) {
+          const $progressBar = $('.bg-blue-600.rounded-full');
+          if ($progressBar.length) {
             const progress = data.progress?.percent || 0;
-            progressBar.style.width = `${progress}%`;
-            progressBar.textContent = `${progress}%`;
+            $progressBar.css('width', `${progress}%`);
+            $progressBar.text(`${progress}%`);
           }
           
           // Update completed tasks
-          const completedTasks = document.querySelector('.font-bold:first-of-type');
-          if (completedTasks) {
-            completedTasks.textContent = `${data.progress?.completed || 0}/${data.progress?.total || 0} tasks`;
+          const $completedTasks = $('.font-bold:first-of-type');
+          if ($completedTasks.length) {
+            $completedTasks.text(`${data.progress?.completed || 0}/${data.progress?.total || 0} tasks`);
           }
           
           // Update issues
-          const highIssues = document.querySelector('.text-red-700');
-          const mediumIssues = document.querySelector('.text-yellow-700');
-          const lowIssues = document.querySelector('.text-blue-700');
-          const totalIssues = document.querySelector('.mt-2 .font-bold');
+          const $highIssues = $('.text-red-700');
+          const $mediumIssues = $('.text-yellow-700');
+          const $lowIssues = $('.text-blue-700');
+          const $totalIssues = $('.mt-2 .font-bold');
           
-          if (highIssues) highIssues.textContent = data.results_summary?.issues?.high || 0;
-          if (mediumIssues) mediumIssues.textContent = data.results_summary?.issues?.medium || 0;
-          if (lowIssues) lowIssues.textContent = data.results_summary?.issues?.low || 0;
-          if (totalIssues) totalIssues.textContent = data.results_summary?.issues?.total || 0;
+          if ($highIssues.length) $highIssues.text(data.results_summary?.issues?.high || 0);
+          if ($mediumIssues.length) $mediumIssues.text(data.results_summary?.issues?.medium || 0);
+          if ($lowIssues.length) $lowIssues.text(data.results_summary?.issues?.low || 0);
+          if ($totalIssues.length) $totalIssues.text(data.results_summary?.issues?.total || 0);
         })
-        .catch(error => {
-          console.error('Error refreshing job status:', error);
+        .fail(function(jqXHR) {
+          console.error('Error refreshing job status:', jqXHR.statusText);
         });
-    }, 5000); // Refresh every 5 seconds
-  {% endif %}
+      }, 5000); // Refresh every 5 seconds
+    }
+  }
 });
 </script>
 {% endblock %}

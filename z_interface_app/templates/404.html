@@ -135,40 +135,34 @@
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+  $(document).ready(function() {
     // Set current time
-    const timeElement = document.getElementById('currentTime');
-    if (timeElement) {
-        timeElement.textContent = new Date().toLocaleTimeString();
-    }
+    $('#currentTime').text(new Date().toLocaleTimeString());
     
     // Set current path
-    const pathElement = document.getElementById('currentPath');
-    if (pathElement) {
-        pathElement.textContent = window.location.pathname;
-    }
+    $('#currentPath').text(window.location.pathname);
 
     // Set up glitch text
-    const glitchText = document.querySelector('.glitch-text');
-    if (glitchText) {
-        const text = glitchText.innerText;
-        glitchText.setAttribute('data-text', text);
+    const $glitchText = $('.glitch-text');
+    if ($glitchText.length) {
+        const text = $glitchText.text();
+        $glitchText.attr('data-text', text);
         
         // Random glitch effect
-        setInterval(() => {
+        setInterval(function() {
             if (Math.random() < 0.1) { // 10% chance of glitch
                 const chars = '█▓▒░█▓▒░';
-                let glitched = text.split('\n').map(line => {
+                let glitched = text.split('\n').map(function(line) {
                     if (Math.random() < 0.3) { // 30% chance to glitch each line
-                        return line.split('').map(char => 
-                            Math.random() < 0.3 ? chars[Math.floor(Math.random() * chars.length)] : char
-                        ).join('');
+                        return line.split('').map(function(char) {
+                            return Math.random() < 0.3 ? chars[Math.floor(Math.random() * chars.length)] : char;
+                        }).join('');
                     }
                     return line;
                 }).join('\n');
-                glitchText.innerText = glitched;
-                setTimeout(() => {
-                    glitchText.innerText = text;
+                $glitchText.text(glitched);
+                setTimeout(function() {
+                    $glitchText.text(text);
                 }, 100);
             }
         }, 2000);

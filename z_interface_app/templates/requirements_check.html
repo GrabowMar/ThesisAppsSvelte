@@ -84,7 +84,7 @@ The application must follow secure coding practices{% endif %}</textarea>
             </thead>
             <tbody>
               {% for result in results %}
-              <tr class="hover:bg-gray-50 cursor-pointer" onclick="toggleDetails('detail-{{ loop.index }}')">
+              <tr class="hover:bg-gray-50 cursor-pointer result-row" data-detail-id="detail-{{ loop.index }}">
                 <td class="py-2 px-4 border border-gray-300 text-xs">
                   {{ result.requirement }}
                 </td>
@@ -163,28 +163,43 @@ The application must follow secure coding practices{% endif %}</textarea>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const form = document.querySelector('form');
-  const submitBtn = document.getElementById('submitBtn');
-  
-  if (form && submitBtn) {
-    form.addEventListener('submit', function() {
-      submitBtn.innerHTML = `
-        <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>Checking...`;
-      submitBtn.disabled = true;
+// Initialize when DOM is ready
+$(document).ready(function() {
+  // Initialize core App functionality
+  if (typeof App !== 'undefined' && App.Features.requirementsAnalysis) {
+    App.Features.requirementsAnalysis.init();
+  } else {
+    // Fallback implementation if App object isn't available
+    setupRequirementsAnalysis();
+  }
+
+  function setupRequirementsAnalysis() {
+    const $form = $('form');
+    const $submitBtn = $('#submitBtn');
+    
+    // Set up form submission loading state
+    if ($form.length && $submitBtn.length) {
+      $form.on('submit', function() {
+        $submitBtn.html(`
+          <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>Checking...`);
+        $submitBtn.prop('disabled', true);
+      });
+    }
+    
+    // Set up row click handlers for toggling details using jQuery instead of inline onclick
+    $('.result-row').on('click', function() {
+      const detailId = $(this).data('detail-id');
+      $(`#${detailId}`).toggleClass('hidden');
     });
+    
+    // Keep the toggleDetails function for backward compatibility
+    window.toggleDetails = function(id) {
+      $(`#${id}`).toggleClass('hidden');
+    };
   }
 });
-
-// Function to toggle details rows
-function toggleDetails(id) {
-  const detailRow = document.getElementById(id);
-  if (detailRow) {
-    detailRow.classList.toggle('hidden');
-  }
-}
 </script>
 {% endblock %}

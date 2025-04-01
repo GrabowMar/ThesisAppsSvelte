@@ -194,343 +194,264 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // DOM Element References
-    const runTestBtn = document.getElementById('runTest');
-    const stopTestBtn = document.getElementById('stopTest');
-    const clearLogBtn = document.getElementById('clearLog');
-    const downloadReportBtn = document.getElementById('downloadReport');
-    const outputLog = document.getElementById('outputLog');
-    const progressBar = document.getElementById('progressBar');
-    const testStatusElement = document.getElementById('testStatus');
-    
-    // State variables
-    let reportPath = '';
-    let testRunning = false;
-    let progressTimer = null;
-    
-    /**
-     * Add a timestamped message to the log
-     * @param {string} message - The message to add
-     */
-    function appendToLog(message) {
-        if (!outputLog) return;
+    // Initialize when DOM is ready
+$(document).ready(function() {
+    // Initialize core App functionality
+    if (typeof App !== 'undefined' && App.Features.performanceTest) {
+      App.Features.performanceTest.init();
+    } else {
+      // Fallback implementation if App object isn't available
+      setupPerformanceTest();
+    }
+  
+    function setupPerformanceTest() {
+      // DOM Element References
+      const elements = {
+        runTestBtn: $('#runTest'),
+        stopTestBtn: $('#stopTest'),
+        clearLogBtn: $('#clearLog'),
+        downloadReportBtn: $('#downloadReport'),
+        outputLog: $('#outputLog'),
+        progressBar: $('#progressBar'),
+        testStatusElement: $('#testStatus')
+      };
+      
+      let reportPath = '';
+      let testRunning = false;
+      let progressTimer = null;
+      
+      // Add a timestamped message to the log
+      function appendToLog(message) {
+        if (!elements.outputLog.length) return;
         
         const timestamp = new Date().toLocaleTimeString();
-        outputLog.textContent += `[${timestamp}] ${message}\n`;
-        outputLog.scrollTop = outputLog.scrollHeight;
-    }
-    
-    /**
-     * Update UI with test statistics
-     * @param {Object} data - Test result data from the server
-     */
-    function updateStatistics(data) {
-        if (!data) return;
-        
-        // Update basic statistics
-        const elements = {
-            totalRequests: document.getElementById('totalRequests'),
-            totalFailures: document.getElementById('totalFailures'),
-            requestsPerSec: document.getElementById('requestsPerSec'),
-            avgResponseTime: document.getElementById('avgResponseTime'),
-            medianResponseTime: document.getElementById('medianResponseTime'),
-            percentile95: document.getElementById('percentile95'),
-            percentile99: document.getElementById('percentile99'),
-            lastRun: document.getElementById('lastRun'),
-            testStatus: document.getElementById('testStatus')
-        };
-        
-        // Basic statistics
-        if (elements.totalRequests) elements.totalRequests.textContent = data.total_requests || 0;
-        if (elements.totalFailures) elements.totalFailures.textContent = data.total_failures || 0;
-        if (elements.requestsPerSec) elements.requestsPerSec.textContent = data.requests_per_sec ? data.requests_per_sec.toFixed(2) : 0;
-        if (elements.avgResponseTime) elements.avgResponseTime.textContent = data.avg_response_time ? data.avg_response_time.toFixed(2) + ' ms' : '-';
-        if (elements.medianResponseTime) elements.medianResponseTime.textContent = data.median_response_time ? data.median_response_time.toFixed(2) + ' ms' : '-';
-        if (elements.percentile95) elements.percentile95.textContent = data.percentile_95 ? data.percentile_95.toFixed(2) + ' ms' : '-';
-        if (elements.percentile99) elements.percentile99.textContent = data.percentile_99 ? data.percentile_99.toFixed(2) + ' ms' : '-';
-        if (elements.lastRun) elements.lastRun.textContent = data.start_time || 'Never';
-        if (elements.testStatus) elements.testStatus.textContent = 'Completed';
-        
-        // Update endpoint table
-        updateEndpointTable(data.endpoints || []);
-        
-        // Update error table if errors exist
-        updateErrorTable(data.errors || []);
-        
-        // Show/hide visualization section
-        toggleVisualizationSection(data.endpoints && data.endpoints.length > 0);
-    }
-    
-    /**
-     * Update the endpoint details table
-     * @param {Array} endpoints - Array of endpoint data objects
-     */
-    function updateEndpointTable(endpoints) {
-        const endpointTable = document.getElementById('endpointTableBody');
-        if (!endpointTable) return;
-        
-        endpointTable.innerHTML = '';
-        
-        if (endpoints && endpoints.length > 0) {
-            endpoints.forEach(endpoint => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="border border-gray-300 px-2 py-1 text-xs">${endpoint.name || ''}</td>
-                    <td class="border border-gray-300 px-2 py-1 text-xs">${endpoint.method || ''}</td>
-                    <td class="border border-gray-300 px-2 py-1 text-xs text-right">${endpoint.num_requests || 0}</td>
-                    <td class="border border-gray-300 px-2 py-1 text-xs text-right">${endpoint.num_failures || 0}</td>
-                    <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.median_response_time || 0).toFixed(2)}</td>
-                    <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.avg_response_time || 0).toFixed(2)}</td>
-                    <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.min_response_time || 0).toFixed(2)}</td>
-                    <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.max_response_time || 0).toFixed(2)}</td>
-                    <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.current_rps || 0).toFixed(2)}</td>
-                `;
-                endpointTable.appendChild(row);
-            });
-        } else {
-            endpointTable.innerHTML = `<tr><td colspan="9" class="border border-gray-300 px-2 py-1 text-xs text-center">No endpoint data available</td></tr>`;
-        }
-    }
-    
-    /**
-     * Update the error details table
-     * @param {Array} errors - Array of error data objects
-     */
-    function updateErrorTable(errors) {
-        const errorSection = document.getElementById('errorSection');
-        const errorTable = document.getElementById('errorTableBody');
-        if (!errorSection || !errorTable) return;
-        
-        if (errors && errors.length > 0) {
-            errorSection.classList.remove('hidden');
-            errorTable.innerHTML = '';
-            
-            errors.forEach(error => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="border border-gray-300 px-2 py-1 text-xs text-red-600">${error.error_type || 'Unknown'}</td>
-                    <td class="border border-gray-300 px-2 py-1 text-xs text-right">${error.count || 0}</td>
-                    <td class="border border-gray-300 px-2 py-1 text-xs">${error.endpoint || ''}</td>
-                    <td class="border border-gray-300 px-2 py-1 text-xs">${error.method || ''}</td>
-                    <td class="border border-gray-300 px-2 py-1 text-xs">${error.description || ''}</td>
-                `;
-                errorTable.appendChild(row);
-            });
-        } else {
-            errorSection.classList.add('hidden');
-        }
-    }
-    
-    /**
-     * Toggle visibility of the visualization section
-     * @param {boolean} show - Whether to show the section
-     */
-    function toggleVisualizationSection(show) {
-        const visualizationSection = document.getElementById('visualizationSection');
-        if (!visualizationSection) return;
-        
-        if (show) {
-            visualizationSection.classList.remove('hidden');
-            // Could implement visualization rendering here
-        } else {
-            visualizationSection.classList.add('hidden');
-        }
-    }
-    
-    /**
-     * Update the progress bar
-     * @param {number} percentage - Progress percentage (0-100)
-     */
-    function updateProgress(percentage) {
-        if (!progressBar) return;
-        progressBar.style.width = `${Math.min(Math.max(percentage, 0), 100)}%`;
-    }
-    
-    /**
-     * Simulate progress during test execution
-     * @param {number} duration - Test duration in seconds
-     * @returns {number} Timer ID for cleanup
-     */
-    function simulateProgress(duration) {
+        elements.outputLog.append(`[${timestamp}] ${message}\n`);
+        elements.outputLog.scrollTop(elements.outputLog[0].scrollHeight);
+      }
+      
+      // Update the progress bar
+      function updateProgress(percentage) {
+        if (!elements.progressBar.length) return;
+        elements.progressBar.css('width', `${Math.min(Math.max(percentage, 0), 100)}%`);
+      }
+      
+      // Simulate progress during test execution
+      function simulateProgress(duration) {
         if (progressTimer) {
-            clearInterval(progressTimer);
+          clearInterval(progressTimer);
         }
         
         let elapsed = 0;
         const interval = 1000; // Update every second
         updateProgress(0);
         
-        const timer = setInterval(() => {
-            elapsed += interval;
-            const percentage = Math.min(Math.floor((elapsed / (duration * 1000)) * 100), 95);
-            updateProgress(percentage);
-            
-            if (elapsed >= duration * 1000 || !testRunning) {
-                clearInterval(timer);
-            }
+        progressTimer = setInterval(() => {
+          elapsed += interval;
+          const percentage = Math.min(Math.floor((elapsed / (duration * 1000)) * 100), 95);
+          updateProgress(percentage);
+          
+          if (elapsed >= duration * 1000 || !testRunning) {
+            clearInterval(progressTimer);
+          }
         }, interval);
         
-        return timer;
-    }
-    
-    /**
-     * Handle running a performance test
-     */
-    async function handleRunTest() {
-        const numUsersElement = document.getElementById('numUsers');
-        const durationElement = document.getElementById('duration');
-        const spawnRateElement = document.getElementById('spawnRate');
+        return progressTimer;
+      }
+      
+      // Handle running a performance test
+      function handleRunTest() {
+        const numUsers = parseInt($('#numUsers').val()) || 10;
+        const duration = parseInt($('#duration').val()) || 30;
+        const spawnRate = parseInt($('#spawnRate').val()) || 1;
         
-        if (!numUsersElement || !durationElement || !spawnRateElement) {
-            appendToLog('Error: Could not find input elements');
-            return;
+        testRunning = true;
+        elements.runTestBtn.prop('disabled', true);
+        elements.stopTestBtn.removeClass('hidden');
+        
+        if (elements.testStatusElement.length) {
+          elements.testStatusElement.text('Running...');
         }
         
-        const numUsers = parseInt(numUsersElement.value) || 10;
-        const duration = parseInt(durationElement.value) || 30;
-        const spawnRate = parseInt(spawnRateElement.value) || 1;
+        appendToLog(`Starting performance test with ${numUsers} users, ${duration}s duration, and ${spawnRate} spawn rate`);
         
-        try {
-            testRunning = true;
-            runTestBtn.disabled = true;
-            stopTestBtn.classList.remove('hidden');
+        // Reset progress and start simulation
+        updateProgress(0);
+        progressTimer = simulateProgress(duration);
+        
+        // Make API request to the current URL
+        $.ajax({
+          url: window.location.href,
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({
+            num_users: numUsers,
+            duration: duration,
+            spawn_rate: spawnRate,
+            endpoints: ["/", "/api/status"]
+          })
+        })
+        .done(function(result) {
+          testRunning = false;
+          
+          if (result.status === 'success') {
+            updateProgress(100);
+            updateStatistics(result.data);
+            appendToLog('Test completed successfully');
             
-            if (testStatusElement) {
-                testStatusElement.textContent = 'Running...';
+            // If a report path is available, enable the download button
+            if (result.report_path) {
+              reportPath = result.report_path;
+              elements.downloadReportBtn.removeClass('hidden');
             }
-            
-            appendToLog(`Starting performance test with ${numUsers} users, ${duration}s duration, and ${spawnRate} spawn rate`);
-            
-            // Reset progress and start simulation
-            updateProgress(0);
-            progressTimer = simulateProgress(duration);
-            
-            // Make API request to the current URL
-            const response = await fetch(window.location.href, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    num_users: numUsers,
-                    duration: duration,
-                    spawn_rate: spawnRate,
-                    endpoints: ["/", "/api/status"] // Add more endpoints as needed
-                })
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || `HTTP error ${response.status}`);
-            }
-            
-            const result = await response.json();
-            testRunning = false;
-            
-            if (result.status === 'success') {
-                updateProgress(100);
-                updateStatistics(result.data);
-                appendToLog('Test completed successfully');
-                
-                // If a report path is available, enable the download button
-                if (result.report_path) {
-                    reportPath = result.report_path;
-                    downloadReportBtn.classList.remove('hidden');
-                }
-            } else {
-                throw new Error(result.error || 'Test failed with unknown error');
-            }
-        } catch (error) {
-            testRunning = false;
-            updateProgress(0);
-            
-            if (testStatusElement) {
-                testStatusElement.textContent = 'Failed';
-            }
-            
-            appendToLog(`Error: ${error.message || 'Unknown error occurred'}`);
-        } finally {
-            if (runTestBtn) {
-                runTestBtn.disabled = false;
-            }
-            
-            if (stopTestBtn) {
-                stopTestBtn.classList.add('hidden');
-            }
+          } else {
+            throw new Error(result.error || 'Test failed with unknown error');
+          }
+        })
+        .fail(function(jqXHR) {
+          testRunning = false;
+          updateProgress(0);
+          
+          if (elements.testStatusElement.length) {
+            elements.testStatusElement.text('Failed');
+          }
+          
+          const errorMsg = jqXHR.responseJSON?.error || jqXHR.statusText || 'Unknown error occurred';
+          appendToLog(`Error: ${errorMsg}`);
+        })
+        .always(function() {
+          elements.runTestBtn.prop('disabled', false);
+          elements.stopTestBtn.addClass('hidden');
+        });
+      }
+      
+      // Handle stopping a running test
+      function handleStopTest() {
+        testRunning = false;
+        appendToLog('Attempting to stop the test...');
+        
+        $.ajax({
+          url: `${window.location.href}/stop`,
+          method: 'POST'
+        })
+        .done(function() {
+          appendToLog('Test stopped successfully');
+          
+          if (elements.testStatusElement.length) {
+            elements.testStatusElement.text('Stopped');
+          }
+        })
+        .fail(function(jqXHR) {
+          const errorMsg = jqXHR.responseJSON?.error || 'Unknown error';
+          appendToLog(`Failed to stop test: ${errorMsg}`);
+        })
+        .always(function() {
+          elements.runTestBtn.prop('disabled', false);
+          elements.stopTestBtn.addClass('hidden');
+        });
+      }
+      
+      // Handle clearing the log output
+      function handleClearLog() {
+        if (elements.outputLog.length) {
+          elements.outputLog.text('');
         }
-    }
-    
-    /**
-     * Handle stopping a running test
-     */
-    async function handleStopTest() {
-        try {
-            testRunning = false;
-            appendToLog('Attempting to stop the test...');
-            
-            // Send request to stop the test
-            const response = await fetch(`${window.location.href}/stop`, {
-                method: 'POST'
-            });
-            
-            if (response.ok) {
-                appendToLog('Test stopped successfully');
-                
-                if (testStatusElement) {
-                    testStatusElement.textContent = 'Stopped';
-                }
-            } else {
-                const errorData = await response.json().catch(() => ({}));
-                appendToLog(`Failed to stop test: ${errorData.error || 'Unknown error'}`);
-            }
-        } catch (error) {
-            appendToLog(`Error stopping test: ${error.message || 'Unknown error'}`);
-        } finally {
-            if (runTestBtn) {
-                runTestBtn.disabled = false;
-            }
-            
-            if (stopTestBtn) {
-                stopTestBtn.classList.add('hidden');
-            }
-        }
-    }
-    
-    /**
-     * Handle clearing the log output
-     */
-    function handleClearLog() {
-        if (outputLog) {
-            outputLog.textContent = '';
-        }
-    }
-    
-    /**
-     * Handle downloading the test report
-     */
-    function handleDownloadReport() {
+      }
+      
+      // Handle downloading the test report
+      function handleDownloadReport() {
         if (reportPath) {
-            window.open(reportPath, '_blank');
+          window.open(reportPath, '_blank');
         } else {
-            appendToLog('Error: No report available to download');
+          appendToLog('Error: No report available to download');
         }
+      }
+      
+      // Update UI with test statistics
+      function updateStatistics(data) {
+        if (!data) return;
+        
+        // Update basic statistics
+        $('#totalRequests').text(data.total_requests || 0);
+        $('#totalFailures').text(data.total_failures || 0);
+        $('#requestsPerSec').text(data.requests_per_sec ? data.requests_per_sec.toFixed(2) : 0);
+        $('#avgResponseTime').text(data.avg_response_time ? data.avg_response_time.toFixed(2) + ' ms' : '-');
+        $('#medianResponseTime').text(data.median_response_time ? data.median_response_time.toFixed(2) + ' ms' : '-');
+        $('#percentile95').text(data.percentile_95 ? data.percentile_95.toFixed(2) + ' ms' : '-');
+        $('#percentile99').text(data.percentile_99 ? data.percentile_99.toFixed(2) + ' ms' : '-');
+        $('#lastRun').text(data.start_time || 'Never');
+        $('#testStatus').text('Completed');
+        
+        // Update endpoint table
+        updateEndpointTable(data.endpoints || []);
+        
+        // Update error table
+        updateErrorTable(data.errors || []);
+        
+        // Show/hide visualization section
+        $('#visualizationSection').toggleClass('hidden', !(data.endpoints && data.endpoints.length > 0));
+      }
+      
+      // Update the endpoint details table
+      function updateEndpointTable(endpoints) {
+        const $tableBody = $('#endpointTableBody');
+        if (!$tableBody.length) return;
+        
+        $tableBody.empty();
+        
+        if (endpoints && endpoints.length > 0) {
+          $.each(endpoints, function(index, endpoint) {
+            const $row = $('<tr>');
+            $row.html(`
+              <td class="border border-gray-300 px-2 py-1 text-xs">${endpoint.name || ''}</td>
+              <td class="border border-gray-300 px-2 py-1 text-xs">${endpoint.method || ''}</td>
+              <td class="border border-gray-300 px-2 py-1 text-xs text-right">${endpoint.num_requests || 0}</td>
+              <td class="border border-gray-300 px-2 py-1 text-xs text-right">${endpoint.num_failures || 0}</td>
+              <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.median_response_time || 0).toFixed(2)}</td>
+              <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.avg_response_time || 0).toFixed(2)}</td>
+              <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.min_response_time || 0).toFixed(2)}</td>
+              <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.max_response_time || 0).toFixed(2)}</td>
+              <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.current_rps || 0).toFixed(2)}</td>
+            `);
+            $tableBody.append($row);
+          });
+        } else {
+          $tableBody.html(`<tr><td colspan="9" class="border border-gray-300 px-2 py-1 text-xs text-center">No endpoint data available</td></tr>`);
+        }
+      }
+      
+      // Update the error details table
+      function updateErrorTable(errors) {
+        const $errorSection = $('#errorSection');
+        const $errorTable = $('#errorTableBody');
+        
+        if (!$errorSection.length || !$errorTable.length) return;
+        
+        if (errors && errors.length > 0) {
+          $errorSection.removeClass('hidden');
+          $errorTable.empty();
+          
+          $.each(errors, function(index, error) {
+            const $row = $('<tr>');
+            $row.html(`
+              <td class="border border-gray-300 px-2 py-1 text-xs text-red-600">${error.error_type || 'Unknown'}</td>
+              <td class="border border-gray-300 px-2 py-1 text-xs text-right">${error.count || 0}</td>
+              <td class="border border-gray-300 px-2 py-1 text-xs">${error.endpoint || ''}</td>
+              <td class="border border-gray-300 px-2 py-1 text-xs">${error.method || ''}</td>
+              <td class="border border-gray-300 px-2 py-1 text-xs">${error.description || ''}</td>
+            `);
+            $errorTable.append($row);
+          });
+        } else {
+          $errorSection.addClass('hidden');
+        }
+      }
+      
+      // Set up event listeners
+      elements.runTestBtn.on('click', handleRunTest);
+      elements.stopTestBtn.on('click', handleStopTest);
+      elements.clearLogBtn.on('click', handleClearLog);
+      elements.downloadReportBtn.on('click', handleDownloadReport);
     }
-    
-    // Set up event listeners
-    if (runTestBtn) {
-        runTestBtn.addEventListener('click', handleRunTest);
-    }
-    
-    if (stopTestBtn) {
-        stopTestBtn.addEventListener('click', handleStopTest);
-    }
-    
-    if (clearLogBtn) {
-        clearLogBtn.addEventListener('click', handleClearLog);
-    }
-    
-    if (downloadReportBtn) {
-        downloadReportBtn.addEventListener('click', handleDownloadReport);
-    }
-});
+  });
 </script>
 {% endblock %}

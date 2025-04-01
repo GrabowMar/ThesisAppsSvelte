@@ -106,87 +106,100 @@
 </div><!-- End unified container -->
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+// Initialize when DOM is ready
+$(document).ready(function() {
   let refreshInterval;
-  const copyBtns = document.querySelectorAll('.copy-logs-btn');
-  const refreshBtn = document.getElementById('refreshLogs');
-  const refreshIntervalSelect = document.getElementById('refreshInterval');
-  const logLevelSelect = document.getElementById('logLevel');
-
-  // Copy logs functionality
-  copyBtns.forEach(btn => {
-    btn.addEventListener('click', function() {
-      const targetId = this.dataset.target;
-      const logsText = document.querySelector(`#${targetId} pre code`).textContent;
-      navigator.clipboard.writeText(logsText).then(() => {
-        const notification = document.querySelector(`#${targetId} .absolute`);
-        notification.classList.remove('hidden');
-        setTimeout(() => {
-          notification.classList.add('hidden');
-        }, 2000);
-      });
+  
+  // Set up copy buttons functionality
+  $('.copy-logs-btn').on('click', function() {
+    const targetId = $(this).data('target');
+    const logsText = $(`#${targetId} pre code`).text();
+    
+    // Use clipboard API to copy text
+    navigator.clipboard.writeText(logsText).then(function() {
+      const $notification = $(`#${targetId} .absolute`);
+      $notification.removeClass('hidden');
+      setTimeout(function() {
+        $notification.addClass('hidden');
+      }, 2000);
     });
   });
 
-  // Refresh logs functionality
+  // Set up refresh logs functionality
   function refreshLogs() {
-    fetch(window.location.href)
-      .then(response => response.text())
-      .then(html => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        // Update backend logs
-        const backendLogs = doc.querySelector('#backendLogs pre code');
-        document.querySelector('#backendLogs pre code').textContent = backendLogs.textContent;
-        // Update frontend logs
-        const frontendLogs = doc.querySelector('#frontendLogs pre code');
-        document.querySelector('#frontendLogs pre code').textContent = frontendLogs.textContent;
-      })
-      .catch(error => console.error('Error refreshing logs:', error));
+    $.ajax({
+      url: window.location.href,
+      method: 'GET'
+    })
+    .done(function(html) {
+      const $parsedHtml = $(html);
+      
+      // Update backend logs
+      const backendLogs = $parsedHtml.find('#backendLogs pre code').text();
+      $('#backendLogs pre code').text(backendLogs);
+      
+      // Update frontend logs
+      const frontendLogs = $parsedHtml.find('#frontendLogs pre code').text();
+      $('#frontendLogs pre code').text(frontendLogs);
+    })
+    .fail(function(jqXHR) {
+      console.error('Error refreshing logs:', jqXHR.statusText);
+    });
   }
 
-  // Manual refresh
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', refreshLogs);
-  }
+  // Manual refresh button
+  $('#refreshLogs').on('click', refreshLogs);
 
   // Auto-refresh interval handling
-  refreshIntervalSelect.addEventListener('change', function() {
+  $('#refreshInterval').on('change', function() {
     if (refreshInterval) clearInterval(refreshInterval);
-    const interval = parseInt(this.value, 10);
-    if (interval > 0) refreshInterval = setInterval(refreshLogs, interval);
+    
+    const interval = parseInt($(this).val(), 10);
+    if (interval > 0) {
+      refreshInterval = setInterval(refreshLogs, interval);
+    }
   });
 
   // Log level filtering
-  logLevelSelect.addEventListener('change', function() {
-    const level = this.value.toLowerCase();
-    const logContainers = document.querySelectorAll('pre code');
-    logContainers.forEach(container => {
-      if (!container.dataset.fullText) {
-        container.dataset.fullText = container.textContent;
+  $('#logLevel').on('change', function() {
+    const level = $(this).val().toLowerCase();
+    
+    $('pre code').each(function() {
+      const $code = $(this);
+      
+      if (!$code.data('fullText')) {
+        $code.data('fullText', $code.text());
       }
-      const fullText = container.dataset.fullText;
+      
+      const fullText = $code.data('fullText');
+      
       if (level === 'all') {
-        container.textContent = fullText;
+        $code.text(fullText);
       } else {
         const lines = fullText.split('\n');
-        const filtered = lines.filter(line => line.toLowerCase().includes(level));
-        container.textContent = filtered.join('\n');
+        const filtered = lines.filter(function(line) {
+          return line.toLowerCase().includes(level);
+        });
+        $code.text(filtered.join('\n'));
       }
     });
   });
 
   // Initialize auto-refresh if an interval is set by default
-  const initialInterval = parseInt(refreshIntervalSelect.value, 10);
-  if (initialInterval > 0) refreshInterval = setInterval(refreshLogs, initialInterval);
+  const initialInterval = parseInt($('#refreshInterval').val(), 10);
+  if (initialInterval > 0) {
+    refreshInterval = setInterval(refreshLogs, initialInterval);
+  }
 
   // Pause auto-refresh when page is hidden
-  document.addEventListener('visibilitychange', function() {
+  $(document).on('visibilitychange', function() {
     if (document.hidden) {
       if (refreshInterval) clearInterval(refreshInterval);
     } else {
-      const interval = parseInt(refreshIntervalSelect.value, 10);
-      if (interval > 0) refreshInterval = setInterval(refreshLogs, interval);
+      const interval = parseInt($('#refreshInterval').val(), 10);
+      if (interval > 0) {
+        refreshInterval = setInterval(refreshLogs, interval);
+      }
     }
   });
 });
