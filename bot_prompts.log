@@ -5513,3 +5513,770 @@ Stacktrace:
 [2025-04-01 07:24:00] INFO: Saved new prompt for Grok/app19
 [2025-04-01 07:24:04] INFO: Saved new prompt for Grok/app20
 [2025-04-01 07:24:04] INFO: Saved new prompt for Grok/app20
+[2025-04-01 07:31:25] INFO: Loaded and copied template: app_20_map.md
+[2025-04-01 07:31:25] INFO: Looking for template for app: app2
+[2025-04-01 07:31:25] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:31:25] INFO: Found matching template: app_2_chat.md
+[2025-04-01 07:31:25] INFO: Loaded and copied template: app_2_chat.md
+[2025-04-01 07:31:26] INFO: Looking for template for app: app1
+[2025-04-01 07:31:26] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:31:26] INFO: Found matching template: app_1_login.md
+[2025-04-01 07:31:26] INFO: Loaded and copied template: app_1_login.md
+[2025-04-01 07:31:26] INFO: Looking for template for app: app2
+[2025-04-01 07:31:26] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:31:26] INFO: Found matching template: app_2_chat.md
+[2025-04-01 07:31:26] INFO: Loaded and copied template: app_2_chat.md
+[2025-04-01 07:31:27] INFO: Looking for template for app: app1
+[2025-04-01 07:31:27] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:31:27] INFO: Found matching template: app_1_login.md
+[2025-04-01 07:31:27] INFO: Loaded and copied template: app_1_login.md
+[2025-04-01 07:33:04] INFO: Loaded and copied template: app_1_login.md
+[2025-04-01 07:33:16] INFO: Looking for template for app: app2
+[2025-04-01 07:33:16] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:33:16] INFO: Found matching template: app_2_chat.md
+[2025-04-01 07:33:16] INFO: Loaded and copied template: app_2_chat.md
+[2025-04-01 07:33:17] INFO: Loaded and copied template: app_2_chat.md
+[2025-04-01 07:33:31] INFO: Looking for template for app: app3
+[2025-04-01 07:33:31] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:33:31] INFO: Found matching template: app_3_feedback.md
+[2025-04-01 07:33:31] INFO: Loaded and copied template: app_3_feedback.md
+[2025-04-01 07:33:31] INFO: Loaded and copied template: app_3_feedback.md
+[2025-04-01 07:33:39] INFO: Looking for template for app: app4
+[2025-04-01 07:33:39] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:33:39] INFO: Found matching template: app_4_blog.md
+[2025-04-01 07:33:39] INFO: Loaded and copied template: app_4_blog.md
+[2025-04-01 07:33:39] INFO: Loaded and copied template: app_4_blog.md
+[2025-04-01 07:33:45] INFO: Looking for template for app: app5
+[2025-04-01 07:33:45] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:33:45] INFO: Found matching template: app_5_cart.md
+[2025-04-01 07:33:45] INFO: Loaded and copied template: app_5_cart.md
+[2025-04-01 07:33:46] INFO: Loaded and copied template: app_5_cart.md
+[2025-04-01 07:33:53] INFO: Looking for template for app: app4
+[2025-04-01 07:33:53] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:33:53] INFO: Found matching template: app_4_blog.md
+[2025-04-01 07:33:53] INFO: Loaded and copied template: app_4_blog.md
+[2025-04-01 07:33:53] INFO: Looking for template for app: app3
+[2025-04-01 07:33:53] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:33:53] INFO: Found matching template: app_3_feedback.md
+[2025-04-01 07:33:53] INFO: Loaded and copied template: app_3_feedback.md
+[2025-04-01 07:33:53] INFO: Looking for template for app: app2
+[2025-04-01 07:33:53] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:33:53] INFO: Found matching template: app_2_chat.md
+[2025-04-01 07:33:53] INFO: Loaded and copied template: app_2_chat.md
+[2025-04-01 07:33:54] INFO: Looking for template for app: app1
+[2025-04-01 07:33:54] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:33:54] INFO: Found matching template: app_1_login.md
+[2025-04-01 07:33:54] INFO: Loaded and copied template: app_1_login.md
+[2025-04-01 07:33:57] INFO: Pasted directly to R1\app1\backend\app.py
+[2025-04-01 07:34:02] INFO: Pasted directly to R1\app1\backend\requirements.txt
+[2025-04-01 07:34:05] INFO: Pasted directly to R1\app1\frontend\src\App.jsx
+[2025-04-01 07:34:11] INFO: Pasted directly to R1\app1\frontend\src\App.css
+[2025-04-01 07:34:15] INFO: Pasted directly to R1\app1\frontend\vite.config.js
+[2025-04-01 07:34:18] INFO: Pasted directly to R1\app1\frontend\src\index.html
+[2025-04-01 07:34:30] INFO: Pasted directly to R1\app1\backend\requirements.txt
+[2025-04-01 07:34:34] INFO: Looking for template for app: app2
+[2025-04-01 07:34:34] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:34:34] INFO: Found matching template: app_2_chat.md
+[2025-04-01 07:34:34] INFO: Loaded and copied template: app_2_chat.md
+[2025-04-01 07:34:56] INFO: Pasted directly to R1\app2\backend\app.py
+[2025-04-01 07:35:03] INFO: Pasted directly to R1\app2\backend\requirements.txt
+[2025-04-01 07:35:10] INFO: Pasted directly to R1\app2\frontend\src\App.jsx
+[2025-04-01 07:35:16] INFO: Pasted directly to R1\app2\frontend\src\App.css
+[2025-04-01 07:35:21] INFO: Pasted directly to R1\app2\frontend\vite.config.js
+[2025-04-01 07:35:25] INFO: Pasted directly to R1\app2\frontend\package.json
+[2025-04-01 07:35:34] INFO: Loaded and copied template: app_2_chat.md
+[2025-04-01 07:36:07] INFO: Looking for template for app: app3
+[2025-04-01 07:36:07] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:36:07] INFO: Found matching template: app_3_feedback.md
+[2025-04-01 07:36:07] INFO: Loaded and copied template: app_3_feedback.md
+[2025-04-01 07:36:11] INFO: Pasted directly to R1\app3\backend\app.py
+[2025-04-01 07:36:17] INFO: Pasted directly to R1\app3\frontend\src\App.jsx
+[2025-04-01 07:36:21] INFO: Pasted directly to R1\app3\frontend\src\App.css
+[2025-04-01 07:36:26] INFO: Pasted directly to R1\app3\backend\requirements.txt
+[2025-04-01 07:36:31] INFO: Pasted directly to R1\app3\frontend\vite.config.js
+[2025-04-01 07:36:35] INFO: Pasted directly to R1\app3\frontend\package.json
+[2025-04-01 07:36:50] INFO: Pasted directly to R1\app3\backend\requirements.txt
+[2025-04-01 07:36:52] INFO: Looking for template for app: app4
+[2025-04-01 07:36:52] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:36:52] INFO: Found matching template: app_4_blog.md
+[2025-04-01 07:36:52] INFO: Loaded and copied template: app_4_blog.md
+[2025-04-01 07:37:09] INFO: Loaded and copied template: app_4_blog.md
+[2025-04-01 07:37:35] INFO: Pasted directly to R1\app4\backend\app.py
+[2025-04-01 07:37:40] INFO: Pasted directly to R1\app4\backend\requirements.txt
+[2025-04-01 07:37:44] INFO: Pasted directly to R1\app4\frontend\src\App.jsx
+[2025-04-01 07:37:49] INFO: Pasted directly to R1\app4\frontend\package.json
+[2025-04-01 07:37:54] INFO: Pasted directly to R1\app4\frontend\src\App.css
+[2025-04-01 07:37:58] INFO: Pasted directly to R1\app4\frontend\vite.config.js
+[2025-04-01 07:38:38] INFO: Looking for template for app: app5
+[2025-04-01 07:38:38] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:38:38] INFO: Found matching template: app_5_cart.md
+[2025-04-01 07:38:38] INFO: Loaded and copied template: app_5_cart.md
+[2025-04-01 07:38:51] INFO: Pasted directly to R1\app5\frontend\package.json
+[2025-04-01 07:39:02] INFO: Pasted directly to R1\app5\backend\app.py
+[2025-04-01 07:39:05] INFO: Looking for template for app: app4
+[2025-04-01 07:39:05] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:39:05] INFO: Found matching template: app_4_blog.md
+[2025-04-01 07:39:05] INFO: Loaded and copied template: app_4_blog.md
+[2025-04-01 07:39:10] INFO: Pasted directly to R1\app4\backend\app.py
+[2025-04-01 07:39:15] INFO: Pasted directly to R1\app4\frontend\package.json
+[2025-04-01 07:39:23] INFO: Pasted directly to R1\app4\frontend\src\App.jsx
+[2025-04-01 07:40:04] INFO: Pasted directly to R1\app4\backend\app.py
+[2025-04-01 07:40:10] INFO: Pasted directly to R1\app4\backend\requirements.txt
+[2025-04-01 07:40:16] INFO: Looking for template for app: app5
+[2025-04-01 07:40:16] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:40:16] INFO: Found matching template: app_5_cart.md
+[2025-04-01 07:40:16] INFO: Loaded and copied template: app_5_cart.md
+[2025-04-01 07:40:19] INFO: Pasted directly to R1\app5\backend\app.py
+[2025-04-01 07:40:25] INFO: Pasted directly to R1\app5\frontend\src\App.jsx
+[2025-04-01 07:40:29] INFO: Pasted directly to R1\app5\frontend\src\App.css
+[2025-04-01 07:40:34] INFO: Pasted directly to R1\app5\backend\requirements.txt
+[2025-04-01 07:40:38] INFO: Pasted directly to R1\app5\frontend\vite.config.js
+[2025-04-01 07:40:41] INFO: Pasted directly to R1\app5\frontend\package.json
+[2025-04-01 07:41:05] INFO: Looking for template for app: app4
+[2025-04-01 07:41:05] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:41:05] INFO: Found matching template: app_4_blog.md
+[2025-04-01 07:41:05] INFO: Loaded and copied template: app_4_blog.md
+[2025-04-01 07:41:06] INFO: Loaded and copied template: app_4_blog.md
+[2025-04-01 07:41:36] INFO: Updated prompt 54
+[2025-04-01 07:41:36] INFO: Updated prompt 54
+[2025-04-01 07:41:41] INFO: Saved new prompt for R1/app2
+[2025-04-01 07:41:41] INFO: Saved new prompt for R1/app2
+[2025-04-01 07:41:46] INFO: Saved new prompt for R1/app3
+[2025-04-01 07:41:46] INFO: Saved new prompt for R1/app3
+[2025-04-01 07:41:58] INFO: Saved new prompt for R1/app5
+[2025-04-01 07:41:58] INFO: Saved new prompt for R1/app5
+[2025-04-01 07:42:05] INFO: Looking for template for app: app5
+[2025-04-01 07:42:05] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:42:05] INFO: Found matching template: app_5_cart.md
+[2025-04-01 07:42:05] INFO: Loaded and copied template: app_5_cart.md
+[2025-04-01 07:42:05] INFO: Looking for template for app: app4
+[2025-04-01 07:42:05] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:42:05] INFO: Found matching template: app_4_blog.md
+[2025-04-01 07:42:05] INFO: Loaded and copied template: app_4_blog.md
+[2025-04-01 07:42:12] INFO: Pasted directly to R1\app4\backend\app.py
+[2025-04-01 07:42:17] INFO: Pasted directly to R1\app4\backend\requirements.txt
+[2025-04-01 07:42:20] INFO: Pasted directly to R1\app4\frontend\src\App.jsx
+[2025-04-01 07:42:25] INFO: Pasted directly to R1\app4\frontend\src\App.css
+[2025-04-01 07:42:30] INFO: Pasted directly to R1\app4\frontend\package.json
+[2025-04-01 07:42:33] INFO: Pasted directly to R1\app4\frontend\vite.config.js
+[2025-04-01 07:42:46] INFO: Saved new prompt for R1/app4
+[2025-04-01 07:42:46] INFO: Saved new prompt for R1/app4
+[2025-04-01 07:43:25] INFO: Looking for template for app: app5
+[2025-04-01 07:43:25] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:43:25] INFO: Found matching template: app_5_cart.md
+[2025-04-01 07:43:25] INFO: Loaded and copied template: app_5_cart.md
+[2025-04-01 07:43:25] INFO: Looking for template for app: app6
+[2025-04-01 07:43:25] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 07:43:25] INFO: Found matching template: app_6_notes.md
+[2025-04-01 07:43:25] INFO: Loaded and copied template: app_6_notes.md
+[2025-04-01 07:43:26] INFO: Loaded and copied template: app_6_notes.md
+[2025-04-01 08:01:51] INFO: Loaded and copied template: app_6_notes.md
+[2025-04-01 08:01:58] INFO: Loaded and copied template: app_7_fileUpload.md
+[2025-04-01 08:02:00] INFO: Looking for template for app: app7
+[2025-04-01 08:02:00] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:02:00] INFO: Found matching template: app_7_fileUpload.md
+[2025-04-01 08:02:00] INFO: Loaded and copied template: app_7_fileUpload.md
+[2025-04-01 08:02:01] INFO: Loaded and copied template: app_7_fileUpload.md
+[2025-04-01 08:02:03] INFO: Looking for template for app: app8
+[2025-04-01 08:02:03] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:02:03] INFO: Found matching template: app_8_forum.md
+[2025-04-01 08:02:03] INFO: Loaded and copied template: app_8_forum.md
+[2025-04-01 08:02:03] INFO: Looking for template for app: app7
+[2025-04-01 08:02:03] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:02:03] INFO: Found matching template: app_7_fileUpload.md
+[2025-04-01 08:02:03] INFO: Loaded and copied template: app_7_fileUpload.md
+[2025-04-01 08:02:04] INFO: Loaded and copied template: app_7_fileUpload.md
+[2025-04-01 08:02:09] INFO: Looking for template for app: app8
+[2025-04-01 08:02:09] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:02:09] INFO: Found matching template: app_8_forum.md
+[2025-04-01 08:02:09] INFO: Loaded and copied template: app_8_forum.md
+[2025-04-01 08:02:10] INFO: Loaded and copied template: app_8_forum.md
+[2025-04-01 08:02:13] INFO: Looking for template for app: app9
+[2025-04-01 08:02:13] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:02:13] INFO: Found matching template: app_9_crud.md
+[2025-04-01 08:02:13] INFO: Loaded and copied template: app_9_crud.md
+[2025-04-01 08:02:14] INFO: Loaded and copied template: app_9_crud.md
+[2025-04-01 08:02:18] INFO: Looking for template for app: app10
+[2025-04-01 08:02:18] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:02:18] INFO: Found matching template: app_10_microblog.md
+[2025-04-01 08:02:18] INFO: Loaded and copied template: app_10_microblog.md
+[2025-04-01 08:02:19] INFO: Loaded and copied template: app_10_microblog.md
+[2025-04-01 08:05:49] INFO: Looking for template for app: app11
+[2025-04-01 08:05:49] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:05:49] INFO: Found matching template: app_11_polling.md
+[2025-04-01 08:05:49] INFO: Loaded and copied template: app_11_polling.md
+[2025-04-01 08:05:49] INFO: Looking for template for app: app10
+[2025-04-01 08:05:49] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:05:49] INFO: Found matching template: app_10_microblog.md
+[2025-04-01 08:05:49] INFO: Loaded and copied template: app_10_microblog.md
+[2025-04-01 08:05:49] INFO: Looking for template for app: app9
+[2025-04-01 08:05:49] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:05:49] INFO: Found matching template: app_9_crud.md
+[2025-04-01 08:05:49] INFO: Loaded and copied template: app_9_crud.md
+[2025-04-01 08:05:49] INFO: Looking for template for app: app8
+[2025-04-01 08:05:49] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:05:49] INFO: Found matching template: app_8_forum.md
+[2025-04-01 08:05:49] INFO: Loaded and copied template: app_8_forum.md
+[2025-04-01 08:05:49] INFO: Looking for template for app: app7
+[2025-04-01 08:05:49] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:05:49] INFO: Found matching template: app_7_fileUpload.md
+[2025-04-01 08:05:49] INFO: Loaded and copied template: app_7_fileUpload.md
+[2025-04-01 08:05:49] INFO: Looking for template for app: app6
+[2025-04-01 08:05:49] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:05:49] INFO: Found matching template: app_6_notes.md
+[2025-04-01 08:05:49] INFO: Loaded and copied template: app_6_notes.md
+[2025-04-01 08:05:50] INFO: Looking for template for app: app5
+[2025-04-01 08:05:50] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:05:50] INFO: Found matching template: app_5_cart.md
+[2025-04-01 08:05:50] INFO: Loaded and copied template: app_5_cart.md
+[2025-04-01 08:05:51] INFO: Looking for template for app: app6
+[2025-04-01 08:05:51] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:05:51] INFO: Found matching template: app_6_notes.md
+[2025-04-01 08:05:51] INFO: Loaded and copied template: app_6_notes.md
+[2025-04-01 08:05:51] INFO: Looking for template for app: app7
+[2025-04-01 08:05:51] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:05:51] INFO: Found matching template: app_7_fileUpload.md
+[2025-04-01 08:05:51] INFO: Loaded and copied template: app_7_fileUpload.md
+[2025-04-01 08:05:51] INFO: Looking for template for app: app6
+[2025-04-01 08:05:51] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:05:51] INFO: Found matching template: app_6_notes.md
+[2025-04-01 08:05:51] INFO: Loaded and copied template: app_6_notes.md
+[2025-04-01 08:06:07] INFO: Looking for template for app: app7
+[2025-04-01 08:06:07] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:06:07] INFO: Found matching template: app_7_fileUpload.md
+[2025-04-01 08:06:07] INFO: Loaded and copied template: app_7_fileUpload.md
+[2025-04-01 08:06:11] INFO: Pasted directly to R1\app7\backend\requirements.txt
+[2025-04-01 08:06:16] INFO: Pasted directly to R1\app7\backend\app.py
+[2025-04-01 08:06:21] INFO: Pasted directly to R1\app7\frontend\package.json
+[2025-04-01 08:06:25] INFO: Pasted directly to R1\app7\frontend\vite.config.js
+[2025-04-01 08:06:28] INFO: Pasted directly to R1\app7\frontend\src\App.jsx
+[2025-04-01 08:06:39] INFO: Pasted directly to R1\app7\frontend\src\App.css
+[2025-04-01 08:06:46] INFO: Looking for template for app: app8
+[2025-04-01 08:06:46] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:06:46] INFO: Found matching template: app_8_forum.md
+[2025-04-01 08:06:46] INFO: Loaded and copied template: app_8_forum.md
+[2025-04-01 08:06:56] INFO: Pasted directly to R1\app8\backend\app.py
+[2025-04-01 08:07:02] INFO: Pasted directly to R1\app8\frontend\src\App.jsx
+[2025-04-01 08:07:10] INFO: Pasted directly to R1\app8\frontend\src\App.css
+[2025-04-01 08:07:16] INFO: Pasted directly to R1\app8\backend\requirements.txt
+[2025-04-01 08:07:20] INFO: Pasted directly to R1\app8\frontend\package.json
+[2025-04-01 08:07:23] INFO: Pasted directly to R1\app8\frontend\vite.config.js
+[2025-04-01 08:07:27] INFO: Looking for template for app: app9
+[2025-04-01 08:07:27] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:07:27] INFO: Found matching template: app_9_crud.md
+[2025-04-01 08:07:27] INFO: Loaded and copied template: app_9_crud.md
+[2025-04-01 08:07:35] INFO: Pasted directly to R1\app9\backend\app.py
+[2025-04-01 08:07:48] INFO: Pasted directly to R1\app9\frontend\src\App.jsx
+[2025-04-01 08:07:56] INFO: Pasted directly to R1\app9\frontend\src\App.css
+[2025-04-01 08:08:02] INFO: Pasted directly to R1\app9\backend\requirements.txt
+[2025-04-01 08:08:05] INFO: Pasted directly to R1\app9\frontend\vite.config.js
+[2025-04-01 08:08:09] INFO: Pasted directly to R1\app9\frontend\package.json
+[2025-04-01 08:08:11] INFO: Looking for template for app: app10
+[2025-04-01 08:08:11] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:08:11] INFO: Found matching template: app_10_microblog.md
+[2025-04-01 08:08:11] INFO: Loaded and copied template: app_10_microblog.md
+[2025-04-01 08:08:17] INFO: Pasted directly to R1\app10\backend\app.py
+[2025-04-01 08:08:26] INFO: Pasted directly to R1\app10\backend\requirements.txt
+[2025-04-01 08:08:28] INFO: Pasted directly to R1\app10\frontend\src\App.jsx
+[2025-04-01 08:08:34] INFO: Pasted directly to R1\app10\frontend\src\App.css
+[2025-04-01 08:08:38] INFO: Pasted directly to R1\app10\frontend\vite.config.js
+[2025-04-01 08:08:43] INFO: Pasted directly to R1\app10\frontend\package.json
+[2025-04-01 08:08:51] INFO: Looking for template for app: app9
+[2025-04-01 08:08:51] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:08:51] INFO: Found matching template: app_9_crud.md
+[2025-04-01 08:08:51] INFO: Loaded and copied template: app_9_crud.md
+[2025-04-01 08:08:51] INFO: Looking for template for app: app8
+[2025-04-01 08:08:51] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:08:51] INFO: Found matching template: app_8_forum.md
+[2025-04-01 08:08:51] INFO: Loaded and copied template: app_8_forum.md
+[2025-04-01 08:08:51] INFO: Looking for template for app: app7
+[2025-04-01 08:08:51] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:08:51] INFO: Found matching template: app_7_fileUpload.md
+[2025-04-01 08:08:51] INFO: Loaded and copied template: app_7_fileUpload.md
+[2025-04-01 08:08:51] INFO: Looking for template for app: app6
+[2025-04-01 08:08:51] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:08:51] INFO: Found matching template: app_6_notes.md
+[2025-04-01 08:08:51] INFO: Loaded and copied template: app_6_notes.md
+[2025-04-01 08:08:51] INFO: Looking for template for app: app5
+[2025-04-01 08:08:51] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:08:51] INFO: Found matching template: app_5_cart.md
+[2025-04-01 08:08:51] INFO: Loaded and copied template: app_5_cart.md
+[2025-04-01 08:08:52] INFO: Looking for template for app: app6
+[2025-04-01 08:08:52] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:08:52] INFO: Found matching template: app_6_notes.md
+[2025-04-01 08:08:52] INFO: Loaded and copied template: app_6_notes.md
+[2025-04-01 08:08:59] INFO: Saved new prompt for R1/app6
+[2025-04-01 08:08:59] INFO: Saved new prompt for R1/app6
+[2025-04-01 08:09:07] INFO: Saved new prompt for R1/app7
+[2025-04-01 08:09:07] INFO: Saved new prompt for R1/app7
+[2025-04-01 08:09:11] INFO: Saved new prompt for R1/app8
+[2025-04-01 08:09:11] INFO: Saved new prompt for R1/app8
+[2025-04-01 08:09:17] INFO: Saved new prompt for R1/app9
+[2025-04-01 08:09:17] INFO: Saved new prompt for R1/app9
+[2025-04-01 08:09:22] INFO: Saved new prompt for R1/app10
+[2025-04-01 08:09:22] INFO: Saved new prompt for R1/app10
+[2025-04-01 08:09:39] INFO: Looking for template for app: app5
+[2025-04-01 08:09:39] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:09:39] INFO: Found matching template: app_5_cart.md
+[2025-04-01 08:09:39] INFO: Loaded and copied template: app_5_cart.md
+[2025-04-01 08:09:39] INFO: Looking for template for app: app6
+[2025-04-01 08:09:39] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:09:39] INFO: Found matching template: app_6_notes.md
+[2025-04-01 08:09:39] INFO: Loaded and copied template: app_6_notes.md
+[2025-04-01 08:09:39] INFO: Looking for template for app: app7
+[2025-04-01 08:09:39] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:09:39] INFO: Found matching template: app_7_fileUpload.md
+[2025-04-01 08:09:39] INFO: Loaded and copied template: app_7_fileUpload.md
+[2025-04-01 08:09:40] INFO: Looking for template for app: app8
+[2025-04-01 08:09:40] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:09:40] INFO: Found matching template: app_8_forum.md
+[2025-04-01 08:09:40] INFO: Loaded and copied template: app_8_forum.md
+[2025-04-01 08:09:40] INFO: Looking for template for app: app9
+[2025-04-01 08:09:40] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:09:40] INFO: Found matching template: app_9_crud.md
+[2025-04-01 08:09:40] INFO: Loaded and copied template: app_9_crud.md
+[2025-04-01 08:09:40] INFO: Looking for template for app: app10
+[2025-04-01 08:09:40] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:09:40] INFO: Found matching template: app_10_microblog.md
+[2025-04-01 08:09:40] INFO: Loaded and copied template: app_10_microblog.md
+[2025-04-01 08:09:40] INFO: Looking for template for app: app11
+[2025-04-01 08:09:40] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:09:40] INFO: Found matching template: app_11_polling.md
+[2025-04-01 08:09:40] INFO: Loaded and copied template: app_11_polling.md
+[2025-04-01 08:09:40] INFO: Looking for template for app: app10
+[2025-04-01 08:09:40] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:09:40] INFO: Found matching template: app_10_microblog.md
+[2025-04-01 08:09:40] INFO: Loaded and copied template: app_10_microblog.md
+[2025-04-01 08:09:44] INFO: Loaded and copied template: app_10_microblog.md
+[2025-04-01 08:09:54] INFO: Looking for template for app: app11
+[2025-04-01 08:09:54] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:09:54] INFO: Found matching template: app_11_polling.md
+[2025-04-01 08:09:54] INFO: Loaded and copied template: app_11_polling.md
+[2025-04-01 08:09:55] INFO: Looking for template for app: app10
+[2025-04-01 08:09:55] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:09:55] INFO: Found matching template: app_10_microblog.md
+[2025-04-01 08:09:55] INFO: Loaded and copied template: app_10_microblog.md
+[2025-04-01 08:09:58] INFO: Looking for template for app: app11
+[2025-04-01 08:09:58] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:09:58] INFO: Found matching template: app_11_polling.md
+[2025-04-01 08:09:58] INFO: Loaded and copied template: app_11_polling.md
+[2025-04-01 08:10:04] INFO: Loaded and copied template: app_11_polling.md
+[2025-04-01 08:10:08] INFO: Looking for template for app: app12
+[2025-04-01 08:10:08] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:10:08] INFO: Found matching template: app_12_reservation.md
+[2025-04-01 08:10:08] INFO: Loaded and copied template: app_12_reservation.md
+[2025-04-01 08:10:09] INFO: Loaded and copied template: app_12_reservation.md
+[2025-04-01 08:10:14] INFO: Looking for template for app: app13
+[2025-04-01 08:10:14] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:10:14] INFO: Found matching template: app_13_gallery.md
+[2025-04-01 08:10:14] INFO: Loaded and copied template: app_13_gallery.md
+[2025-04-01 08:10:15] INFO: Loaded and copied template: app_13_gallery.md
+[2025-04-01 08:10:19] INFO: Looking for template for app: app14
+[2025-04-01 08:10:19] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:10:19] INFO: Found matching template: app_14_storage.md
+[2025-04-01 08:10:19] INFO: Loaded and copied template: app_14_storage.md
+[2025-04-01 08:10:20] INFO: Loaded and copied template: app_14_storage.md
+[2025-04-01 08:10:25] INFO: Looking for template for app: app15
+[2025-04-01 08:10:25] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:10:25] INFO: Found matching template: app_15_kanban.md
+[2025-04-01 08:10:25] INFO: Loaded and copied template: app_15_kanban.md
+[2025-04-01 08:10:25] INFO: Loaded and copied template: app_15_kanban.md
+[2025-04-01 08:13:14] INFO: Looking for template for app: app16
+[2025-04-01 08:13:14] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:13:14] INFO: Found matching template: app_16_iot.md
+[2025-04-01 08:13:14] INFO: Loaded and copied template: app_16_iot.md
+[2025-04-01 08:13:14] INFO: Looking for template for app: app17
+[2025-04-01 08:13:14] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:13:14] INFO: Found matching template: app_17_fitness.md
+[2025-04-01 08:13:14] INFO: Loaded and copied template: app_17_fitness.md
+[2025-04-01 08:13:14] INFO: Looking for template for app: app16
+[2025-04-01 08:13:14] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:13:14] INFO: Found matching template: app_16_iot.md
+[2025-04-01 08:13:14] INFO: Loaded and copied template: app_16_iot.md
+[2025-04-01 08:13:14] INFO: Looking for template for app: app15
+[2025-04-01 08:13:14] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:13:14] INFO: Found matching template: app_15_kanban.md
+[2025-04-01 08:13:14] INFO: Loaded and copied template: app_15_kanban.md
+[2025-04-01 08:13:14] INFO: Looking for template for app: app14
+[2025-04-01 08:13:14] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:13:14] INFO: Found matching template: app_14_storage.md
+[2025-04-01 08:13:14] INFO: Loaded and copied template: app_14_storage.md
+[2025-04-01 08:13:15] INFO: Looking for template for app: app13
+[2025-04-01 08:13:15] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:13:15] INFO: Found matching template: app_13_gallery.md
+[2025-04-01 08:13:15] INFO: Loaded and copied template: app_13_gallery.md
+[2025-04-01 08:13:15] INFO: Looking for template for app: app12
+[2025-04-01 08:13:15] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:13:15] INFO: Found matching template: app_12_reservation.md
+[2025-04-01 08:13:15] INFO: Loaded and copied template: app_12_reservation.md
+[2025-04-01 08:13:16] INFO: Looking for template for app: app11
+[2025-04-01 08:13:16] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:13:16] INFO: Found matching template: app_11_polling.md
+[2025-04-01 08:13:16] INFO: Loaded and copied template: app_11_polling.md
+[2025-04-01 08:13:19] INFO: Pasted directly to R1\app11\backend\app.py
+[2025-04-01 08:13:25] INFO: Pasted directly to R1\app11\frontend\src\App.jsx
+[2025-04-01 08:13:36] INFO: Pasted directly to R1\app11\frontend\src\App.css
+[2025-04-01 08:13:44] INFO: Pasted directly to R1\app11\frontend\vite.config.js
+[2025-04-01 08:13:48] INFO: Pasted directly to R1\app11\backend\requirements.txt
+[2025-04-01 08:13:51] INFO: Looking for template for app: app12
+[2025-04-01 08:13:51] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:13:51] INFO: Found matching template: app_12_reservation.md
+[2025-04-01 08:13:51] INFO: Loaded and copied template: app_12_reservation.md
+[2025-04-01 08:13:57] INFO: Pasted directly to R1\app12\backend\app.py
+[2025-04-01 08:14:01] INFO: Pasted directly to R1\app12\frontend\src\App.jsx
+[2025-04-01 08:14:06] INFO: Pasted directly to R1\app12\frontend\src\App.css
+[2025-04-01 08:14:12] INFO: Pasted directly to R1\app12\backend\requirements.txt
+[2025-04-01 08:14:15] INFO: Pasted directly to R1\app12\frontend\package.json
+[2025-04-01 08:14:20] INFO: Pasted directly to R1\app12\frontend\vite.config.js
+[2025-04-01 08:14:27] INFO: Looking for template for app: app13
+[2025-04-01 08:14:27] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:14:27] INFO: Found matching template: app_13_gallery.md
+[2025-04-01 08:14:27] INFO: Loaded and copied template: app_13_gallery.md
+[2025-04-01 08:14:42] INFO: Pasted directly to R1\app13\backend\app.py
+[2025-04-01 08:14:48] INFO: Pasted directly to R1\app13\frontend\src\App.jsx
+[2025-04-01 08:14:55] INFO: Pasted directly to R1\app13\frontend\src\App.css
+[2025-04-01 08:15:02] INFO: Pasted directly to R1\app13\frontend\vite.config.js
+[2025-04-01 08:15:06] INFO: Pasted directly to R1\app13\backend\requirements.txt
+[2025-04-01 08:15:09] INFO: Pasted directly to R1\app13\frontend\package.json
+[2025-04-01 08:15:15] INFO: Looking for template for app: app14
+[2025-04-01 08:15:15] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:15:15] INFO: Found matching template: app_14_storage.md
+[2025-04-01 08:15:15] INFO: Loaded and copied template: app_14_storage.md
+[2025-04-01 08:15:20] INFO: Pasted directly to R1\app14\backend\app.py
+[2025-04-01 08:15:25] INFO: Pasted directly to R1\app14\frontend\src\App.jsx
+[2025-04-01 08:15:31] INFO: Pasted directly to R1\app14\backend\requirements.txt
+[2025-04-01 08:15:34] INFO: Pasted directly to R1\app14\frontend\package.json
+[2025-04-01 08:15:37] INFO: Pasted directly to R1\app14\frontend\vite.config.js
+[2025-04-01 08:15:40] INFO: Looking for template for app: app15
+[2025-04-01 08:15:40] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:15:40] INFO: Found matching template: app_15_kanban.md
+[2025-04-01 08:15:40] INFO: Loaded and copied template: app_15_kanban.md
+[2025-04-01 08:15:45] INFO: Pasted directly to R1\app15\backend\app.py
+[2025-04-01 08:15:51] INFO: Pasted directly to R1\app15\frontend\src\App.jsx
+[2025-04-01 08:15:57] INFO: Pasted directly to R1\app15\frontend\src\App.css
+[2025-04-01 08:16:01] INFO: Pasted directly to R1\app15\backend\requirements.txt
+[2025-04-01 08:16:04] INFO: Pasted directly to R1\app15\frontend\package.json
+[2025-04-01 08:16:07] INFO: Pasted directly to R1\app15\frontend\vite.config.js
+[2025-04-01 08:16:17] INFO: Saved new prompt for R1/app11
+[2025-04-01 08:16:17] INFO: Saved new prompt for R1/app11
+[2025-04-01 08:16:22] INFO: Saved new prompt for R1/app12
+[2025-04-01 08:16:22] INFO: Saved new prompt for R1/app12
+[2025-04-01 08:16:27] INFO: Saved new prompt for R1/app13
+[2025-04-01 08:16:27] INFO: Saved new prompt for R1/app13
+[2025-04-01 08:16:33] INFO: Saved new prompt for R1/app14
+[2025-04-01 08:16:33] INFO: Saved new prompt for R1/app14
+[2025-04-01 08:16:37] INFO: Saved new prompt for R1/app15
+[2025-04-01 08:16:37] INFO: Saved new prompt for R1/app15
+[2025-04-01 08:18:03] INFO: Looking for template for app: app16
+[2025-04-01 08:18:03] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:18:03] INFO: Found matching template: app_16_iot.md
+[2025-04-01 08:18:03] INFO: Loaded and copied template: app_16_iot.md
+[2025-04-01 08:18:03] INFO: Looking for template for app: app17
+[2025-04-01 08:18:03] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:18:03] INFO: Found matching template: app_17_fitness.md
+[2025-04-01 08:18:03] INFO: Loaded and copied template: app_17_fitness.md
+[2025-04-01 08:18:04] INFO: Looking for template for app: app16
+[2025-04-01 08:18:04] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:18:04] INFO: Found matching template: app_16_iot.md
+[2025-04-01 08:18:04] INFO: Loaded and copied template: app_16_iot.md
+[2025-04-01 08:18:05] INFO: Loaded and copied template: app_16_iot.md
+[2025-04-01 08:18:11] INFO: Looking for template for app: app17
+[2025-04-01 08:18:11] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:18:11] INFO: Found matching template: app_17_fitness.md
+[2025-04-01 08:18:11] INFO: Loaded and copied template: app_17_fitness.md
+[2025-04-01 08:18:11] INFO: Loaded and copied template: app_17_fitness.md
+[2025-04-01 08:18:16] INFO: Looking for template for app: app18
+[2025-04-01 08:18:16] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:18:16] INFO: Found matching template: app_18_wiki.md
+[2025-04-01 08:18:16] INFO: Loaded and copied template: app_18_wiki.md
+[2025-04-01 08:18:17] INFO: Loaded and copied template: app_18_wiki.md
+[2025-04-01 08:18:17] INFO: Loaded and copied template: app_18_wiki.md
+[2025-04-01 08:18:23] INFO: Looking for template for app: app19
+[2025-04-01 08:18:23] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:18:23] INFO: Found matching template: app_19_wallet.md
+[2025-04-01 08:18:23] INFO: Loaded and copied template: app_19_wallet.md
+[2025-04-01 08:18:23] INFO: Loaded and copied template: app_19_wallet.md
+[2025-04-01 08:18:27] INFO: Looking for template for app: app20
+[2025-04-01 08:18:27] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:18:27] INFO: Found matching template: app_20_map.md
+[2025-04-01 08:18:27] INFO: Loaded and copied template: app_20_map.md
+[2025-04-01 08:18:28] INFO: Loaded and copied template: app_20_map.md
+[2025-04-01 08:21:49] INFO: Looking for template for app: app19
+[2025-04-01 08:21:49] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:21:49] INFO: Found matching template: app_19_wallet.md
+[2025-04-01 08:21:49] INFO: Loaded and copied template: app_19_wallet.md
+[2025-04-01 08:21:50] INFO: Looking for template for app: app20
+[2025-04-01 08:21:50] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:21:50] INFO: Found matching template: app_20_map.md
+[2025-04-01 08:21:50] INFO: Loaded and copied template: app_20_map.md
+[2025-04-01 08:21:50] INFO: Looking for template for app: app21
+[2025-04-01 08:21:50] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:21:50] INFO: No matching template found for app21
+[2025-04-01 08:21:50] INFO: Looking for template for app: app22
+[2025-04-01 08:21:50] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:21:50] INFO: No matching template found for app22
+[2025-04-01 08:21:50] INFO: Looking for template for app: app21
+[2025-04-01 08:21:50] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:21:50] INFO: No matching template found for app21
+[2025-04-01 08:21:50] INFO: Looking for template for app: app20
+[2025-04-01 08:21:50] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:21:50] INFO: Found matching template: app_20_map.md
+[2025-04-01 08:21:50] INFO: Loaded and copied template: app_20_map.md
+[2025-04-01 08:21:50] INFO: Looking for template for app: app19
+[2025-04-01 08:21:50] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:21:50] INFO: Found matching template: app_19_wallet.md
+[2025-04-01 08:21:50] INFO: Loaded and copied template: app_19_wallet.md
+[2025-04-01 08:21:50] INFO: Looking for template for app: app18
+[2025-04-01 08:21:50] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:21:50] INFO: Found matching template: app_18_wiki.md
+[2025-04-01 08:21:50] INFO: Loaded and copied template: app_18_wiki.md
+[2025-04-01 08:21:50] INFO: Looking for template for app: app17
+[2025-04-01 08:21:50] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:21:50] INFO: Found matching template: app_17_fitness.md
+[2025-04-01 08:21:50] INFO: Loaded and copied template: app_17_fitness.md
+[2025-04-01 08:21:51] INFO: Looking for template for app: app16
+[2025-04-01 08:21:51] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:21:51] INFO: Found matching template: app_16_iot.md
+[2025-04-01 08:21:51] INFO: Loaded and copied template: app_16_iot.md
+[2025-04-01 08:21:51] INFO: Looking for template for app: app15
+[2025-04-01 08:21:51] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:21:51] INFO: Found matching template: app_15_kanban.md
+[2025-04-01 08:21:51] INFO: Loaded and copied template: app_15_kanban.md
+[2025-04-01 08:21:52] INFO: Looking for template for app: app16
+[2025-04-01 08:21:52] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:21:52] INFO: Found matching template: app_16_iot.md
+[2025-04-01 08:21:52] INFO: Loaded and copied template: app_16_iot.md
+[2025-04-01 08:21:56] INFO: Pasted directly to R1\app16\backend\requirements.txt
+[2025-04-01 08:22:05] INFO: Pasted directly to R1\app16\backend\app.py
+[2025-04-01 08:22:10] INFO: Pasted directly to R1\app16\frontend\src\App.jsx
+[2025-04-01 08:22:17] INFO: Pasted directly to R1\app16\frontend\src\App.css
+[2025-04-01 08:22:23] INFO: Pasted directly to R1\app16\frontend\vite.config.js
+[2025-04-01 08:22:26] INFO: Pasted directly to R1\app16\frontend\package.json
+[2025-04-01 08:22:30] INFO: Looking for template for app: app17
+[2025-04-01 08:22:30] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:22:30] INFO: Found matching template: app_17_fitness.md
+[2025-04-01 08:22:30] INFO: Loaded and copied template: app_17_fitness.md
+[2025-04-01 08:22:36] INFO: Pasted directly to R1\app17\backend\app.py
+[2025-04-01 08:22:41] INFO: Pasted directly to R1\app17\frontend\src\App.jsx
+[2025-04-01 08:22:46] INFO: Pasted directly to R1\app17\frontend\src\App.css
+[2025-04-01 08:22:51] INFO: Pasted directly to R1\app17\backend\requirements.txt
+[2025-04-01 08:22:55] INFO: Pasted directly to R1\app17\frontend\package.json
+[2025-04-01 08:22:58] INFO: Pasted directly to R1\app17\frontend\vite.config.js
+[2025-04-01 08:23:02] INFO: Looking for template for app: app18
+[2025-04-01 08:23:02] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:23:02] INFO: Found matching template: app_18_wiki.md
+[2025-04-01 08:23:02] INFO: Loaded and copied template: app_18_wiki.md
+[2025-04-01 08:23:15] INFO: Pasted directly to R1\app18\backend\app.py
+[2025-04-01 08:23:21] INFO: Pasted directly to R1\app18\frontend\src\App.jsx
+[2025-04-01 08:23:27] INFO: Pasted directly to R1\app18\frontend\src\App.css
+[2025-04-01 08:23:31] INFO: Pasted directly to R1\app18\backend\requirements.txt
+[2025-04-01 08:23:34] INFO: Pasted directly to R1\app18\frontend\vite.config.js
+[2025-04-01 08:23:46] INFO: Looking for template for app: app19
+[2025-04-01 08:23:46] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:23:46] INFO: Found matching template: app_19_wallet.md
+[2025-04-01 08:23:46] INFO: Loaded and copied template: app_19_wallet.md
+[2025-04-01 08:23:49] INFO: Pasted directly to R1\app19\backend\app.py
+[2025-04-01 08:23:55] INFO: Pasted directly to R1\app19\frontend\src\App.jsx
+[2025-04-01 08:24:00] INFO: Pasted directly to R1\app19\frontend\src\App.css
+[2025-04-01 08:24:04] INFO: Pasted directly to R1\app19\backend\requirements.txt
+[2025-04-01 08:24:07] INFO: Pasted directly to R1\app19\frontend\package.json
+[2025-04-01 08:24:10] INFO: Pasted directly to R1\app19\frontend\vite.config.js
+[2025-04-01 08:24:14] INFO: Looking for template for app: app20
+[2025-04-01 08:24:14] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:24:14] INFO: Found matching template: app_20_map.md
+[2025-04-01 08:24:14] INFO: Loaded and copied template: app_20_map.md
+[2025-04-01 08:24:22] INFO: Pasted directly to R1\app20\backend\app.py
+[2025-04-01 08:24:29] INFO: Pasted directly to R1\app20\frontend\src\App.jsx
+[2025-04-01 08:24:34] INFO: Pasted directly to R1\app20\frontend\src\App.css
+[2025-04-01 08:24:38] INFO: Pasted directly to R1\app20\backend\requirements.txt
+[2025-04-01 08:24:41] INFO: Pasted directly to R1\app20\frontend\package.json
+[2025-04-01 08:24:45] INFO: Pasted directly to R1\app20\frontend\vite.config.js
+[2025-04-01 08:24:55] INFO: Saved new prompt for R1/app16
+[2025-04-01 08:24:55] INFO: Saved new prompt for R1/app16
+[2025-04-01 08:25:00] INFO: Saved new prompt for R1/app17
+[2025-04-01 08:25:00] INFO: Saved new prompt for R1/app17
+[2025-04-01 08:25:04] INFO: Saved new prompt for R1/app18
+[2025-04-01 08:25:04] INFO: Saved new prompt for R1/app18
+[2025-04-01 08:25:10] INFO: Saved new prompt for R1/app19
+[2025-04-01 08:25:10] INFO: Saved new prompt for R1/app19
+[2025-04-01 08:25:14] INFO: Saved new prompt for R1/app20
+[2025-04-01 08:25:14] INFO: Saved new prompt for R1/app20
+[2025-04-01 08:25:49] INFO: Loaded and copied template: app_20_map.md
+[2025-04-01 08:25:50] INFO: Looking for template for app: app2
+[2025-04-01 08:25:50] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:25:50] INFO: Found matching template: app_2_chat.md
+[2025-04-01 08:25:50] INFO: Loaded and copied template: app_2_chat.md
+[2025-04-01 08:25:51] INFO: Looking for template for app: app3
+[2025-04-01 08:25:51] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:25:51] INFO: Found matching template: app_3_feedback.md
+[2025-04-01 08:25:51] INFO: Loaded and copied template: app_3_feedback.md
+[2025-04-01 08:25:51] INFO: Looking for template for app: app2
+[2025-04-01 08:25:51] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:25:51] INFO: Found matching template: app_2_chat.md
+[2025-04-01 08:25:51] INFO: Loaded and copied template: app_2_chat.md
+[2025-04-01 08:25:51] INFO: Looking for template for app: app1
+[2025-04-01 08:25:51] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:25:51] INFO: Found matching template: app_1_login.md
+[2025-04-01 08:25:51] INFO: Loaded and copied template: app_1_login.md
+[2025-04-01 08:25:52] INFO: Loaded and copied template: app_1_login.md
+[2025-04-01 08:26:00] INFO: Loaded and copied template: app_1_login.md
+[2025-04-01 08:26:00] INFO: Looking for template for app: app2
+[2025-04-01 08:26:00] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:26:00] INFO: Found matching template: app_2_chat.md
+[2025-04-01 08:26:00] INFO: Loaded and copied template: app_2_chat.md
+[2025-04-01 08:26:01] INFO: Loaded and copied template: app_2_chat.md
+[2025-04-01 08:26:06] INFO: Looking for template for app: app3
+[2025-04-01 08:26:06] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:26:06] INFO: Found matching template: app_3_feedback.md
+[2025-04-01 08:26:06] INFO: Loaded and copied template: app_3_feedback.md
+[2025-04-01 08:26:06] INFO: Loaded and copied template: app_3_feedback.md
+[2025-04-01 08:26:10] INFO: Looking for template for app: app4
+[2025-04-01 08:26:10] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:26:10] INFO: Found matching template: app_4_blog.md
+[2025-04-01 08:26:10] INFO: Loaded and copied template: app_4_blog.md
+[2025-04-01 08:26:11] INFO: Loaded and copied template: app_4_blog.md
+[2025-04-01 08:26:14] INFO: Looking for template for app: app5
+[2025-04-01 08:26:14] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:26:14] INFO: Found matching template: app_5_cart.md
+[2025-04-01 08:26:14] INFO: Loaded and copied template: app_5_cart.md
+[2025-04-01 08:26:15] INFO: Loaded and copied template: app_5_cart.md
+[2025-04-01 08:27:28] INFO: Looking for template for app: app4
+[2025-04-01 08:27:28] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:27:28] INFO: Found matching template: app_4_blog.md
+[2025-04-01 08:27:28] INFO: Loaded and copied template: app_4_blog.md
+[2025-04-01 08:27:28] INFO: Looking for template for app: app3
+[2025-04-01 08:27:28] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:27:28] INFO: Found matching template: app_3_feedback.md
+[2025-04-01 08:27:28] INFO: Loaded and copied template: app_3_feedback.md
+[2025-04-01 08:27:28] INFO: Looking for template for app: app2
+[2025-04-01 08:27:28] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:27:28] INFO: Found matching template: app_2_chat.md
+[2025-04-01 08:27:28] INFO: Loaded and copied template: app_2_chat.md
+[2025-04-01 08:27:28] INFO: Looking for template for app: app1
+[2025-04-01 08:27:28] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:27:28] INFO: Found matching template: app_1_login.md
+[2025-04-01 08:27:28] INFO: Loaded and copied template: app_1_login.md
+[2025-04-01 08:27:29] INFO: Loaded and copied template: app_1_login.md
+[2025-04-01 08:27:46] INFO: Looking for template for app: app2
+[2025-04-01 08:27:46] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:27:46] INFO: Found matching template: app_2_chat.md
+[2025-04-01 08:27:46] INFO: Loaded and copied template: app_2_chat.md
+[2025-04-01 08:27:46] INFO: Looking for template for app: app3
+[2025-04-01 08:27:46] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:27:46] INFO: Found matching template: app_3_feedback.md
+[2025-04-01 08:27:46] INFO: Loaded and copied template: app_3_feedback.md
+[2025-04-01 08:27:49] INFO: Looking for template for app: app4
+[2025-04-01 08:27:49] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:27:49] INFO: Found matching template: app_4_blog.md
+[2025-04-01 08:27:49] INFO: Loaded and copied template: app_4_blog.md
+[2025-04-01 08:27:49] INFO: Loaded and copied template: app_4_blog.md
+[2025-04-01 08:27:59] INFO: Looking for template for app: app5
+[2025-04-01 08:27:59] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:27:59] INFO: Found matching template: app_5_cart.md
+[2025-04-01 08:27:59] INFO: Loaded and copied template: app_5_cart.md
+[2025-04-01 08:28:00] INFO: Loaded and copied template: app_5_cart.md
+[2025-04-01 08:28:15] INFO: Looking for template for app: app4
+[2025-04-01 08:28:15] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:28:15] INFO: Found matching template: app_4_blog.md
+[2025-04-01 08:28:15] INFO: Loaded and copied template: app_4_blog.md
+[2025-04-01 08:28:15] INFO: Looking for template for app: app3
+[2025-04-01 08:28:15] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:28:15] INFO: Found matching template: app_3_feedback.md
+[2025-04-01 08:28:15] INFO: Loaded and copied template: app_3_feedback.md
+[2025-04-01 08:28:15] INFO: Looking for template for app: app2
+[2025-04-01 08:28:15] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:28:15] INFO: Found matching template: app_2_chat.md
+[2025-04-01 08:28:15] INFO: Loaded and copied template: app_2_chat.md
+[2025-04-01 08:28:15] INFO: Looking for template for app: app1
+[2025-04-01 08:28:15] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:28:15] INFO: Found matching template: app_1_login.md
+[2025-04-01 08:28:15] INFO: Loaded and copied template: app_1_login.md
+[2025-04-01 08:29:48] INFO: Pasted directly to O3\app1\backend\app.py
+[2025-04-01 08:29:52] INFO: Pasted directly to O3\app1\backend\requirements.txt
+[2025-04-01 08:29:55] INFO: Pasted directly to O3\app1\frontend\src\App.jsx
+[2025-04-01 08:30:14] INFO: Pasted directly to O3\app1\frontend\src\App.jsx
+[2025-04-01 08:30:20] INFO: Pasted directly to O3\app1\frontend\src\App.css
+[2025-04-01 08:30:24] INFO: Pasted directly to O3\app1\frontend\vite.config.js
+[2025-04-01 08:30:28] INFO: Pasted directly to O3\app1\frontend\package.json
+[2025-04-01 08:30:31] INFO: Pasted directly to O3\app1\frontend\src\index.html
+[2025-04-01 08:30:33] INFO: Looking for template for app: app2
+[2025-04-01 08:30:33] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:30:33] INFO: Found matching template: app_2_chat.md
+[2025-04-01 08:30:33] INFO: Loaded and copied template: app_2_chat.md
+[2025-04-01 08:30:42] INFO: Pasted directly to O3\app2\backend\app.py
+[2025-04-01 08:30:58] INFO: Pasted directly to O3\app2\backend\requirements.txt
+[2025-04-01 08:31:02] INFO: Pasted directly to O3\app2\frontend\src\App.jsx
+[2025-04-01 08:31:10] INFO: Pasted directly to O3\app2\frontend\src\App.css
+[2025-04-01 08:31:15] INFO: Pasted directly to O3\app2\frontend\vite.config.js
+[2025-04-01 08:31:19] INFO: Pasted directly to O3\app2\frontend\package.json
+[2025-04-01 08:31:23] INFO: Pasted directly to O3\app2\frontend\src\index.html
+[2025-04-01 08:31:25] INFO: Looking for template for app: app3
+[2025-04-01 08:31:25] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:31:25] INFO: Found matching template: app_3_feedback.md
+[2025-04-01 08:31:25] INFO: Loaded and copied template: app_3_feedback.md
+[2025-04-01 08:31:32] INFO: Pasted directly to O3\app3\backend\app.py
+[2025-04-01 08:31:36] INFO: Pasted directly to O3\app3\backend\requirements.txt
+[2025-04-01 08:31:41] INFO: Pasted directly to O3\app3\frontend\src\App.jsx
+[2025-04-01 08:31:46] INFO: Pasted directly to O3\app3\frontend\src\App.css
+[2025-04-01 08:31:51] INFO: Pasted directly to O3\app3\frontend\vite.config.js
+[2025-04-01 08:31:55] INFO: Pasted directly to O3\app3\frontend\package.json
+[2025-04-01 08:31:59] INFO: Pasted directly to O3\app3\frontend\src\index.html
+[2025-04-01 08:32:01] INFO: Looking for template for app: app4
+[2025-04-01 08:32:01] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:32:01] INFO: Found matching template: app_4_blog.md
+[2025-04-01 08:32:01] INFO: Loaded and copied template: app_4_blog.md
+[2025-04-01 08:32:09] INFO: Pasted directly to O3\app4\backend\app.py
+[2025-04-01 08:32:12] INFO: Pasted directly to O3\app4\backend\app.py
+[2025-04-01 08:32:18] INFO: Pasted directly to O3\app4\frontend\src\App.jsx
+[2025-04-01 08:32:27] INFO: Pasted directly to O3\app4\frontend\src\App.css
+[2025-04-01 08:32:31] INFO: Pasted directly to O3\app4\backend\requirements.txt
+[2025-04-01 08:32:35] INFO: Pasted directly to O3\app4\frontend\package.json
+[2025-04-01 08:32:39] INFO: Pasted directly to O3\app4\frontend\src\index.html
+[2025-04-01 08:32:42] INFO: Pasted directly to O3\app4\frontend\vite.config.js
+[2025-04-01 08:34:48] INFO: Pasted directly to O3\app4\frontend\package.json
+[2025-04-01 08:34:53] INFO: Pasted directly to O3\app4\frontend\vite.config.js
+[2025-04-01 08:35:00] INFO: Looking for template for app: app5
+[2025-04-01 08:35:00] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:35:00] INFO: Found matching template: app_5_cart.md
+[2025-04-01 08:35:00] INFO: Loaded and copied template: app_5_cart.md
+[2025-04-01 08:35:04] INFO: Pasted directly to O3\app5\backend\app.py
+[2025-04-01 08:35:10] INFO: Pasted directly to O3\app5\backend\requirements.txt
+[2025-04-01 08:35:13] INFO: Pasted directly to O3\app5\frontend\src\App.jsx
+[2025-04-01 08:35:33] INFO: Pasted directly to O3\app5\backend\app.py
+[2025-04-01 08:35:39] INFO: Pasted directly to O3\app5\backend\requirements.txt
+[2025-04-01 08:35:42] INFO: Pasted directly to O3\app5\frontend\src\App.jsx
+[2025-04-01 08:43:13] INFO: Saved new prompt for O3/app1
+[2025-04-01 08:43:13] INFO: Saved new prompt for O3/app1
+[2025-04-01 08:43:18] INFO: Saved new prompt for O3/app2
+[2025-04-01 08:43:18] INFO: Saved new prompt for O3/app2
+[2025-04-01 08:43:22] INFO: Saved new prompt for O3/app3
+[2025-04-01 08:43:22] INFO: Saved new prompt for O3/app3
+[2025-04-01 08:43:26] INFO: Saved new prompt for O3/app4
+[2025-04-01 08:43:26] INFO: Saved new prompt for O3/app4
+[2025-04-01 08:43:30] INFO: Saved new prompt for O3/app5
+[2025-04-01 08:43:30] INFO: Saved new prompt for O3/app5
+[2025-04-01 08:43:39] INFO: Looking for template for app: app6
+[2025-04-01 08:43:39] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:43:39] INFO: Found matching template: app_6_notes.md
+[2025-04-01 08:43:39] INFO: Loaded and copied template: app_6_notes.md
+[2025-04-01 08:43:40] INFO: Loaded and copied template: app_6_notes.md
+[2025-04-01 08:43:46] INFO: Looking for template for app: app7
+[2025-04-01 08:43:46] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:43:46] INFO: Found matching template: app_7_fileUpload.md
+[2025-04-01 08:43:46] INFO: Loaded and copied template: app_7_fileUpload.md
+[2025-04-01 08:43:46] INFO: Loaded and copied template: app_7_fileUpload.md
+[2025-04-01 08:43:53] INFO: Looking for template for app: app8
+[2025-04-01 08:43:53] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:43:53] INFO: Found matching template: app_8_forum.md
+[2025-04-01 08:43:53] INFO: Loaded and copied template: app_8_forum.md
+[2025-04-01 08:43:59] INFO: Loaded and copied template: app_8_forum.md
+[2025-04-01 08:44:04] INFO: Looking for template for app: app9
+[2025-04-01 08:44:04] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:44:04] INFO: Found matching template: app_9_crud.md
+[2025-04-01 08:44:05] INFO: Loaded and copied template: app_9_crud.md
+[2025-04-01 08:44:05] INFO: Loaded and copied template: app_9_crud.md
+[2025-04-01 08:44:11] INFO: Looking for template for app: app10
+[2025-04-01 08:44:11] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md']
+[2025-04-01 08:44:11] INFO: Found matching template: app_10_microblog.md
+[2025-04-01 08:44:11] INFO: Loaded and copied template: app_10_microblog.md
+[2025-04-01 08:44:11] INFO: Loaded and copied template: app_10_microblog.md

@@ -1,0 +1,86 @@
+/* app/frontend/src/App.css */
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar {
+  background-color: #343a40;
+  padding: 0.5rem 1rem;
+}
+
+.navbar a {
+  color: #f8f9fa;
+  margin-right: 1rem;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}
+
+.error {
+  color: red;
+  margin: 1rem 0;
+}
+
+.form input,
+.form textarea,
+.search input,
+.search select {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.form button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.form button:hover {
+  background: #0056b3;
+}
+
+.thread-list,
+.comment-list {
+  list-style: none;
+  padding: 0;
+}
+
+.thread-list li,
+.comment-list li {
+  border-bottom: 1px solid #dee2e6;
+  padding: 0.5rem 0;
+}
+
+.thread-meta,
+.comment-meta {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.search {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}

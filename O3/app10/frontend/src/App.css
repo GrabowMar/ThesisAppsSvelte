@@ -1,0 +1,145 @@
+/* Basic resets */
+body, html, #root {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* App container */
+.App {
+  max-width: 800px;
+  margin: auto;
+  padding: 1rem;
+}
+
+/* Header styles */
+header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+header h1 {
+  margin-bottom: 0.5rem;
+}
+
+nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+nav button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+nav button:hover {
+  background: #0056b3;
+}
+
+/* Feed and posts */
+.feed, .create-post, .profile {
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.post {
+  background: white;
+  border: 1px solid #ddd;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.post .author {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.post .content {
+  margin-bottom: 0.5rem;
+}
+
+.post .interactions button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.post .interactions button:hover {
+  background: #1e7e34;
+}
+
+/* Comments */
+.comments {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  border-top: 1px solid #eee;
+  padding-top: 0.5rem;
+}
+
+.comment-form {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.comment-form input {
+  flex: 1;
+  padding: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.comment-form button {
+  background: #17a2b8;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.comment-form button:hover {
+  background: #117a8b;
+}
+
+/* Form styling */
+form > div {
+  margin-bottom: 1rem;
+}
+
+form label {
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+form input[type="text"],
+form textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Footer */
+footer {
+  margin-top: 2rem;
+  text-align: center;
+  color: #666;
+}
+
+/* Error message */
+.error {
+  color: red;
+  font-weight: bold;
+}

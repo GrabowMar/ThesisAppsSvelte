@@ -5,14 +5,14 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
-    port: 6153,  // Changed to match your frontend port
+    port: 5653, // Frontend (Vite) will run on port 5653
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:port: 5653',
+        target: 'http://localhost:6153', // Proxy API calls to backend on port 6153
         changeOrigin: true,
         secure: false,
       }
     }
   }
-});
+})
