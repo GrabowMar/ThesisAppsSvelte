@@ -1,3 +1,2 @@
 Method,Name,Error,Occurrences
-GET,/,"ConnectionRefusedError(10061, '[WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.')",4
-GET,/api/status,"ConnectionRefusedError(10061, '[WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.')",1
+GET,/api/status,HTTPError('500 Server Error: Internal Server Error for url: /api/status'),32

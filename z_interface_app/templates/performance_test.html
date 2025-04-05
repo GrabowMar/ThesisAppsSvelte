@@ -194,264 +194,307 @@
 </div>
 
 <script>
-    // Initialize when DOM is ready
+// Self-contained Performance Test Module
 $(document).ready(function() {
-    // Initialize core App functionality
-    if (typeof App !== 'undefined' && App.Features.performanceTest) {
-      App.Features.performanceTest.init();
-    } else {
-      // Fallback implementation if App object isn't available
-      setupPerformanceTest();
-    }
-  
-    function setupPerformanceTest() {
-      // DOM Element References
-      const elements = {
-        runTestBtn: $('#runTest'),
-        stopTestBtn: $('#stopTest'),
-        clearLogBtn: $('#clearLog'),
-        downloadReportBtn: $('#downloadReport'),
-        outputLog: $('#outputLog'),
-        progressBar: $('#progressBar'),
-        testStatusElement: $('#testStatus')
-      };
-      
-      let reportPath = '';
-      let testRunning = false;
-      let progressTimer = null;
-      
-      // Add a timestamped message to the log
-      function appendToLog(message) {
-        if (!elements.outputLog.length) return;
-        
-        const timestamp = new Date().toLocaleTimeString();
-        elements.outputLog.append(`[${timestamp}] ${message}\n`);
-        elements.outputLog.scrollTop(elements.outputLog[0].scrollHeight);
-      }
-      
-      // Update the progress bar
-      function updateProgress(percentage) {
-        if (!elements.progressBar.length) return;
-        elements.progressBar.css('width', `${Math.min(Math.max(percentage, 0), 100)}%`);
-      }
-      
-      // Simulate progress during test execution
-      function simulateProgress(duration) {
-        if (progressTimer) {
-          clearInterval(progressTimer);
-        }
-        
-        let elapsed = 0;
-        const interval = 1000; // Update every second
-        updateProgress(0);
-        
-        progressTimer = setInterval(() => {
-          elapsed += interval;
-          const percentage = Math.min(Math.floor((elapsed / (duration * 1000)) * 100), 95);
-          updateProgress(percentage);
-          
-          if (elapsed >= duration * 1000 || !testRunning) {
-            clearInterval(progressTimer);
-          }
-        }, interval);
-        
-        return progressTimer;
-      }
-      
-      // Handle running a performance test
-      function handleRunTest() {
-        const numUsers = parseInt($('#numUsers').val()) || 10;
-        const duration = parseInt($('#duration').val()) || 30;
-        const spawnRate = parseInt($('#spawnRate').val()) || 1;
-        
-        testRunning = true;
-        elements.runTestBtn.prop('disabled', true);
-        elements.stopTestBtn.removeClass('hidden');
-        
-        if (elements.testStatusElement.length) {
-          elements.testStatusElement.text('Running...');
-        }
-        
-        appendToLog(`Starting performance test with ${numUsers} users, ${duration}s duration, and ${spawnRate} spawn rate`);
-        
-        // Reset progress and start simulation
-        updateProgress(0);
-        progressTimer = simulateProgress(duration);
-        
-        // Make API request to the current URL
-        $.ajax({
-          url: window.location.href,
-          method: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify({
-            num_users: numUsers,
-            duration: duration,
-            spawn_rate: spawnRate,
-            endpoints: ["/", "/api/status"]
-          })
-        })
-        .done(function(result) {
-          testRunning = false;
-          
-          if (result.status === 'success') {
-            updateProgress(100);
-            updateStatistics(result.data);
-            appendToLog('Test completed successfully');
+    // Initialize standalone performance test implementation
+    const PerformanceTest = {
+        // State
+        reportPath: '',
+        testRunning: false,
+        progressTimer: null,
+
+        // DOM Elements
+        elements: {
+            runTestBtn: $('#runTest'),
+            stopTestBtn: $('#stopTest'),
+            clearLogBtn: $('#clearLog'),
+            downloadReportBtn: $('#downloadReport'),
+            outputLog: $('#outputLog'),
+            progressBar: $('#progressBar'),
+            testStatusElement: $('#testStatus'),
+            resultsElements: {
+                totalRequests: $('#totalRequests'),
+                totalFailures: $('#totalFailures'),
+                requestsPerSec: $('#requestsPerSec'),
+                avgResponseTime: $('#avgResponseTime'),
+                medianResponseTime: $('#medianResponseTime'),
+                percentile95: $('#percentile95'),
+                percentile99: $('#percentile99'),
+                lastRun: $('#lastRun')
+            },
+            errorSection: $('#errorSection'),
+            errorTableBody: $('#errorTableBody'),
+            endpointTableBody: $('#endpointTableBody'),
+            visualizationSection: $('#visualizationSection'),
+            responseTimeChart: $('#responseTimeChart')
+        },
+
+        // Initialize the module
+        init: function() {
+            this.setupEventListeners();
+            // Log initialization for debugging
+            this.appendToLog('Performance test module initialized');
+        },
+
+        // Set up event listeners
+        setupEventListeners: function() {
+            this.elements.runTestBtn.on('click', this.handleRunTest.bind(this));
+            this.elements.stopTestBtn.on('click', this.handleStopTest.bind(this));
+            this.elements.clearLogBtn.on('click', this.handleClearLog.bind(this));
+            this.elements.downloadReportBtn.on('click', this.handleDownloadReport.bind(this));
+        },
+
+        // Log handling
+        appendToLog: function(message) {
+            if (!this.elements.outputLog.length) return;
             
-            // If a report path is available, enable the download button
-            if (result.report_path) {
-              reportPath = result.report_path;
-              elements.downloadReportBtn.removeClass('hidden');
+            const timestamp = new Date().toLocaleTimeString();
+            this.elements.outputLog.append(`[${timestamp}] ${message}\n`);
+            this.elements.outputLog.scrollTop(this.elements.outputLog[0].scrollHeight);
+        },
+
+        // Progress simulation
+        updateProgress: function(percentage) {
+            if (!this.elements.progressBar.length) return;
+            this.elements.progressBar.css('width', `${Math.min(Math.max(percentage, 0), 100)}%`);
+        },
+
+        simulateProgress: function(duration) {
+            if (this.progressTimer) {
+                clearInterval(this.progressTimer);
             }
-          } else {
-            throw new Error(result.error || 'Test failed with unknown error');
-          }
-        })
-        .fail(function(jqXHR) {
-          testRunning = false;
-          updateProgress(0);
-          
-          if (elements.testStatusElement.length) {
-            elements.testStatusElement.text('Failed');
-          }
-          
-          const errorMsg = jqXHR.responseJSON?.error || jqXHR.statusText || 'Unknown error occurred';
-          appendToLog(`Error: ${errorMsg}`);
-        })
-        .always(function() {
-          elements.runTestBtn.prop('disabled', false);
-          elements.stopTestBtn.addClass('hidden');
-        });
-      }
-      
-      // Handle stopping a running test
-      function handleStopTest() {
-        testRunning = false;
-        appendToLog('Attempting to stop the test...');
-        
-        $.ajax({
-          url: `${window.location.href}/stop`,
-          method: 'POST'
-        })
-        .done(function() {
-          appendToLog('Test stopped successfully');
-          
-          if (elements.testStatusElement.length) {
-            elements.testStatusElement.text('Stopped');
-          }
-        })
-        .fail(function(jqXHR) {
-          const errorMsg = jqXHR.responseJSON?.error || 'Unknown error';
-          appendToLog(`Failed to stop test: ${errorMsg}`);
-        })
-        .always(function() {
-          elements.runTestBtn.prop('disabled', false);
-          elements.stopTestBtn.addClass('hidden');
-        });
-      }
-      
-      // Handle clearing the log output
-      function handleClearLog() {
-        if (elements.outputLog.length) {
-          elements.outputLog.text('');
-        }
-      }
-      
-      // Handle downloading the test report
-      function handleDownloadReport() {
-        if (reportPath) {
-          window.open(reportPath, '_blank');
-        } else {
-          appendToLog('Error: No report available to download');
-        }
-      }
-      
-      // Update UI with test statistics
-      function updateStatistics(data) {
-        if (!data) return;
-        
-        // Update basic statistics
-        $('#totalRequests').text(data.total_requests || 0);
-        $('#totalFailures').text(data.total_failures || 0);
-        $('#requestsPerSec').text(data.requests_per_sec ? data.requests_per_sec.toFixed(2) : 0);
-        $('#avgResponseTime').text(data.avg_response_time ? data.avg_response_time.toFixed(2) + ' ms' : '-');
-        $('#medianResponseTime').text(data.median_response_time ? data.median_response_time.toFixed(2) + ' ms' : '-');
-        $('#percentile95').text(data.percentile_95 ? data.percentile_95.toFixed(2) + ' ms' : '-');
-        $('#percentile99').text(data.percentile_99 ? data.percentile_99.toFixed(2) + ' ms' : '-');
-        $('#lastRun').text(data.start_time || 'Never');
-        $('#testStatus').text('Completed');
-        
+            
+            let elapsed = 0;
+            const interval = 1000; // Update every second
+            this.updateProgress(0);
+            
+            this.progressTimer = setInterval(() => {
+                elapsed += interval;
+                const percentage = Math.min(Math.floor((elapsed / (duration * 1000)) * 100), 95);
+                this.updateProgress(percentage);
+                
+                if (elapsed >= duration * 1000 || !this.testRunning) {
+                    clearInterval(this.progressTimer);
+                }
+            }, interval);
+            
+            return this.progressTimer;
+        },
+
+        // Run test
+        handleRunTest: function() {
+            const numUsers = parseInt($('#numUsers').val()) || 10;
+            const duration = parseInt($('#duration').val()) || 30;
+            const spawnRate = parseInt($('#spawnRate').val()) || 1;
+            
+            this.testRunning = true;
+            this.elements.runTestBtn.prop('disabled', true);
+            this.elements.stopTestBtn.removeClass('hidden');
+            
+            if (this.elements.testStatusElement.length) {
+                this.elements.testStatusElement.text('Running...');
+            }
+            
+            this.appendToLog(`Starting performance test with ${numUsers} users, ${duration}s duration, and ${spawnRate} spawn rate`);
+            
+            // Reset progress and start simulation
+            this.updateProgress(0);
+            this.progressTimer = this.simulateProgress(duration);
+            
+            // Make API request to the current URL
+            $.ajax({
+                url: window.location.href,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    num_users: numUsers,
+                    duration: duration,
+                    spawn_rate: spawnRate,
+                    endpoints: ["/", "/api/status"]
+                })
+            })
+            .done((result) => {
+                this.testRunning = false;
+                
+                if (result.status === 'success') {
+                    this.updateProgress(100);
+                    this.updateStatistics(result.data);
+                    this.appendToLog('Test completed successfully');
+                    
+                    // If a report path is available, enable the download button
+                    if (result.report_path) {
+                        this.reportPath = result.report_path;
+                        this.elements.downloadReportBtn.removeClass('hidden');
+                    }
+                } else {
+                    this.appendToLog(`Test failed: ${result.error || 'Unknown error'}`);
+                    this.updateProgress(0);
+                    if (this.elements.testStatusElement.length) {
+                        this.elements.testStatusElement.text('Failed');
+                    }
+                }
+            })
+            .fail((jqXHR) => {
+                this.testRunning = false;
+                this.updateProgress(0);
+                
+                if (this.elements.testStatusElement.length) {
+                    this.elements.testStatusElement.text('Failed');
+                }
+                
+                const errorMsg = jqXHR.responseJSON?.error || jqXHR.statusText || 'Unknown error occurred';
+                this.appendToLog(`Error: ${errorMsg}`);
+                console.error('AJAX Error:', jqXHR);
+            })
+            .always(() => {
+                this.elements.runTestBtn.prop('disabled', false);
+                this.elements.stopTestBtn.addClass('hidden');
+            });
+        },
+
+        // Stop test
+        handleStopTest: function() {
+            this.testRunning = false;
+            this.appendToLog('Attempting to stop the test...');
+            
+            $.ajax({
+                url: `${window.location.href}/stop`,
+                method: 'POST'
+            })
+            .done(() => {
+                this.appendToLog('Test stopped successfully');
+                
+                if (this.elements.testStatusElement.length) {
+                    this.elements.testStatusElement.text('Stopped');
+                }
+            })
+            .fail((jqXHR) => {
+                const errorMsg = jqXHR.responseJSON?.error || 'Unknown error';
+                this.appendToLog(`Failed to stop test: ${errorMsg}`);
+            })
+            .always(() => {
+                this.elements.runTestBtn.prop('disabled', false);
+                this.elements.stopTestBtn.addClass('hidden');
+            });
+        },
+
+        // Clear log
+        handleClearLog: function() {
+            if (this.elements.outputLog.length) {
+                this.elements.outputLog.text('');
+            }
+        },
+
+        // Download report
+        handleDownloadReport: function() {
+            if (this.reportPath) {
+                window.open(this.reportPath, '_blank');
+            } else {
+                this.appendToLog('Error: No report available to download');
+            }
+        },
+
+        // Update UI with test statistics
+        updateStatistics: function(data) {
+            if (!data) {
+                this.appendToLog('Warning: No data received from test');
+                return;
+            }
+            
+            try {
+                console.log('Received test data:', data);
+                
+                // Update basic statistics
+                this.elements.resultsElements.totalRequests.text(data.total_requests || 0);
+                this.elements.resultsElements.totalFailures.text(data.total_failures || 0);
+                this.elements.resultsElements.requestsPerSec.text(data.requests_per_sec ? data.requests_per_sec.toFixed(2) : 0);
+                this.elements.resultsElements.avgResponseTime.text(data.avg_response_time ? data.avg_response_time.toFixed(2) + ' ms' : '-');
+                this.elements.resultsElements.medianResponseTime.text(data.median_response_time ? data.median_response_time.toFixed(2) + ' ms' : '-');
+                this.elements.resultsElements.percentile95.text(data.percentile_95 ? data.percentile_95.toFixed(2) + ' ms' : '-');
+                this.elements.resultsElements.percentile99.text(data.percentile_99 ? data.percentile_99.toFixed(2) + ' ms' : '-');
+                this.elements.resultsElements.lastRun.text(data.start_time || 'Never');
+                this.elements.testStatusElement.text('Completed');
+                
+                // Update endpoint table
+                this.updateEndpointTable(data.endpoints || []);
+                
+                // Update error table
+                this.updateErrorTable(data.errors || []);
+                
+                // Show/hide visualization section
+                this.elements.visualizationSection.toggleClass('hidden', !(data.endpoints && data.endpoints.length > 0));
+
+            } catch (error) {
+                console.error('Error updating statistics:', error);
+                this.appendToLog(`Error updating statistics: ${error.message}`);
+            }
+        },
+
         // Update endpoint table
-        updateEndpointTable(data.endpoints || []);
-        
+        updateEndpointTable: function(endpoints) {
+            const $tableBody = this.elements.endpointTableBody;
+            if (!$tableBody.length) return;
+            
+            $tableBody.empty();
+            
+            if (endpoints && endpoints.length > 0) {
+                endpoints.forEach((endpoint) => {
+                    const $row = $('<tr>');
+                    $row.html(`
+                        <td class="border border-gray-300 px-2 py-1 text-xs">${endpoint.name || ''}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs">${endpoint.method || ''}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs text-right">${endpoint.num_requests || 0}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs text-right">${endpoint.num_failures || 0}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.median_response_time || 0).toFixed(2)}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.avg_response_time || 0).toFixed(2)}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.min_response_time || 0).toFixed(2)}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.max_response_time || 0).toFixed(2)}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.current_rps || 0).toFixed(2)}</td>
+                    `);
+                    $tableBody.append($row);
+                });
+            } else {
+                $tableBody.html(`<tr><td colspan="9" class="border border-gray-300 px-2 py-1 text-xs text-center">No endpoint data available</td></tr>`);
+            }
+        },
+
         // Update error table
-        updateErrorTable(data.errors || []);
-        
-        // Show/hide visualization section
-        $('#visualizationSection').toggleClass('hidden', !(data.endpoints && data.endpoints.length > 0));
-      }
-      
-      // Update the endpoint details table
-      function updateEndpointTable(endpoints) {
-        const $tableBody = $('#endpointTableBody');
-        if (!$tableBody.length) return;
-        
-        $tableBody.empty();
-        
-        if (endpoints && endpoints.length > 0) {
-          $.each(endpoints, function(index, endpoint) {
-            const $row = $('<tr>');
-            $row.html(`
-              <td class="border border-gray-300 px-2 py-1 text-xs">${endpoint.name || ''}</td>
-              <td class="border border-gray-300 px-2 py-1 text-xs">${endpoint.method || ''}</td>
-              <td class="border border-gray-300 px-2 py-1 text-xs text-right">${endpoint.num_requests || 0}</td>
-              <td class="border border-gray-300 px-2 py-1 text-xs text-right">${endpoint.num_failures || 0}</td>
-              <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.median_response_time || 0).toFixed(2)}</td>
-              <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.avg_response_time || 0).toFixed(2)}</td>
-              <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.min_response_time || 0).toFixed(2)}</td>
-              <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.max_response_time || 0).toFixed(2)}</td>
-              <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.current_rps || 0).toFixed(2)}</td>
-            `);
-            $tableBody.append($row);
-          });
-        } else {
-          $tableBody.html(`<tr><td colspan="9" class="border border-gray-300 px-2 py-1 text-xs text-center">No endpoint data available</td></tr>`);
+        updateErrorTable: function(errors) {
+            const $errorSection = this.elements.errorSection;
+            const $errorTable = this.elements.errorTableBody;
+            
+            if (!$errorSection.length || !$errorTable.length) return;
+            
+            if (errors && errors.length > 0) {
+                $errorSection.removeClass('hidden');
+                $errorTable.empty();
+                
+                errors.forEach((error) => {
+                    const $row = $('<tr>');
+                    $row.html(`
+                        <td class="border border-gray-300 px-2 py-1 text-xs text-red-600">${error.error_type || 'Unknown'}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs text-right">${error.count || 0}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs">${error.endpoint || ''}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs">${error.method || ''}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs">${error.description || ''}</td>
+                    `);
+                    $errorTable.append($row);
+                });
+            } else {
+                $errorSection.addClass('hidden');
+            }
         }
-      }
-      
-      // Update the error details table
-      function updateErrorTable(errors) {
-        const $errorSection = $('#errorSection');
-        const $errorTable = $('#errorTableBody');
-        
-        if (!$errorSection.length || !$errorTable.length) return;
-        
-        if (errors && errors.length > 0) {
-          $errorSection.removeClass('hidden');
-          $errorTable.empty();
-          
-          $.each(errors, function(index, error) {
-            const $row = $('<tr>');
-            $row.html(`
-              <td class="border border-gray-300 px-2 py-1 text-xs text-red-600">${error.error_type || 'Unknown'}</td>
-              <td class="border border-gray-300 px-2 py-1 text-xs text-right">${error.count || 0}</td>
-              <td class="border border-gray-300 px-2 py-1 text-xs">${error.endpoint || ''}</td>
-              <td class="border border-gray-300 px-2 py-1 text-xs">${error.method || ''}</td>
-              <td class="border border-gray-300 px-2 py-1 text-xs">${error.description || ''}</td>
-            `);
-            $errorTable.append($row);
-          });
-        } else {
-          $errorSection.addClass('hidden');
-        }
-      }
-      
-      // Set up event listeners
-      elements.runTestBtn.on('click', handleRunTest);
-      elements.stopTestBtn.on('click', handleStopTest);
-      elements.clearLogBtn.on('click', handleClearLog);
-      elements.downloadReportBtn.on('click', handleDownloadReport);
+    };
+
+    // Check if the global App object is available and use it,
+    // otherwise use our standalone implementation
+    if (typeof App !== 'undefined' && App.Features && App.Features.performanceTest) {
+        console.log('Using global App.Features.performanceTest');
+        App.Features.performanceTest.init();
+    } else {
+        console.log('Using standalone PerformanceTest implementation');
+        PerformanceTest.init();
     }
-  });
+});
 </script>
 {% endblock %}

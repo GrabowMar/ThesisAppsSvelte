@@ -20,6 +20,7 @@ from functools import wraps
 
 import aiohttp
 from flask import request, render_template, url_for, Blueprint, current_app, jsonify, redirect
+from path_utils import PathUtils
 
 # Set up module-level logger
 logger = logging.getLogger(__name__)
@@ -85,7 +86,7 @@ class GPT4AllAnalyzer:
     @staticmethod
     def adjust_path(p: Optional[Path]) -> Path:
         """
-        Correctly adjusts paths containing "z_interface_app" directory.
+        Correctly adjusts paths using centralized path utilities.
         
         Args:
             p: Path to adjust
@@ -96,29 +97,7 @@ class GPT4AllAnalyzer:
         if not p:
             return Path.cwd()
             
-        try:
-            abs_path = p.resolve()
-            parts = list(abs_path.parts)
-            
-            # Find the z_interface_app component if it exists
-            z_app_index = -1
-            for i, part in enumerate(parts):
-                if part.lower() == "z_interface_app":
-                    z_app_index = i
-                    break
-                    
-            # If found, reconstruct the path without it
-            if z_app_index >= 0:
-                new_parts = parts[:z_app_index] + parts[z_app_index+1:]
-                adjusted = Path(*new_parts)
-                logger.info(f"Adjusted path from {abs_path} to {adjusted}")
-                return adjusted
-            
-            return abs_path
-                
-        except Exception as e:
-            logger.error(f"Error adjusting path {p}: {e}")
-            return p if p else Path.cwd()
+        return PathUtils.remove_interface_component(p)
 
     def __init__(self, base_path: Union[Path, str]):
         """
@@ -893,7 +872,31 @@ class GPT4AllAnalyzer:
         Returns:
             List of dictionaries with requirement and check results
         """
-        directory = directory or self.base_path
+        if directory is None:
+            directory = self.base_path
+        
+        # Try to find the directory if it doesn't exist
+        if not directory.exists():
+            if isinstance(directory, Path) and len(directory.parts) >= 2:
+                # Extract model and app_num if possible
+                parts = directory.parts
+                for i, part in enumerate(parts):
+                    if part.lower() in ("llama", "mistral", "deepseek", "gpt4o", "claude", "gemini", "grok", "r1", "o3"):
+                        model = part
+                        # Look for app number in next part
+                        if i+1 < len(parts) and parts[i+1].startswith("app"):
+                            try:
+                                app_num = int(parts[i+1].replace("app", ""))
+                                # Try to find the correct directory
+                                alt_dir = PathUtils.find_app_directory(self.base_path, model, app_num)
+                                if alt_dir and alt_dir.exists():
+                                    directory = alt_dir
+                                    logger.info(f"Found alternate directory: {directory}")
+                            except ValueError:
+                                pass
+                        break
+        
+        # Apply path adjustment
         directory = self.adjust_path(directory)
         
         # Find frontend and backend files
@@ -1012,8 +1015,19 @@ class GPT4AllAnalyzer:
 
 
 def get_app_directory(app, model: str, app_num: int) -> Path:
-    """Helper function to get app directory path."""
-    return app.config["BASE_DIR"] / f"{model}/app{app_num}"
+    """
+    Get the directory for a specific app with enhanced path handling.
+    
+    Args:
+        app: Flask app instance
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        Path to the app directory
+    """
+    base_dir = app.config.get("BASE_DIR", Path.cwd())
+    return PathUtils.normalize_app_path(base_dir, model, app_num)
 
 
 def get_analysis_summary(issues: List[AnalysisIssue]) -> Dict[str, Any]:

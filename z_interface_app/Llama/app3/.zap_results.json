@@ -1,6 +1,18 @@
 {
   "alerts": [
     {
+      "url": "http://localhost:5505",
+      "name": "Cross-Domain Misconfiguration",
+      "alert": "Cross-Domain Misconfiguration",
+      "risk": "Medium",
+      "confidence": "Medium",
+      "description": "Web browser data loading may be possible, due to a Cross Origin Resource Sharing (CORS) misconfiguration on the web server.",
+      "solution": "Ensure that sensitive data is not available in an unauthenticated manner (using IP address white-listing, for instance).\nConfigure the \"Access-Control-Allow-Origin\" HTTP header to a more restrictive set of domains, or remove all CORS headers entirely, to allow the web browser to enforce the Same Origin Policy (SOP) in a more restrictive manner.",
+      "reference": "https://vulncat.fortify.com/en/detail?id=desc.config.dotnet.html5_overly_permissive_cors_policy",
+      "evidence": "Access-Control-Allow-Origin: *",
+      "cwe_id": "264"
+    },
+    {
       "url": "http://localhost:5505/sitemap.xml",
       "name": "Cross-Domain Misconfiguration",
       "alert": "Cross-Domain Misconfiguration",
@@ -23,25 +35,13 @@
       "reference": "https://vulncat.fortify.com/en/detail?id=desc.config.dotnet.html5_overly_permissive_cors_policy",
       "evidence": "Access-Control-Allow-Origin: *",
       "cwe_id": "264"
-    },
-    {
-      "url": "http://localhost:5505",
-      "name": "Cross-Domain Misconfiguration",
-      "alert": "Cross-Domain Misconfiguration",
-      "risk": "Medium",
-      "confidence": "Medium",
-      "description": "Web browser data loading may be possible, due to a Cross Origin Resource Sharing (CORS) misconfiguration on the web server.",
-      "solution": "Ensure that sensitive data is not available in an unauthenticated manner (using IP address white-listing, for instance).\nConfigure the \"Access-Control-Allow-Origin\" HTTP header to a more restrictive set of domains, or remove all CORS headers entirely, to allow the web browser to enforce the Same Origin Policy (SOP) in a more restrictive manner.",
-      "reference": "https://vulncat.fortify.com/en/detail?id=desc.config.dotnet.html5_overly_permissive_cors_policy",
-      "evidence": "Access-Control-Allow-Origin: *",
-      "cwe_id": "264"
     }
   ],
   "summary": {
-    "start_time": "2025-04-01T16:48:02.699890",
+    "start_time": "2025-04-01T18:22:22.106573",
     "target_url": "http://localhost:5505",
     "status": "success",
-    "end_time": "2025-04-01T16:48:27.701684",
+    "end_time": "2025-04-01T18:22:47.339467",
     "total_alerts": 3,
     "risk_counts": {
       "High": 0,
@@ -50,5 +50,5 @@
       "Info": 0
     }
   },
-  "scan_time": "2025-04-01T16:48:30.567933"
+  "scan_time": "2025-04-01T18:22:50.185977"
 }

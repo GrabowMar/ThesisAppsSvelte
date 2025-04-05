@@ -54,6 +54,8 @@ from gpt4all_analysis import GPT4AllAnalyzer
 from performance_analysis import PerformanceTester
 from zap_scanner import ZAPScanner, create_scanner
 from batch_analysis import init_batch_analysis, batch_analysis_bp
+from path_utils import PathUtils
+
 
 # =============================================================================
 # Module-Level Logger
@@ -65,6 +67,7 @@ logger = logging.getLogger(__name__)
 # =============================================================================
 @dataclass
 class AppConfig:
+    """Application configuration with environment variable fallbacks."""
     DEBUG: bool = True
     SECRET_KEY: str = os.getenv("FLASK_SECRET_KEY", "your-secret-key-here")
     BASE_DIR: Path = Path(__file__).parent
@@ -82,11 +85,14 @@ class AppConfig:
 
     @classmethod
     def from_env(cls) -> "AppConfig":
+        """Create a configuration instance from environment variables."""
         return cls()
 
 
 @dataclass
 class AIModel:
+    """Represents an AI model with display properties"
+    """
     name: str
     color: str
     
@@ -97,6 +103,7 @@ class AIModel:
 
 @dataclass
 class DockerStatus:
+    """Represents the status of a Docker container."""
     exists: bool = False
     running: bool = False
     health: str = "unknown"
@@ -104,6 +111,7 @@ class DockerStatus:
     details: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
+        """Convert status to dictionary for JSON serialization."""
         return asdict(self)
     
     
@@ -155,6 +163,7 @@ class RequestLoggerMiddleware:
     """
     
     def __init__(self, app):
+        """Initialize middleware and attach handlers to the Flask app."""
         self.app = app
         self.logger = app.logger
         
@@ -235,8 +244,10 @@ class RequestLoggerMiddleware:
 # Logging Configuration
 # =============================================================================
 class StatusEndpointFilter(logging.Filter):
+    """Filter to reduce noise in logs from status endpoints."""
+    
     def filter(self, record: logging.LogRecord) -> bool:
-        # Filter out routine container status messages from the logs.
+        """Filter out routine container status messages from the logs."""
         if not hasattr(record, "args") or len(record.args) < 3:
             return True
         msg = record.args[2] if isinstance(record.args[2], str) else ""
@@ -244,8 +255,16 @@ class StatusEndpointFilter(logging.Filter):
 
 
 class LoggingService:
+    """Provides centralized logging configuration for the application."""
+    
     @staticmethod
     def configure(log_level: str) -> None:
+        """
+        Configure logging settings for the application.
+        
+        Args:
+            log_level: The desired logging level (DEBUG, INFO, WARNING, ERROR)
+        """
         # More detailed log format that includes thread info
         log_format = (
             "%(asctime)s - %(name)s - [%(levelname)s] - "
@@ -284,6 +303,8 @@ class LoggingService:
 # Port Management
 # =============================================================================
 class PortManager:
+    """Manages port allocations for application containers."""
+    
     BASE_BACKEND_PORT = 5001
     BASE_FRONTEND_PORT = 5501
     PORTS_PER_APP = 2
@@ -292,6 +313,15 @@ class PortManager:
 
     @classmethod
     def get_port_range(cls, model_idx: int) -> Dict[str, Dict[str, int]]:
+        """
+        Get the port range for a model's applications.
+        
+        Args:
+            model_idx: The index of the model in AI_MODELS
+            
+        Returns:
+            Dictionary with start and end ports for backend and frontend
+        """
         total_needed = cls.APPS_PER_MODEL * cls.PORTS_PER_APP + cls.BUFFER_PORTS
         return {
             "backend": {
@@ -306,6 +336,16 @@ class PortManager:
 
     @classmethod
     def get_app_ports(cls, model_idx: int, app_num: int) -> Dict[str, int]:
+        """
+        Get the specific ports for an application.
+        
+        Args:
+            model_idx: The index of the model in AI_MODELS
+            app_num: The application number
+            
+        Returns:
+            Dictionary with backend and frontend port numbers
+        """
         rng = cls.get_port_range(model_idx)
         return {
             "backend": rng["backend"]["start"] + (app_num - 1) * cls.PORTS_PER_APP,
@@ -316,13 +356,27 @@ class PortManager:
 # Docker Management
 # =============================================================================
 class DockerManager:
+    """Manages Docker containers and their statuses with caching."""
+    
     def __init__(self, client: Optional[docker.DockerClient] = None) -> None:
+        """
+        Initialize Docker manager with optional client.
+        
+        Args:
+            client: Optional pre-configured Docker client
+        """
         self.logger = logging.getLogger(__name__)
         self.client = client or self._create_docker_client()
         self._cache: Dict[str, Tuple[float, DockerStatus]] = {}
         self._cache_duration = AppConfig.from_env().CACHE_DURATION
 
     def _create_docker_client(self) -> Optional[docker.DockerClient]:
+        """
+        Create a Docker client with configured timeout.
+        
+        Returns:
+            Docker client instance or None if creation fails
+        """
         try:
             docker_host = os.getenv("DOCKER_HOST", "npipe:////./pipe/docker_engine")
             return docker.DockerClient(
@@ -334,6 +388,15 @@ class DockerManager:
             return None
 
     def get_container_status(self, container_name: str) -> DockerStatus:
+        """
+        Get the status of a container with caching.
+        
+        Args:
+            container_name: Name of the container
+            
+        Returns:
+            DockerStatus object with container status details
+        """
         now = time.time()
         if container_name in self._cache:
             timestamp, status = self._cache[container_name]
@@ -344,6 +407,15 @@ class DockerManager:
         return status
 
     def _fetch_container_status(self, container_name: str) -> DockerStatus:
+        """
+        Fetch the current status of a container from Docker.
+        
+        Args:
+            container_name: Name of the container
+            
+        Returns:
+            DockerStatus object with container status details
+        """
         if not self.client:
             return DockerStatus(exists=False, status="error", details="Docker client unavailable")
         try:
@@ -365,6 +437,16 @@ class DockerManager:
             return DockerStatus(exists=False, status="error", details=str(e))
 
     def get_container_logs(self, container_name: str, tail: int = 100) -> str:
+        """
+        Get the logs from a container.
+        
+        Args:
+            container_name: Name of the container
+            tail: Number of log lines to retrieve
+            
+        Returns:
+            String containing container logs
+        """
         if not self.client:
             return "Docker client unavailable"
         try:
@@ -375,6 +457,7 @@ class DockerManager:
             return f"Log retrieval error: {e}"
 
     def cleanup_containers(self) -> None:
+        """Remove stopped containers older than 24 hours."""
         if not self.client:
             return
         try:
@@ -386,8 +469,16 @@ class DockerManager:
 # System Health Monitoring
 # =============================================================================
 class SystemHealthMonitor:
+    """Monitors system health metrics including disk space and Docker status."""
+    
     @staticmethod
     def check_disk_space() -> bool:
+        """
+        Check if disk space is sufficient (< 90% used).
+        
+        Returns:
+            True if disk space is sufficient, False otherwise
+        """
         try:
             if os.name == "nt":
                 result = subprocess.run(
@@ -423,6 +514,15 @@ class SystemHealthMonitor:
 
     @staticmethod
     def check_health(docker_client: Optional[docker.DockerClient]) -> bool:
+        """
+        Check overall system health including Docker connectivity.
+        
+        Args:
+            docker_client: Docker client to check
+            
+        Returns:
+            True if system is healthy, False otherwise
+        """
         if not docker_client:
             logging.error("No Docker client")
             return False
@@ -484,12 +584,29 @@ def ajax_compatible(f):
 
 
 def get_model_index(model_name: str) -> int:
-    """Get the index of a model in the AI_MODELS list."""
+    """
+    Get the index of a model in the AI_MODELS list.
+    
+    Args:
+        model_name: Name of the model
+        
+    Returns:
+        Index in the AI_MODELS list or 0 if not found
+    """
     return next((i for i, m in enumerate(AI_MODELS) if m.name == model_name), 0)
 
 
 def get_container_names(model: str, app_num: int) -> Tuple[str, str]:
-    """Get the container names for a given model and app number."""
+    """
+    Get the container names for a given model and app number.
+    
+    Args:
+        model: Model name
+        app_num: Application number
+        
+    Returns:
+        Tuple of (backend_container_name, frontend_container_name)
+    """
     idx = get_model_index(model)
     ports = PortManager.get_app_ports(idx, app_num)
     base = model.lower()
@@ -523,7 +640,15 @@ def get_app_info(model_name: str, app_num: int) -> Dict[str, Any]:
 
 
 def get_apps_for_model(model_name: str) -> List[Dict[str, Any]]:
-    """Get all apps for a specific model."""
+    """
+    Get all apps for a specific model.
+    
+    Args:
+        model_name: Name of the model
+        
+    Returns:
+        List of app information dictionaries
+    """
     base_path = Path(model_name)
     if not base_path.exists():
         return []
@@ -542,7 +667,12 @@ def get_apps_for_model(model_name: str) -> List[Dict[str, Any]]:
 
 
 def get_all_apps() -> List[Dict[str, Any]]:
-    """Get all apps for all models."""
+    """
+    Get all apps for all models.
+    
+    Returns:
+        List of app information dictionaries for all models
+    """
     return [app_info for model in AI_MODELS for app_info in get_apps_for_model(model.name)]
 
 
@@ -691,7 +821,21 @@ def process_security_analysis(
     full_scan: bool,
     no_issue_message: str,
 ):
-    """Common logic for running security analysis and returning template."""
+    """
+    Common logic for running security analysis and returning template.
+    
+    Args:
+        template: Template name to render
+        analyzer: Security analyzer instance
+        analysis_method: Method to call for analysis
+        model: Model name
+        app_num: App number
+        full_scan: Whether to run a full scan
+        no_issue_message: Message to show when no issues found
+        
+    Returns:
+        Rendered template with analysis results
+    """
     try:
         issues, tool_status, tool_output_details = analysis_method(
             model, app_num, use_all_tools=full_scan
@@ -770,7 +914,12 @@ def get_app_directory(app: Flask, model: str, app_num: int) -> Path:
 
 
 def stop_zap_scanners(scans: Dict[str, Any]) -> None:
-    """Stop all active ZAP scanners."""
+    """
+    Stop all active ZAP scanners.
+    
+    Args:
+        scans: Dictionary of scan_key -> scanner mappings
+    """
     for scan_key, scanner in scans.items():
         if hasattr(scanner, "stop_scan") and callable(scanner.stop_scan):
             try:
@@ -788,12 +937,24 @@ def stop_zap_scanners(scans: Dict[str, Any]) -> None:
 # =============================================================================
 class ScanManager:
     """Manages ZAP scans and their states."""
+    
     def __init__(self):
+        """Initialize scan manager with empty scan dictionary."""
         self.scans: Dict[str, Dict[str, Any]] = {}
         self._lock = threading.Lock()
 
     def create_scan(self, model: str, app_num: int, options: dict) -> str:
-        """Create a new scan entry."""
+        """
+        Create a new scan entry.
+        
+        Args:
+            model: Model name
+            app_num: App number
+            options: Scan options
+            
+        Returns:
+            Generated scan ID
+        """
         scan_id = f"{model}-{app_num}-{int(time.time())}"
         with self._lock:
             self.scans[scan_id] = {
@@ -808,7 +969,16 @@ class ScanManager:
         return scan_id
 
     def get_scan(self, model: str, app_num: int) -> Optional[dict]:
-        """Get the latest scan for a given model/app combination."""
+        """
+        Get the latest scan for a given model/app combination.
+        
+        Args:
+            model: Model name
+            app_num: App number
+            
+        Returns:
+            Latest scan details or None if no scan exists
+        """
         with self._lock:
             matching_scans = [
                 (sid, scan) for sid, scan in self.scans.items()
@@ -819,7 +989,13 @@ class ScanManager:
             return max(matching_scans, key=lambda x: x[0])[1]
 
     def update_scan(self, scan_id: str, **kwargs):
-        """Update scan details."""
+        """
+        Update scan details.
+        
+        Args:
+            scan_id: ID of the scan to update
+            **kwargs: Fields to update
+        """
         with self._lock:
             if scan_id in self.scans:
                 self.scans[scan_id].update(kwargs)
@@ -836,7 +1012,12 @@ class ScanManager:
 
 
 def get_scan_manager():
-    """Retrieve or initialize the scan manager."""
+    """
+    Retrieve or initialize the scan manager.
+    
+    Returns:
+        ScanManager instance from current app or a new one if not present
+    """
     if not hasattr(current_app, 'scan_manager'):
         current_app.scan_manager = ScanManager()
     return current_app.scan_manager
@@ -846,7 +1027,17 @@ def get_scan_manager():
 # =============================================================================
 class CustomJSONEncoder(json.JSONEncoder):
     """Extended JSON encoder that can handle dataclasses and objects with __dict__."""
+    
     def default(self, obj):
+        """
+        Custom encoding for special types.
+        
+        Args:
+            obj: Object to encode
+            
+        Returns:
+            JSON serializable representation
+        """
         # Handle dataclasses
         if hasattr(obj, "__dataclass_fields__"):
             return asdict(obj)
@@ -866,7 +1057,16 @@ class CustomJSONEncoder(json.JSONEncoder):
 # AI Service Integration 
 # =============================================================================
 def call_ai_service(model: str, prompt: str) -> str:
-    """Call an AI service with a prompt and return the response."""
+    """
+    Call an AI service with a prompt and return the response.
+    
+    Args:
+        model: AI model to use
+        prompt: Prompt to send to the model
+        
+    Returns:
+        AI-generated response
+    """
     # Replace with actual integration logic
     return "AI analysis result"
 
@@ -884,7 +1084,12 @@ zap_bp = Blueprint("zap", __name__)
 @main_bp.route("/")
 @ajax_compatible
 def index():
-    """Main dashboard index page."""
+    """
+    Main dashboard index page showing all apps and their statuses.
+    
+    Returns:
+        Rendered index template with apps and models
+    """
     docker_manager: DockerManager = current_app.config["docker_manager"]
     apps = get_all_apps()
     for app_info in apps:
@@ -903,7 +1108,16 @@ def index():
 @main_bp.route("/docker-logs/<string:model>/<int:app_num>")
 @ajax_compatible
 def view_docker_logs(model: str, app_num: int):
-    """View Docker compose logs for debugging."""
+    """
+    View Docker compose logs for debugging.
+    
+    Args:
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        Rendered template with Docker logs
+    """
     app_dir = Path(f"{model}/app{app_num}")
     if not app_dir.exists():
         flash(f"Directory not found: {app_dir}", "error")
@@ -941,7 +1155,16 @@ def view_docker_logs(model: str, app_num: int):
 @main_bp.route("/status/<string:model>/<int:app_num>")
 @ajax_compatible
 def check_app_status(model: str, app_num: int):
-    """Check and return container status for an app."""
+    """
+    Check and return container status for an app.
+    
+    Args:
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        JSON status for AJAX or redirect with flash for regular requests
+    """
     docker_manager: DockerManager = current_app.config["docker_manager"]
     status = get_app_container_statuses(model, app_num, docker_manager)
     
@@ -1026,7 +1249,16 @@ def batch_docker_action(action: str, model: str):
 @main_bp.route("/logs/<string:model>/<int:app_num>")
 @ajax_compatible
 def view_logs(model: str, app_num: int):
-    """View container logs for an app."""
+    """
+    View container logs for an app.
+    
+    Args:
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        Rendered template with logs
+    """
     docker_manager: DockerManager = current_app.config["docker_manager"]
     b_name, f_name = get_container_names(model, app_num)
     logs_data = {
@@ -1039,7 +1271,17 @@ def view_logs(model: str, app_num: int):
 @main_bp.route("/<action>/<string:model>/<int:app_num>")
 @ajax_compatible
 def handle_docker_action_route(action: str, model: str, app_num: int):
-    """Handle Docker action (start, stop, reload, rebuild) for an app."""
+    """
+    Handle Docker action (start, stop, reload, rebuild) for an app.
+    
+    Args:
+        action: Action to perform
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        JSON response or redirect with flash message
+    """
     success, message = handle_docker_action(action, model, app_num)
     
     # For AJAX requests, return JSON
@@ -1176,7 +1418,16 @@ def system_info():
 @api_bp.route("/container/<string:model>/<int:app_num>/status")
 @ajax_compatible
 def container_status(model: str, app_num: int):
-    """Get container status for an app."""
+    """
+    Get container status for an app.
+    
+    Args:
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        JSON with container statuses
+    """
     docker_manager: DockerManager = current_app.config["docker_manager"]
     status = get_app_container_statuses(model, app_num, docker_manager)
     return status
@@ -1184,7 +1435,16 @@ def container_status(model: str, app_num: int):
 @api_bp.route("/debug/docker/<string:model>/<int:app_num>")
 @ajax_compatible
 def debug_docker_environment(model: str, app_num: int):
-    """Debug endpoint to inspect docker environment for an app."""
+    """
+    Debug endpoint to inspect docker environment for an app.
+    
+    Args:
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        JSON with docker environment details
+    """
     app_dir = Path(f"{model}/app{app_num}")
     
     try:
@@ -1245,7 +1505,16 @@ def debug_docker_environment(model: str, app_num: int):
 @api_bp.route("/health/<string:model>/<int:app_num>")
 @ajax_compatible
 def check_container_health(model: str, app_num: int):
-    """Check if containers for an app are healthy."""
+    """
+    Check if containers for an app are healthy.
+    
+    Args:
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        JSON with health status
+    """
     docker_manager: DockerManager = current_app.config["docker_manager"]
     healthy, message = verify_container_health(docker_manager, model, app_num)
     return {"healthy": healthy, "message": message}
@@ -1254,7 +1523,12 @@ def check_container_health(model: str, app_num: int):
 @api_bp.route("/status")
 @ajax_compatible
 def system_status():
-    """Get overall system status."""
+    """
+    Get overall system status.
+    
+    Returns:
+        JSON with system status overview
+    """
     docker_manager: DockerManager = current_app.config["docker_manager"]
     disk_ok = SystemHealthMonitor.check_disk_space()
     docker_ok = SystemHealthMonitor.check_health(docker_manager.client)
@@ -1268,7 +1542,12 @@ def system_status():
 @api_bp.route("/model-info")
 @ajax_compatible
 def get_model_info():
-    """Get information about all AI models."""
+    """
+    Get information about all AI models.
+    
+    Returns:
+        JSON list with model information
+    """
     return [
         {
             "name": model.name,
@@ -1286,6 +1565,9 @@ def log_client_error():
     """
     Endpoint to log client-side errors that might be causing
     undefined route requests.
+    
+    Returns:
+        JSON status response
     """
     try:
         data = request.get_json()
@@ -1321,7 +1603,16 @@ def log_client_error():
 @zap_bp.route("/<string:model>/<int:app_num>")
 @ajax_compatible
 def zap_scan(model: str, app_num: int):
-    """ZAP scanner page for a specific app."""
+    """
+    ZAP scanner page for a specific app.
+    
+    Args:
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        Rendered template with scan results
+    """
     base_dir: Path = current_app.config["BASE_DIR"]
     results_file = base_dir / f"{model}/app{app_num}/.zap_results.json"
     alerts = []
@@ -1340,7 +1631,16 @@ def zap_scan(model: str, app_num: int):
 @zap_bp.route("/scan/<string:model>/<int:app_num>", methods=["POST"])
 @ajax_compatible
 def start_zap_scan(model: str, app_num: int):
-    """Start a ZAP scan for a specific app."""
+    """
+    Start a ZAP scan for a specific app.
+    
+    Args:
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        JSON response with scan status
+    """
     data = request.get_json()
     base_dir: Path = current_app.config["BASE_DIR"]
     scan_manager = get_scan_manager()
@@ -1389,7 +1689,16 @@ def start_zap_scan(model: str, app_num: int):
 @zap_bp.route("/scan/<string:model>/<int:app_num>/status")
 @ajax_compatible
 def zap_scan_status(model: str, app_num: int):
-    """Get the status of a ZAP scan."""
+    """
+    Get the status of a ZAP scan.
+    
+    Args:
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        JSON with scan status and progress
+    """
     scan_manager = get_scan_manager()
     scan = scan_manager.get_scan(model, app_num)
     if not scan:
@@ -1421,7 +1730,16 @@ def zap_scan_status(model: str, app_num: int):
 @zap_bp.route("/scan/<string:model>/<int:app_num>/stop", methods=["POST"])
 @ajax_compatible
 def stop_zap_scan(model: str, app_num: int):
-    """Stop a running ZAP scan."""
+    """
+    Stop a running ZAP scan.
+    
+    Args:
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        JSON with stop operation result
+    """
     scan_manager = get_scan_manager()
     scan = scan_manager.get_scan(model, app_num)
     if not scan:
@@ -1461,7 +1779,16 @@ def stop_zap_scan(model: str, app_num: int):
 @analysis_bp.route("/backend-security/<string:model>/<int:app_num>")
 @ajax_compatible
 def security_analysis(model: str, app_num: int):
-    """Run backend security analysis for an app."""
+    """
+    Run backend security analysis for an app.
+    
+    Args:
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        Rendered template with security analysis results
+    """
     full_scan = request.args.get("full", "").lower() == "true"
     analyzer = current_app.backend_security_analyzer
     return process_security_analysis(
@@ -1478,7 +1805,16 @@ def security_analysis(model: str, app_num: int):
 @analysis_bp.route("/frontend-security/<string:model>/<int:app_num>")
 @ajax_compatible
 def frontend_security_analysis(model: str, app_num: int):
-    """Run frontend security analysis for an app."""
+    """
+    Run frontend security analysis for an app.
+    
+    Args:
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        Rendered template with security analysis results
+    """
     full_scan = request.args.get("full", "").lower() == "true"
     analyzer = current_app.frontend_security_analyzer
     return process_security_analysis(
@@ -1495,7 +1831,12 @@ def frontend_security_analysis(model: str, app_num: int):
 @api_bp.route("/analyze-security", methods=["POST"])
 @ajax_compatible
 def analyze_security_issues():
-    """Analyze security issues with AI."""
+    """
+    Analyze security issues with AI.
+    
+    Returns:
+        JSON with AI analysis results
+    """
     try:
         data = request.get_json()
         if not data or "issues" not in data:
@@ -1603,7 +1944,16 @@ Format your response with clear headings and concise explanations suitable for a
 @analysis_bp.route("/security/summary/<string:model>/<int:app_num>")
 @ajax_compatible
 def get_security_summary(model: str, app_num: int):
-    """Get security analysis summary for an app."""
+    """
+    Get security analysis summary for an app.
+    
+    Args:
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        JSON with security summary
+    """
     try:
         backend_issues, backend_status, _ = current_app.backend_security_analyzer.analyze_security(
             model, app_num, use_all_tools=False
@@ -1638,7 +1988,12 @@ def get_security_summary(model: str, app_num: int):
 @analysis_bp.route("/security/analyze-file", methods=["POST"])
 @ajax_compatible
 def analyze_single_file():
-    """Analyze a single file for security issues."""
+    """
+    Analyze a single file for security issues.
+    
+    Returns:
+        JSON with analysis results
+    """
     try:
         data = request.get_json()
         if not data or "file_path" not in data:
@@ -1738,7 +2093,16 @@ def performance_test(model: str, port: int):
 @performance_bp.route("/<string:model>/<int:port>/stop", methods=["POST"])
 @ajax_compatible
 def stop_performance_test(model: str, port: int):
-    """Stop a running performance test."""
+    """
+    Stop a running performance test.
+    
+    Args:
+        model: Model name
+        port: Port number
+        
+    Returns:
+        JSON with stop operation result
+    """
     try:
         # For now, we'll just return success
         return {"status": "success", "message": "Test stopped successfully"}
@@ -1754,7 +2118,16 @@ def stop_performance_test(model: str, port: int):
 @performance_bp.route("/<string:model>/<int:port>/reports", methods=["GET"])
 @ajax_compatible
 def list_performance_reports(model: str, port: int):
-    """List available performance reports for a specific model/port."""
+    """
+    List available performance reports for a specific model/port.
+    
+    Args:
+        model: Model name
+        port: Port number
+        
+    Returns:
+        JSON with available reports
+    """
     try:
         report_dir = current_app.config["BASE_DIR"] / "performance_reports"
         if not report_dir.exists():
@@ -1784,7 +2157,17 @@ def list_performance_reports(model: str, port: int):
 @performance_bp.route("/<string:model>/<int:port>/reports/<path:report_name>", methods=["GET"])
 @ajax_compatible
 def view_performance_report(model: str, port: int, report_name: str):
-    """View a specific performance report."""
+    """
+    View a specific performance report.
+    
+    Args:
+        model: Model name
+        port: Port number
+        report_name: Report filename
+        
+    Returns:
+        Rendered template with report content
+    """
     try:
         report_path = current_app.config["BASE_DIR"] / "performance_reports" / report_name
         if not report_path.exists():
@@ -1812,7 +2195,15 @@ def view_performance_report(model: str, port: int, report_name: str):
 @gpt4all_bp.route("/analyze-gpt4all/<string:analysis_type>", methods=["POST"])
 @ajax_compatible
 def analyze_gpt4all(analysis_type: str):
-    """Run GPT4All analysis on code."""
+    """
+    Run GPT4All analysis on code.
+    
+    Args:
+        analysis_type: Type of analysis to run
+        
+    Returns:
+        JSON with analysis results
+    """
     try:
         data = request.get_json()
         directory = Path(data.get("directory", current_app.config["BASE_DIR"]))
@@ -1843,16 +2234,15 @@ def analyze_gpt4all(analysis_type: str):
         )
 
 @gpt4all_bp.route("/gpt4all-analysis", methods=["GET", "POST"])
-@ajax_compatible
 def gpt4all_analysis():
     """Flask route for checking requirements against code."""
     try:
         # Extract parameters
         model = request.args.get("model") or request.form.get("model")
-        app_num = request.args.get("app_num") or request.form.get("app_num")
+        app_num_str = request.args.get("app_num") or request.form.get("app_num")
         
         # Validate required parameters
-        if not model or not app_num:
+        if not model or not app_num_str:
             return render_template(
                 "requirements_check.html",
                 model=None,
@@ -1862,16 +2252,41 @@ def gpt4all_analysis():
                 error="Model and app number are required"
             )
             
-        # Find the application directory
-        directory = get_app_directory(current_app, model, app_num)
-        if not directory.exists():
+        try:
+            app_num = int(app_num_str)
+        except ValueError:
+            return render_template(
+                "requirements_check.html",
+                model=model,
+                app_num=None,
+                requirements=[],
+                results=None,
+                error=f"Invalid app number: {app_num_str}"
+            )
+            
+        # Find the application directory using the enhanced path handling
+        base_dir = current_app.config.get("BASE_DIR", Path.cwd())
+        directory = PathUtils.find_app_directory(base_dir, model, app_num)
+        
+        if not directory:
+            # Try harder to find a valid directory
+            all_possible_dirs = [
+                get_app_directory(current_app, model, app_num),
+                base_dir / f"{model}/app{app_num}",
+                base_dir / f"{model.lower()}/app{app_num}",
+                base_dir / "z_interface_app" / f"{model}/app{app_num}",
+                base_dir / "z_interface_app" / f"{model.lower()}/app{app_num}"
+            ]
+            
+            # Show more informative error
+            error_msg = f"Directory not found: Tried paths: {', '.join(str(p) for p in all_possible_dirs)}"
             return render_template(
                 "requirements_check.html",
                 model=model,
                 app_num=app_num,
                 requirements=[],
                 results=None,
-                error=f"Directory not found: {directory}"
+                error=error_msg
             )
         
         # Setup for requirements analysis
@@ -1884,7 +2299,7 @@ def gpt4all_analysis():
             req_list = [r.strip() for r in requirements_text.strip().splitlines() if r.strip()]
             
             if req_list:
-                # Initialize analyzer
+                # Initialize analyzer with the correct directory
                 analyzer = GPT4AllAnalyzer(directory)
                 
                 # Run check for each requirement using proper asyncio handling in Flask
@@ -1892,6 +2307,9 @@ def gpt4all_analysis():
                 asyncio.set_event_loop(loop)
                 results = loop.run_until_complete(analyzer.check_requirements(directory, req_list))
                 loop.close()
+                
+                # Log success
+                logger.info(f"Successfully analyzed requirements for {model}/app{app_num}")
         
         # Render template with form or results
         return render_template(
@@ -1952,9 +2370,16 @@ def register_error_handlers(app: Flask) -> None:
 
 
 def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
-    """Register Flask request hooks."""
+    """
+    Register Flask request hooks.
+    
+    Args:
+        app: Flask app instance
+        docker_manager: Docker manager instance
+    """
     @app.before_request
     def before():
+        # Occasional cleanup
         if random.random() < 0.01:
             docker_manager.cleanup_containers()
             if "ZAP_SCANS" in app.config:
@@ -1987,7 +2412,15 @@ def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
 # Flask App Factory
 # =============================================================================
 def create_app(config: Optional[AppConfig] = None) -> Flask:
-    """Create and configure the Flask application."""
+    """
+    Create and configure the Flask application.
+    
+    Args:
+        config: Optional configuration object
+        
+    Returns:
+        Configured Flask application
+    """
     app = Flask(__name__)
     app_config = config or AppConfig.from_env()
     app.config.from_object(app_config)
@@ -2058,8 +2491,15 @@ if __name__ == "__main__":
 # Optional: Database Manager for Storing Scan Data
 # =============================================================================
 class DatabaseManager:
+    """Manages database operations for storing scan results."""
+    
     def __init__(self, db_path="scans.db"):
-        """Initialize database connection and tables."""
+        """
+        Initialize database connection and tables.
+        
+        Args:
+            db_path: Path to the SQLite database file
+        """
         self.conn = sqlite3.connect(db_path)
         self._create_tables()
 
@@ -2087,7 +2527,18 @@ class DatabaseManager:
         ''')
         
     def store_security_scan(self, scan_type, model, app_num, issues):
-        """Store security scan results."""
+        """
+        Store security scan results.
+        
+        Args:
+            scan_type: Type of security scan
+            model: Model name
+            app_num: App number
+            issues: Issues found in the scan
+            
+        Returns:
+            ID of the new database record
+        """
         issues_json = json.dumps(issues)
         cursor = self.conn.cursor()
         cursor.execute(
@@ -2098,7 +2549,17 @@ class DatabaseManager:
         return cursor.lastrowid
         
     def get_security_scans(self, model=None, app_num=None, limit=10):
-        """Retrieve security scan results with optional filters."""
+        """
+        Retrieve security scan results with optional filters.
+        
+        Args:
+            model: Optional model filter
+            app_num: Optional app number filter
+            limit: Maximum number of records to return
+            
+        Returns:
+            List of scan results
+        """
         cursor = self.conn.cursor()
         query = "SELECT * FROM security_scans"
         params = []
