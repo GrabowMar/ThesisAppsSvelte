@@ -2515,3 +2515,1099 @@ The home directory is already in use. Ensure no other ZAP instances are running 
 2025-04-07 23:03:35,040 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
 2025-04-07 23:03:35,041 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
 2025-04-07 23:03:35,041 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-07 23:25:02,394 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-07 23:25:02,468 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-07 23:25:02,469 - zap_scanner - INFO - Found free port: 8090
+2025-04-07 23:25:02,469 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-07 23:25:02,470 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-07 23:25:02,470 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-07 23:25:04,217 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-07 23:25:04,292 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-07 23:25:04,293 - zap_scanner - INFO - Found free port: 8090
+2025-04-07 23:25:04,293 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-07 23:25:04,293 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-07 23:25:04,294 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-07 23:34:58,132 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-07 23:34:58,199 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-07 23:34:58,200 - zap_scanner - INFO - Found free port: 8090
+2025-04-07 23:34:58,200 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-07 23:34:58,200 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-07 23:34:58,201 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-07 23:34:58,202 - zap_scanner - INFO - Starting comprehensive scan Llama-3 for http://localhost:5505
+2025-04-07 23:34:58,202 - zap_scanner - INFO - Starting comprehensive scan of target: http://localhost:5505
+2025-04-07 23:34:58,202 - zap_scanner - INFO - Starting ZAP daemon...
+2025-04-07 23:34:58,202 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-07 23:35:04,106 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-07 23:35:04,110 - zap_scanner - INFO - Found ZAP JAR at: C:\Program Files\ZAP\Zed Attack Proxy\zap-2.16.1.jar
+2025-04-07 23:35:04,111 - zap_scanner - INFO - Starting ZAP with command: java -Xmx4G -Djava.io.tmpdir=c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\tmp -Djava.net.preferIPv4Stack=true -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -jar C:\Program Files\ZAP\Zed Attack Proxy\zap-2.16.1.jar -daemon -port 8090 -host 127.0.0.1 -config api.key=5tjkc409k4oaacd69qob5p6uri -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true -config connection.timeoutInSecs=1200 -config ascan.maxScanDurationInMins=120 -config ascan.threadPerHost=8 -config view.mode=standard -config ascan.attackStrength=HIGH -config ascan.alertThreshold=LOW -config pscan.maxAlertsPerRule=0 -config pscan.maxBodySizeInBytes=10000000 -config ajaxSpider.browserId=chrome-headless -config ajaxSpider.maxDuration=600 -config ajaxSpider.clickDefaultElems=true -config ajaxSpider.clickElemsOnce=false -config ajaxSpider.eventWait=2000 -config ajaxSpider.maxCrawlDepth=10 -config ajaxSpider.maxCrawlStates=0 -config ajaxSpider.numberOfBrowsers=4 -config ajaxSpider.randomInputs=true -config pscans.pscanner(10020).enabled=true -config pscans.pscanner(10020).alertThreshold=LOW -config pscans.pscanner(10021).enabled=true -config pscans.pscanner(10021).alertThreshold=LOW -config pscans.pscanner(10038).enabled=true -config pscans.pscanner(10038).alertThreshold=LOW -config pscans.pscanner(10035).enabled=true -config pscans.pscanner(10035).alertThreshold=LOW -config pscans.pscanner(10063).enabled=true -config pscans.pscanner(10063).alertThreshold=LOW -config pscans.pscanner(10054).enabled=true -config pscans.pscanner(10054).alertThreshold=LOW -config pscans.pscanner(10024).enabled=true -config pscans.pscanner(10024).alertThreshold=LOW -config pscans.pscanner(10025).enabled=true -config pscans.pscanner(10025).alertThreshold=LOW -config pscans.pscanner(10027).enabled=true -config pscans.pscanner(10027).alertThreshold=LOW -config pscans.pscanner(10096).enabled=true -config pscans.pscanner(10096).alertThreshold=LOW -config pscans.pscanner(10097).enabled=true -config pscans.pscanner(10097).alertThreshold=LOW -config pscans.pscanner(10094).enabled=true -config pscans.pscanner(10094).alertThreshold=LOW -config pscans.pscanner(90022).enabled=true -config pscans.pscanner(90022).alertThreshold=LOW -config pscans.pscanner(10109).enabled=true -config pscans.pscanner(10109).alertThreshold=LOW -config pscans.pscanner(10110).enabled=true -config pscans.pscanner(10110).alertThreshold=LOW -config ascan.attackStrength=HIGH -config ascan.alertThreshold=LOW
+2025-04-07 23:35:04,117 - zap_scanner - INFO - Waiting for ZAP to initialize (15 seconds)...
+2025-04-07 23:35:19,118 - zap_scanner - INFO - Connecting to ZAP API (attempt 1/5)...
+2025-04-07 23:35:19,236 - zap_scanner - INFO - Successfully connected to ZAP 2.16.1
+2025-04-07 23:35:19,236 - zap_scanner - INFO - ZAP startup completed in 21.03 seconds
+2025-04-07 23:35:19,237 - zap_scanner - INFO - Configuring comprehensive passive scanning...
+2025-04-07 23:35:19,237 - zap_scanner - INFO - Enabling ALL passive scanners...
+2025-04-07 23:35:19,249 - zap_scanner - INFO - Setting passive scan to analyze ALL traffic (not just in-scope)...
+2025-04-07 23:35:19,258 - zap_scanner - INFO - Setting LOW alert threshold for all passive scanners to increase detection rate...
+2025-04-07 23:35:19,578 - zap_scanner - INFO - Setting unlimited maximum alerts per rule...
+2025-04-07 23:35:19,585 - zap_scanner - INFO - Passive scanning fully configured with 57 enabled scanners.
+2025-04-07 23:35:19,585 - zap_scanner - INFO - Accessing target URL: http://localhost:5505
+2025-04-07 23:35:19,692 - zap_scanner - INFO - Initial target access complete
+2025-04-07 23:35:21,706 - zap_scanner - INFO - Performing extended spidering...
+2025-04-07 23:36:21,757 - zap_scanner - INFO - Extended spidering completed
+2025-04-07 23:36:21,757 - zap_scanner - INFO - Checking passive scan status after initial discovery...
+2025-04-07 23:36:21,758 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-07 23:36:21,765 - zap_scanner - INFO - Passive scan in progress: 3 records left to scan (elapsed: 0.0s)
+2025-04-07 23:36:26,779 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 5.0s)
+2025-04-07 23:36:26,780 - zap_scanner - INFO - Passive scan completed in 5.0 seconds
+2025-04-07 23:36:26,780 - zap_scanner - INFO - Starting traditional spider scan with maxChildren=30
+2025-04-07 23:36:26,793 - zap_scanner - INFO - Spider scan started with ID: 0
+2025-04-07 23:36:26,793 - zap_scanner - INFO - Monitoring Spider progress for scan ID: 0
+2025-04-07 23:36:26,797 - zap_scanner - INFO - Spider progress: 0% (elapsed: 0.0s)
+2025-04-07 23:36:28,814 - zap_scanner - INFO - Spider progress: 100% (elapsed: 2.0s)
+2025-04-07 23:36:28,814 - zap_scanner - INFO - Spider scan completed in 2.0 seconds
+2025-04-07 23:36:28,814 - zap_scanner - INFO - Starting AJAX Spider for JavaScript-rendered content...
+2025-04-07 23:36:28,818 - zap_scanner - INFO - Running AJAX Spider on target: http://localhost:5505
+2025-04-07 23:36:28,832 - zap_scanner - INFO - AJAX Spider started: OK
+2025-04-07 23:36:28,833 - zap_scanner - INFO - Monitoring AJAX Spider progress...
+2025-04-07 23:36:28,837 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 0%, elapsed: 0.0s)
+2025-04-07 23:36:33,845 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 0%, elapsed: 5.0s)
+2025-04-07 23:36:38,862 - zap_scanner - INFO - AJAX Spider completed with status: stopped (elapsed: 10.0s)
+2025-04-07 23:36:38,889 - zap_scanner - INFO - AJAX Spider found 13 results
+2025-04-07 23:36:38,924 - zap_scanner - INFO - AJAX Spider completed with 13 URLs discovered
+2025-04-07 23:36:38,925 - zap_scanner - INFO - Sample of AJAX-discovered URLs:
+2025-04-07 23:36:38,925 - zap_scanner - INFO -  - Unknown URL
+2025-04-07 23:36:38,925 - zap_scanner - INFO -  - Unknown URL
+2025-04-07 23:36:38,926 - zap_scanner - INFO -  - Unknown URL
+2025-04-07 23:36:38,926 - zap_scanner - INFO -  - Unknown URL
+2025-04-07 23:36:38,926 - zap_scanner - INFO -  - Unknown URL
+2025-04-07 23:36:38,927 - zap_scanner - INFO - Waiting for passive scan to process all discovered content...
+2025-04-07 23:36:38,927 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-07 23:36:38,934 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 0.0s)
+2025-04-07 23:36:38,934 - zap_scanner - INFO - Passive scan completed in 0.0 seconds
+2025-04-07 23:36:38,935 - zap_scanner - INFO - Configuring comprehensive active scanning...
+2025-04-07 23:36:38,935 - zap_scanner - INFO - Enabling ALL active scanners...
+2025-04-07 23:36:38,958 - zap_scanner - INFO - Setting HIGH attack strength for all policies...
+2025-04-07 23:36:39,022 - zap_scanner - INFO - Setting LOW alert threshold for all policies...
+2025-04-07 23:36:39,074 - zap_scanner - INFO - Configuring scan policy options...
+2025-04-07 23:36:39,130 - zap_scanner - INFO - Enabled 47 active scanners in category: Other
+2025-04-07 23:36:39,130 - zap_scanner - INFO - Active scanning fully configured with 47 enabled scanners
+2025-04-07 23:36:39,130 - zap_scanner - INFO - Starting active scan with comprehensive settings...
+2025-04-07 23:36:39,147 - zap_scanner - INFO - Active scan started with ID: 0
+2025-04-07 23:36:39,147 - zap_scanner - INFO - Monitoring Active scan progress for scan ID: 0
+2025-04-07 23:36:39,152 - zap_scanner - INFO - Active scan progress: 0% (elapsed: 0.0s)
+2025-04-07 23:36:44,160 - zap_scanner - INFO - Active scan progress: 1% (elapsed: 5.0s)
+2025-04-07 23:36:49,185 - zap_scanner - INFO - Active scan progress: 2% (elapsed: 10.0s)
+2025-04-07 23:36:54,204 - zap_scanner - INFO - Active scan progress: 4% (elapsed: 15.1s)
+2025-04-07 23:36:59,213 - zap_scanner - INFO - Active scan progress: 13% (elapsed: 20.1s)
+2025-04-07 23:37:04,221 - zap_scanner - INFO - Active scan progress: 14% (elapsed: 25.1s)
+2025-04-07 23:37:09,227 - zap_scanner - INFO - Active scan progress: 16% (elapsed: 30.1s)
+2025-04-07 23:37:14,293 - zap_scanner - INFO - Active scan progress: 18% (elapsed: 35.1s)
+2025-04-07 23:37:19,323 - zap_scanner - INFO - Active scan progress: 20% (elapsed: 40.2s)
+2025-04-07 23:37:24,337 - zap_scanner - INFO - Active scan progress: 26% (elapsed: 45.2s)
+2025-04-07 23:37:29,355 - zap_scanner - INFO - Active scan progress: 27% (elapsed: 50.2s)
+2025-04-07 23:37:34,367 - zap_scanner - INFO - Active scan progress: 29% (elapsed: 55.2s)
+2025-04-07 23:37:39,382 - zap_scanner - INFO - Active scan progress: 30% (elapsed: 60.2s)
+2025-04-07 23:37:44,396 - zap_scanner - INFO - Active scan progress: 32% (elapsed: 65.2s)
+2025-04-07 23:37:49,407 - zap_scanner - INFO - Active scan progress: 33% (elapsed: 70.3s)
+2025-04-07 23:37:54,427 - zap_scanner - INFO - Active scan progress: 35% (elapsed: 75.3s)
+2025-04-07 23:37:59,436 - zap_scanner - INFO - Active scan progress: 36% (elapsed: 80.3s)
+2025-04-07 23:38:04,456 - zap_scanner - INFO - Active scan progress: 38% (elapsed: 85.3s)
+2025-04-07 23:38:10,639 - zap_scanner - INFO - Active scan progress: 40% (elapsed: 91.5s)
+2025-04-07 23:38:15,663 - zap_scanner - INFO - Active scan progress: 41% (elapsed: 96.5s)
+2025-04-07 23:38:20,683 - zap_scanner - INFO - Active scan progress: 45% (elapsed: 101.5s)
+2025-04-07 23:38:25,699 - zap_scanner - INFO - Active scan progress: 47% (elapsed: 106.6s)
+2025-04-07 23:38:30,723 - zap_scanner - INFO - Active scan progress: 49% (elapsed: 111.6s)
+2025-04-07 23:38:35,781 - zap_scanner - INFO - Active scan progress: 50% (elapsed: 116.6s)
+2025-04-07 23:38:40,792 - zap_scanner - INFO - Active scan progress: 51% (elapsed: 121.6s)
+2025-04-07 23:38:45,802 - zap_scanner - INFO - Active scan progress: 55% (elapsed: 126.7s)
+2025-04-07 23:38:50,811 - zap_scanner - INFO - Active scan progress: 61% (elapsed: 131.7s)
+2025-04-07 23:38:55,828 - zap_scanner - INFO - Active scan progress: 65% (elapsed: 136.7s)
+2025-04-07 23:39:00,834 - zap_scanner - INFO - Active scan progress: 69% (elapsed: 141.7s)
+2025-04-07 23:39:05,853 - zap_scanner - INFO - Active scan progress: 70% (elapsed: 146.7s)
+2025-04-07 23:39:10,864 - zap_scanner - INFO - Active scan progress: 72% (elapsed: 151.7s)
+2025-04-07 23:39:15,874 - zap_scanner - INFO - Active scan progress: 87% (elapsed: 156.7s)
+2025-04-07 23:39:20,893 - zap_scanner - INFO - Active scan progress: 91% (elapsed: 161.7s)
+2025-04-07 23:39:25,910 - zap_scanner - INFO - Active scan progress: 93% (elapsed: 166.8s)
+2025-04-07 23:39:30,917 - zap_scanner - INFO - Active scan progress: 100% (elapsed: 171.8s)
+2025-04-07 23:39:30,918 - zap_scanner - INFO - Active scan scan completed in 171.8 seconds
+2025-04-07 23:39:30,918 - zap_scanner - INFO - Performing final passive scan check...
+2025-04-07 23:39:30,918 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-07 23:39:30,923 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 0.0s)
+2025-04-07 23:39:30,923 - zap_scanner - INFO - Passive scan completed in 0.0 seconds
+2025-04-07 23:39:30,924 - zap_scanner - INFO - Retrieving final scan alerts...
+2025-04-07 23:39:31,053 - zap_scanner - INFO - Found 442 total alerts
+2025-04-07 23:39:31,054 - zap_scanner - INFO - Processing alert details...
+2025-04-07 23:39:31,054 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505
+2025-04-07 23:39:31,054 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505
+2025-04-07 23:39:31,055 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/robots.txt
+2025-04-07 23:39:31,055 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/sitemap.xml
+2025-04-07 23:39:31,055 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.well-known/security.txt
+2025-04-07 23:39:31,055 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/sitemap.xml
+2025-04-07 23:39:31,056 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/robots.txt
+2025-04-07 23:39:31,056 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.well-known/security.txt
+2025-04-07 23:39:31,056 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/crossdomain.xml
+2025-04-07 23:39:31,056 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/humans.txt
+2025-04-07 23:39:31,057 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/crossdomain.xml
+2025-04-07 23:39:31,057 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/clientaccesspolicy.xml
+2025-04-07 23:39:31,057 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/manifest.json
+2025-04-07 23:39:31,058 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/login
+2025-04-07 23:39:31,058 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/humans.txt
+2025-04-07 23:39:31,058 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/clientaccesspolicy.xml
+2025-04-07 23:39:31,058 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/manifest.json
+2025-04-07 23:39:31,059 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/login
+2025-04-07 23:39:31,059 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/package.json - Parameter: x-frame-options
+2025-04-07 23:39:31,059 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/package.json
+2025-04-07 23:39:31,060 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/package.json
+2025-04-07 23:39:31,060 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/register
+2025-04-07 23:39:31,060 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/join
+2025-04-07 23:39:31,060 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/signin
+2025-04-07 23:39:31,060 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/signup
+2025-04-07 23:39:31,061 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/authentication
+2025-04-07 23:39:31,061 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/auth
+2025-04-07 23:39:31,061 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/register
+2025-04-07 23:39:31,061 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/join
+2025-04-07 23:39:31,062 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/authentication
+2025-04-07 23:39:31,062 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/signin
+2025-04-07 23:39:31,062 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/signup
+2025-04-07 23:39:31,063 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/auth
+2025-04-07 23:39:31,063 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/user
+2025-04-07 23:39:31,063 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/profile
+2025-04-07 23:39:31,064 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/administrator
+2025-04-07 23:39:31,064 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/admin
+2025-04-07 23:39:31,064 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/backend
+2025-04-07 23:39:31,065 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/account
+2025-04-07 23:39:31,065 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/user
+2025-04-07 23:39:31,065 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/admin
+2025-04-07 23:39:31,065 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/administrator
+2025-04-07 23:39:31,066 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/account
+2025-04-07 23:39:31,066 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/profile
+2025-04-07 23:39:31,066 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/backend
+2025-04-07 23:39:31,067 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/manage
+2025-04-07 23:39:31,067 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/manage
+2025-04-07 23:39:31,067 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/cp
+2025-04-07 23:39:31,068 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/portal
+2025-04-07 23:39:31,069 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/management
+2025-04-07 23:39:31,069 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/control
+2025-04-07 23:39:31,069 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/dashboard
+2025-04-07 23:39:31,069 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/cp
+2025-04-07 23:39:31,070 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/api
+2025-04-07 23:39:31,070 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/dashboard
+2025-04-07 23:39:31,070 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/control
+2025-04-07 23:39:31,070 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/management
+2025-04-07 23:39:31,070 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/api
+2025-04-07 23:39:31,071 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/portal
+2025-04-07 23:39:31,071 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/swagger
+2025-04-07 23:39:31,071 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/swagger-ui
+2025-04-07 23:39:31,071 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/swagger-ui.html
+2025-04-07 23:39:31,071 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/api/v2
+2025-04-07 23:39:31,072 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/api/v1
+2025-04-07 23:39:31,072 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/swagger
+2025-04-07 23:39:31,072 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/swagger-ui
+2025-04-07 23:39:31,072 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/api/docs
+2025-04-07 23:39:31,073 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/api/v1
+2025-04-07 23:39:31,073 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/api/v2
+2025-04-07 23:39:31,073 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/swagger-ui.html
+2025-04-07 23:39:31,073 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/api/docs
+2025-04-07 23:39:31,074 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/graphql
+2025-04-07 23:39:31,074 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/playground
+2025-04-07 23:39:31,074 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/graphql
+2025-04-07 23:39:31,074 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/playground
+2025-04-07 23:39:31,075 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/graphiql
+2025-04-07 23:39:31,075 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/docs
+2025-04-07 23:39:31,075 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/documentation
+2025-04-07 23:39:31,075 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/help
+2025-04-07 23:39:31,075 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/documentation
+2025-04-07 23:39:31,076 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/graphiql
+2025-04-07 23:39:31,076 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/help
+2025-04-07 23:39:31,076 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/docs
+2025-04-07 23:39:31,076 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/guide
+2025-04-07 23:39:31,077 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/manual
+2025-04-07 23:39:31,077 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/changelog
+2025-04-07 23:39:31,077 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/guide
+2025-04-07 23:39:31,077 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/license
+2025-04-07 23:39:31,078 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/js/
+2025-04-07 23:39:31,078 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/manual
+2025-04-07 23:39:31,078 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/readme
+2025-04-07 23:39:31,078 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/changelog
+2025-04-07 23:39:31,079 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/tutorial
+2025-04-07 23:39:31,079 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/license
+2025-04-07 23:39:31,079 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/tutorial
+2025-04-07 23:39:31,079 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/js/
+2025-04-07 23:39:31,080 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/readme
+2025-04-07 23:39:31,080 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/javascript/
+2025-04-07 23:39:31,080 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/css/
+2025-04-07 23:39:31,080 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/javascript/
+2025-04-07 23:39:31,081 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/styles/
+2025-04-07 23:39:31,081 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/css/
+2025-04-07 23:39:31,081 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/img/
+2025-04-07 23:39:31,082 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/images/
+2025-04-07 23:39:31,082 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/media/
+2025-04-07 23:39:31,082 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/styles/
+2025-04-07 23:39:31,082 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/img/
+2025-04-07 23:39:31,083 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/images/
+2025-04-07 23:39:31,083 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/media/
+2025-04-07 23:39:31,083 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/assets/
+2025-04-07 23:39:31,083 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/static/
+2025-04-07 23:39:31,083 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/public/
+2025-04-07 23:39:31,084 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/dist/
+2025-04-07 23:39:31,084 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/build/
+2025-04-07 23:39:31,085 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/uploads/
+2025-04-07 23:39:31,085 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/static/
+2025-04-07 23:39:31,085 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/assets/
+2025-04-07 23:39:31,085 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/public/
+2025-04-07 23:39:31,086 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/dist/
+2025-04-07 23:39:31,086 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/build/
+2025-04-07 23:39:31,086 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/uploads/
+2025-04-07 23:39:31,086 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/files/
+2025-04-07 23:39:31,087 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/downloads/
+2025-04-07 23:39:31,087 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/vendor/
+2025-04-07 23:39:31,087 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/lib/
+2025-04-07 23:39:31,087 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/downloads/
+2025-04-07 23:39:31,088 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/libs/
+2025-04-07 23:39:31,088 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/node_modules/
+2025-04-07 23:39:31,088 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/vendor/
+2025-04-07 23:39:31,088 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/files/
+2025-04-07 23:39:31,089 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/components/
+2025-04-07 23:39:31,089 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/lib/
+2025-04-07 23:39:31,089 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/node_modules/
+2025-04-07 23:39:31,089 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/libs/
+2025-04-07 23:39:31,089 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/components/
+2025-04-07 23:39:31,089 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/modules/
+2025-04-07 23:39:31,090 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/plugins/
+2025-04-07 23:39:31,090 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/themes/
+2025-04-07 23:39:31,090 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/modules/
+2025-04-07 23:39:31,091 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/plugins/
+2025-04-07 23:39:31,092 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.git/
+2025-04-07 23:39:31,092 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.svn/
+2025-04-07 23:39:31,092 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/templates/
+2025-04-07 23:39:31,092 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/themes/
+2025-04-07 23:39:31,092 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.git/
+2025-04-07 23:39:31,093 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.svn/
+2025-04-07 23:39:31,093 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/templates/
+2025-04-07 23:39:31,094 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.gitignore
+2025-04-07 23:39:31,094 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.env
+2025-04-07 23:39:31,094 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.npmrc
+2025-04-07 23:39:31,095 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/config.js
+2025-04-07 23:39:31,095 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/config.php
+2025-04-07 23:39:31,095 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.editorconfig
+2025-04-07 23:39:31,095 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.gitignore
+2025-04-07 23:39:31,096 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/config.json
+2025-04-07 23:39:31,096 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.npmrc
+2025-04-07 23:39:31,096 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.env
+2025-04-07 23:39:31,096 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.editorconfig
+2025-04-07 23:39:31,097 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/config.php
+2025-04-07 23:39:31,097 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/config.js
+2025-04-07 23:39:31,097 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/config.json
+2025-04-07 23:39:31,097 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/settings.json
+2025-04-07 23:39:31,097 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/web.config
+2025-04-07 23:39:31,098 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/info.php
+2025-04-07 23:39:31,098 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/settings.json
+2025-04-07 23:39:31,098 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/phpinfo.php
+2025-04-07 23:39:31,098 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/server.xml
+2025-04-07 23:39:31,098 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/composer.json
+2025-04-07 23:39:31,099 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/web.config
+2025-04-07 23:39:31,099 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/info.php
+2025-04-07 23:39:31,099 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/phpinfo.php
+2025-04-07 23:39:31,099 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/composer.json
+2025-04-07 23:39:31,099 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/server.xml
+2025-04-07 23:39:31,100 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/test
+2025-04-07 23:39:31,100 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/test.php
+2025-04-07 23:39:31,100 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/server-info
+2025-04-07 23:39:31,101 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/server-status
+2025-04-07 23:39:31,101 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/debug
+2025-04-07 23:39:31,101 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/test.html
+2025-04-07 23:39:31,101 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/test.php
+2025-04-07 23:39:31,102 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/test
+2025-04-07 23:39:31,102 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/debug
+2025-04-07 23:39:31,102 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/server-info
+2025-04-07 23:39:31,103 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/server-status
+2025-04-07 23:39:31,103 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/test.html
+2025-04-07 23:39:31,103 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/health
+2025-04-07 23:39:31,103 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/metrics
+2025-04-07 23:39:31,104 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/wp-login.php
+2025-04-07 23:39:31,104 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/wp-admin/
+2025-04-07 23:39:31,104 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/health
+2025-04-07 23:39:31,104 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/metrics
+2025-04-07 23:39:31,105 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/wp-login.php
+2025-04-07 23:39:31,105 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/wp-content/
+2025-04-07 23:39:31,105 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/status
+2025-04-07 23:39:31,105 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/wp-config.php
+2025-04-07 23:39:31,105 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/wp-admin/
+2025-04-07 23:39:31,106 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/status
+2025-04-07 23:39:31,106 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/wp-content/
+2025-04-07 23:39:31,107 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/wp-config.php
+2025-04-07 23:39:31,107 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/wp-includes/
+2025-04-07 23:39:31,107 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator
+2025-04-07 23:39:31,108 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/health
+2025-04-07 23:39:31,108 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/wp-includes/
+2025-04-07 23:39:31,108 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/actuator
+2025-04-07 23:39:31,109 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/info
+2025-04-07 23:39:31,109 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/env
+2025-04-07 23:39:31,109 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/actuator/health
+2025-04-07 23:39:31,109 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/metrics
+2025-04-07 23:39:31,110 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/actuator/info
+2025-04-07 23:39:31,110 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/actuator/env
+2025-04-07 23:39:31,110 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/actuator/metrics
+2025-04-07 23:39:31,110 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/WEB-INF/web.xml
+2025-04-07 23:39:31,111 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/app_data
+2025-04-07 23:39:31,111 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/elmah.axd
+2025-04-07 23:39:31,111 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/trace.axd
+2025-04-07 23:39:31,111 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/trace
+2025-04-07 23:39:31,111 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/heapdump
+2025-04-07 23:39:31,112 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/WEB-INF/web.xml
+2025-04-07 23:39:31,114 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/elmah.axd
+2025-04-07 23:39:31,114 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/app_data
+2025-04-07 23:39:31,114 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/actuator/trace
+2025-04-07 23:39:31,114 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/trace.axd
+2025-04-07 23:39:31,115 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/actuator/heapdump
+2025-04-07 23:39:31,115 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/META-INF/
+2025-04-07 23:39:31,115 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/console/
+2025-04-07 23:39:31,116 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/backup/
+2025-04-07 23:39:31,116 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/bak/
+2025-04-07 23:39:31,116 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/old/
+2025-04-07 23:39:31,116 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/backup/
+2025-04-07 23:39:31,117 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/dev/
+2025-04-07 23:39:31,117 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/old/
+2025-04-07 23:39:31,117 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/console/
+2025-04-07 23:39:31,117 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/bak/
+2025-04-07 23:39:31,118 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/META-INF/
+2025-04-07 23:39:31,118 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/dev/
+2025-04-07 23:39:31,118 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/tmp/
+2025-04-07 23:39:31,118 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/temp/
+2025-04-07 23:39:31,118 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/private/
+2025-04-07 23:39:31,119 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/tmp/
+2025-04-07 23:39:31,119 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/archive/
+2025-04-07 23:39:31,119 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/404
+2025-04-07 23:39:31,119 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/500
+2025-04-07 23:39:31,120 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/temp/
+2025-04-07 23:39:31,120 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/private/
+2025-04-07 23:39:31,120 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/404
+2025-04-07 23:39:31,121 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/500
+2025-04-07 23:39:31,121 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/archive/
+2025-04-07 23:39:31,122 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/403
+2025-04-07 23:39:31,122 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/error
+2025-04-07 23:39:31,122 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/403
+2025-04-07 23:39:31,122 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/error
+2025-04-07 23:39:31,123 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.azure/
+2025-04-07 23:39:31,123 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.aws/
+2025-04-07 23:39:31,123 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.well-known/
+2025-04-07 23:39:31,123 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.gcp/
+2025-04-07 23:39:31,123 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/angular/
+2025-04-07 23:39:31,124 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.aws/
+2025-04-07 23:39:31,124 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/angular/
+2025-04-07 23:39:31,124 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.gcp/
+2025-04-07 23:39:31,124 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.well-known/
+2025-04-07 23:39:31,125 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.azure/
+2025-04-07 23:39:31,125 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/react/
+2025-04-07 23:39:31,125 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/vue/
+2025-04-07 23:39:31,126 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/react/
+2025-04-07 23:39:31,126 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/svelte/
+2025-04-07 23:39:31,126 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/vue/
+2025-04-07 23:39:31,126 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/src/
+2025-04-07 23:39:31,127 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/app/
+2025-04-07 23:39:31,127 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/src/
+2025-04-07 23:39:31,127 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/oauth/
+2025-04-07 23:39:31,127 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/svelte/
+2025-04-07 23:39:31,128 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/app/
+2025-04-07 23:39:31,128 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/oauth/
+2025-04-07 23:39:31,128 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/auth/
+2025-04-07 23:39:31,129 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/logout
+2025-04-07 23:39:31,129 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/sso/
+2025-04-07 23:39:31,129 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/reset-password
+2025-04-07 23:39:31,129 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/auth/
+2025-04-07 23:39:31,130 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/reset-password
+2025-04-07 23:39:31,130 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/forgot-password
+2025-04-07 23:39:31,130 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/logout
+2025-04-07 23:39:31,130 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/activate
+2025-04-07 23:39:31,130 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/verify
+2025-04-07 23:39:31,130 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/sso/
+2025-04-07 23:39:31,131 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/forgot-password
+2025-04-07 23:39:31,131 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/activate
+2025-04-07 23:39:31,131 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/verify
+2025-04-07 23:39:31,131 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/cart
+2025-04-07 23:39:31,131 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/checkout
+2025-04-07 23:39:31,132 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/cart
+2025-04-07 23:39:31,132 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/catalog
+2025-04-07 23:39:31,132 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/order
+2025-04-07 23:39:31,132 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/checkout
+2025-04-07 23:39:31,132 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/store
+2025-04-07 23:39:31,132 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/shop
+2025-04-07 23:39:31,133 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/shop
+2025-04-07 23:39:31,133 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/order
+2025-04-07 23:39:31,134 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/catalog
+2025-04-07 23:39:31,134 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/store
+2025-04-07 23:39:31,135 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/support
+2025-04-07 23:39:31,135 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/about
+2025-04-07 23:39:31,135 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/feedback
+2025-04-07 23:39:31,135 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/category
+2025-04-07 23:39:31,136 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/contact
+2025-04-07 23:39:31,136 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/product
+2025-04-07 23:39:31,136 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/feedback
+2025-04-07 23:39:31,136 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/support
+2025-04-07 23:39:31,137 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/contact
+2025-04-07 23:39:31,137 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/product
+2025-04-07 23:39:31,137 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/about
+2025-04-07 23:39:31,137 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/category
+2025-04-07 23:39:31,138 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/faq
+2025-04-07 23:39:31,139 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/connect
+2025-04-07 23:39:31,139 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/social
+2025-04-07 23:39:31,139 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/share
+2025-04-07 23:39:31,139 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/faq
+2025-04-07 23:39:31,139 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/reviews
+2025-04-07 23:39:31,139 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/comments
+2025-04-07 23:39:31,139 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/follow
+2025-04-07 23:39:31,140 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/social
+2025-04-07 23:39:31,140 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/reviews
+2025-04-07 23:39:31,140 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/share
+2025-04-07 23:39:31,140 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/connect
+2025-04-07 23:39:31,140 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/comments
+2025-04-07 23:39:31,141 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/follow
+2025-04-07 23:39:31,141 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/ratings
+2025-04-07 23:39:31,142 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/forum
+2025-04-07 23:39:31,142 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/news
+2025-04-07 23:39:31,142 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/blog
+2025-04-07 23:39:31,142 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/events
+2025-04-07 23:39:31,143 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/forum
+2025-04-07 23:39:31,143 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/ratings
+2025-04-07 23:39:31,143 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/search
+2025-04-07 23:39:31,143 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/news
+2025-04-07 23:39:31,143 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/blog
+2025-04-07 23:39:31,144 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/events
+2025-04-07 23:39:31,144 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/search
+2025-04-07 23:39:31,144 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/query
+2025-04-07 23:39:31,144 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/find
+2025-04-07 23:39:31,145 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/m/
+2025-04-07 23:39:31,145 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/mobile
+2025-04-07 23:39:31,145 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/find
+2025-04-07 23:39:31,145 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/results
+2025-04-07 23:39:31,145 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/query
+2025-04-07 23:39:31,146 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/mobile
+2025-04-07 23:39:31,146 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/m/
+2025-04-07 23:39:31,146 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/results
+2025-04-07 23:39:31,146 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.xml
+2025-04-07 23:39:31,147 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.yaml
+2025-04-07 23:39:31,147 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.csv
+2025-04-07 23:39:31,147 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.xml
+2025-04-07 23:39:31,147 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.json
+2025-04-07 23:39:31,148 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.yml
+2025-04-07 23:39:31,148 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.yaml
+2025-04-07 23:39:31,149 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.log
+2025-04-07 23:39:31,149 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.csv
+2025-04-07 23:39:31,149 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/api/mobile
+2025-04-07 23:39:31,149 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.yml
+2025-04-07 23:39:31,150 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.log
+2025-04-07 23:39:31,150 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.json
+2025-04-07 23:39:31,151 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/api/mobile
+2025-04-07 23:39:31,151 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.bak
+2025-04-07 23:39:31,151 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.config
+2025-04-07 23:39:31,151 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.sample
+2025-04-07 23:39:31,152 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.bak
+2025-04-07 23:39:31,152 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.sql
+2025-04-07 23:39:31,152 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.config
+2025-04-07 23:39:31,152 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.sample
+2025-04-07 23:39:31,152 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.example
+2025-04-07 23:39:31,152 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.sql
+2025-04-07 23:39:31,153 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.example
+2025-04-07 23:39:31,153 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/.txt - Parameter: x-frame-options
+2025-04-07 23:39:31,153 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.txt
+2025-04-07 23:39:31,153 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.txt
+2025-04-07 23:39:31,153 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.old
+2025-04-07 23:39:31,153 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.zip
+2025-04-07 23:39:31,154 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.tar.gz
+2025-04-07 23:39:31,154 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.old
+2025-04-07 23:39:31,154 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.zip
+2025-04-07 23:39:31,154 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.tar.gz
+2025-04-07 23:39:31,155 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/favicon.ico
+2025-04-07 23:39:31,155 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/favicon.ico
+2025-04-07 23:39:31,156 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/node_modules/.vite/deps/chunk-FAW2VN4A.js?v=52d06adf - Parameter: x-frame-options
+2025-04-07 23:39:31,156 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/@id/__x00__react/jsx-dev-runtime - Parameter: x-frame-options
+2025-04-07 23:39:31,156 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/node_modules/vite/dist/client/env.mjs - Parameter: x-frame-options
+2025-04-07 23:39:31,157 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/
+2025-04-07 23:39:31,157 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/ - Parameter: x-frame-options
+2025-04-07 23:39:31,157 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/node_modules/.vite/deps/react.js?v=6f2f211a - Parameter: x-frame-options
+2025-04-07 23:39:31,157 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/node_modules/.vite/deps/chunk-FAW2VN4A.js?v=52d06adf
+2025-04-07 23:39:31,157 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/@id/__x00__react/jsx-dev-runtime
+2025-04-07 23:39:31,158 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/node_modules/vite/dist/client/env.mjs
+2025-04-07 23:39:31,158 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/node_modules/vite/dist/client/env.mjs
+2025-04-07 23:39:31,158 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/node_modules/.vite/deps/react.js?v=6f2f211a
+2025-04-07 23:39:31,158 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/
+2025-04-07 23:39:31,158 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/@id/__x00__react/jsx-dev-runtime
+2025-04-07 23:39:31,159 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/node_modules/.vite/deps/chunk-FAW2VN4A.js?v=52d06adf
+2025-04-07 23:39:31,160 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/node_modules/.vite/deps/react.js?v=6f2f211a
+2025-04-07 23:39:31,160 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/src/App.jsx - Parameter: x-frame-options
+2025-04-07 23:39:31,160 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/src/App.jsx
+2025-04-07 23:39:31,160 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/src/App.jsx
+2025-04-07 23:39:31,160 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/@react-refresh - Parameter: x-frame-options
+2025-04-07 23:39:31,160 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/@react-refresh
+2025-04-07 23:39:31,161 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/@react-refresh
+2025-04-07 23:39:31,161 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=6f2f211a - Parameter: x-frame-options
+2025-04-07 23:39:31,161 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/@vite/client - Parameter: x-frame-options
+2025-04-07 23:39:31,161 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/node_modules/.vite/deps/chunk-SAOJIHTQ.js?v=52d06adf - Parameter: x-frame-options
+2025-04-07 23:39:31,163 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/node_modules/.vite/deps/axios.js?v=418ecf3c - Parameter: x-frame-options
+2025-04-07 23:39:31,163 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=6f2f211a
+2025-04-07 23:39:31,163 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=6f2f211a
+2025-04-07 23:39:31,163 - zap_scanner - INFO - [Medium] Application Error Disclosure - URL: http://localhost:5505/@vite/client
+2025-04-07 23:39:31,164 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/@vite/client
+2025-04-07 23:39:31,164 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/@vite/client
+2025-04-07 23:39:31,164 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/node_modules/.vite/deps/chunk-SAOJIHTQ.js?v=52d06adf
+2025-04-07 23:39:31,164 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/node_modules/.vite/deps/axios.js?v=418ecf3c
+2025-04-07 23:39:31,165 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/node_modules/.vite/deps/chunk-SAOJIHTQ.js?v=52d06adf
+2025-04-07 23:39:31,165 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/node_modules/.vite/deps/axios.js?v=418ecf3c
+2025-04-07 23:39:31,165 - zap_scanner - INFO - [High] Obchodzenie Œcie¿ki - URL: http://localhost:5505/node_modules/.vite/deps/chunk-FAW2VN4A.js?v=%2Fchunk-FAW2VN4A.js - Parameter: v
+2025-04-07 23:39:31,166 - zap_scanner - INFO - [High] Obchodzenie Œcie¿ki - URL: http://localhost:5505/node_modules/.vite/deps/react.js?v=%2Freact.js - Parameter: v
+2025-04-07 23:39:31,166 - zap_scanner - INFO - Alert categories summary:
+2025-04-07 23:39:31,166 - zap_scanner - INFO - Category 'Security Headers': 227 alerts
+2025-04-07 23:39:31,166 - zap_scanner - INFO -   Examples: Content Security Policy (CSP) Header Not Set, Content Security Policy (CSP) Header Not Set, Content Security Policy (CSP) Header Not Set
+2025-04-07 23:39:31,167 - zap_scanner - INFO - Category 'Other': 210 alerts
+2025-04-07 23:39:31,167 - zap_scanner - INFO -   Examples: Cross-Domain Misconfiguration, Cross-Domain Misconfiguration, Cross-Domain Misconfiguration
+2025-04-07 23:39:31,167 - zap_scanner - INFO - Category 'Information Disclosure': 5 alerts
+2025-04-07 23:39:31,167 - zap_scanner - INFO -   Examples: Information Disclosure - Suspicious Comments, Information Disclosure - Debug Error Messages, Information Disclosure - Suspicious Comments
+2025-04-07 23:39:31,167 - zap_scanner - INFO - Scan completed in 272 seconds (4.5 minutes)
+2025-04-07 23:39:31,167 - zap_scanner - INFO - Risk breakdown: High=2, Medium=416, Low=19, Info=0
+2025-04-07 23:39:31,168 - zap_scanner - INFO - Cleaning up ZAP resources...
+2025-04-07 23:39:31,168 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-07 23:39:31,168 - zap_scanner - INFO - Terminating existing ZAP process...
+2025-04-07 23:39:37,311 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-07 23:39:37,312 - zap_scanner - INFO - Saving scan results to c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app3\.zap_results.json
+2025-04-07 23:39:37,324 - zap_scanner - INFO - Scan Llama-3 completed successfully with 2 high, 416 medium, 19 low risks
+2025-04-07 23:39:37,326 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-07 23:39:37,327 - zap_scanner - INFO - Terminating existing ZAP process...
+2025-04-07 23:39:43,495 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-08 00:52:41,844 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-08 00:52:41,980 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-08 00:52:41,981 - zap_scanner - INFO - Found free port: 8090
+2025-04-08 00:52:41,981 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 00:52:41,982 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-08 00:52:41,982 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 00:52:45,119 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-08 00:52:45,191 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-08 00:52:45,191 - zap_scanner - INFO - Found free port: 8090
+2025-04-08 00:52:45,192 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 00:52:45,192 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-08 00:52:45,193 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 00:58:52,931 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-08 00:58:53,017 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-08 00:58:53,018 - zap_scanner - INFO - Found free port: 8090
+2025-04-08 00:58:53,018 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 00:58:53,018 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-08 00:58:53,018 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 00:59:10,724 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-08 00:59:10,794 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-08 00:59:10,795 - zap_scanner - INFO - Found free port: 8090
+2025-04-08 00:59:10,795 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 00:59:10,795 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-08 00:59:10,795 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 00:59:23,325 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-08 00:59:23,388 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-08 00:59:23,389 - zap_scanner - INFO - Found free port: 8090
+2025-04-08 00:59:23,389 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 00:59:23,389 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-08 00:59:23,390 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 00:59:23,390 - zap_scanner - INFO - Source code root directory set to: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app3
+2025-04-08 00:59:23,391 - zap_scanner - INFO - Source code root directory set to: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app3
+2025-04-08 00:59:23,391 - zap_scanner - INFO - Starting comprehensive scan Llama-3 for http://localhost:5505
+2025-04-08 00:59:23,391 - zap_scanner - INFO - Starting comprehensive scan of target: http://localhost:5505
+2025-04-08 00:59:23,391 - zap_scanner - INFO - Starting ZAP daemon...
+2025-04-08 00:59:23,391 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-08 00:59:29,512 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-08 00:59:29,514 - zap_scanner - INFO - Found ZAP JAR at: C:\Program Files\ZAP\Zed Attack Proxy\zap-2.16.1.jar
+2025-04-08 00:59:29,514 - zap_scanner - INFO - Starting ZAP with command: java -Xmx4G -Djava.io.tmpdir=c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\tmp -Djava.net.preferIPv4Stack=true -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -jar C:\Program Files\ZAP\Zed Attack Proxy\zap-2.16.1.jar -daemon -port 8090 -host 127.0.0.1 -config api.key=5tjkc409k4oaacd69qob5p6uri -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true -config connection.timeoutInSecs=1200 -config ascan.maxScanDurationInMins=120 -config ascan.threadPerHost=8 -config view.mode=standard -config ascan.attackStrength=HIGH -config ascan.alertThreshold=LOW -config pscan.maxAlertsPerRule=0 -config pscan.maxBodySizeInBytes=10000000 -config ajaxSpider.browserId=chrome-headless -config ajaxSpider.maxDuration=600 -config ajaxSpider.clickDefaultElems=true -config ajaxSpider.clickElemsOnce=false -config ajaxSpider.eventWait=2000 -config ajaxSpider.maxCrawlDepth=10 -config ajaxSpider.maxCrawlStates=0 -config ajaxSpider.numberOfBrowsers=4 -config ajaxSpider.randomInputs=true -config pscans.pscanner(10020).enabled=true -config pscans.pscanner(10020).alertThreshold=LOW -config pscans.pscanner(10021).enabled=true -config pscans.pscanner(10021).alertThreshold=LOW -config pscans.pscanner(10038).enabled=true -config pscans.pscanner(10038).alertThreshold=LOW -config pscans.pscanner(10035).enabled=true -config pscans.pscanner(10035).alertThreshold=LOW -config pscans.pscanner(10063).enabled=true -config pscans.pscanner(10063).alertThreshold=LOW -config pscans.pscanner(10054).enabled=true -config pscans.pscanner(10054).alertThreshold=LOW -config pscans.pscanner(10024).enabled=true -config pscans.pscanner(10024).alertThreshold=LOW -config pscans.pscanner(10025).enabled=true -config pscans.pscanner(10025).alertThreshold=LOW -config pscans.pscanner(10027).enabled=true -config pscans.pscanner(10027).alertThreshold=LOW -config pscans.pscanner(10096).enabled=true -config pscans.pscanner(10096).alertThreshold=LOW -config pscans.pscanner(10097).enabled=true -config pscans.pscanner(10097).alertThreshold=LOW -config pscans.pscanner(10094).enabled=true -config pscans.pscanner(10094).alertThreshold=LOW -config pscans.pscanner(90022).enabled=true -config pscans.pscanner(90022).alertThreshold=LOW -config pscans.pscanner(10109).enabled=true -config pscans.pscanner(10109).alertThreshold=LOW -config pscans.pscanner(10110).enabled=true -config pscans.pscanner(10110).alertThreshold=LOW -config ascan.attackStrength=HIGH -config ascan.alertThreshold=LOW
+2025-04-08 00:59:29,518 - zap_scanner - INFO - Waiting for ZAP to initialize (15 seconds)...
+2025-04-08 00:59:44,523 - zap_scanner - INFO - Connecting to ZAP API (attempt 1/5)...
+2025-04-08 00:59:44,705 - zap_scanner - INFO - Successfully connected to ZAP 2.16.1
+2025-04-08 00:59:44,705 - zap_scanner - INFO - ZAP startup completed in 21.31 seconds
+2025-04-08 00:59:44,706 - zap_scanner - INFO - Configuring comprehensive passive scanning...
+2025-04-08 00:59:44,706 - zap_scanner - INFO - Enabling ALL passive scanners...
+2025-04-08 00:59:44,729 - zap_scanner - INFO - Setting passive scan to analyze ALL traffic (not just in-scope)...
+2025-04-08 00:59:44,740 - zap_scanner - INFO - Setting LOW alert threshold for all passive scanners to increase detection rate...
+2025-04-08 00:59:45,152 - zap_scanner - INFO - Setting unlimited maximum alerts per rule...
+2025-04-08 00:59:45,162 - zap_scanner - INFO - Passive scanning fully configured with 57 enabled scanners.
+2025-04-08 00:59:45,162 - zap_scanner - INFO - Accessing target URL: http://localhost:5505
+2025-04-08 00:59:45,241 - zap_scanner - INFO - Initial target access complete
+2025-04-08 00:59:47,256 - zap_scanner - INFO - Performing extended spidering...
+2025-04-08 01:00:47,942 - zap_scanner - INFO - Extended spidering completed
+2025-04-08 01:00:47,942 - zap_scanner - INFO - Checking passive scan status after initial discovery...
+2025-04-08 01:00:47,942 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-08 01:00:47,949 - zap_scanner - INFO - Passive scan in progress: 1 records left to scan (elapsed: 0.0s)
+2025-04-08 01:00:52,970 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 5.0s)
+2025-04-08 01:00:52,970 - zap_scanner - INFO - Passive scan completed in 5.0 seconds
+2025-04-08 01:00:52,971 - zap_scanner - INFO - Starting traditional spider scan with maxChildren=30
+2025-04-08 01:00:52,981 - zap_scanner - INFO - Spider scan started with ID: 0
+2025-04-08 01:00:52,982 - zap_scanner - INFO - Monitoring Spider progress for scan ID: 0
+2025-04-08 01:00:52,985 - zap_scanner - INFO - Spider progress: 0% (elapsed: 0.0s)
+2025-04-08 01:00:55,002 - zap_scanner - INFO - Spider progress: 100% (elapsed: 2.0s)
+2025-04-08 01:00:55,002 - zap_scanner - INFO - Spider scan completed in 2.0 seconds
+2025-04-08 01:00:55,003 - zap_scanner - INFO - Starting AJAX Spider for JavaScript-rendered content...
+2025-04-08 01:00:55,008 - zap_scanner - INFO - Running AJAX Spider on target: http://localhost:5505
+2025-04-08 01:00:55,021 - zap_scanner - INFO - AJAX Spider started: OK
+2025-04-08 01:00:55,021 - zap_scanner - INFO - Monitoring AJAX Spider progress...
+2025-04-08 01:00:55,027 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 0%, elapsed: 0.0s)
+2025-04-08 01:01:00,038 - zap_scanner - INFO - AJAX Spider completed with status: stopped (elapsed: 5.0s)
+2025-04-08 01:01:00,043 - zap_scanner - INFO - AJAX Spider found 0 results
+2025-04-08 01:01:00,047 - zap_scanner - INFO - AJAX Spider completed with 0 URLs discovered
+2025-04-08 01:01:00,048 - zap_scanner - INFO - Waiting for passive scan to process all discovered content...
+2025-04-08 01:01:00,048 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-08 01:01:00,053 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 0.0s)
+2025-04-08 01:01:00,053 - zap_scanner - INFO - Passive scan completed in 0.0 seconds
+2025-04-08 01:01:00,053 - zap_scanner - INFO - Configuring comprehensive active scanning...
+2025-04-08 01:01:00,053 - zap_scanner - INFO - Enabling ALL active scanners...
+2025-04-08 01:01:00,078 - zap_scanner - INFO - Setting HIGH attack strength for all policies...
+2025-04-08 01:01:00,158 - zap_scanner - INFO - Setting LOW alert threshold for all policies...
+2025-04-08 01:01:00,224 - zap_scanner - INFO - Configuring scan policy options...
+2025-04-08 01:01:00,296 - zap_scanner - INFO - Enabled 47 active scanners in category: Other
+2025-04-08 01:01:00,296 - zap_scanner - INFO - Active scanning fully configured with 47 enabled scanners
+2025-04-08 01:01:00,296 - zap_scanner - INFO - Starting active scan with comprehensive settings...
+2025-04-08 01:01:00,317 - zap_scanner - INFO - Active scan started with ID: 0
+2025-04-08 01:01:00,317 - zap_scanner - INFO - Monitoring Active scan progress for scan ID: 0
+2025-04-08 01:01:00,322 - zap_scanner - INFO - Active scan progress: 0% (elapsed: 0.0s)
+2025-04-08 01:01:05,329 - zap_scanner - INFO - Active scan progress: 1% (elapsed: 5.0s)
+2025-04-08 01:01:10,344 - zap_scanner - INFO - Active scan progress: 3% (elapsed: 10.0s)
+2025-04-08 01:01:15,365 - zap_scanner - INFO - Active scan progress: 11% (elapsed: 15.0s)
+2025-04-08 01:01:20,379 - zap_scanner - INFO - Active scan progress: 14% (elapsed: 20.1s)
+2025-04-08 01:01:25,393 - zap_scanner - INFO - Active scan progress: 15% (elapsed: 25.1s)
+2025-04-08 01:01:30,400 - zap_scanner - INFO - Active scan progress: 17% (elapsed: 30.1s)
+2025-04-08 01:01:35,417 - zap_scanner - INFO - Active scan progress: 19% (elapsed: 35.1s)
+2025-04-08 01:01:40,441 - zap_scanner - INFO - Active scan progress: 26% (elapsed: 40.1s)
+2025-04-08 01:01:45,455 - zap_scanner - INFO - Active scan progress: 27% (elapsed: 45.1s)
+2025-04-08 01:01:50,470 - zap_scanner - INFO - Active scan progress: 29% (elapsed: 50.2s)
+2025-04-08 01:01:55,475 - zap_scanner - INFO - Active scan progress: 31% (elapsed: 55.2s)
+2025-04-08 01:02:00,483 - zap_scanner - INFO - Active scan progress: 32% (elapsed: 60.2s)
+2025-04-08 01:02:05,497 - zap_scanner - INFO - Active scan progress: 34% (elapsed: 65.2s)
+2025-04-08 01:02:10,515 - zap_scanner - INFO - Active scan progress: 36% (elapsed: 70.2s)
+2025-04-08 01:02:15,534 - zap_scanner - INFO - Active scan progress: 37% (elapsed: 75.2s)
+2025-04-08 01:02:22,514 - zap_scanner - INFO - Active scan progress: 40% (elapsed: 82.2s)
+2025-04-08 01:02:27,534 - zap_scanner - INFO - Active scan progress: 41% (elapsed: 87.2s)
+2025-04-08 01:02:32,554 - zap_scanner - INFO - Active scan progress: 46% (elapsed: 92.2s)
+2025-04-08 01:02:37,581 - zap_scanner - INFO - Active scan progress: 48% (elapsed: 97.3s)
+2025-04-08 01:02:42,594 - zap_scanner - INFO - Active scan progress: 49% (elapsed: 102.3s)
+2025-04-08 01:02:47,605 - zap_scanner - INFO - Active scan progress: 51% (elapsed: 107.3s)
+2025-04-08 01:02:52,653 - zap_scanner - INFO - Active scan progress: 59% (elapsed: 112.3s)
+2025-04-08 01:02:57,663 - zap_scanner - INFO - Active scan progress: 61% (elapsed: 117.3s)
+2025-04-08 01:03:02,684 - zap_scanner - INFO - Active scan progress: 68% (elapsed: 122.4s)
+2025-04-08 01:03:07,693 - zap_scanner - INFO - Active scan progress: 70% (elapsed: 127.4s)
+2025-04-08 01:03:12,713 - zap_scanner - INFO - Active scan progress: 71% (elapsed: 132.4s)
+2025-04-08 01:03:17,727 - zap_scanner - INFO - Active scan progress: 87% (elapsed: 137.4s)
+2025-04-08 01:03:22,738 - zap_scanner - INFO - Active scan progress: 89% (elapsed: 142.4s)
+2025-04-08 01:03:27,750 - zap_scanner - INFO - Active scan progress: 92% (elapsed: 147.4s)
+2025-04-08 01:03:32,769 - zap_scanner - INFO - Active scan progress: 100% (elapsed: 152.5s)
+2025-04-08 01:03:32,770 - zap_scanner - INFO - Active scan scan completed in 152.5 seconds
+2025-04-08 01:03:32,770 - zap_scanner - INFO - Performing final passive scan check...
+2025-04-08 01:03:32,770 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-08 01:03:32,774 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 0.0s)
+2025-04-08 01:03:32,774 - zap_scanner - INFO - Passive scan completed in 0.0 seconds
+2025-04-08 01:03:32,774 - zap_scanner - INFO - Collecting source files for code analysis...
+2025-04-08 01:03:38,290 - zap_scanner - INFO - Collected 0 potential source files for analysis
+2025-04-08 01:03:38,315 - zap_scanner - INFO - Collected 0 source files for code analysis
+2025-04-08 01:03:38,316 - zap_scanner - INFO - Retrieving final scan alerts...
+2025-04-08 01:03:38,426 - zap_scanner - INFO - Found 387 total alerts
+2025-04-08 01:03:38,426 - zap_scanner - INFO - Processing alert details and extracting affected code...
+2025-04-08 01:03:38,426 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505
+2025-04-08 01:03:38,427 - zap_scanner - ERROR - Error processing alert #1: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,464 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/robots.txt
+2025-04-08 01:03:38,465 - zap_scanner - ERROR - Error processing alert #3: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,470 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/sitemap.xml
+2025-04-08 01:03:38,471 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.well-known/security.txt
+2025-04-08 01:03:38,471 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/crossdomain.xml
+2025-04-08 01:03:38,472 - zap_scanner - ERROR - Error processing alert #7: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,477 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/manifest.json
+2025-04-08 01:03:38,478 - zap_scanner - ERROR - Error processing alert #9: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,483 - zap_scanner - ERROR - Error processing alert #10: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,491 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/clientaccesspolicy.xml
+2025-04-08 01:03:38,492 - zap_scanner - ERROR - Error processing alert #12: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,496 - zap_scanner - ERROR - Error processing alert #13: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,502 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/package.json - Parameter: x-frame-options
+2025-04-08 01:03:38,502 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/package.json
+2025-04-08 01:03:38,503 - zap_scanner - ERROR - Error processing alert #16: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,508 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/humans.txt
+2025-04-08 01:03:38,508 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/register
+2025-04-08 01:03:38,508 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/login
+2025-04-08 01:03:38,508 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/signup
+2025-04-08 01:03:38,508 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/signin
+2025-04-08 01:03:38,508 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/join
+2025-04-08 01:03:38,510 - zap_scanner - ERROR - Error processing alert #24: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,516 - zap_scanner - ERROR - Error processing alert #25: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,521 - zap_scanner - ERROR - Error processing alert #26: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,530 - zap_scanner - ERROR - Error processing alert #27: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,535 - zap_scanner - ERROR - Error processing alert #28: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,540 - zap_scanner - ERROR - Error processing alert #29: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,546 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/authentication
+2025-04-08 01:03:38,547 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/auth
+2025-04-08 01:03:38,547 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/account
+2025-04-08 01:03:38,548 - zap_scanner - ERROR - Error processing alert #33: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,552 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/profile
+2025-04-08 01:03:38,553 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/admin
+2025-04-08 01:03:38,553 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/user
+2025-04-08 01:03:38,554 - zap_scanner - ERROR - Error processing alert #37: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,560 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/administrator
+2025-04-08 01:03:38,561 - zap_scanner - ERROR - Error processing alert #39: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,567 - zap_scanner - ERROR - Error processing alert #40: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,573 - zap_scanner - ERROR - Error processing alert #41: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,579 - zap_scanner - ERROR - Error processing alert #42: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,585 - zap_scanner - ERROR - Error processing alert #43: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,591 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/management
+2025-04-08 01:03:38,591 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/dashboard
+2025-04-08 01:03:38,592 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/control
+2025-04-08 01:03:38,592 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/manage
+2025-04-08 01:03:38,592 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/backend
+2025-04-08 01:03:38,592 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/cp
+2025-04-08 01:03:38,593 - zap_scanner - ERROR - Error processing alert #50: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,599 - zap_scanner - ERROR - Error processing alert #51: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,604 - zap_scanner - ERROR - Error processing alert #52: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,611 - zap_scanner - ERROR - Error processing alert #53: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,615 - zap_scanner - ERROR - Error processing alert #54: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,623 - zap_scanner - ERROR - Error processing alert #55: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,629 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/portal
+2025-04-08 01:03:38,629 - zap_scanner - ERROR - Error processing alert #57: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,636 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/swagger
+2025-04-08 01:03:38,637 - zap_scanner - ERROR - Error processing alert #59: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,646 - zap_scanner - ERROR - Error processing alert #60: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,652 - zap_scanner - ERROR - Error processing alert #61: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,658 - zap_scanner - ERROR - Error processing alert #62: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,664 - zap_scanner - ERROR - Error processing alert #63: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,672 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/api
+2025-04-08 01:03:38,672 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/api/docs
+2025-04-08 01:03:38,673 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/api/v1
+2025-04-08 01:03:38,673 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/api/v2
+2025-04-08 01:03:38,674 - zap_scanner - ERROR - Error processing alert #68: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,678 - zap_scanner - ERROR - Error processing alert #69: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,685 - zap_scanner - ERROR - Error processing alert #70: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,691 - zap_scanner - ERROR - Error processing alert #71: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,697 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/graphql
+2025-04-08 01:03:38,697 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/swagger-ui
+2025-04-08 01:03:38,697 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/playground
+2025-04-08 01:03:38,697 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/docs
+2025-04-08 01:03:38,698 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/graphiql
+2025-04-08 01:03:38,698 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/swagger-ui.html
+2025-04-08 01:03:38,698 - zap_scanner - ERROR - Error processing alert #78: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,704 - zap_scanner - ERROR - Error processing alert #79: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,712 - zap_scanner - ERROR - Error processing alert #80: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,719 - zap_scanner - ERROR - Error processing alert #81: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,733 - zap_scanner - ERROR - Error processing alert #82: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,740 - zap_scanner - ERROR - Error processing alert #83: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,745 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/documentation
+2025-04-08 01:03:38,745 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/help
+2025-04-08 01:03:38,745 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/manual
+2025-04-08 01:03:38,746 - zap_scanner - ERROR - Error processing alert #87: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,751 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/tutorial
+2025-04-08 01:03:38,752 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/guide
+2025-04-08 01:03:38,752 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/readme
+2025-04-08 01:03:38,752 - zap_scanner - ERROR - Error processing alert #91: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,757 - zap_scanner - ERROR - Error processing alert #92: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,763 - zap_scanner - ERROR - Error processing alert #93: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,768 - zap_scanner - ERROR - Error processing alert #94: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,774 - zap_scanner - ERROR - Error processing alert #95: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,780 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/changelog
+2025-04-08 01:03:38,780 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/js/
+2025-04-08 01:03:38,781 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/license
+2025-04-08 01:03:38,781 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/javascript/
+2025-04-08 01:03:38,782 - zap_scanner - ERROR - Error processing alert #100: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,788 - zap_scanner - ERROR - Error processing alert #101: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,794 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/styles/
+2025-04-08 01:03:38,794 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/css/
+2025-04-08 01:03:38,795 - zap_scanner - ERROR - Error processing alert #104: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,801 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/images/
+2025-04-08 01:03:38,802 - zap_scanner - ERROR - Error processing alert #106: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,810 - zap_scanner - ERROR - Error processing alert #107: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,817 - zap_scanner - ERROR - Error processing alert #108: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,824 - zap_scanner - ERROR - Error processing alert #109: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,830 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/img/
+2025-04-08 01:03:38,830 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/assets/
+2025-04-08 01:03:38,831 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/media/
+2025-04-08 01:03:38,831 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/static/
+2025-04-08 01:03:38,831 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/public/
+2025-04-08 01:03:38,832 - zap_scanner - ERROR - Error processing alert #115: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,840 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/dist/
+2025-04-08 01:03:38,841 - zap_scanner - ERROR - Error processing alert #117: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,848 - zap_scanner - ERROR - Error processing alert #118: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,856 - zap_scanner - ERROR - Error processing alert #119: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,864 - zap_scanner - ERROR - Error processing alert #120: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,872 - zap_scanner - ERROR - Error processing alert #121: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,880 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/build/
+2025-04-08 01:03:38,880 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/uploads/
+2025-04-08 01:03:38,880 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/downloads/
+2025-04-08 01:03:38,882 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/files/
+2025-04-08 01:03:38,882 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/vendor/
+2025-04-08 01:03:38,883 - zap_scanner - ERROR - Error processing alert #127: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,890 - zap_scanner - ERROR - Error processing alert #128: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,896 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/lib/
+2025-04-08 01:03:38,897 - zap_scanner - ERROR - Error processing alert #130: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,906 - zap_scanner - ERROR - Error processing alert #131: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,913 - zap_scanner - ERROR - Error processing alert #132: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,920 - zap_scanner - ERROR - Error processing alert #133: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,928 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/libs/
+2025-04-08 01:03:38,928 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/node_modules/
+2025-04-08 01:03:38,928 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/components/
+2025-04-08 01:03:38,930 - zap_scanner - ERROR - Error processing alert #137: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,937 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/plugins/
+2025-04-08 01:03:38,938 - zap_scanner - ERROR - Error processing alert #139: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,946 - zap_scanner - ERROR - Error processing alert #140: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,954 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/modules/
+2025-04-08 01:03:38,954 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/themes/
+2025-04-08 01:03:38,955 - zap_scanner - ERROR - Error processing alert #143: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,962 - zap_scanner - ERROR - Error processing alert #144: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,970 - zap_scanner - ERROR - Error processing alert #145: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,976 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/templates/
+2025-04-08 01:03:38,976 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.svn/
+2025-04-08 01:03:38,976 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.editorconfig
+2025-04-08 01:03:38,976 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.git/
+2025-04-08 01:03:38,976 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.env
+2025-04-08 01:03:38,977 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.gitignore
+2025-04-08 01:03:38,978 - zap_scanner - ERROR - Error processing alert #152: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,983 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.npmrc
+2025-04-08 01:03:38,984 - zap_scanner - ERROR - Error processing alert #154: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,991 - zap_scanner - ERROR - Error processing alert #155: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:38,997 - zap_scanner - ERROR - Error processing alert #156: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,005 - zap_scanner - ERROR - Error processing alert #157: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,011 - zap_scanner - ERROR - Error processing alert #158: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,023 - zap_scanner - ERROR - Error processing alert #159: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,033 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/config.json
+2025-04-08 01:03:39,033 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/config.php
+2025-04-08 01:03:39,035 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/config.js
+2025-04-08 01:03:39,035 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/web.config
+2025-04-08 01:03:39,036 - zap_scanner - ERROR - Error processing alert #164: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,046 - zap_scanner - ERROR - Error processing alert #165: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,055 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/settings.json
+2025-04-08 01:03:39,056 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/server.xml
+2025-04-08 01:03:39,109 - zap_scanner - ERROR - Error processing alert #168: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,116 - zap_scanner - ERROR - Error processing alert #169: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,123 - zap_scanner - ERROR - Error processing alert #170: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,128 - zap_scanner - ERROR - Error processing alert #171: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,135 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/composer.json
+2025-04-08 01:03:39,135 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/info.php
+2025-04-08 01:03:39,135 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/phpinfo.php
+2025-04-08 01:03:39,136 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/server-status
+2025-04-08 01:03:39,136 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/test
+2025-04-08 01:03:39,136 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/server-info
+2025-04-08 01:03:39,136 - zap_scanner - ERROR - Error processing alert #178: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,144 - zap_scanner - ERROR - Error processing alert #179: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,150 - zap_scanner - ERROR - Error processing alert #180: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,156 - zap_scanner - ERROR - Error processing alert #181: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,163 - zap_scanner - ERROR - Error processing alert #182: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,169 - zap_scanner - ERROR - Error processing alert #183: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,176 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/test.php
+2025-04-08 01:03:39,176 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/test.html
+2025-04-08 01:03:39,176 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/status
+2025-04-08 01:03:39,176 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/debug
+2025-04-08 01:03:39,176 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/metrics
+2025-04-08 01:03:39,177 - zap_scanner - ERROR - Error processing alert #189: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,183 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/health
+2025-04-08 01:03:39,183 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/wp-login.php
+2025-04-08 01:03:39,188 - zap_scanner - ERROR - Error processing alert #192: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,195 - zap_scanner - ERROR - Error processing alert #193: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,201 - zap_scanner - ERROR - Error processing alert #194: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,206 - zap_scanner - ERROR - Error processing alert #195: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,211 - zap_scanner - ERROR - Error processing alert #196: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,218 - zap_scanner - ERROR - Error processing alert #197: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,224 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/wp-config.php
+2025-04-08 01:03:39,224 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/wp-admin/
+2025-04-08 01:03:39,224 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/wp-content/
+2025-04-08 01:03:39,225 - zap_scanner - ERROR - Error processing alert #201: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,229 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/wp-includes/
+2025-04-08 01:03:39,230 - zap_scanner - ERROR - Error processing alert #203: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,236 - zap_scanner - ERROR - Error processing alert #204: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,241 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator
+2025-04-08 01:03:39,243 - zap_scanner - ERROR - Error processing alert #206: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,248 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/health
+2025-04-08 01:03:39,248 - zap_scanner - ERROR - Error processing alert #208: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,255 - zap_scanner - ERROR - Error processing alert #209: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,260 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/info
+2025-04-08 01:03:39,260 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/heapdump
+2025-04-08 01:03:39,260 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/metrics
+2025-04-08 01:03:39,261 - zap_scanner - ERROR - Error processing alert #213: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,267 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/trace
+2025-04-08 01:03:39,267 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/env
+2025-04-08 01:03:39,267 - zap_scanner - ERROR - Error processing alert #216: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,273 - zap_scanner - ERROR - Error processing alert #217: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,279 - zap_scanner - ERROR - Error processing alert #218: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,284 - zap_scanner - ERROR - Error processing alert #219: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,290 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/trace.axd
+2025-04-08 01:03:39,290 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/app_data
+2025-04-08 01:03:39,290 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/WEB-INF/web.xml
+2025-04-08 01:03:39,291 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/elmah.axd
+2025-04-08 01:03:39,292 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/META-INF/
+2025-04-08 01:03:39,292 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/console/
+2025-04-08 01:03:39,292 - zap_scanner - ERROR - Error processing alert #226: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,298 - zap_scanner - ERROR - Error processing alert #227: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,304 - zap_scanner - ERROR - Error processing alert #228: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,311 - zap_scanner - ERROR - Error processing alert #229: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,316 - zap_scanner - ERROR - Error processing alert #230: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,323 - zap_scanner - ERROR - Error processing alert #231: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,330 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/backup/
+2025-04-08 01:03:39,330 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/bak/
+2025-04-08 01:03:39,330 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/old/
+2025-04-08 01:03:39,330 - zap_scanner - ERROR - Error processing alert #235: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,337 - zap_scanner - ERROR - Error processing alert #236: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,344 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/dev/
+2025-04-08 01:03:39,345 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/temp/
+2025-04-08 01:03:39,345 - zap_scanner - ERROR - Error processing alert #239: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,354 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/private/
+2025-04-08 01:03:39,354 - zap_scanner - ERROR - Error processing alert #241: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,362 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/tmp/
+2025-04-08 01:03:39,363 - zap_scanner - ERROR - Error processing alert #243: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,371 - zap_scanner - ERROR - Error processing alert #244: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,378 - zap_scanner - ERROR - Error processing alert #245: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,384 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/archive/
+2025-04-08 01:03:39,385 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/403
+2025-04-08 01:03:39,385 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/500
+2025-04-08 01:03:39,385 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/error
+2025-04-08 01:03:39,385 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/404
+2025-04-08 01:03:39,386 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.aws/
+2025-04-08 01:03:39,386 - zap_scanner - ERROR - Error processing alert #252: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,393 - zap_scanner - ERROR - Error processing alert #253: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,399 - zap_scanner - ERROR - Error processing alert #254: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,407 - zap_scanner - ERROR - Error processing alert #255: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,414 - zap_scanner - ERROR - Error processing alert #256: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,421 - zap_scanner - ERROR - Error processing alert #257: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,427 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.gcp/
+2025-04-08 01:03:39,428 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.azure/
+2025-04-08 01:03:39,428 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.well-known/
+2025-04-08 01:03:39,428 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/react/
+2025-04-08 01:03:39,430 - zap_scanner - ERROR - Error processing alert #262: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,435 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/angular/
+2025-04-08 01:03:39,436 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/vue/
+2025-04-08 01:03:39,437 - zap_scanner - ERROR - Error processing alert #265: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,442 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/svelte/
+2025-04-08 01:03:39,444 - zap_scanner - ERROR - Error processing alert #267: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,451 - zap_scanner - ERROR - Error processing alert #268: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,458 - zap_scanner - ERROR - Error processing alert #269: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,464 - zap_scanner - ERROR - Error processing alert #270: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,471 - zap_scanner - ERROR - Error processing alert #271: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,477 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/app/
+2025-04-08 01:03:39,477 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/src/
+2025-04-08 01:03:39,478 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/oauth/
+2025-04-08 01:03:39,479 - zap_scanner - ERROR - Error processing alert #275: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,484 - zap_scanner - ERROR - Error processing alert #276: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,490 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/auth/
+2025-04-08 01:03:39,490 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/sso/
+2025-04-08 01:03:39,490 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/logout
+2025-04-08 01:03:39,491 - zap_scanner - ERROR - Error processing alert #280: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,497 - zap_scanner - ERROR - Error processing alert #281: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,503 - zap_scanner - ERROR - Error processing alert #282: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,509 - zap_scanner - ERROR - Error processing alert #283: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,515 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/activate
+2025-04-08 01:03:39,515 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/verify
+2025-04-08 01:03:39,515 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/checkout
+2025-04-08 01:03:39,516 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/reset-password
+2025-04-08 01:03:39,516 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/cart
+2025-04-08 01:03:39,516 - zap_scanner - ERROR - Error processing alert #289: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,522 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/forgot-password
+2025-04-08 01:03:39,522 - zap_scanner - ERROR - Error processing alert #291: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,528 - zap_scanner - ERROR - Error processing alert #292: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,534 - zap_scanner - ERROR - Error processing alert #293: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,540 - zap_scanner - ERROR - Error processing alert #294: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,545 - zap_scanner - ERROR - Error processing alert #295: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,551 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/order
+2025-04-08 01:03:39,551 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/product
+2025-04-08 01:03:39,551 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/store
+2025-04-08 01:03:39,552 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/shop
+2025-04-08 01:03:39,552 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/category
+2025-04-08 01:03:39,552 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/catalog
+2025-04-08 01:03:39,553 - zap_scanner - ERROR - Error processing alert #302: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,559 - zap_scanner - ERROR - Error processing alert #303: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,564 - zap_scanner - ERROR - Error processing alert #304: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,572 - zap_scanner - ERROR - Error processing alert #305: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,578 - zap_scanner - ERROR - Error processing alert #306: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,585 - zap_scanner - ERROR - Error processing alert #307: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,590 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/feedback
+2025-04-08 01:03:39,590 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/contact
+2025-04-08 01:03:39,590 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/social
+2025-04-08 01:03:39,591 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/support
+2025-04-08 01:03:39,591 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/faq
+2025-04-08 01:03:39,591 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/about
+2025-04-08 01:03:39,591 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/share
+2025-04-08 01:03:39,592 - zap_scanner - ERROR - Error processing alert #315: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,597 - zap_scanner - ERROR - Error processing alert #316: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,602 - zap_scanner - ERROR - Error processing alert #317: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,608 - zap_scanner - ERROR - Error processing alert #318: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,612 - zap_scanner - ERROR - Error processing alert #319: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,618 - zap_scanner - ERROR - Error processing alert #320: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,625 - zap_scanner - ERROR - Error processing alert #321: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,629 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/connect
+2025-04-08 01:03:39,630 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/follow
+2025-04-08 01:03:39,630 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/comments
+2025-04-08 01:03:39,631 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/reviews
+2025-04-08 01:03:39,631 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/forum
+2025-04-08 01:03:39,632 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/ratings
+2025-04-08 01:03:39,632 - zap_scanner - ERROR - Error processing alert #328: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,638 - zap_scanner - ERROR - Error processing alert #329: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,644 - zap_scanner - ERROR - Error processing alert #330: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,649 - zap_scanner - ERROR - Error processing alert #331: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,655 - zap_scanner - ERROR - Error processing alert #332: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,661 - zap_scanner - ERROR - Error processing alert #333: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,666 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/blog
+2025-04-08 01:03:39,666 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/events
+2025-04-08 01:03:39,667 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/search
+2025-04-08 01:03:39,667 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/news
+2025-04-08 01:03:39,667 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/query
+2025-04-08 01:03:39,668 - zap_scanner - ERROR - Error processing alert #339: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,673 - zap_scanner - ERROR - Error processing alert #340: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,677 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/find
+2025-04-08 01:03:39,678 - zap_scanner - ERROR - Error processing alert #342: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,683 - zap_scanner - ERROR - Error processing alert #343: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,688 - zap_scanner - ERROR - Error processing alert #344: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,695 - zap_scanner - ERROR - Error processing alert #345: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,701 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/results
+2025-04-08 01:03:39,701 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/m/
+2025-04-08 01:03:39,701 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/mobile
+2025-04-08 01:03:39,702 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.xml
+2025-04-08 01:03:39,702 - zap_scanner - ERROR - Error processing alert #350: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,708 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.json
+2025-04-08 01:03:39,708 - zap_scanner - ERROR - Error processing alert #352: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,715 - zap_scanner - ERROR - Error processing alert #353: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,722 - zap_scanner - ERROR - Error processing alert #354: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,728 - zap_scanner - ERROR - Error processing alert #355: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,733 - zap_scanner - ERROR - Error processing alert #356: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,739 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/api/mobile
+2025-04-08 01:03:39,739 - zap_scanner - ERROR - Error processing alert #358: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,744 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.log
+2025-04-08 01:03:39,744 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.yml
+2025-04-08 01:03:39,745 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.csv
+2025-04-08 01:03:39,745 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.yaml
+2025-04-08 01:03:39,745 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.bak
+2025-04-08 01:03:39,746 - zap_scanner - ERROR - Error processing alert #364: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,753 - zap_scanner - ERROR - Error processing alert #365: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,759 - zap_scanner - ERROR - Error processing alert #366: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,765 - zap_scanner - ERROR - Error processing alert #367: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,770 - zap_scanner - ERROR - Error processing alert #368: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,776 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/.txt - Parameter: x-frame-options
+2025-04-08 01:03:39,776 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.txt
+2025-04-08 01:03:39,777 - zap_scanner - ERROR - Error processing alert #371: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,782 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.sql
+2025-04-08 01:03:39,783 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.config
+2025-04-08 01:03:39,783 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.sample
+2025-04-08 01:03:39,784 - zap_scanner - ERROR - Error processing alert #376: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,789 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.old
+2025-04-08 01:03:39,790 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.zip
+2025-04-08 01:03:39,791 - zap_scanner - ERROR - Error processing alert #379: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,796 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.example
+2025-04-08 01:03:39,796 - zap_scanner - ERROR - Error processing alert #381: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,803 - zap_scanner - ERROR - Error processing alert #382: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,809 - zap_scanner - ERROR - Error processing alert #383: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,815 - zap_scanner - ERROR - Error processing alert #384: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,820 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.tar.gz
+2025-04-08 01:03:39,820 - zap_scanner - ERROR - Error processing alert #386: 'core' object has no attribute 'messages_by_url'
+2025-04-08 01:03:39,824 - zap_scanner - INFO - Alert categories summary:
+2025-04-08 01:03:39,825 - zap_scanner - INFO - Category 'Security Headers': 193 alerts
+2025-04-08 01:03:39,825 - zap_scanner - INFO -   Examples: Content Security Policy (CSP) Header Not Set, Content Security Policy (CSP) Header Not Set, Content Security Policy (CSP) Header Not Set
+2025-04-08 01:03:39,825 - zap_scanner - INFO - Category 'Other': 194 alerts
+2025-04-08 01:03:39,825 - zap_scanner - INFO -   Examples: Cross-Domain Misconfiguration, Cross-Domain Misconfiguration, Cross-Domain Misconfiguration
+2025-04-08 01:03:39,825 - zap_scanner - INFO - Scan completed in 256 seconds (4.3 minutes)
+2025-04-08 01:03:39,826 - zap_scanner - INFO - Risk breakdown: High=0, Medium=380, Low=7, Info=0
+2025-04-08 01:03:39,826 - zap_scanner - INFO - Vulnerabilities with affected code identified: 0/193
+2025-04-08 01:03:39,826 - zap_scanner - INFO - Cleaning up ZAP resources...
+2025-04-08 01:03:39,826 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-08 01:03:39,826 - zap_scanner - INFO - Terminating existing ZAP process...
+2025-04-08 01:03:46,347 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-08 01:03:46,348 - zap_scanner - INFO - Generating affected code report...
+2025-04-08 01:03:46,349 - zap_scanner - INFO - Saved affected code report to: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app3\.zap_code_report.md
+2025-04-08 01:03:46,350 - zap_scanner - INFO - Saving scan results to c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app3\.zap_results.json
+2025-04-08 01:03:46,357 - zap_scanner - INFO - Scan Llama-3 completed successfully with 0 high, 380 medium, 7 low risks
+2025-04-08 01:03:46,387 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-08 01:03:46,389 - zap_scanner - INFO - Terminating existing ZAP process...
+2025-04-08 01:03:52,818 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-08 01:08:23,666 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-08 01:08:23,737 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-08 01:08:23,738 - zap_scanner - INFO - Found free port: 8090
+2025-04-08 01:08:23,739 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 01:08:23,739 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-08 01:08:23,739 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app

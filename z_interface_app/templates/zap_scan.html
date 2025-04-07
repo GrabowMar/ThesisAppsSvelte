@@ -28,6 +28,11 @@
             <option value="Medium">Medium</option>
             <option value="Low">Low</option>
           </select>
+          <select id="codeFilter" aria-label="Filter by code availability" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
+            <option value="all">All Alerts</option>
+            <option value="hasCode">With Code</option>
+            <option value="noCode">Without Code</option>
+          </select>
         </div>
       </div>
     </div>
@@ -121,6 +126,7 @@
             <div class="border border-gray-400 bg-white alert-item rounded-sm shadow-sm" 
                  data-risk="{{ alert.risk }}" 
                  data-confidence="{{ alert.confidence }}"
+                 data-has-code="{{ alert.affected_code is defined and alert.affected_code and alert.affected_code.snippet }}"
                  data-searchable="{{ alert.name }} {{ alert.description }} {{ alert.url }}">
               <div class="p-2">
                 <!-- Alert Header -->
@@ -147,6 +153,11 @@
                     <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400 rounded-sm">CWE-{{ alert.cwe_id }}</span>
                   {% endif %}
                   
+                  <!-- Code Badge (if available) -->
+                  {% if alert.affected_code is defined and alert.affected_code and alert.affected_code.snippet %}
+                    <span class="text-xs px-2 py-0.5 bg-purple-100 text-purple-800 border border-purple-400 rounded-sm">Code Available</span>
+                  {% endif %}
+                  
                   <!-- Expand Button -->
                   <button class="ml-auto action-btn h-6 px-2 text-xs expand-btn rounded-sm">Expand</button>
                 </div>
@@ -169,24 +180,60 @@
                         <div class="whitespace-pre-wrap">{{ alert.description }}</div>
                       </div>
                     {% endif %}
+                    
+                    {% if alert.affected_code is defined and alert.affected_code and alert.affected_code.snippet %}
+                      <div class="text-xs bg-gray-50 p-2 border border-gray-300 rounded-sm space-y-1">
+                        <div class="font-bold">Affected Code:</div>
+                        {% if alert.affected_code.file_path %}
+                          <div class="text-xs text-gray-600 mb-1">
+                            <span class="font-semibold">File:</span> {{ alert.affected_code.file_path }}
+                          </div>
+                        {% endif %}
+                        {% if alert.affected_code.line_number %}
+                          <div class="text-xs text-gray-600 mb-1">
+                            <span class="font-semibold">Line:</span> {{ alert.affected_code.line_number }}
+                          </div>
+                        {% endif %}
+                        <div class="font-mono text-xs bg-gray-900 text-white p-2 overflow-x-auto rounded-sm code-block whitespace-pre">
+                          {% if alert.affected_code.start_line > 0 %}
+                            {% set lines = alert.affected_code.snippet.split('\n') %}
+                            {% for i in range(alert.affected_code.start_line, alert.affected_code.start_line + lines|length) %}
+                              <div class="code-line {% if i in alert.affected_code.vulnerable_lines %}bg-red-900 vulnerable-line{% endif %}">
+                                <span class="line-number text-gray-500 inline-block w-10 text-right pr-2 select-none border-r border-gray-600 mr-2">{{ i }}</span>
+                                <span class="line-content">{{ lines[loop.index0] }}</span>
+                                {% if i in alert.affected_code.vulnerable_lines %}
+                                  <span class="text-red-400 ml-2 inline-block">← VULNERABILITY</span>
+                                {% endif %}
+                              </div>
+                            {% endfor %}
+                          {% else %}
+                            <code>{{ alert.affected_code.snippet }}</code>
+                          {% endif %}
+                        </div>
+                      </div>
+                    {% endif %}
+                    
                     {% if alert.solution %}
                       <div class="text-xs bg-gray-50 p-2 border border-gray-300 rounded-sm">
                         <div class="font-bold">Solution:</div>
                         <div class="whitespace-pre-wrap">{{ alert.solution }}</div>
                       </div>
                     {% endif %}
+                    
                     {% if alert.evidence %}
                       <div class="text-xs font-mono bg-gray-800 text-white p-2 overflow-x-auto rounded-sm">
                         <div class="font-bold text-gray-400 mb-1">Evidence:</div>
                         <code>{{ alert.evidence }}</code>
                       </div>
                     {% endif %}
+                    
                     {% if alert.attack %}
                       <div class="text-xs bg-gray-50 p-2 border border-gray-300 rounded-sm">
                         <div class="font-bold">Attack:</div>
                         <div class="font-mono">{{ alert.attack }}</div>
                       </div>
                     {% endif %}
+                    
                     {% if alert.reference %}
                       <div class="text-xs bg-gray-50 p-2 border border-gray-300 rounded-sm">
                         <div class="font-bold">Reference:</div>
@@ -274,8 +321,12 @@
             <span class="text-gray-600">Policy:</span>
             <span class="font-bold">Default Policy</span>
           </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Code Analysis:</span>
+            <span class="font-bold text-purple-700">Enabled</span>
+          </div>
           <div class="mt-2 p-2 bg-gray-50 border border-gray-300 rounded-sm">
-            <p class="text-xs text-gray-700">This scanner runs a comprehensive security assessment including spider crawling, passive analysis, and active vulnerability testing.</p>
+            <p class="text-xs text-gray-700">This scanner runs a comprehensive security assessment including spider crawling, passive analysis, active vulnerability testing, and source code analysis.</p>
           </div>
         </div>
       </div>
@@ -298,6 +349,24 @@
             <span class="text-gray-600">Total Alerts:</span>
             <span class="font-bold" id="totalAlerts">0</span>
           </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">With Code:</span>
+            <span class="font-bold text-purple-700" id="alertsWithCode">0</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Code Report Card -->
+      <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+          <h2 class="font-bold text-xs">Code Analysis Report</h2>
+        </div>
+        <div class="p-2 text-xs space-y-2">
+          <p class="text-gray-700">A detailed source code analysis report is available for this scan, highlighting affected code for identified vulnerabilities.</p>
+          <a href="{{ url_for('zap.download_code_report', model=model, app_num=app_num) }}" 
+             class="block w-full py-1 px-2 bg-purple-100 text-purple-800 border border-purple-400 rounded-sm text-center hover:bg-purple-200 transition-colors">
+            Download Code Report
+          </a>
         </div>
       </div>
     </div>
@@ -328,6 +397,7 @@ $(document).ready(function() {
       searchInput: $('#searchIssues'),
       riskFilter: $('#riskFilter'),
       confidenceFilter: $('#confidenceFilter'),
+      codeFilter: $('#codeFilter'),
       progressBar: $('#progressBar'),
       scanProgress: $('#scanProgress'),
       targetUrlElem: $('#targetUrl'),
@@ -353,7 +423,8 @@ $(document).ready(function() {
       statsElements: {
         startTime: $('#scanStartTime'),
         duration: $('#scanDuration'),
-        totalAlerts: $('#totalAlerts')
+        totalAlerts: $('#totalAlerts'),
+        withCode: $('#alertsWithCode')
       }
     };
     
@@ -401,31 +472,46 @@ $(document).ready(function() {
       }
     }
     
-    // Filter alerts based on search term, risk, and confidence
+    // Filter alerts based on search term, risk, confidence, and code availability
     function applyFilters() {
-      if (!elements.searchInput.length || !elements.riskFilter.length || !elements.confidenceFilter.length) return;
+      if (!elements.searchInput.length || !elements.riskFilter.length || 
+          !elements.confidenceFilter.length || !elements.codeFilter.length) return;
       
       const searchTerm = elements.searchInput.val().toLowerCase();
       const selectedRisk = elements.riskFilter.val();
       const selectedConfidence = elements.confidenceFilter.val();
+      const codeFilter = elements.codeFilter.val();
       
       let visibleCount = 0;
+      let withCodeCount = 0;
       
       $('.alert-item').each(function() {
         const $alert = $(this);
         const risk = $alert.data('risk');
         const confidence = $alert.data('confidence');
+        const hasCode = $alert.data('has-code');
         const searchText = $alert.data('searchable').toLowerCase();
         
         const riskMatch = selectedRisk === 'all' || risk === selectedRisk;
         const confidenceMatch = selectedConfidence === 'all' || confidence === selectedConfidence;
         const searchMatch = !searchTerm || searchText.includes(searchTerm);
+        const codeMatch = codeFilter === 'all' || 
+                         (codeFilter === 'hasCode' && hasCode) || 
+                         (codeFilter === 'noCode' && !hasCode);
         
-        const isVisible = riskMatch && confidenceMatch && searchMatch;
+        const isVisible = riskMatch && confidenceMatch && searchMatch && codeMatch;
         $alert.toggle(isVisible);
         
-        if (isVisible) visibleCount++;
+        if (isVisible) {
+          visibleCount++;
+          if (hasCode) withCodeCount++;
+        }
       });
+      
+      // Update the alerts with code counter
+      if (elements.statsElements.withCode.length) {
+        elements.statsElements.withCode.text(withCodeCount);
+      }
     }
     
     // Add a log message to the progress log
@@ -509,6 +595,7 @@ $(document).ready(function() {
         elements.statsElements.startTime.text(startTimeStr);
         elements.statsElements.duration.text('0s');
         elements.statsElements.totalAlerts.text('0');
+        elements.statsElements.withCode.text('0');
       }
       
       // Set scan start time and start duration timer
@@ -650,6 +737,11 @@ $(document).ready(function() {
                 (parseInt(data.info_count) || 0);
               elements.statsElements.totalAlerts.text(total);
             }
+            
+            // Update vulnerabilities with code count if available
+            if (elements.statsElements.withCode.length && data.vulnerabilities_with_code !== undefined) {
+              elements.statsElements.withCode.text(data.vulnerabilities_with_code || 0);
+            }
           }
           
           // Log phase changes
@@ -657,6 +749,19 @@ $(document).ready(function() {
           if (data.status !== prevStatus) {
             appendToLog(`Status changed to: ${data.status}`);
             elements.scanStatusElem.data('prev-status', data.status);
+            
+            // Log specific phase messages
+            if (data.status === 'Running - Spider') {
+              appendToLog('Spider phase started - discovering web content...');
+            } else if (data.status === 'Running - AJAX Spider') {
+              appendToLog('AJAX Spider started - discovering JavaScript-rendered content...');
+            } else if (data.status === 'Running - Passive Scan') {
+              appendToLog('Passive scanning in progress - analyzing responses...');
+            } else if (data.status === 'Running - Active Scan') {
+              appendToLog('Active scanning in progress - testing for vulnerabilities...');
+            } else if (data.status === 'Running - Code Analysis') {
+              appendToLog('Code analysis in progress - identifying affected source code...');
+            }
           }
           
           // Check if scan is complete
@@ -732,6 +837,10 @@ $(document).ready(function() {
       elements.confidenceFilter.on('change', applyFilters);
     }
     
+    if (elements.codeFilter.length) {
+      elements.codeFilter.on('change', applyFilters);
+    }
+    
     // Set up expand/collapse buttons for alert details
     $('.expand-btn').on('click', function() {
       const $details = $(this).closest('div').next().find('.alert-details');
@@ -744,9 +853,62 @@ $(document).ready(function() {
     // Initialize target URL
     updateTargetUrl();
     
+    // Count alerts with code and update counter
+    function updateCodeCounter() {
+      let withCodeCount = 0;
+      $('.alert-item').each(function() {
+        if ($(this).data('has-code')) {
+          withCodeCount++;
+        }
+      });
+      
+      if (elements.statsElements.withCode.length) {
+        elements.statsElements.withCode.text(withCodeCount);
+      }
+    }
+    
+    // Initialize code counter
+    updateCodeCounter();
+    
+    // Apply syntax highlighting to code blocks if highlight.js is available
+    if (typeof hljs !== 'undefined') {
+      $('.code-block code').each(function(i, block) {
+        hljs.highlightElement(block);
+      });
+    }
+    
     // Log ready message
-    appendToLog('ZAP Scanner interface ready. Click "Start Scan" to begin comprehensive security assessment.');
+    appendToLog('ZAP Scanner interface ready with code analysis capabilities. Click "Start Scan" to begin comprehensive security assessment.');
   }
 });
 </script>
+
+<style>
+/* Additional styles for code display */
+.code-block {
+  font-family: 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  tab-size: 4;
+}
+
+.vulnerable-line {
+  position: relative;
+}
+
+.line-number {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}
+
+/* Add a subtle hover effect to code lines */
+.code-line:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Make vulnerable lines more visible */
+.vulnerable-line .line-content {
+  font-weight: bold;
+  color: #ff7b72;
+}
+</style>
 {% endblock %}

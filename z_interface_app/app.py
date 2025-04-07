@@ -1676,6 +1676,11 @@ def zap_scan(model: str, app_num: int):
                 data = json.load(f)
                 alerts = data.get("alerts", [])
                 zap_logger.info(f"Loaded {len(alerts)} alerts from previous scan for {model}/app{app_num}")
+                
+                # Count alerts with affected code for statistics
+                alerts_with_code = sum(1 for alert in alerts if alert.get('affected_code') and 
+                                       alert.get('affected_code', {}).get('snippet'))
+                zap_logger.info(f"Found {alerts_with_code} alerts with affected code")
         except Exception as e:
             error_msg = f"Failed to load previous results: {e}"
             zap_logger.exception(f"Error loading ZAP results for {model}/app{app_num}: {e}")
@@ -1723,6 +1728,13 @@ def start_zap_scan(model: str, app_num: int):
             # Create scanner with its streamlined configuration
             scan_thread_logger.info(f"Initializing ZAP scanner for {model}/app{app_num}")
             scanner = create_scanner(base_dir)
+            
+            # Set source code root directory for code analysis
+            app_path = base_dir / f"{model}/app{app_num}"
+            if app_path.exists() and app_path.is_dir():
+                scan_thread_logger.info(f"Setting source code root directory to {app_path}")
+                scanner.set_source_code_root(str(app_path))
+            
             scan_manager.update_scan(
                 scan_id, 
                 scanner=scanner, 
@@ -1743,6 +1755,19 @@ def start_zap_scan(model: str, app_num: int):
                 scan_manager.update_scan(scan_id, status="Failed", progress=0)
             else:
                 scan_thread_logger.info(f"Scan completed successfully for {model}/app{app_num}")
+                
+                # Get information about code analysis
+                results_file = base_dir / f"{model}/app{app_num}/.zap_results.json"
+                vulnerabilities_with_code = 0
+                if results_file.exists():
+                    try:
+                        with open(results_file, encoding='utf-8') as f:
+                            data = json.load(f)
+                            summary = data.get("summary", {})
+                            vulnerabilities_with_code = summary.get("vulnerabilities_with_code", 0)
+                    except Exception as e:
+                        scan_thread_logger.error(f"Error reading code analysis stats: {str(e)}")
+                
                 scan_manager.update_scan(
                     scan_id, 
                     status="Complete", 
@@ -1750,7 +1775,8 @@ def start_zap_scan(model: str, app_num: int):
                     spider_progress=100,
                     passive_progress=100,
                     active_progress=100,
-                    end_time=datetime.now().isoformat()
+                    end_time=datetime.now().isoformat(),
+                    vulnerabilities_with_code=vulnerabilities_with_code
                 )
         except Exception as e:
             scan_thread_logger.exception(f"Scan error for {model}/app{app_num}: {str(e)}")
@@ -1807,12 +1833,14 @@ def zap_scan_status(model: str, app_num: int):
             "high_count": 0,
             "medium_count": 0,
             "low_count": 0,
-            "info_count": 0
+            "info_count": 0,
+            "vulnerabilities_with_code": 0
         }
     
     # Get risk counts from results file
     results_file = current_app.config["BASE_DIR"] / f"{model}/app{app_num}/.zap_results.json"
     counts = {"high": 0, "medium": 0, "low": 0, "info": 0}
+    vulnerabilities_with_code = 0
     
     if results_file.exists():
         try:
@@ -1829,11 +1857,18 @@ def zap_scan_status(model: str, app_num: int):
                             risk = alert.get("risk", "").lower()
                             if risk in counts:
                                 counts[risk] += 1
+                            
+                            # Count alerts with affected code
+                            if alert.get('affected_code') and alert.get('affected_code', {}).get('snippet'):
+                                vulnerabilities_with_code += 1
                         
                         # If the scan is complete, get duration information
                         summary = data.get("summary", {})
                         if summary.get("status") == "success" and "start_time" in summary and "end_time" in summary:
                             scan["duration_seconds"] = summary.get("duration_seconds", 0)
+                            # Also get code analysis data from summary if available
+                            if "vulnerabilities_with_code" in summary:
+                                vulnerabilities_with_code = summary.get("vulnerabilities_with_code", 0)
                     except json.JSONDecodeError as e:
                         zap_logger.error(f"Invalid JSON in results file for {model}/app{app_num}: {str(e)}")
         except Exception as e:
@@ -1853,6 +1888,7 @@ def zap_scan_status(model: str, app_num: int):
         "passive_progress": scan.get("passive_progress", 0),
         "active_progress": scan.get("active_progress", 0),
         "ajax_progress": scan.get("ajax_progress", 0),
+        "vulnerabilities_with_code": scan.get("vulnerabilities_with_code", vulnerabilities_with_code)
     }
     
     # Add timestamps if available
@@ -1930,6 +1966,118 @@ def stop_zap_scan(model: str, app_num: int):
             code=500
         )
 
+
+@zap_bp.route("/code_report/<string:model>/<int:app_num>")
+def download_code_report(model: str, app_num: int):
+    """
+    Download the code analysis report for a specific app.
+    
+    Args:
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        Markdown file download or error response
+    """
+    zap_logger = create_logger_for_component('zap')
+    zap_logger.info(f"Code report download requested for {model}/app{app_num}")
+    
+    base_dir: Path = current_app.config["BASE_DIR"]
+    report_file = base_dir / f"{model}/app{app_num}/.zap_code_report.md"
+    
+    if not report_file.exists():
+        zap_logger.warning(f"Code report file not found for {model}/app{app_num}")
+        return APIResponse(
+            success=False,
+            error="Code analysis report not found. Please run a scan first.",
+            code=404
+        )
+    
+    try:
+        zap_logger.info(f"Sending code report file for {model}/app{app_num}")
+        return send_file(
+            report_file,
+            mimetype="text/markdown",
+            as_attachment=True,
+            download_name=f"security_code_report_{model}_app{app_num}.md"
+        )
+    except Exception as e:
+        error_msg = f"Failed to send code report for {model}/app{app_num}: {str(e)}"
+        zap_logger.exception(error_msg)
+        return APIResponse(
+            success=False,
+            error=error_msg,
+            code=500
+        )
+
+
+@zap_bp.route("/regenerate_code_report/<string:model>/<int:app_num>", methods=["POST"])
+@ajax_compatible
+def regenerate_code_report(model: str, app_num: int):
+    """
+    Regenerate the code analysis report for a specific app from existing scan results.
+    Useful when modifying the report format without rescanning.
+    
+    Args:
+        model: Model name
+        app_num: App number
+        
+    Returns:
+        JSON response indicating success or failure
+    """
+    zap_logger = create_logger_for_component('zap')
+    zap_logger.info(f"Code report regeneration requested for {model}/app{app_num}")
+    
+    base_dir: Path = current_app.config["BASE_DIR"]
+    results_file = base_dir / f"{model}/app{app_num}/.zap_results.json"
+    report_file = base_dir / f"{model}/app{app_num}/.zap_code_report.md"
+    
+    if not results_file.exists():
+        zap_logger.warning(f"Results file not found for {model}/app{app_num}")
+        return APIResponse(
+            success=False,
+            error="Scan results not found. Please run a scan first.",
+            code=404
+        )
+    
+    try:
+        zap_logger.info(f"Reading scan results to regenerate code report for {model}/app{app_num}")
+        with open(results_file, encoding='utf-8') as f:
+            data = json.load(f)
+            vulnerabilities = data.get("alerts", [])
+        
+        if not vulnerabilities:
+            zap_logger.warning(f"No vulnerabilities found in scan results for {model}/app{app_num}")
+            return APIResponse(
+                success=False,
+                error="No vulnerabilities found in scan results.",
+                code=404
+            )
+        
+        # Create scanner instance for report generation only
+        scanner = create_scanner(base_dir)
+        
+        # Generate report
+        zap_logger.info(f"Generating code report for {model}/app{app_num}")
+        report_content = scanner.generate_affected_code_report(vulnerabilities, str(report_file))
+        
+        vulnerabilities_with_code = sum(1 for v in vulnerabilities if v.get('affected_code') and 
+                                      v.get('affected_code', {}).get('snippet'))
+        
+        zap_logger.info(f"Code report generated successfully with {vulnerabilities_with_code} code-related findings")
+        return {
+            "success": True, 
+            "message": f"Code report regenerated with {vulnerabilities_with_code} code-related findings.",
+            "vulnerabilities_with_code": vulnerabilities_with_code
+        }
+    except Exception as e:
+        error_msg = f"Failed to regenerate code report for {model}/app{app_num}: {str(e)}"
+        zap_logger.exception(error_msg)
+        return APIResponse(
+            success=False,
+            error=error_msg,
+            code=500
+        )
 # ----- Analysis Routes -----
 @analysis_bp.route("/backend-security/<string:model>/<int:app_num>")
 @ajax_compatible

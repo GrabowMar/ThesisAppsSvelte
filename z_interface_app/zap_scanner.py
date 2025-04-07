@@ -4,10 +4,12 @@ import logging
 import os
 import subprocess
 import socket
-from dataclasses import dataclass, asdict
+import re
+import requests
+from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Set
+from typing import Dict, List, Optional, Tuple, Set, Any
 from contextlib import contextmanager
 
 from zapv2 import ZAPv2
@@ -26,6 +28,17 @@ file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelnam
 logger.addHandler(file_handler)
 
 @dataclass
+class CodeContext:
+    """Represents source code context around vulnerable code"""
+    snippet: str
+    line_number: Optional[int] = None
+    file_path: Optional[str] = None
+    start_line: int = 0
+    end_line: int = 0
+    vulnerable_lines: List[int] = field(default_factory=list)
+    highlight_positions: List[Tuple[int, int]] = field(default_factory=list)  # [(start, end), ...]
+
+@dataclass
 class ZapVulnerability:
     url: str
     name: str
@@ -40,6 +53,8 @@ class ZapVulnerability:
     parameter: Optional[str] = None
     attack: Optional[str] = None
     wascid: Optional[str] = None
+    affected_code: Optional[CodeContext] = None
+    source_file: Optional[str] = None
 
 @dataclass
 class ScanStatus:
@@ -97,6 +112,11 @@ class ZAPScanner:
             "Server Side": ["Server Side Include", "Server Side Template Injection"],
             "Known Vulnerabilities": ["CVE-", "Log4Shell", "Spring4Shell", "Text4Shell"]
         }
+        
+        # Source code mapping configuration
+        self.source_code_mapping = {}  # Maps URL paths to local source files
+        self.source_root_dir = None    # Root directory for source code
+        self.source_file_extensions = ['.js', '.jsx', '.ts', '.tsx', '.php', '.py', '.java', '.html', '.css']
         
         logger.info(f"ZAPScanner initialized with base path: {self.base_path}")
         logger.info(f"ZAP proxy configuration: {self.proxy_host}:{self.proxy_port}")
@@ -260,6 +280,229 @@ class ZAPScanner:
         if zap_path.suffix == '.jar':
             return ['java'] + java_opts + ['-jar', str(zap_path)] + zap_args
         return [str(zap_path)] + zap_args
+
+    # --------------- Source Code Mapping Methods ---------------
+
+    def set_source_code_mapping(self, mapping: Dict[str, str], root_dir: Optional[str] = None):
+        """
+        Set the mapping between URL paths and local source code file paths.
+        
+        Args:
+            mapping: Dict mapping URL paths to local file paths
+            root_dir: Optional root directory for source code
+        """
+        self.source_code_mapping = mapping
+        self.source_root_dir = root_dir
+        logger.info(f"Set source code mapping with {len(mapping)} entries")
+        if root_dir:
+            logger.info(f"Source code root directory: {root_dir}")
+    
+    def _url_to_source_file(self, url: str) -> Optional[str]:
+        """
+        Convert a URL to a local source file path if possible.
+        """
+        if not self.source_code_mapping and not self.source_root_dir:
+            return None
+            
+        # Try direct mapping first
+        for url_prefix, file_path in self.source_code_mapping.items():
+            if url.startswith(url_prefix):
+                relative_path = url[len(url_prefix):]
+                return os.path.join(file_path, relative_path)
+                
+        # If no direct mapping and we have a root directory, try to infer
+        if self.source_root_dir:
+            try:
+                from urllib.parse import urlparse
+                parsed = urlparse(url)
+                path = parsed.path
+                
+                # Remove leading slash and query/fragments
+                if path.startswith('/'):
+                    path = path[1:]
+                    
+                # Try different possibilities
+                possibilities = [
+                    os.path.join(self.source_root_dir, path),
+                    os.path.join(self.source_root_dir, 'src', path),
+                    os.path.join(self.source_root_dir, 'public', path)
+                ]
+                
+                # Try each possibility with each extension
+                for possibility in possibilities:
+                    # If the file exists directly
+                    if os.path.isfile(possibility):
+                        return possibility
+                        
+                    # Try with different extensions if needed
+                    base_path, ext = os.path.splitext(possibility)
+                    if not ext:
+                        for extension in self.source_file_extensions:
+                            if os.path.isfile(f"{base_path}{extension}"):
+                                return f"{base_path}{extension}"
+            except Exception as e:
+                logger.debug(f"Error inferring source file from URL {url}: {str(e)}")
+                
+        return None
+
+    def _fetch_source_from_url(self, url: str) -> Optional[str]:
+        """
+        Attempts to fetch source code directly from the URL if it's a static file.
+        """
+        try:
+            # Check if it's likely a static file
+            if any(url.endswith(ext) for ext in ['.js', '.html', '.css', '.tsx', '.ts', '.jsx']):
+                response = requests.get(url, timeout=5)
+                if response.status_code == 200:
+                    return response.text
+        except Exception as e:
+            logger.debug(f"Error fetching source from URL {url}: {str(e)}")
+        return None
+
+    def _get_affected_code(self, alert: Dict[str, Any]) -> Optional[CodeContext]:
+        """
+        Extracts affected code context from an alert if possible.
+        """
+        url = alert.get('url', '')
+        evidence = alert.get('evidence', '')
+        
+        if not evidence or not url:
+            return None
+            
+        # Try to get source code from local file or by fetching URL
+        source_file = self._url_to_source_file(url)
+        source_code = None
+        
+        if source_file and os.path.isfile(source_file):
+            try:
+                with open(source_file, 'r', encoding='utf-8') as f:
+                    source_code = f.read()
+                logger.debug(f"Loaded source code from: {source_file}")
+            except Exception as e:
+                logger.debug(f"Error reading source file {source_file}: {str(e)}")
+        
+        if not source_code:
+            # Try to fetch source from URL if it's a static file
+            source_code = self._fetch_source_from_url(url)
+            if source_code:
+                logger.debug(f"Fetched source code from URL: {url}")
+        
+        if not source_code:
+            # If we still don't have source, try to extract from response
+            try:
+                # Use correct ZAP API methods to get messages
+                messages = []
+                try:
+                    # Get messages using the correct API method
+                    if hasattr(self.zap.core, 'messages'):
+                        # Use the messages method with baseurl parameter
+                        messages = self.zap.core.messages(baseurl=url)
+                        logger.debug(f"Found {len(messages)} messages for URL: {url}")
+                except Exception as e:
+                    logger.debug(f"Error getting messages for URL {url}: {str(e)}")
+                
+                # Process messages to find evidence
+                for message in messages:
+                    if isinstance(message, dict) and 'responseBody' in message:
+                        response_body = message.get('responseBody', '')
+                        if evidence in response_body:
+                            source_code = response_body
+                            logger.debug(f"Using response body as source code for URL: {url}")
+                            break
+                    elif hasattr(message, 'get') and callable(message.get):
+                        message_id = message.get('id')
+                        if message_id:
+                            # Fetch full message details if we only have IDs
+                            try:
+                                full_message = self.zap.core.message(message_id)
+                                if full_message and 'responseBody' in full_message:
+                                    response_body = full_message.get('responseBody', '')
+                                    if evidence in response_body:
+                                        source_code = response_body
+                                        logger.debug(f"Found evidence in message ID {message_id}")
+                                        break
+                            except Exception as e:
+                                logger.debug(f"Error retrieving message {message_id}: {str(e)}")
+            except Exception as e:
+                logger.debug(f"Error trying to extract source from ZAP messages: {str(e)}")
+        
+        if not source_code:
+            logger.debug(f"No source code available for URL: {url}")
+            # Create minimal code context with just the evidence
+            if evidence:
+                return CodeContext(
+                    snippet=evidence,
+                    line_number=None,
+                    file_path=source_file,
+                    highlight_positions=[(0, len(evidence))]
+                )
+            return None
+            
+        # Find evidence in source code and extract context
+        try:
+            # Escape regex special characters in evidence
+            pattern = re.escape(evidence)
+            matches = list(re.finditer(pattern, source_code))
+            
+            if not matches:
+                logger.debug(f"Evidence not found in source code for URL: {url}")
+                # Create context with just the evidence
+                return CodeContext(
+                    snippet=evidence,
+                    line_number=None,
+                    file_path=source_file,
+                    highlight_positions=[(0, len(evidence))]
+                )
+            
+            # Take the first match for simplicity
+            match = matches[0]
+            start_pos, end_pos = match.span()
+            
+            # Find line number
+            line_number = source_code[:start_pos].count('\n') + 1
+            
+            # Extract contextual lines (5 before and after)
+            lines = source_code.splitlines()
+            start_line = max(0, line_number - 6)
+            end_line = min(len(lines), line_number + 5)
+            
+            context_lines = lines[start_line:end_line]
+            context_snippet = '\n'.join(context_lines)
+            
+            # Calculate positions for highlighting in the context
+            # First, find the start position in the context
+            if start_line > 0:
+                # Adjust for removed lines
+                prefix_length = len('\n'.join(lines[:start_line])) + 1  # +1 for the newline
+                adjusted_start = start_pos - prefix_length
+                adjusted_end = end_pos - prefix_length
+            else:
+                adjusted_start = start_pos
+                adjusted_end = end_pos
+                
+            # Ensure positions are within bounds
+            adjusted_start = max(0, adjusted_start)
+            adjusted_end = min(len(context_snippet), adjusted_end)
+            
+            return CodeContext(
+                snippet=context_snippet,
+                line_number=line_number,
+                file_path=source_file,
+                start_line=start_line + 1,  # 1-based line numbering
+                end_line=end_line,
+                vulnerable_lines=[line_number],
+                highlight_positions=[(adjusted_start, adjusted_end)]
+            )
+            
+        except Exception as e:
+            logger.debug(f"Error extracting code context: {str(e)}")
+            # Fallback to just showing the evidence
+            return CodeContext(
+                snippet=evidence,
+                line_number=None,
+                file_path=source_file,
+                highlight_positions=[(0, len(evidence))]
+            )
 
     # --------------- ZAP Process Management ---------------
 
@@ -886,6 +1129,46 @@ class ZAPScanner:
                 pass
             return False
 
+    def _collect_source_files(self, target_url: str):
+        """
+        Attempt to identify and collect source files after scanning.
+        """
+        logger.info("Collecting source files for code analysis...")
+        collected_files = {}
+        
+        # Use ZAP messages to get responses that might contain source code
+        if hasattr(self.zap, 'core') and hasattr(self.zap.core, 'messages'):
+            try:
+                # Get all messages matching target URL
+                messages = self.zap.core.messages(baseurl=target_url)
+                
+                # Identify potential source files from responses
+                for message in messages:
+                    url = message.get('url', '')
+                    if not url:
+                        continue
+                        
+                    # Look for known source file extensions
+                    if any(url.endswith(ext) for ext in self.source_file_extensions):
+                        message_id = message.get('id')
+                        
+                        if message_id:
+                            try:
+                                # Get full message content
+                                full_message = self.zap.core.message(message_id)
+                                
+                                if full_message and 'responseBody' in full_message:
+                                    # Store source code with URL as key
+                                    logger.debug(f"Collected source from URL: {url}")
+                                    collected_files[url] = full_message['responseBody']
+                            except Exception as e:
+                                logger.debug(f"Error retrieving message {message_id}: {str(e)}")
+            except Exception as e:
+                logger.warning(f"Error collecting source files: {str(e)}")
+        
+        logger.info(f"Collected {len(collected_files)} potential source files for analysis")
+        return collected_files
+
     def scan_target(self, target_url: str) -> Tuple[List[ZapVulnerability], Dict]:
         """
         Comprehensive scan of the target URL using ZAP with enhanced passive and active scanning.
@@ -962,6 +1245,10 @@ class ZAPScanner:
             # Final passive scan wait
             logger.info("Performing final passive scan check...")
             self._wait_for_passive_scan_completion(max_wait_time=300)
+            
+            # Collect source code files
+            source_files = self._collect_source_files(target_url)
+            logger.info(f"Collected {len(source_files)} source files for code analysis")
 
             # Retrieve alerts with detailed logging
             logger.info("Retrieving final scan alerts...")
@@ -971,7 +1258,7 @@ class ZAPScanner:
             # Process and categorize alerts
             risk_counts = {"High": 0, "Medium": 0, "Low": 0, "Info": 0}
             
-            logger.info("Processing alert details...")
+            logger.info("Processing alert details and extracting affected code...")
             alert_names = set()  # Track unique alert names
             alert_categories = {}  # Group alerts by category
             
@@ -998,6 +1285,12 @@ class ZAPScanner:
                         alert_categories[category] = []
                     alert_categories[category].append(name)
                     
+                    # Get affected code context
+                    affected_code = self._get_affected_code(alert)
+                    source_file = None
+                    if affected_code and affected_code.file_path:
+                        source_file = affected_code.file_path
+                    
                     vuln = ZapVulnerability(
                         url=alert.get('url', ''),
                         name=name,
@@ -1011,14 +1304,22 @@ class ZAPScanner:
                         cwe_id=alert.get('cweid', ''),
                         parameter=alert.get('param', ''),
                         attack=alert.get('attack', ''),
-                        wascid=alert.get('wascid', '')
+                        wascid=alert.get('wascid', ''),
+                        affected_code=affected_code,
+                        source_file=source_file
                     )
                     vulnerabilities.append(vuln)
                     
-                    # Log high and medium risks in detail
+                    # Log high and medium risks in detail with affected code info
                     if risk in ["High", "Medium"]:
-                        logger.info(f"[{risk}] {vuln.name} - URL: {vuln.url}" + 
-                                    (f" - Parameter: {vuln.parameter}" if vuln.parameter else ""))
+                        log_message = f"[{risk}] {vuln.name} - URL: {vuln.url}"
+                        if vuln.parameter:
+                            log_message += f" - Parameter: {vuln.parameter}"
+                        if affected_code and affected_code.snippet:
+                            log_message += f" - Affected code identified"
+                            if affected_code.line_number:
+                                log_message += f" at line {affected_code.line_number}"
+                        logger.info(log_message)
                 except Exception as e:
                     logger.error(f"Error processing alert #{idx}: {str(e)}")
                     continue
@@ -1041,6 +1342,10 @@ class ZAPScanner:
             logger.info(f"Risk breakdown: High={risk_counts['High']}, Medium={risk_counts['Medium']}, "
                         f"Low={risk_counts['Low']}, Info={risk_counts['Info']}")
             
+            # Log affected code stats
+            with_code = sum(1 for v in vulnerabilities if v.affected_code and v.affected_code.snippet)
+            logger.info(f"Vulnerabilities with affected code identified: {with_code}/{len(vulnerabilities)}")
+            
             # Update summary with final results
             summary.update({
                 "status": "success",
@@ -1051,7 +1356,8 @@ class ZAPScanner:
                 "passive_scan_enabled": True,
                 "ajax_spider_enabled": True,
                 "unique_alert_types": len(alert_names),
-                "alert_categories": {k: len(v) for k, v in alert_categories.items()}
+                "alert_categories": {k: len(v) for k, v in alert_categories.items()},
+                "vulnerabilities_with_code": with_code
             })
             
             return vulnerabilities, summary
@@ -1066,6 +1372,127 @@ class ZAPScanner:
         finally:
             logger.info("Cleaning up ZAP resources...")
             self._cleanup_existing_zap()
+
+    def generate_affected_code_report(self, vulnerabilities: List[ZapVulnerability], output_file: str = None) -> str:
+        """
+        Generates a report focusing on the affected code for each vulnerability.
+        
+        Args:
+            vulnerabilities: List of ZapVulnerability objects
+            output_file: Optional file path to save the report
+            
+        Returns:
+            The report content as a string
+        """
+        logger.info("Generating affected code report...")
+        
+        # Group vulnerabilities by risk level for better organization
+        vuln_by_risk = {
+            "High": [],
+            "Medium": [],
+            "Low": [],
+            "Informational": []
+        }
+        
+        for vuln in vulnerabilities:
+            risk = vuln.risk
+            if risk == "Info":
+                risk = "Informational"
+            if risk in vuln_by_risk:
+                vuln_by_risk[risk].append(vuln)
+        
+        # Generate report
+        report = ["# Security Vulnerability Report with Affected Code\n"]
+        
+        # Add summary section
+        report.append("## Summary\n")
+        for risk, vulns in vuln_by_risk.items():
+            if vulns:
+                report.append(f"- **{risk}**: {len(vulns)} vulnerabilities\n")
+        
+        # Add detailed findings with code
+        for risk in ["High", "Medium", "Low", "Informational"]:
+            vulns = vuln_by_risk[risk]
+            if not vulns:
+                continue
+                
+            report.append(f"\n## {risk} Risk Vulnerabilities\n")
+            
+            for i, vuln in enumerate(vulns, 1):
+                report.append(f"### {i}. {vuln.name}\n")
+                report.append(f"- **URL**: {vuln.url}\n")
+                if vuln.parameter:
+                    report.append(f"- **Parameter**: {vuln.parameter}\n")
+                report.append(f"- **Confidence**: {vuln.confidence}\n")
+                report.append(f"- **Description**: {vuln.description}\n")
+                report.append(f"- **Solution**: {vuln.solution}\n")
+                
+                if vuln.cwe_id:
+                    report.append(f"- **CWE ID**: {vuln.cwe_id}\n")
+                
+                # Add affected code section if available
+                if vuln.affected_code and vuln.affected_code.snippet:
+                    code = vuln.affected_code
+                    report.append("\n#### Affected Code\n")
+                    
+                    if code.file_path:
+                        report.append(f"**File**: {code.file_path}\n")
+                    
+                    if code.line_number:
+                        report.append(f"**Line**: {code.line_number}\n")
+                    
+                    # Add code snippet with syntax highlighting
+                    report.append("\n```\n")
+                    # Add line numbers to code
+                    if code.start_line > 0:
+                        lines = code.snippet.split('\n')
+                        numbered_lines = []
+                        for i, line in enumerate(lines, code.start_line):
+                            line_num = f"{i:4d} | "
+                            # Highlight vulnerable lines
+                            if i in code.vulnerable_lines:
+                                numbered_lines.append(f"{line_num}{line}  <-- VULNERABILITY")
+                            else:
+                                numbered_lines.append(f"{line_num}{line}")
+                        report.append('\n'.join(numbered_lines))
+                    else:
+                        # If we don't have line numbers, just show the snippet
+                        report.append(code.snippet)
+                    report.append("\n```\n")
+                
+                # Add evidence if available but no code snippet
+                elif vuln.evidence and (not vuln.affected_code or not vuln.affected_code.snippet):
+                    report.append("\n#### Evidence\n")
+                    report.append("\n```\n")
+                    report.append(vuln.evidence)
+                    report.append("\n```\n")
+                
+                report.append("\n---\n")
+        
+        # Save report to file if specified
+        report_content = '\n'.join(report)
+        if output_file:
+            try:
+                with open(output_file, 'w', encoding='utf-8') as f:
+                    f.write(report_content)
+                logger.info(f"Saved affected code report to: {output_file}")
+            except Exception as e:
+                logger.error(f"Error saving report to {output_file}: {str(e)}")
+        
+        return report_content
+
+    def set_source_code_root(self, root_dir: str):
+        """
+        Set the root directory for source code to help with mapping URLs to local files.
+        
+        Args:
+            root_dir: Path to the source code root directory
+        """
+        if os.path.isdir(root_dir):
+            self.source_root_dir = root_dir
+            logger.info(f"Source code root directory set to: {root_dir}")
+        else:
+            logger.warning(f"Source code root directory not found: {root_dir}")
 
     def start_scan(self, model: str, app_num: int) -> bool:
         """
@@ -1090,6 +1517,11 @@ class ZAPScanner:
         frontend_port = frontend_port_start + ((app_num - 1) * PORTS_PER_APP)
         target_url = f"http://localhost:{frontend_port}"
         
+        # Try to set source code root if possible
+        app_path = self.base_path / f"{model}/app{app_num}"
+        if app_path.exists() and app_path.is_dir():
+            self.set_source_code_root(str(app_path))
+        
         # Store scan info
         self._scans[scan_key] = {
             "status": scan_status,
@@ -1106,17 +1538,32 @@ class ZAPScanner:
             # Run the scan
             vulnerabilities, summary = self.scan_target(target_url)
             
+            # Generate affected code report
+            report_path = self.base_path / f"{model}/app{app_num}/.zap_code_report.md"
+            self.generate_affected_code_report(vulnerabilities, str(report_path))
+            
             # Save results
             results_path = self.base_path / f"{model}/app{app_num}/.zap_results.json"
             results_path.parent.mkdir(parents=True, exist_ok=True)
             
             logger.info(f"Saving scan results to {results_path}")
             with open(results_path, "w") as f:
-                json.dump({
-                    "alerts": [asdict(v) for v in vulnerabilities],
+                # Convert to dict but handle affected_code specially
+                results_dict = {
+                    "alerts": [],
                     "summary": summary,
                     "scan_time": datetime.now().isoformat()
-                }, f, indent=2)
+                }
+                
+                # Serialize each vulnerability
+                for vuln in vulnerabilities:
+                    vuln_dict = asdict(vuln)
+                    # Convert code context to dict if it exists
+                    if vuln.affected_code:
+                        vuln_dict['affected_code'] = asdict(vuln.affected_code)
+                    results_dict['alerts'].append(vuln_dict)
+                
+                json.dump(results_dict, f, indent=2)
                 
             # Update scan status
             scan_status.status = "Complete"
