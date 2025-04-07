@@ -10,7 +10,10 @@
       "solution": "Ensure that sensitive data is not available in an unauthenticated manner (using IP address white-listing, for instance).\nConfigure the \"Access-Control-Allow-Origin\" HTTP header to a more restrictive set of domains, or remove all CORS headers entirely, to allow the web browser to enforce the Same Origin Policy (SOP) in a more restrictive manner.",
       "reference": "https://vulncat.fortify.com/en/detail?id=desc.config.dotnet.html5_overly_permissive_cors_policy",
       "evidence": "Access-Control-Allow-Origin: *",
-      "cwe_id": "264"
+      "cwe_id": "264",
+      "parameter": "",
+      "attack": "",
+      "wascid": "14"
     },
     {
       "url": "http://localhost:5503/robots.txt",
@@ -22,7 +25,10 @@
       "solution": "Ensure that sensitive data is not available in an unauthenticated manner (using IP address white-listing, for instance).\nConfigure the \"Access-Control-Allow-Origin\" HTTP header to a more restrictive set of domains, or remove all CORS headers entirely, to allow the web browser to enforce the Same Origin Policy (SOP) in a more restrictive manner.",
       "reference": "https://vulncat.fortify.com/en/detail?id=desc.config.dotnet.html5_overly_permissive_cors_policy",
       "evidence": "Access-Control-Allow-Origin: *",
-      "cwe_id": "264"
+      "cwe_id": "264",
+      "parameter": "",
+      "attack": "",
+      "wascid": "14"
     },
     {
       "url": "http://localhost:5503/sitemap.xml",
@@ -34,14 +40,18 @@
       "solution": "Ensure that sensitive data is not available in an unauthenticated manner (using IP address white-listing, for instance).\nConfigure the \"Access-Control-Allow-Origin\" HTTP header to a more restrictive set of domains, or remove all CORS headers entirely, to allow the web browser to enforce the Same Origin Policy (SOP) in a more restrictive manner.",
       "reference": "https://vulncat.fortify.com/en/detail?id=desc.config.dotnet.html5_overly_permissive_cors_policy",
       "evidence": "Access-Control-Allow-Origin: *",
-      "cwe_id": "264"
+      "cwe_id": "264",
+      "parameter": "",
+      "attack": "",
+      "wascid": "14"
     }
   ],
   "summary": {
-    "start_time": "2025-04-01T16:05:19.102427",
+    "start_time": "2025-04-07T11:53:04.170534",
     "target_url": "http://localhost:5503",
     "status": "success",
-    "end_time": "2025-04-01T16:05:44.433998",
+    "end_time": "2025-04-07T11:53:25.569655",
+    "duration_seconds": 21,
     "total_alerts": 3,
     "risk_counts": {
       "High": 0,
@@ -50,5 +60,5 @@
       "Info": 0
     }
   },
-  "scan_time": "2025-04-01T16:05:47.265530"
+  "scan_time": "2025-04-07T11:53:27.794949"
 }

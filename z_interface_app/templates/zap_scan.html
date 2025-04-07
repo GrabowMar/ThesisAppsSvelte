@@ -61,19 +61,56 @@
       <!-- Progress Bar Section -->
       <div id="scanProgress" class="hidden border border-gray-400 bg-white p-2 rounded-sm shadow-sm">
         <div class="text-xs font-bold mb-1">Scan Progress</div>
-        <div class="w-full bg-gray-200 rounded-full h-2">
-          <div id="progressBar" class="bg-blue-600 rounded-full h-2 transition-all duration-500" style="width: 0%"></div>
+        <div class="space-y-1">
+          <div class="flex justify-between text-xs">
+            <span>Overall Progress:</span>
+            <span id="progressPercentage">0%</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2">
+            <div id="progressBar" class="bg-blue-600 rounded-full h-2 transition-all duration-500" style="width: 0%"></div>
+          </div>
+          
+          <!-- Detailed Phase Progress -->
+          <div class="mt-2 grid grid-cols-3 gap-1 text-xs">
+            <div>
+              <div class="flex justify-between">
+                <span>Spider:</span>
+                <span id="spiderProgress">0%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-1">
+                <div id="spiderProgressBar" class="bg-green-600 rounded-full h-1" style="width: 0%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between">
+                <span>Passive Scan:</span>
+                <span id="passiveProgress">0%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-1">
+                <div id="passiveProgressBar" class="bg-yellow-600 rounded-full h-1" style="width: 0%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between">
+                <span>Active Scan:</span>
+                <span id="activeProgress">0%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-1">
+                <div id="activeProgressBar" class="bg-red-600 rounded-full h-1" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Log Output Section -->
       <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
-          <h2 class="font-bold text-xs">Progress Log</h2>
+          <h2 class="font-bold text-xs">Scan Log</h2>
           <button id="clearLog" class="text-xs text-gray-600 hover:text-gray-900 rounded-sm">Clear</button>
         </div>
         <div class="p-2">
-          <pre id="progressLog" class="text-xs font-mono bg-gray-50 p-2 border border-gray-300 h-48 overflow-auto rounded-sm"></pre>
+          <pre id="progressLog" class="text-xs font-mono bg-gray-50 p-2 border border-gray-300 h-64 overflow-auto rounded-sm"></pre>
         </div>
       </div>
 
@@ -119,6 +156,9 @@
                   <div>
                     <div class="text-xs font-bold">{{ alert.name }}</div>
                     <div class="text-xs text-gray-600">{{ alert.url }}</div>
+                    {% if alert.parameter %}
+                      <div class="text-xs text-gray-600">Parameter: {{ alert.parameter }}</div>
+                    {% endif %}
                   </div>
                   
                   <!-- Collapsible Details -->
@@ -139,6 +179,12 @@
                       <div class="text-xs font-mono bg-gray-800 text-white p-2 overflow-x-auto rounded-sm">
                         <div class="font-bold text-gray-400 mb-1">Evidence:</div>
                         <code>{{ alert.evidence }}</code>
+                      </div>
+                    {% endif %}
+                    {% if alert.attack %}
+                      <div class="text-xs bg-gray-50 p-2 border border-gray-300 rounded-sm">
+                        <div class="font-bold">Attack:</div>
+                        <div class="font-mono">{{ alert.attack }}</div>
                       </div>
                     {% endif %}
                     {% if alert.reference %}
@@ -198,49 +244,60 @@
         </div>
       </div>
 
-      <!-- Scan Options Card -->
+      <!-- Scan Configuration Card -->
       <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-          <h2 class="font-bold text-xs">Scan Options</h2>
+          <h2 class="font-bold text-xs">Scan Configuration</h2>
         </div>
-        <div class="p-2 space-y-2">
-          <label class="block">
-            <span class="text-xs font-medium text-gray-700">Spider Depth:</span>
-            <input type="number" id="spiderDepth" value="5" min="1" max="10" 
-                   class="mt-1 w-full h-6 px-2 text-xs border border-gray-300 rounded-sm">
-          </label>
-          <label class="block">
-            <span class="text-xs font-medium text-gray-700">Thread Count:</span>
-            <input type="number" id="threadCount" value="2" min="1" max="5" 
-                   class="mt-1 w-full h-6 px-2 text-xs border border-gray-300 rounded-sm">
-          </label>
-          <div class="space-y-1">
-            <label class="flex items-center">
-              <input type="checkbox" id="ajaxSpider" class="mr-2 rounded-sm">
-              <span class="text-xs">Use AJAX Spider</span>
-            </label>
-            <label class="flex items-center">
-              <input type="checkbox" id="passiveScan" checked class="mr-2 rounded-sm">
-              <span class="text-xs">Passive Scan</span>
-            </label>
-            <label class="flex items-center">
-              <input type="checkbox" id="activeScan" checked class="mr-2 rounded-sm">
-              <span class="text-xs">Active Scan</span>
-            </label>
+        <div class="p-2 text-xs space-y-1">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Scan Mode:</span>
+            <span class="font-bold">Comprehensive</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Spider:</span>
+            <span class="font-bold">Enabled</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Passive Scan:</span>
+            <span class="font-bold">Enabled</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Active Scan:</span>
+            <span class="font-bold">Enabled</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Scan Depth:</span>
+            <span class="font-bold">Comprehensive</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Policy:</span>
+            <span class="font-bold">Default Policy</span>
+          </div>
+          <div class="mt-2 p-2 bg-gray-50 border border-gray-300 rounded-sm">
+            <p class="text-xs text-gray-700">This scanner runs a comprehensive security assessment including spider crawling, passive analysis, and active vulnerability testing.</p>
           </div>
         </div>
       </div>
       
-      <!-- Scan Policy Card -->
+      <!-- Scan Statistics Card -->
       <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-          <h2 class="font-bold text-xs">Scan Policy</h2>
+          <h2 class="font-bold text-xs">Scan Statistics</h2>
         </div>
-        <div class="p-2">
-          <select id="scanPolicy" class="w-full h-6 px-2 text-xs border border-gray-300 rounded-sm">
-            <option value="Default Policy">Default Policy</option>
-            <option value="SQL Injection and XSS">SQL Injection and XSS</option>
-          </select>
+        <div class="p-2 text-xs space-y-1">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Start Time:</span>
+            <span class="font-bold" id="scanStartTime">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Duration:</span>
+            <span class="font-bold" id="scanDuration">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Total Alerts:</span>
+            <span class="font-bold" id="totalAlerts">0</span>
+          </div>
         </div>
       </div>
     </div>
@@ -248,7 +305,7 @@
 </div>
 
 <script>
-  // Initialize when DOM is ready
+// Initialize when DOM is ready
 $(document).ready(function() {
   // Initialize core App functionality
   if (typeof App !== 'undefined' && App.Features.zapScan) {
@@ -261,6 +318,8 @@ $(document).ready(function() {
   function setupZapScan() {
     let pollingActive = false;
     let filterTimeout = null;
+    let scanStartTimestamp = null;
+    let durationInterval = null;
     
     // DOM Elements
     const elements = {
@@ -281,6 +340,20 @@ $(document).ready(function() {
         medium: $('#mediumCount'),
         low: $('#lowCount'),
         info: $('#infoCount')
+      },
+      progressElements: {
+        percentage: $('#progressPercentage'),
+        spider: $('#spiderProgress'),
+        spiderBar: $('#spiderProgressBar'),
+        passive: $('#passiveProgress'),
+        passiveBar: $('#passiveProgressBar'),
+        active: $('#activeProgress'),
+        activeBar: $('#activeProgressBar')
+      },
+      statsElements: {
+        startTime: $('#scanStartTime'),
+        duration: $('#scanDuration'),
+        totalAlerts: $('#totalAlerts')
       }
     };
     
@@ -364,6 +437,35 @@ $(document).ready(function() {
       elements.progressLogElem.scrollTop(elements.progressLogElem[0].scrollHeight);
     }
     
+    // Format duration from seconds
+    function formatDuration(totalSeconds) {
+      if (!totalSeconds) return "-";
+      
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      
+      if (hours > 0) {
+        return `${hours}h ${minutes}m ${seconds}s`;
+      } else if (minutes > 0) {
+        return `${minutes}m ${seconds}s`;
+      } else {
+        return `${seconds}s`;
+      }
+    }
+    
+    // Update duration display
+    function updateDuration() {
+      if (!scanStartTimestamp) return;
+      
+      const now = new Date();
+      const durationSeconds = Math.floor((now - scanStartTimestamp) / 1000);
+      
+      if (elements.statsElements.duration.length) {
+        elements.statsElements.duration.text(formatDuration(durationSeconds));
+      }
+    }
+    
     // Start a new ZAP scan
     function startScan() {
       if (!elements.startScanBtn.length || !elements.stopScanBtn.length || !elements.scanProgress.length) return;
@@ -372,16 +474,6 @@ $(document).ready(function() {
       const urlParts = window.location.pathname.split('/');
       const model = urlParts[urlParts.length - 2] || '';
       const appNum = urlParts[urlParts.length - 1] || '';
-      
-      // Collect scan options
-      const scanOptions = {
-        spiderDepth: parseInt($('#spiderDepth').val()) || 5,
-        threadCount: parseInt($('#threadCount').val()) || 2,
-        useAjaxSpider: $('#ajaxSpider').is(':checked') || false,
-        usePassiveScan: $('#passiveScan').is(':checked') || true,
-        useActiveScan: $('#activeScan').is(':checked') || true,
-        scanPolicy: $('#scanPolicy').val() || 'Default Policy'
-      };
       
       // Update UI to scanning state
       elements.startScanBtn.prop('disabled', true);
@@ -392,18 +484,50 @@ $(document).ready(function() {
         elements.scanStatusElem.text('Starting...');
       }
       
-      appendToLog(`Starting scan with options: Spider Depth=${scanOptions.spiderDepth}, Threads=${scanOptions.threadCount}, AJAX=${scanOptions.useAjaxSpider}`);
+      // Reset progress elements
+      if (elements.progressElements) {
+        elements.progressElements.percentage.text('0%');
+        elements.progressElements.spider.text('0%');
+        elements.progressElements.passive.text('0%');
+        elements.progressElements.active.text('0%');
+        elements.progressBar.css('width', '0%');
+        elements.progressElements.spiderBar.css('width', '0%');
+        elements.progressElements.passiveBar.css('width', '0%');
+        elements.progressElements.activeBar.css('width', '0%');
+      }
       
-      // Send scan request to server
+      // Reset counters
+      if (elements.countElements) {
+        elements.countElements.high.text('0');
+        elements.countElements.medium.text('0');
+        elements.countElements.low.text('0');
+        elements.countElements.info.text('0');
+      }
+      
+      if (elements.statsElements) {
+        const startTimeStr = new Date().toLocaleString();
+        elements.statsElements.startTime.text(startTimeStr);
+        elements.statsElements.duration.text('0s');
+        elements.statsElements.totalAlerts.text('0');
+      }
+      
+      // Set scan start time and start duration timer
+      scanStartTimestamp = new Date();
+      if (durationInterval) clearInterval(durationInterval);
+      durationInterval = setInterval(updateDuration, 1000);
+      
+      appendToLog(`Starting comprehensive scan of target: http://localhost:${calculatePort(model, appNum)}`);
+      
+      // Send scan request to server - no options needed with railroaded approach
       $.ajax({
         url: `/zap/scan/${model}/${appNum}`,
         method: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify(scanOptions)
+        data: JSON.stringify({})
       })
       .done(function() {
         // Start progress polling
-        appendToLog('Scan started successfully');
+        appendToLog('Scan initiated successfully. Starting spider phase...');
         pollProgress(model, appNum);
       })
       .fail(function(jqXHR) {
@@ -417,6 +541,12 @@ $(document).ready(function() {
         elements.stopScanBtn.addClass('hidden');
         if (elements.scanStatusElem.length) {
           elements.scanStatusElem.text('Error');
+        }
+        
+        // Stop duration timer
+        if (durationInterval) {
+          clearInterval(durationInterval);
+          durationInterval = null;
         }
       });
     }
@@ -446,6 +576,12 @@ $(document).ready(function() {
           elements.scanStatusElem.text('Stopped');
         }
         
+        // Stop duration timer
+        if (durationInterval) {
+          clearInterval(durationInterval);
+          durationInterval = null;
+        }
+        
         appendToLog('Scan stopped successfully');
       })
       .fail(function(jqXHR) {
@@ -467,9 +603,30 @@ $(document).ready(function() {
           method: 'GET'
         })
         .done(function(data) {
-          // Update progress bar
+          // Update progress bar and text
+          const progress = Math.min(Math.max(data.progress || 0, 0), 100);
+          
           if (elements.progressBar.length) {
-            elements.progressBar.css('width', `${Math.min(Math.max(data.progress, 0), 100)}%`);
+            elements.progressBar.css('width', `${progress}%`);
+          }
+          
+          if (elements.progressElements.percentage.length) {
+            elements.progressElements.percentage.text(`${progress}%`);
+          }
+          
+          // Update detailed progress bars if available
+          if (elements.progressElements) {
+            const spiderProgress = Math.min(Math.max(data.spider_progress || 0, 0), 100);
+            const passiveProgress = Math.min(Math.max(data.passive_progress || 0, 0), 100);
+            const activeProgress = Math.min(Math.max(data.active_progress || 0, 0), 100);
+            
+            elements.progressElements.spider.text(`${spiderProgress}%`);
+            elements.progressElements.passive.text(`${passiveProgress}%`);
+            elements.progressElements.active.text(`${activeProgress}%`);
+            
+            elements.progressElements.spiderBar.css('width', `${spiderProgress}%`);
+            elements.progressElements.passiveBar.css('width', `${passiveProgress}%`);
+            elements.progressElements.activeBar.css('width', `${activeProgress}%`);
           }
           
           // Update status text
@@ -483,11 +640,23 @@ $(document).ready(function() {
             elements.countElements.medium.text(data.medium_count || 0);
             elements.countElements.low.text(data.low_count || 0);
             elements.countElements.info.text(data.info_count || 0);
+            
+            // Update total alerts
+            if (elements.statsElements.totalAlerts.length) {
+              const total = 
+                (parseInt(data.high_count) || 0) + 
+                (parseInt(data.medium_count) || 0) + 
+                (parseInt(data.low_count) || 0) + 
+                (parseInt(data.info_count) || 0);
+              elements.statsElements.totalAlerts.text(total);
+            }
           }
           
-          // Log important state changes
-          if (data.status !== 'Running' && data.status !== 'Starting') {
+          // Log phase changes
+          const prevStatus = elements.scanStatusElem.data('prev-status');
+          if (data.status !== prevStatus) {
             appendToLog(`Status changed to: ${data.status}`);
+            elements.scanStatusElem.data('prev-status', data.status);
           }
           
           // Check if scan is complete
@@ -498,8 +667,14 @@ $(document).ready(function() {
             if (elements.startScanBtn.length) elements.startScanBtn.prop('disabled', false);
             if (elements.lastScanTimeElem.length) elements.lastScanTimeElem.text(new Date().toLocaleString());
             
-            appendToLog('Scan completed. Reloading page to show results...');
-            setTimeout(() => window.location.reload(), 1000);
+            // Stop duration timer
+            if (durationInterval) {
+              clearInterval(durationInterval);
+              durationInterval = null;
+            }
+            
+            appendToLog('Scan completed successfully. Reloading page to show results...');
+            setTimeout(() => window.location.reload(), 2000);
             return;
           }
           
@@ -570,7 +745,7 @@ $(document).ready(function() {
     updateTargetUrl();
     
     // Log ready message
-    appendToLog('ZAP Scanner interface ready');
+    appendToLog('ZAP Scanner interface ready. Click "Start Scan" to begin comprehensive security assessment.');
   }
 });
 </script>
