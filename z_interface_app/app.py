@@ -2,7 +2,7 @@
 Refactored Flask-based AI Model Management System
 
 This version enhances jQuery compatibility, improves API responses,
-centralizes error handling, and optimizes route organization.
+centralizes error handling, and optimizes route organization with proper logging.
 """
 
 # =============================================================================
@@ -10,7 +10,6 @@ centralizes error handling, and optimizes route organization.
 # =============================================================================
 import asyncio
 import json
-import logging
 import os
 import random
 import sqlite3
@@ -56,7 +55,7 @@ from locust import HttpUser, User, task, constant, events, between
 from locust.env import Environment
 from locust.stats import stats_printer, StatsEntry
 from locust.runners import Runner, LocalRunner, MasterRunner, WorkerRunner
-from werkzeug.exceptions import BadRequest, HTTPException, NotFound, InternalServerError
+from werkzeug.exceptions import BadRequest, HTTPException, NotFound as WerkzeugNotFound, InternalServerError
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 # =============================================================================
@@ -69,12 +68,10 @@ from gpt4all_analysis import GPT4AllAnalyzer
 from path_utils import PathUtils
 from performance_analysis import LocustPerformanceTester, PerformanceResult, EndpointStats, ErrorStats
 from zap_scanner import ZAPScanner, create_scanner
+from logging_service import initialize_logging, create_logger_for_component
 
-
-# =============================================================================
-# Module-Level Logger
-# =============================================================================
-logger = logging.getLogger(__name__)
+# Create the main application logger
+logger = create_logger_for_component('app')
 
 # =============================================================================
 # Enhanced Configuration & Domain Models
@@ -85,11 +82,13 @@ class AppConfig:
     DEBUG: bool = True
     SECRET_KEY: str = os.getenv("FLASK_SECRET_KEY", "your-secret-key-here")
     BASE_DIR: Path = Path(__file__).parent
-    LOG_LEVEL: str = os.getenv("LOG_LEVEL", "ERROR")
     DOCKER_TIMEOUT: int = int(os.getenv("DOCKER_TIMEOUT", "10"))
     CACHE_DURATION: int = int(os.getenv("CACHE_DURATION", "5"))
     HOST: str = "0.0.0.0" if os.getenv("FLASK_ENV") == "production" else "127.0.0.1"
     PORT: int = int(os.getenv("PORT", "5000"))
+    LOG_DIR: str = os.getenv("LOG_DIR", "logs")
+    LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
+
     # CORS settings for API endpoints
     CORS_ENABLED: bool = os.getenv("CORS_ENABLED", "false").lower() == "true"
     CORS_ORIGINS: List[str] = field(default_factory=lambda: ["http://localhost:5000"])
@@ -105,8 +104,7 @@ class AppConfig:
 
 @dataclass
 class AIModel:
-    """Represents an AI model with display properties"
-    """
+    """Represents an AI model with display properties"""
     name: str
     color: str
     
@@ -168,152 +166,6 @@ AI_MODELS: List[AIModel] = [
 ]
 
 # =============================================================================
-# Enhanced Request Logging Middleware
-# =============================================================================
-class RequestLoggerMiddleware:
-    """
-    Middleware to enhance request logging with additional context information.
-    Adds referrer, user agent, client IP, and a request ID to logs.
-    """
-    
-    def __init__(self, app):
-        """Initialize middleware and attach handlers to the Flask app."""
-        self.app = app
-        self.logger = app.logger
-        
-        # Apply the middleware
-        @app.before_request
-        def before_request():
-            # Generate a unique ID for this request
-            request_id = str(uuid.uuid4())[:8]
-            g.request_id = request_id
-            g.start_time = time.time()
-            
-            # Log the beginning of the request with context
-            referrer = request.referrer or 'No referrer'
-            user_agent = request.user_agent.string if request.user_agent else 'No user agent'
-            
-            self.logger.info(
-                f"REQUEST START [{request_id}]: {request.method} {request.path} | "
-                f"Referrer: {referrer} | "
-                f"User-Agent: {user_agent} | "
-                f"IP: {request.remote_addr}"
-            )
-            
-            # For AJAX requests, log additional context
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                self.logger.info(
-                    f"AJAX REQUEST [{request_id}]: {request.method} {request.path} | "
-                    f"Content-Type: {request.content_type}"
-                )
-                
-        @app.after_request
-        def after_request(response):
-            # Calculate the request duration
-            duration = time.time() - g.get('start_time', time.time())
-            
-            # Get the request_id or generate a fallback
-            request_id = g.get('request_id', 'unknown')
-            
-            # Log the end of the request with status and duration
-            self.logger.info(
-                f"REQUEST END [{request_id}]: {request.method} {request.path} | "
-                f"Status: {response.status_code} | "
-                f"Duration: {duration:.4f}s"
-            )
-            
-            # Add the request ID to the response headers for debugging
-            response.headers['X-Request-ID'] = request_id
-            
-            # Add CORS headers if enabled
-            if current_app.config.get('CORS_ENABLED', False):
-                response.headers['Access-Control-Allow-Origin'] = '*'
-                response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-                response.headers['Access-Control-Allow-Headers'] = 'Content-Type, X-Requested-With'
-            
-            return response
-        
-        # Handle exceptions in requests
-        @app.errorhandler(Exception)
-        def handle_exception(e):
-            request_id = g.get('request_id', 'unknown')
-            self.logger.error(
-                f"REQUEST ERROR [{request_id}]: {request.method} {request.path} | "
-                f"Error: {str(e)}"
-            )
-            
-            # Special handling for AJAX requests to provide consistent error format
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                response = APIResponse(
-                    success=False,
-                    error=str(e),
-                    code=500 if not isinstance(e, HTTPException) else e.code
-                )
-                return response.to_response()
-                
-            # Let the regular error handlers take care of the response for non-AJAX
-            raise e
-
-# =============================================================================
-# Logging Configuration
-# =============================================================================
-class StatusEndpointFilter(logging.Filter):
-    """Filter to reduce noise in logs from status endpoints."""
-    
-    def filter(self, record: logging.LogRecord) -> bool:
-        """Filter out routine container status messages from the logs."""
-        if not hasattr(record, "args") or len(record.args) < 3:
-            return True
-        msg = record.args[2] if isinstance(record.args[2], str) else ""
-        return "GET /api/container/" not in msg or not msg.endswith(' HTTP/1.1" 200 -')
-
-
-class LoggingService:
-    """Provides centralized logging configuration for the application."""
-    
-    @staticmethod
-    def configure(log_level: str) -> None:
-        """
-        Configure logging settings for the application.
-        
-        Args:
-            log_level: The desired logging level (DEBUG, INFO, WARNING, ERROR)
-        """
-        # More detailed log format that includes thread info
-        log_format = (
-            "%(asctime)s - %(name)s - [%(levelname)s] - "
-            "%(threadName)s - %(message)s"
-        )
-        
-        # Configure the basic logging
-        logging.basicConfig(
-            level=getattr(logging, log_level.upper(), logging.ERROR),
-            format=log_format,
-            datefmt="%Y-%m-%d %H:%M:%S"
-        )
-        
-        # Configure werkzeug to be more verbose by removing the filter
-        werkzeug_logger = logging.getLogger("werkzeug")
-        
-        # Set specific log levels for various components
-        logging.getLogger("zap_scanner").setLevel(logging.INFO)
-        logging.getLogger("owasp_zap").setLevel(logging.WARNING)
-        
-        # Create a file handler for important logs
-        try:
-            file_handler = logging.FileHandler("app_requests.log")
-            file_handler.setLevel(logging.INFO)
-            file_handler.setFormatter(logging.Formatter(log_format))
-            
-            # Add the file handler to the werkzeug logger and root logger
-            werkzeug_logger.addHandler(file_handler)
-            logging.getLogger().addHandler(file_handler)
-            
-            logging.info("File logging initialized successfully")
-        except (IOError, PermissionError) as e:
-            logging.warning(f"Could not initialize file logging: {e}")
-
-# =============================================================================
 # Port Management
 # =============================================================================
 class PortManager:
@@ -324,6 +176,8 @@ class PortManager:
     PORTS_PER_APP = 2
     BUFFER_PORTS = 20
     APPS_PER_MODEL = 30
+    
+    _logger = create_logger_for_component('port_manager')
 
     @classmethod
     def get_port_range(cls, model_idx: int) -> Dict[str, Dict[str, int]]:
@@ -361,10 +215,12 @@ class PortManager:
             Dictionary with backend and frontend port numbers
         """
         rng = cls.get_port_range(model_idx)
-        return {
+        ports = {
             "backend": rng["backend"]["start"] + (app_num - 1) * cls.PORTS_PER_APP,
             "frontend": rng["frontend"]["start"] + (app_num - 1) * cls.PORTS_PER_APP,
         }
+        cls._logger.debug(f"Allocated ports for model_idx={model_idx}, app_num={app_num}: {ports}")
+        return ports
 
 # =============================================================================
 # Docker Management
@@ -379,10 +235,11 @@ class DockerManager:
         Args:
             client: Optional pre-configured Docker client
         """
-        self.logger = logging.getLogger(__name__)
+        self.logger = create_logger_for_component('docker')
         self.client = client or self._create_docker_client()
         self._cache: Dict[str, Tuple[float, DockerStatus]] = {}
         self._cache_duration = AppConfig.from_env().CACHE_DURATION
+        self.logger.info("Docker manager initialized")
 
     def _create_docker_client(self) -> Optional[docker.DockerClient]:
         """
@@ -393,12 +250,13 @@ class DockerManager:
         """
         try:
             docker_host = os.getenv("DOCKER_HOST", "npipe:////./pipe/docker_engine")
+            self.logger.debug(f"Creating Docker client with host: {docker_host}")
             return docker.DockerClient(
                 base_url=docker_host,
                 timeout=AppConfig.from_env().DOCKER_TIMEOUT,
             )
         except Exception as e:
-            self.logger.error(f"Docker client creation failed: {e}")
+            self.logger.exception(f"Docker client creation failed: {e}")
             return None
 
     def get_container_status(self, container_name: str) -> DockerStatus:
@@ -415,6 +273,7 @@ class DockerManager:
         if container_name in self._cache:
             timestamp, status = self._cache[container_name]
             if now - timestamp < self._cache_duration:
+                self.logger.debug(f"Using cached status for {container_name}")
                 return status
         status = self._fetch_container_status(container_name)
         self._cache[container_name] = (now, status)
@@ -431,6 +290,7 @@ class DockerManager:
             DockerStatus object with container status details
         """
         if not self.client:
+            self.logger.warning(f"Docker client unavailable when fetching status for {container_name}")
             return DockerStatus(exists=False, status="error", details="Docker client unavailable")
         try:
             container = self.client.containers.get(container_name)
@@ -445,9 +305,10 @@ class DockerManager:
                 details=state.get("Status", "unknown"),
             )
         except NotFound:
+            self.logger.debug(f"Container not found: {container_name}")
             return DockerStatus(exists=False, status="no_container", details="Container not found")
         except Exception as e:
-            self.logger.error(f"Docker error for {container_name}: {e}")
+            self.logger.exception(f"Docker error for {container_name}: {e}")
             return DockerStatus(exists=False, status="error", details=str(e))
 
     def get_container_logs(self, container_name: str, tail: int = 100) -> str:
@@ -462,22 +323,28 @@ class DockerManager:
             String containing container logs
         """
         if not self.client:
+            self.logger.warning(f"Docker client unavailable when fetching logs for {container_name}")
             return "Docker client unavailable"
         try:
             container = self.client.containers.get(container_name)
+            self.logger.debug(f"Retrieving {tail} log lines from {container_name}")
             return container.logs(tail=tail).decode("utf-8")
         except Exception as e:
-            self.logger.error(f"Log retrieval failed for {container_name}: {e}")
+            self.logger.exception(f"Log retrieval failed for {container_name}: {e}")
             return f"Log retrieval error: {e}"
 
     def cleanup_containers(self) -> None:
         """Remove stopped containers older than 24 hours."""
         if not self.client:
+            self.logger.warning("Docker client unavailable for container cleanup")
             return
         try:
-            self.client.containers.prune(filters={"until": "24h"})
+            self.logger.info("Cleaning up stopped containers older than 24 hours")
+            result = self.client.containers.prune(filters={"until": "24h"})
+            if 'ContainersDeleted' in result and result['ContainersDeleted']:
+                self.logger.info(f"Removed {len(result['ContainersDeleted'])} containers")
         except Exception as e:
-            self.logger.error(f"Container cleanup failed: {e}")
+            self.logger.exception(f"Container cleanup failed: {e}")
 
 # =============================================================================
 # System Health Monitoring
@@ -485,8 +352,10 @@ class DockerManager:
 class SystemHealthMonitor:
     """Monitors system health metrics including disk space and Docker status."""
     
-    @staticmethod
-    def check_disk_space() -> bool:
+    _logger = create_logger_for_component('system_health')
+    
+    @classmethod
+    def check_disk_space(cls) -> bool:
         """
         Check if disk space is sufficient (< 90% used).
         
@@ -495,9 +364,10 @@ class SystemHealthMonitor:
         """
         try:
             if os.name == "nt":
+                cls._logger.debug("Checking disk space on Windows")
                 result = subprocess.run(
                     ["wmic", "logicaldisk", "get", "size,freespace,caption"],
-                    capture_output=True, text=True, check=True,
+                    capture_output=True, text=True, encoding='utf-8', errors='replace', check=True,
                 )
                 lines = result.stdout.strip().split("\n")[1:]
                 for line in lines:
@@ -506,28 +376,37 @@ class SystemHealthMonitor:
                         try:
                             free = int(parts[1])
                             total = int(parts[2])
-                            if total > 0 and (total - free) / total * 100 > 90:
-                                logging.warning(f"Disk usage critical: {parts[0]}")
+                            usage_percent = (total - free) / total * 100 if total > 0 else 0
+                            if total > 0 and usage_percent > 90:
+                                cls._logger.warning(f"Disk usage critical for {parts[0]}: {usage_percent:.1f}%")
                                 return False
                         except ValueError:
                             continue
             else:
+                cls._logger.debug("Checking disk space on Unix")
                 result = subprocess.run(
                     ["df", "-h"], capture_output=True, text=True, check=True
                 )
                 lines = result.stdout.split("\n")[1:]
+                critical_disks = []
                 for line in lines:
                     if line and (fields := line.split()) and len(fields) >= 5:
-                        if int(fields[4].rstrip("%")) > 90:
-                            logging.warning(f"Disk usage critical: {fields[5]}")
-                            return False
+                        usage_percent = int(fields[4].rstrip("%"))
+                        if usage_percent > 90:
+                            critical_disks.append(f"{fields[5]} ({usage_percent}%)")
+                
+                if critical_disks:
+                    cls._logger.warning(f"Disk usage critical: {', '.join(critical_disks)}")
+                    return False
+            
+            cls._logger.debug("Disk space check passed")
+            return True
         except Exception as e:
-            logging.error(f"Disk check failed: {e}")
+            cls._logger.exception(f"Disk check failed: {e}")
             return False
-        return True
 
-    @staticmethod
-    def check_health(docker_client: Optional[docker.DockerClient]) -> bool:
+    @classmethod
+    def check_health(cls, docker_client: Optional[docker.DockerClient]) -> bool:
         """
         Check overall system health including Docker connectivity.
         
@@ -538,13 +417,14 @@ class SystemHealthMonitor:
             True if system is healthy, False otherwise
         """
         if not docker_client:
-            logging.error("No Docker client")
+            cls._logger.error("Docker client unavailable for health check")
             return False
         try:
+            cls._logger.debug("Pinging Docker daemon")
             docker_client.ping()
-            return SystemHealthMonitor.check_disk_space()
+            return cls.check_disk_space()
         except Exception as e:
-            logging.error(f"Health check failed: {e}")
+            cls._logger.exception(f"Docker health check failed: {e}")
             return False
 
 # =============================================================================
@@ -557,6 +437,7 @@ def ajax_compatible(f):
     """
     @wraps(f)
     def wrapped(*args, **kwargs):
+        function_logger = create_logger_for_component('ajax')
         is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
         try:
             result = f(*args, **kwargs)
@@ -582,7 +463,7 @@ def ajax_compatible(f):
             return result
                 
         except Exception as e:
-            logger.error(f"Error in {f.__name__}: {e}")
+            function_logger.exception(f"Error in {f.__name__}: {e}")
             
             if is_ajax:
                 error_response = APIResponse(
@@ -664,19 +545,29 @@ def get_apps_for_model(model_name: str) -> List[Dict[str, Any]]:
         List of app information dictionaries
     """
     base_path = Path(model_name)
+    util_logger = create_logger_for_component('utils')
+    
     if not base_path.exists():
+        util_logger.debug(f"Model directory does not exist: {base_path}")
         return []
+    
     apps = []
-    app_dirs = sorted(
-        (d for d in base_path.iterdir() if d.is_dir() and d.name.startswith("app")),
-        key=lambda x: int(x.name.replace("app", ""))
-    )
-    for app_dir in app_dirs:
-        try:
-            app_num = int(app_dir.name.replace("app", ""))
-            apps.append(get_app_info(model_name, app_num))
-        except ValueError as e:
-            logger.error(f"Error processing {app_dir}: {e}")
+    try:
+        app_dirs = sorted(
+            (d for d in base_path.iterdir() if d.is_dir() and d.name.startswith("app")),
+            key=lambda x: int(x.name.replace("app", ""))
+        )
+        
+        for app_dir in app_dirs:
+            try:
+                app_num = int(app_dir.name.replace("app", ""))
+                apps.append(get_app_info(model_name, app_num))
+            except ValueError as e:
+                util_logger.error(f"Error processing {app_dir}: {e}")
+    except Exception as e:
+        util_logger.exception(f"Error scanning apps for model {model_name}: {e}")
+    
+    util_logger.debug(f"Found {len(apps)} apps for model {model_name}")
     return apps
 
 
@@ -687,7 +578,13 @@ def get_all_apps() -> List[Dict[str, Any]]:
     Returns:
         List of app information dictionaries for all models
     """
-    return [app_info for model in AI_MODELS for app_info in get_apps_for_model(model.name)]
+    all_apps = []
+    for model in AI_MODELS:
+        model_apps = get_apps_for_model(model.name)
+        all_apps.extend(model_apps)
+    
+    logger.debug(f"Retrieved {len(all_apps)} apps across all models")
+    return all_apps
 
 
 def run_docker_compose(
@@ -710,16 +607,18 @@ def run_docker_compose(
     Returns:
         Tuple of (success, output)
     """
+    compose_logger = create_logger_for_component('docker_compose')
     app_dir = Path(f"{model}/app{app_num}")
+    
     if not app_dir.exists():
-        logger.error(f"Directory not found: {app_dir}")
+        compose_logger.error(f"Directory not found: {app_dir}")
         return False, f"Directory not found: {app_dir}"
     
     # Check for compose file existence
     compose_file = app_dir / "docker-compose.yml"
     compose_yaml = app_dir / "docker-compose.yaml"
     if not compose_file.exists() and not compose_yaml.exists():
-        logger.error(f"No docker-compose.yml/yaml file found in {app_dir}")
+        compose_logger.error(f"No docker-compose.yml/yaml file found in {app_dir}")
         return False, f"No docker-compose file found in {app_dir}"
     
     # Build the custom project name
@@ -728,7 +627,7 @@ def run_docker_compose(
     
     # Include the -p option to rename the compose stack
     cmd = ["docker-compose", "-p", project_name] + command
-    logger.info(f"Running command: {' '.join(cmd)} in {app_dir} with timeout {timeout}s")
+    compose_logger.info(f"Running command: {' '.join(cmd)} in {app_dir} with timeout {timeout}s")
     
     try:
         result = subprocess.run(
@@ -737,23 +636,27 @@ def run_docker_compose(
             check=check,
             capture_output=True,
             text=True,
+            encoding='utf-8',  # Explicitly set UTF-8 encoding
+            errors='replace',   # Replace invalid characters instead of failing
             timeout=timeout,
         )
         output = result.stdout or result.stderr
         success = result.returncode == 0
         
         if success:
-            logger.info(f"Command succeeded: {' '.join(cmd)}")
+            compose_logger.info(f"Command succeeded: {' '.join(cmd)}")
         else:
-            logger.error(f"Command failed with code {result.returncode}: {' '.join(cmd)}")
-            logger.error(f"Error output: {output[:500]}")
+            compose_logger.error(
+                f"Command failed with code {result.returncode}: {' '.join(cmd)}\n"
+                f"Error output: {output[:500]}"
+            )
         
         return success, output
     except subprocess.TimeoutExpired:
-        logger.error(f"Command timed out after {timeout}s: {' '.join(cmd)}")
+        compose_logger.error(f"Command timed out after {timeout}s: {' '.join(cmd)}")
         return False, f"Command timed out after {timeout}s"
     except Exception as e:
-        logger.error(f"Error running {' '.join(cmd)}: {str(e)}")
+        compose_logger.exception(f"Error running {' '.join(cmd)}: {str(e)}")
         return False, str(e)
 
 
@@ -769,6 +672,7 @@ def handle_docker_action(action: str, model: str, app_num: int) -> Tuple[bool, s
     Returns:
         Tuple of (success, message)
     """
+    docker_logger = create_logger_for_component('docker')
     commands = {
         "start": [("up", "-d", 120)],
         "stop": [("down", None, 30)],
@@ -778,25 +682,25 @@ def handle_docker_action(action: str, model: str, app_num: int) -> Tuple[bool, s
     }
     
     if action not in commands:
-        logger.error(f"Invalid action: {action}")
+        docker_logger.error(f"Invalid action: {action}")
         return False, f"Invalid action: {action}"
     
-    logger.info(f"Starting {action} for {model}/app{app_num}")
+    docker_logger.info(f"Starting {action} for {model}/app{app_num}")
     
     # Execute each command step
     for i, (base_cmd, extra_arg, timeout) in enumerate(commands[action]):
         cmd = [base_cmd] + ([extra_arg] if extra_arg else [])
         step_desc = f"Step {i+1}/{len(commands[action])}: {' '.join(cmd)}"
-        logger.info(f"{step_desc} for {model}/app{app_num}")
+        docker_logger.info(f"{step_desc} for {model}/app{app_num}")
         
         success, msg = run_docker_compose(cmd, model, app_num, timeout=timeout)
         
         if not success:
             error_msg = f"{action.capitalize()} failed during {base_cmd}: {msg}"
-            logger.error(f"Docker {action} failed: {error_msg}")
+            docker_logger.error(f"Docker {action} failed: {error_msg}")
             return False, error_msg
     
-    logger.info(f"Successfully completed {action} for {model}/app{app_num}")
+    docker_logger.info(f"Successfully completed {action} for {model}/app{app_num}")
     return True, f"Successfully completed {action}"
 
 
@@ -816,13 +720,32 @@ def verify_container_health(
     Returns:
         Tuple of (is_healthy, message)
     """
+    health_logger = create_logger_for_component('health')
     backend_name, frontend_name = get_container_names(model, app_num)
-    for _ in range(max_retries):
+    
+    health_logger.info(f"Verifying health for {model}/app{app_num} ({backend_name}, {frontend_name})")
+    
+    for attempt in range(1, max_retries + 1):
         backend = docker_manager.get_container_status(backend_name)
         frontend = docker_manager.get_container_status(frontend_name)
+        
+        backend_status = f"{backend.status} ({backend.health})"
+        frontend_status = f"{frontend.status} ({frontend.health})"
+        health_logger.debug(
+            f"Health check attempt {attempt}/{max_retries}: "
+            f"Backend: {backend_status}, Frontend: {frontend_status}"
+        )
+        
         if backend.health == "healthy" and frontend.health == "healthy":
+            health_logger.info(f"All containers healthy for {model}/app{app_num}")
             return True, "All containers healthy"
+        
         time.sleep(retry_delay)
+    
+    health_logger.warning(
+        f"Containers failed to reach healthy state for {model}/app{app_num} "
+        f"after {max_retries} attempts"
+    )
     return False, "Containers failed to reach healthy state"
 
 
@@ -850,11 +773,20 @@ def process_security_analysis(
     Returns:
         Rendered template with analysis results
     """
+    sec_logger = create_logger_for_component('security')
     try:
+        sec_logger.info(f"Running {template.split('.')[0]} analysis for {model}/app{app_num} (full_scan={full_scan})")
+        
         issues, tool_status, tool_output_details = analysis_method(
             model, app_num, use_all_tools=full_scan
         )
+        
         summary = analyzer.get_analysis_summary(issues) if issues else analyzer.get_analysis_summary([])
+        sec_logger.info(
+            f"Security analysis complete for {model}/app{app_num}: "
+            f"Found {len(issues) if issues else 0} issues"
+        )
+        
         return render_template(
             template,
             model=model,
@@ -868,7 +800,7 @@ def process_security_analysis(
             tool_output_details=tool_output_details,
         )
     except ValueError as e:
-        logger.warning(f"No files to analyze: {e}")
+        sec_logger.warning(f"No files to analyze for {model}/app{app_num}: {e}")
         return render_template(
             template,
             model=model,
@@ -880,7 +812,7 @@ def process_security_analysis(
             tool_output_details={},
         )
     except Exception as e:
-        logger.error(f"Security analysis failed: {e}")
+        sec_logger.exception(f"Security analysis failed for {model}/app{app_num}: {e}")
         return render_template(
             template,
             model=model,
@@ -934,17 +866,25 @@ def stop_zap_scanners(scans: Dict[str, Any]) -> None:
     Args:
         scans: Dictionary of scan_key -> scanner mappings
     """
+    zap_logger = create_logger_for_component('zap_scanner')
+    stopped_count = 0
+    
     for scan_key, scanner in scans.items():
         if hasattr(scanner, "stop_scan") and callable(scanner.stop_scan):
             try:
                 model, app_num = scan_key.split("-")[:2]
+                zap_logger.info(f"Stopping ZAP scan for {model}/app{app_num}")
                 scanner.stop_scan(model=model, app_num=int(app_num))
+                stopped_count += 1
             except Exception as e:
-                logger.error(f"Error stopping scan for {scan_key}: {e}")
+                zap_logger.exception(f"Error stopping scan for {scan_key}: {e}")
         else:
-            logger.warning(
+            zap_logger.warning(
                 f"Invalid scanner for key {scan_key}: expected a ZAPScanner instance but got {type(scanner)}"
             )
+    
+    if stopped_count > 0:
+        zap_logger.info(f"Stopped {stopped_count} ZAP scans")
 
 # =============================================================================
 # ZAP Scanner Integration
@@ -954,8 +894,10 @@ class ScanManager:
     
     def __init__(self):
         """Initialize scan manager with empty scan dictionary."""
+        self.logger = create_logger_for_component('scan_manager')
         self.scans: Dict[str, Dict[str, Any]] = {}
         self._lock = threading.Lock()
+        self.logger.info("Scan manager initialized")
 
     def create_scan(self, model: str, app_num: int, options: dict) -> str:
         """
@@ -980,6 +922,7 @@ class ScanManager:
                 "model": model,
                 "app_num": app_num,
             }
+        self.logger.info(f"Created new scan with ID: {scan_id} for {model}/app{app_num}")
         return scan_id
 
     def get_scan(self, model: str, app_num: int) -> Optional[dict]:
@@ -1000,7 +943,9 @@ class ScanManager:
             ]
             if not matching_scans:
                 return None
-            return max(matching_scans, key=lambda x: x[0])[1]
+            latest_scan = max(matching_scans, key=lambda x: x[0])[1]
+            self.logger.debug(f"Retrieved latest scan for {model}/app{app_num}: {latest_scan.get('status', 'Unknown')}")
+            return latest_scan
 
     def update_scan(self, scan_id: str, **kwargs):
         """
@@ -1013,16 +958,24 @@ class ScanManager:
         with self._lock:
             if scan_id in self.scans:
                 self.scans[scan_id].update(kwargs)
+                status_update = kwargs.get('status', None)
+                if status_update:
+                    self.logger.info(f"Updated scan {scan_id} status to: {status_update}")
 
     def cleanup_old_scans(self):
         """Remove completed scans older than 1 hour."""
         current_time = time.time()
         with self._lock:
+            before_count = len(self.scans)
             self.scans = {
                 sid: scan for sid, scan in self.scans.items()
                 if scan["status"] not in ("Complete", "Failed", "Stopped") or
                 current_time - int(sid.split("-")[-1]) < 3600
             }
+            after_count = len(self.scans)
+            
+            if before_count > after_count:
+                self.logger.info(f"Cleaned up {before_count - after_count} old scans")
 
 
 def get_scan_manager():
@@ -1033,6 +986,7 @@ def get_scan_manager():
         ScanManager instance from current app or a new one if not present
     """
     if not hasattr(current_app, 'scan_manager'):
+        logger.debug("Creating new ScanManager instance")
         current_app.scan_manager = ScanManager()
     return current_app.scan_manager
 
@@ -1081,6 +1035,8 @@ def call_ai_service(model: str, prompt: str) -> str:
     Returns:
         AI-generated response
     """
+    ai_logger = create_logger_for_component('ai_service')
+    ai_logger.info(f"Calling AI service with model: {model}, prompt length: {len(prompt)} chars")
     # Replace with actual integration logic
     return "AI analysis result"
 
@@ -1104,8 +1060,15 @@ def index():
     Returns:
         Rendered index template with apps and models
     """
+    route_logger = create_logger_for_component('routes')
+    route_logger.info("Rendering main dashboard")
+    
     docker_manager: DockerManager = current_app.config["docker_manager"]
     apps = get_all_apps()
+    
+    # Log the number of apps found
+    route_logger.debug(f"Found {len(apps)} apps to display")
+    
     for app_info in apps:
         statuses = get_app_container_statuses(app_info["model"], app_info["app_num"], docker_manager)
         app_info["backend_status"] = statuses["backend"]
@@ -1113,6 +1076,7 @@ def index():
     
     # Add autorefresh_enabled based on config
     autorefresh_enabled = request.cookies.get('autorefresh', 'false') == 'true'
+    route_logger.debug(f"Autorefresh setting: {autorefresh_enabled}")
     
     return render_template("index.html", 
                          apps=apps, 
@@ -1132,18 +1096,25 @@ def view_docker_logs(model: str, app_num: int):
     Returns:
         Rendered template with Docker logs
     """
+    route_logger = create_logger_for_component('routes')
+    route_logger.info(f"Fetching Docker logs for {model}/app{app_num}")
+    
     app_dir = Path(f"{model}/app{app_num}")
     if not app_dir.exists():
+        route_logger.warning(f"Directory not found: {app_dir}")
         flash(f"Directory not found: {app_dir}", "error")
         return redirect(url_for("main.index"))
     
     try:
         # Get docker-compose logs
+        route_logger.debug(f"Running docker-compose logs for {model}/app{app_num}")
         result = subprocess.run(
             ["docker-compose", "logs", "--no-color"],
             cwd=str(app_dir),
             capture_output=True,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             timeout=10
         )
         compose_logs = result.stdout or "No docker-compose logs available"
@@ -1151,6 +1122,8 @@ def view_docker_logs(model: str, app_num: int):
         # Get individual container logs
         b_name, f_name = get_container_names(model, app_num)
         docker_manager: DockerManager = current_app.config["docker_manager"]
+        
+        route_logger.debug(f"Fetching container logs for {b_name} and {f_name}")
         backend_logs = docker_manager.get_container_logs(b_name, tail=100)
         frontend_logs = docker_manager.get_container_logs(f_name, tail=100)
         
@@ -1163,6 +1136,7 @@ def view_docker_logs(model: str, app_num: int):
             frontend_logs=frontend_logs
         )
     except Exception as e:
+        route_logger.exception(f"Error fetching logs for {model}/app{app_num}: {str(e)}")
         flash(f"Error fetching logs: {str(e)}", "error")
         return redirect(url_for("main.index"))
 
@@ -1179,6 +1153,9 @@ def check_app_status(model: str, app_num: int):
     Returns:
         JSON status for AJAX or redirect with flash for regular requests
     """
+    route_logger = create_logger_for_component('routes')
+    route_logger.debug(f"Checking status for {model}/app{app_num}")
+    
     docker_manager: DockerManager = current_app.config["docker_manager"]
     status = get_app_container_statuses(model, app_num, docker_manager)
     
@@ -1203,9 +1180,13 @@ def batch_docker_action(action: str, model: str):
     Returns:
         JSON response with results
     """
+    route_logger = create_logger_for_component('routes')
+    route_logger.info(f"Batch {action} requested for model {model}")
+    
     # Get all apps for the model
     apps = get_apps_for_model(model)
     if not apps:
+        route_logger.warning(f"No apps found for model {model}")
         return APIResponse(
             success=False,
             error=f"No apps found for model {model}",
@@ -1215,6 +1196,7 @@ def batch_docker_action(action: str, model: str):
     # Validate the action
     valid_actions = ["start", "stop", "reload", "rebuild", "health-check"]
     if action not in valid_actions:
+        route_logger.warning(f"Invalid batch action requested: {action}")
         return APIResponse(
             success=False,
             error=f"Invalid action: {action}",
@@ -1222,6 +1204,7 @@ def batch_docker_action(action: str, model: str):
         )
     
     # Process all apps
+    route_logger.info(f"Processing batch {action} for {len(apps)} apps of model {model}")
     results = []
     for app in apps:
         app_num = app["app_num"]
@@ -1242,7 +1225,7 @@ def batch_docker_action(action: str, model: str):
                     "message": message
                 })
         except Exception as e:
-            logger.error(f"Error during batch {action} for {model} app {app_num}: {e}")
+            route_logger.exception(f"Error during batch {action} for {model} app {app_num}: {e}")
             results.append({
                 "app_num": app_num,
                 "success": False,
@@ -1251,6 +1234,7 @@ def batch_docker_action(action: str, model: str):
     
     # Summarize results
     success_count = sum(1 for r in results if r["success"])
+    route_logger.info(f"Batch {action} for {model} completed: {success_count}/{len(results)} succeeded")
     
     return {
         "status": "success" if success_count == len(results) else "partial" if success_count > 0 else "error",
@@ -1273,8 +1257,13 @@ def view_logs(model: str, app_num: int):
     Returns:
         Rendered template with logs
     """
+    route_logger = create_logger_for_component('routes')
+    route_logger.info(f"Viewing container logs for {model}/app{app_num}")
+    
     docker_manager: DockerManager = current_app.config["docker_manager"]
     b_name, f_name = get_container_names(model, app_num)
+    
+    route_logger.debug(f"Fetching logs for containers: {b_name}, {f_name}")
     logs_data = {
         "backend": docker_manager.get_container_logs(b_name),
         "frontend": docker_manager.get_container_logs(f_name),
@@ -1296,6 +1285,9 @@ def handle_docker_action_route(action: str, model: str, app_num: int):
     Returns:
         JSON response or redirect with flash message
     """
+    route_logger = create_logger_for_component('routes')
+    route_logger.info(f"Docker action '{action}' requested for {model}/app{app_num}")
+    
     success, message = handle_docker_action(action, model, app_num)
     
     # For AJAX requests, return JSON
@@ -1320,11 +1312,16 @@ def system_info():
     Returns:
         JSON with system metrics, health status, and resource utilization
     """
+    api_logger = create_logger_for_component('api')
+    api_logger.debug("System info requested")
+    
     docker_manager: DockerManager = current_app.config["docker_manager"]
     
     # Get basic system metrics
     try:
         import psutil
+        api_logger.debug("Getting system metrics using psutil")
+        
         cpu_percent = psutil.cpu_percent(interval=0.5)
         memory = psutil.virtual_memory()
         memory_percent = memory.percent
@@ -1348,6 +1345,7 @@ def system_info():
         }
     except ImportError:
         # Fallback if psutil is not available
+        api_logger.warning("psutil not available, using mock system metrics")
         system_health = {
             "cpu_percent": random.randint(10, 40),  # Mock data
             "memory_percent": random.randint(30, 70),
@@ -1372,6 +1370,7 @@ def system_info():
     # Try to get actual container counts if docker client is available
     if docker_manager.client:
         try:
+            api_logger.debug("Getting container counts from Docker")
             containers = docker_manager.client.containers.list(all=True)
             docker_status["containers"] = {
                 "running": sum(1 for c in containers if c.status == "running"),
@@ -1379,7 +1378,7 @@ def system_info():
                 "total": len(containers)
             }
         except Exception as e:
-            logger.error(f"Error getting container counts: {e}")
+            api_logger.exception(f"Error getting container counts: {e}")
     
     # Get app overview
     apps = get_all_apps()
@@ -1400,6 +1399,7 @@ def system_info():
             app_stats["models"][model_name] += 1
     
     # Get app status counts (limited to 10 apps for performance)
+    api_logger.debug("Sampling app statuses for dashboard (limited to 10 apps)")
     for app in apps[:10]:  # Limit to 10 apps to avoid overloading
         try:
             statuses = get_app_container_statuses(app["model"], app["app_num"], docker_manager)
@@ -1413,7 +1413,7 @@ def system_info():
             else:
                 app_stats["status"]["stopped"] += 1
         except Exception as e:
-            logger.error(f"Error getting app status: {e}")
+            api_logger.exception(f"Error getting app status for {app['model']}/app{app['app_num']}: {e}")
     
     # Scale up the counts based on sampling
     if len(apps) > 10:
@@ -1442,6 +1442,9 @@ def container_status(model: str, app_num: int):
     Returns:
         JSON with container statuses
     """
+    api_logger = create_logger_for_component('api')
+    api_logger.debug(f"Container status requested for {model}/app{app_num}")
+    
     docker_manager: DockerManager = current_app.config["docker_manager"]
     status = get_app_container_statuses(model, app_num, docker_manager)
     return status
@@ -1459,6 +1462,9 @@ def debug_docker_environment(model: str, app_num: int):
     Returns:
         JSON with docker environment details
     """
+    api_logger = create_logger_for_component('api')
+    api_logger.info(f"Docker environment debug requested for {model}/app{app_num}")
+    
     app_dir = Path(f"{model}/app{app_num}")
     
     try:
@@ -1471,23 +1477,29 @@ def debug_docker_environment(model: str, app_num: int):
         compose_file_exists = compose_file.exists() or compose_yaml.exists()
         compose_content = ""
         if compose_file.exists():
-            compose_content = compose_file.read_text(errors='replace')[:500] + "..."
+            compose_content = compose_file.read_text(encoding='utf-8', errors='replace')[:500] + "..."
         elif compose_yaml.exists():
-            compose_content = compose_yaml.read_text(errors='replace')[:500] + "..."
+            compose_content = compose_yaml.read_text(encoding='utf-8', errors='replace')[:500] + "..."
         
         # Check docker installation
+        api_logger.debug("Checking Docker version")
         docker_version = subprocess.run(
             ["docker", "--version"], 
             capture_output=True, 
-            text=True
+            text=True,
+            encoding='utf-8',
+            errors='replace'
         ).stdout.strip()
         
         # Check docker-compose installation
         try:
+            api_logger.debug("Checking Docker Compose version")
             docker_compose_version = subprocess.run(
                 ["docker-compose", "--version"], 
                 capture_output=True, 
-                text=True
+                text=True,
+                encoding='utf-8',
+                errors='replace'
             ).stdout.strip()
         except:
             docker_compose_version = "Not available or error"
@@ -1497,6 +1509,8 @@ def debug_docker_environment(model: str, app_num: int):
         docker_manager: DockerManager = current_app.config["docker_manager"]
         backend_status = docker_manager.get_container_status(b_name)
         frontend_status = docker_manager.get_container_status(f_name)
+        
+        api_logger.debug(f"Debug data collected for {model}/app{app_num}")
         
         return {
             "directory_exists": dir_exists,
@@ -1509,7 +1523,7 @@ def debug_docker_environment(model: str, app_num: int):
             "timestamp": datetime.now().isoformat()
         }
     except Exception as e:
-        logger.error(f"Error in debug endpoint: {e}")
+        api_logger.exception(f"Error in debug endpoint for {model}/app{app_num}: {e}")
         return APIResponse(
             success=False,
             error=str(e),
@@ -1529,8 +1543,12 @@ def check_container_health(model: str, app_num: int):
     Returns:
         JSON with health status
     """
+    api_logger = create_logger_for_component('api')
+    api_logger.debug(f"Health check requested for {model}/app{app_num}")
+    
     docker_manager: DockerManager = current_app.config["docker_manager"]
     healthy, message = verify_container_health(docker_manager, model, app_num)
+    api_logger.debug(f"Health check result for {model}/app{app_num}: {healthy} - {message}")
     return {"healthy": healthy, "message": message}
 
 
@@ -1543,11 +1561,18 @@ def system_status():
     Returns:
         JSON with system status overview
     """
+    api_logger = create_logger_for_component('api')
+    api_logger.debug("System status check requested")
+    
     docker_manager: DockerManager = current_app.config["docker_manager"]
     disk_ok = SystemHealthMonitor.check_disk_space()
     docker_ok = SystemHealthMonitor.check_health(docker_manager.client)
+    
+    status = "healthy" if (disk_ok and docker_ok) else "warning"
+    api_logger.debug(f"System status: {status} (disk: {disk_ok}, docker: {docker_ok})")
+    
     return {
-        "status": "healthy" if (disk_ok and docker_ok) else "warning",
+        "status": status,
         "details": {"disk_space": disk_ok, "docker_health": docker_ok},
         "timestamp": datetime.now().isoformat(),
     }
@@ -1562,7 +1587,10 @@ def get_model_info():
     Returns:
         JSON list with model information
     """
-    return [
+    api_logger = create_logger_for_component('api')
+    api_logger.debug("Model information requested")
+    
+    model_info = [
         {
             "name": model.name,
             "color": model.color,
@@ -1571,6 +1599,9 @@ def get_model_info():
         }
         for idx, model in enumerate(AI_MODELS)
     ]
+    
+    api_logger.debug(f"Returning information for {len(model_info)} models")
+    return model_info
 
 # ----- Client-side Error Logging Endpoint -----
 @api_bp.route("/log-client-error", methods=["POST"])
@@ -1583,9 +1614,12 @@ def log_client_error():
     Returns:
         JSON status response
     """
+    client_logger = create_logger_for_component('client_errors')
+    
     try:
         data = request.get_json()
         if not data:
+            client_logger.warning("Client error logging request with no data")
             return APIResponse(
                 success=False,
                 error="No error data provided",
@@ -1593,7 +1627,7 @@ def log_client_error():
             )
             
         # Log the client error with detailed context
-        logger.error(
+        client_logger.error(
             f"CLIENT ERROR: {data.get('message')} | "
             f"URL: {data.get('url')} | "
             f"File: {data.get('filename')}:{data.get('lineno')}:{data.get('colno')} | "
@@ -1602,11 +1636,11 @@ def log_client_error():
         
         # Log stack trace at debug level
         if 'stack' in data:
-            logger.debug(f"Error stack trace: {data.get('stack')}")
+            client_logger.debug(f"Error stack trace: {data.get('stack')}")
             
         return {"status": "success"}
     except Exception as e:
-        logger.error(f"Error in client error logger: {e}")
+        client_logger.exception(f"Error in client error logger: {e}")
         return APIResponse(
             success=False,
             error=str(e),
@@ -1627,19 +1661,27 @@ def zap_scan(model: str, app_num: int):
     Returns:
         Rendered template with scan results
     """
+    zap_logger = create_logger_for_component('zap')
+    zap_logger.info(f"ZAP scan page requested for {model}/app{app_num}")
+    
     base_dir: Path = current_app.config["BASE_DIR"]
     results_file = base_dir / f"{model}/app{app_num}/.zap_results.json"
     alerts = []
     error_msg = None
+    
     if results_file.exists():
         try:
-            with open(results_file) as f:
+            zap_logger.debug(f"Loading previous scan results from {results_file}")
+            with open(results_file, encoding='utf-8', errors='replace') as f:
                 data = json.load(f)
                 alerts = data.get("alerts", [])
-                logger.info(f"Loaded {len(alerts)} alerts from previous scan for {model}/app{app_num}")
+                zap_logger.info(f"Loaded {len(alerts)} alerts from previous scan for {model}/app{app_num}")
         except Exception as e:
             error_msg = f"Failed to load previous results: {e}"
-            logger.error(error_msg)
+            zap_logger.exception(f"Error loading ZAP results for {model}/app{app_num}: {e}")
+    else:
+        zap_logger.debug(f"No previous scan results file found at {results_file}")
+    
     return render_template("zap_scan.html", model=model, app_num=app_num, alerts=alerts, error=error_msg)
 
 
@@ -1656,12 +1698,16 @@ def start_zap_scan(model: str, app_num: int):
     Returns:
         JSON response with scan status
     """
+    zap_logger = create_logger_for_component('zap')
+    zap_logger.info(f"Starting ZAP scan for {model}/app{app_num}")
+    
     base_dir: Path = current_app.config["BASE_DIR"]
     scan_manager = get_scan_manager()
     
     # Check for existing scan
     existing_scan = scan_manager.get_scan(model, app_num)
     if existing_scan and existing_scan["status"] not in ("Complete", "Failed", "Stopped"):
+        zap_logger.warning(f"ZAP scan already in progress for {model}/app{app_num}: {existing_scan['status']}")
         return APIResponse(
             success=False,
             error="A scan is already running",
@@ -1669,12 +1715,13 @@ def start_zap_scan(model: str, app_num: int):
         )
     
     scan_id = scan_manager.create_scan(model, app_num, {})
-    logger.info(f"Created new scan with ID: {scan_id} for {model}/app{app_num}")
+    zap_logger.info(f"Created new scan with ID: {scan_id} for {model}/app{app_num}")
     
     def run_scan():
+        scan_thread_logger = create_logger_for_component('zap')
         try:
             # Create scanner with its streamlined configuration
-            logger.info(f"Initializing ZAP scanner for {model}/app{app_num}")
+            scan_thread_logger.info(f"Initializing ZAP scanner for {model}/app{app_num}")
             scanner = create_scanner(base_dir)
             scan_manager.update_scan(
                 scan_id, 
@@ -1688,14 +1735,14 @@ def start_zap_scan(model: str, app_num: int):
             )
             
             # Start the scan with simplified interface
-            logger.info(f"Starting comprehensive scan for {model}/app{app_num}")
+            scan_thread_logger.info(f"Starting comprehensive scan for {model}/app{app_num}")
             success = scanner.start_scan(model, app_num)
             
             if not success:
-                logger.error(f"Scan failed to complete successfully for {model}/app{app_num}")
+                scan_thread_logger.error(f"Scan failed to complete successfully for {model}/app{app_num}")
                 scan_manager.update_scan(scan_id, status="Failed", progress=0)
             else:
-                logger.info(f"Scan completed successfully for {model}/app{app_num}")
+                scan_thread_logger.info(f"Scan completed successfully for {model}/app{app_num}")
                 scan_manager.update_scan(
                     scan_id, 
                     status="Complete", 
@@ -1706,16 +1753,17 @@ def start_zap_scan(model: str, app_num: int):
                     end_time=datetime.now().isoformat()
                 )
         except Exception as e:
-            logger.error(f"Scan error for {model}/app{app_num}: {str(e)}")
+            scan_thread_logger.exception(f"Scan error for {model}/app{app_num}: {str(e)}")
             scan_manager.update_scan(scan_id, status=f"Failed: {str(e)}", progress=0)
         finally:
             # Ensure ZAP resources are properly cleaned up
             try:
                 if scanner:
+                    scan_thread_logger.info(f"Cleaning up ZAP resources for {model}/app{app_num}")
                     scanner._cleanup_existing_zap()
-                    logger.info(f"ZAP resources cleaned up for {model}/app{app_num}")
+                    scan_thread_logger.info(f"ZAP resources cleaned up for {model}/app{app_num}")
             except Exception as cleanup_error:
-                logger.error(f"Error cleaning up ZAP resources: {str(cleanup_error)}")
+                scan_thread_logger.exception(f"Error cleaning up ZAP resources for {model}/app{app_num}: {str(cleanup_error)}")
             
             scan_manager.cleanup_old_scans()
     
@@ -1723,7 +1771,7 @@ def start_zap_scan(model: str, app_num: int):
     thread = threading.Thread(target=run_scan, daemon=True)
     thread.name = f"zap-scan-{model}-{app_num}"
     thread.start()
-    logger.info(f"Scan thread started for {model}/app{app_num}")
+    zap_logger.info(f"Scan thread started for {model}/app{app_num}")
     
     return {"status": "started", "scan_id": scan_id}
 
@@ -1742,11 +1790,14 @@ def zap_scan_status(model: str, app_num: int):
     Returns:
         JSON with scan status and detailed progress metrics
     """
+    zap_logger = create_logger_for_component('zap')
+    zap_logger.debug(f"Scan status requested for {model}/app{app_num}")
+    
     scan_manager = get_scan_manager()
     scan = scan_manager.get_scan(model, app_num)
     
     if not scan:
-        logger.debug(f"No scan found for {model}/app{app_num}")
+        zap_logger.debug(f"No scan found for {model}/app{app_num}")
         return {
             "status": "Not Started", 
             "progress": 0,
@@ -1767,7 +1818,7 @@ def zap_scan_status(model: str, app_num: int):
         try:
             # Check if file is empty or has minimal content
             if results_file.stat().st_size < 10:  # Less than 10 bytes
-                logger.warning(f"Results file for {model}/app{app_num} exists but is empty or too small")
+                zap_logger.warning(f"Results file for {model}/app{app_num} exists but is empty or too small")
             else:
                 with open(results_file) as f:
                     try:
@@ -1784,9 +1835,9 @@ def zap_scan_status(model: str, app_num: int):
                         if summary.get("status") == "success" and "start_time" in summary and "end_time" in summary:
                             scan["duration_seconds"] = summary.get("duration_seconds", 0)
                     except json.JSONDecodeError as e:
-                        logger.error(f"Invalid JSON in results file for {model}/app{app_num}: {str(e)}")
+                        zap_logger.error(f"Invalid JSON in results file for {model}/app{app_num}: {str(e)}")
         except Exception as e:
-            logger.error(f"Error reading results file for {model}/app{app_num}: {str(e)}")
+            zap_logger.exception(f"Error reading results file for {model}/app{app_num}: {str(e)}")
             # Continue with default counts, don't fail the request
     
     # Build response with detailed status info
@@ -1828,11 +1879,14 @@ def stop_zap_scan(model: str, app_num: int):
     Returns:
         JSON with stop operation result
     """
+    zap_logger = create_logger_for_component('zap')
+    zap_logger.info(f"Request to stop ZAP scan for {model}/app{app_num}")
+    
     scan_manager = get_scan_manager()
     scan = scan_manager.get_scan(model, app_num)
     
     if not scan:
-        logger.warning(f"Stop request failed: No scan found for {model}/app{app_num}")
+        zap_logger.warning(f"Stop request failed: No scan found for {model}/app{app_num}")
         return APIResponse(
             success=False,
             error="No running scan found",
@@ -1840,7 +1894,7 @@ def stop_zap_scan(model: str, app_num: int):
         )
     
     if scan["status"] in ("Complete", "Failed", "Stopped"):
-        logger.warning(f"Stop request ignored: Scan for {model}/app{app_num} is already in state {scan['status']}")
+        zap_logger.warning(f"Stop request ignored: Scan for {model}/app{app_num} is already in state {scan['status']}")
         return APIResponse(
             success=False,
             error=f"Scan is not running (current status: {scan['status']})",
@@ -1848,12 +1902,13 @@ def stop_zap_scan(model: str, app_num: int):
         )
     
     try:
-        logger.info(f"Stopping scan for {model}/app{app_num}")
+        zap_logger.info(f"Stopping scan for {model}/app{app_num}")
         
         # Attempt to gracefully clean up ZAP resources
         if "scanner" in scan and scan["scanner"]:
+            zap_logger.debug(f"Cleaning up ZAP resources for {model}/app{app_num}")
             scan["scanner"]._cleanup_existing_zap()
-            logger.info(f"ZAP resources cleaned up for {model}/app{app_num}")
+            zap_logger.info(f"ZAP resources cleaned up for {model}/app{app_num}")
         
         # Update scan status
         scan_id = next(sid for sid, s in scan_manager.scans.items() if s == scan)
@@ -1864,11 +1919,11 @@ def stop_zap_scan(model: str, app_num: int):
             end_time=datetime.now().isoformat()
         )
         
-        logger.info(f"Scan for {model}/app{app_num} successfully stopped")
+        zap_logger.info(f"Scan for {model}/app{app_num} successfully stopped")
         return {"status": "stopped"}
     except Exception as e:
         error_msg = f"Failed to stop scan for {model}/app{app_num}: {str(e)}"
-        logger.error(error_msg)
+        zap_logger.exception(error_msg)
         return APIResponse(
             success=False,
             error=error_msg,
@@ -1889,6 +1944,9 @@ def security_analysis(model: str, app_num: int):
     Returns:
         Rendered template with security analysis results
     """
+    security_logger = create_logger_for_component('security')
+    security_logger.info(f"Backend security analysis requested for {model}/app{app_num}")
+    
     full_scan = request.args.get("full", "").lower() == "true"
     analyzer = current_app.backend_security_analyzer
     return process_security_analysis(
@@ -1915,6 +1973,9 @@ def frontend_security_analysis(model: str, app_num: int):
     Returns:
         Rendered template with security analysis results
     """
+    security_logger = create_logger_for_component('security')
+    security_logger.info(f"Frontend security analysis requested for {model}/app{app_num}")
+    
     full_scan = request.args.get("full", "").lower() == "true"
     analyzer = current_app.frontend_security_analyzer
     return process_security_analysis(
@@ -1937,13 +1998,18 @@ def analyze_security_issues():
     Returns:
         JSON with AI analysis results
     """
+    security_logger = create_logger_for_component('security')
+    
     try:
         data = request.get_json()
         if not data or "issues" not in data:
+            security_logger.warning("No issues provided for security analysis")
             raise BadRequest("No issues provided for analysis")
         
         model_name = data.get("model", "default-model")
         issues = data["issues"]
+        
+        security_logger.info(f"Analyzing {len(issues)} security issues using AI for model {model_name}")
         
         # Group issues by tool first
         tool_groups = {}
@@ -2020,21 +2086,24 @@ Format your response with clear headings and concise explanations suitable for a
 """
         
         # Call AI service for analysis
+        security_logger.info(f"Sending security analysis prompt to AI service (length: {len(prompt)} chars)")
         analysis_result = call_ai_service(model_name, prompt)
+        security_logger.info("Received security analysis from AI service")
+        
         return APIResponse(
             success=True,
             data={"response": analysis_result}
         )
         
     except BadRequest as e:
-        logger.warning(f"Bad request in security analysis: {e}")
+        security_logger.warning(f"Bad request in security analysis: {e}")
         return APIResponse(
             success=False,
             error=str(e),
             code=400
         )
     except Exception as e:
-        logger.error(f"Error in security analysis: {e}")
+        security_logger.exception(f"Error in security analysis: {e}")
         return APIResponse(
             success=False,
             error="Analysis failed",
@@ -2054,19 +2123,29 @@ def get_security_summary(model: str, app_num: int):
     Returns:
         JSON with security summary
     """
+    security_logger = create_logger_for_component('security')
+    security_logger.info(f"Security summary requested for {model}/app{app_num}")
+    
     try:
+        security_logger.debug(f"Running backend security analysis for {model}/app{app_num}")
         backend_issues, backend_status, _ = current_app.backend_security_analyzer.analyze_security(
             model, app_num, use_all_tools=False
         )
         backend_summary = current_app.backend_security_analyzer.get_analysis_summary(backend_issues)
+        
+        security_logger.debug(f"Running frontend security analysis for {model}/app{app_num}")
         frontend_issues, frontend_status, _ = current_app.frontend_security_analyzer.run_security_analysis(
             model, app_num, use_all_tools=False
         )
         frontend_summary = current_app.frontend_security_analyzer.get_analysis_summary(frontend_issues)
+        
+        total_issues = backend_summary["total_issues"] + frontend_summary["total_issues"]
+        security_logger.info(f"Security summary for {model}/app{app_num}: {total_issues} total issues found")
+        
         combined_summary = {
             "backend": {"summary": backend_summary, "status": backend_status},
             "frontend": {"summary": frontend_summary, "status": frontend_status},
-            "total_issues": backend_summary["total_issues"] + frontend_summary["total_issues"],
+            "total_issues": total_issues,
             "severity_counts": {
                 "HIGH": backend_summary["severity_counts"]["HIGH"] + frontend_summary["severity_counts"]["HIGH"],
                 "MEDIUM": backend_summary["severity_counts"]["MEDIUM"] + frontend_summary["severity_counts"]["MEDIUM"],
@@ -2076,7 +2155,7 @@ def get_security_summary(model: str, app_num: int):
         }
         return combined_summary
     except Exception as e:
-        logger.error(f"Error getting security summary: {e}")
+        security_logger.exception(f"Error getting security summary for {model}/app{app_num}: {e}")
         return APIResponse(
             success=False,
             error="Failed to get security summary",
@@ -2094,21 +2173,30 @@ def analyze_single_file():
     Returns:
         JSON with analysis results
     """
+    security_logger = create_logger_for_component('security')
+    
     try:
         data = request.get_json()
         if not data or "file_path" not in data:
+            security_logger.warning("No file path provided for file analysis")
             raise BadRequest("No file path provided")
         
         file_path = Path(data["file_path"])
         is_frontend = data.get("is_frontend", False)
+        file_type = "frontend" if is_frontend else "backend"
+        
+        security_logger.info(f"Analyzing single {file_type} file: {file_path}")
         analyzer = current_app.frontend_security_analyzer if is_frontend else current_app.backend_security_analyzer
         
         if is_frontend:
+            security_logger.debug(f"Running ESLint on {file_path.parent}")
             issues, tool_status, tool_output = analyzer._run_eslint(file_path.parent)
         else:
+            security_logger.debug(f"Running Bandit on {file_path.parent}")
             issues, tool_status, tool_output = analyzer._run_bandit(file_path.parent)
             
         file_issues = [issue for issue in issues if Path(issue.filename).name == file_path.name]
+        security_logger.info(f"Found {len(file_issues)} issues in {file_path.name}")
         
         return {
             "status": "success",
@@ -2117,14 +2205,14 @@ def analyze_single_file():
             "tool_output": tool_output,
         }
     except BadRequest as e:
-        logger.warning(f"Bad request in file analysis: {e}")
+        security_logger.warning(f"Bad request in file analysis: {e}")
         return APIResponse(
             success=False,
             error=str(e),
             code=400
         )
     except Exception as e:
-        logger.error(f"Error analyzing file: {e}")
+        security_logger.exception(f"Error analyzing file: {e}")
         return APIResponse(
             success=False,
             error="File analysis failed",
@@ -2132,35 +2220,6 @@ def analyze_single_file():
         )
 
 # ----- Performance Testing Routes -----
-# Helper function for AJAX compatible responses
-def ajax_compatible(f):
-    @functools.wraps(f)
-    def decorated_function(*args, **kwargs):
-        response = f(*args, **kwargs)
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            if isinstance(response, tuple) and len(response) >= 2:
-                if isinstance(response[0], dict):
-                    return jsonify(response[0]), response[1]
-            elif isinstance(response, dict):
-                return jsonify(response)
-        return response
-    return decorated_function
-
-# Helper class for API responses
-class APIResponse(dict):
-    def __init__(self, success=True, message="", error="", data=None, code=200):
-        super().__init__(
-            success=success,
-            message=message,
-            error=error,
-            data=data or {}
-        )
-        self.code = code
-
-    def __call__(self):
-        return self, self.code
-
-
 @performance_bp.route("/<string:model>/<int:port>", methods=["GET", "POST"])
 @ajax_compatible
 def performance_test(model: str, port: int):
@@ -2175,20 +2234,28 @@ def performance_test(model: str, port: int):
         On GET: Renders the performance test page
         On POST: Runs the test and returns JSON results
     """
+    perf_logger = create_logger_for_component('performance')
+    
     # Get the base directory from app config for storing test results
     base_dir = current_app.config.get("BASE_DIR", Path("."))
     output_dir = base_dir / "performance_reports"
     
-    # Create the tester instance
-    tester = LocustPerformanceTester(output_dir=output_dir)
-    
     if request.method == "POST":
+        perf_logger.info(f"Starting performance test for {model} on port {port}")
         try:
+            # Create the tester instance
+            tester = LocustPerformanceTester(output_dir=output_dir)
+            
             data = request.get_json()
             num_users = int(data.get("num_users", 10))
             duration = int(data.get("duration", 30))
             spawn_rate = int(data.get("spawn_rate", 1))
             endpoints = data.get("endpoints", ["/"])
+            
+            perf_logger.info(
+                f"Test parameters: users={num_users}, duration={duration}s, "
+                f"spawn_rate={spawn_rate}, endpoints={len(endpoints)}"
+            )
             
             # Convert simple endpoint strings to endpoint dictionaries
             formatted_endpoints = []
@@ -2206,6 +2273,7 @@ def performance_test(model: str, port: int):
             test_name = f"{model}_{port}"
             
             # Run the test using the CLI approach (easier for web integration)
+            perf_logger.info(f"Running test: {test_name} against http://localhost:{port}")
             result = tester.run_test_cli(
                 test_name=test_name,
                 host=f"http://localhost:{port}",
@@ -2218,11 +2286,13 @@ def performance_test(model: str, port: int):
             
             # If test completed successfully
             if result:
+                perf_logger.info(f"Test completed successfully: {test_name}")
                 # Find the generated report file
                 report_files = list(output_dir.glob(f"{test_name}_*/*_report.html"))
                 report_path = report_files[0] if report_files else None
                 
                 relative_path = str(report_path.relative_to(base_dir)) if report_path else ""
+                perf_logger.info(f"Report generated at: {relative_path}")
                 
                 return {
                     "status": "success",
@@ -2230,21 +2300,23 @@ def performance_test(model: str, port: int):
                     "report_path": f"/static/{relative_path}"
                 }
             else:
+                perf_logger.error(f"Test execution failed for {test_name}")
                 return APIResponse(
                     success=False,
                     error="Test execution failed. Check server logs for details.",
                     code=500
                 )
         except Exception as e:
-            logger.exception(f"Performance test error: {e}")
+            perf_logger.exception(f"Performance test error for {model} on port {port}: {e}")
             return APIResponse(
                 success=False,
                 error=str(e),
                 code=500
             )
-    
-    # GET request - render the test form
-    return render_template("performance_test.html", model=model, port=port)
+    else:
+        # GET request - render the test form
+        perf_logger.info(f"Rendering performance test form for {model} on port {port}")
+        return render_template("performance_test.html", model=model, port=port)
 
 
 @performance_bp.route("/<string:model>/<int:port>/stop", methods=["POST"])
@@ -2260,18 +2332,22 @@ def stop_performance_test(model: str, port: int):
     Returns:
         JSON with stop operation result
     """
+    perf_logger = create_logger_for_component('performance')
+    perf_logger.info(f"Request to stop performance test for {model} on port {port}")
+    
     try:
         # In a real implementation, you would:
         # 1. Check if there's a running test for this model/port
         # 2. Use subprocess to kill the Locust process or terminate the test
         
         # For now, we'll tell the user this is a placeholder
+        perf_logger.warning(f"Performance test stop not fully implemented for {model} on port {port}")
         return {
             "status": "success", 
             "message": "Test stop requested. Note: Actual test stopping depends on your environment setup."
         }
     except Exception as e:
-        logger.exception(f"Error stopping performance test: {e}")
+        perf_logger.exception(f"Error stopping performance test for {model} on port {port}: {e}")
         return APIResponse(
             success=False,
             error=str(e),
@@ -2292,10 +2368,14 @@ def list_performance_reports(model: str, port: int):
     Returns:
         JSON with available reports
     """
+    perf_logger = create_logger_for_component('performance')
+    perf_logger.info(f"Listing performance reports for {model} on port {port}")
+    
     try:
         base_dir = current_app.config.get("BASE_DIR", Path("."))
         report_dir = base_dir / "performance_reports"
         if not report_dir.exists():
+            perf_logger.debug(f"Report directory does not exist: {report_dir}")
             return {"reports": []}
         
         # Search for test directories with this model/port pattern
@@ -2303,6 +2383,7 @@ def list_performance_reports(model: str, port: int):
         test_name = f"{model}_{port}"
         
         # First, find all test directories
+        perf_logger.debug(f"Searching for test directories with pattern: {test_name}")
         test_dirs = [d for d in report_dir.iterdir() if d.is_dir() and d.name.startswith(test_name)]
         
         for test_dir in test_dirs:
@@ -2337,9 +2418,10 @@ def list_performance_reports(model: str, port: int):
                     "graphs": graphs
                 })
         
+        perf_logger.info(f"Found {len(reports)} performance reports for {model} on port {port}")
         return {"reports": sorted(reports, key=lambda x: x.get("timestamp", ""), reverse=True)}
     except Exception as e:
-        logger.exception(f"Error listing performance reports: {e}")
+        perf_logger.exception(f"Error listing performance reports for {model} on port {port}: {e}")
         return APIResponse(
             success=False,
             error=str(e),
@@ -2361,31 +2443,38 @@ def view_performance_report(model: str, port: int, report_id: str):
     Returns:
         Rendered template with report content
     """
+    perf_logger = create_logger_for_component('performance')
+    perf_logger.info(f"Viewing performance report {report_id} for {model} on port {port}")
+    
     try:
         base_dir = current_app.config.get("BASE_DIR", Path("."))
         report_dir = base_dir / "performance_reports" / report_id
         
         if not report_dir.exists():
+            perf_logger.warning(f"Report directory not found: {report_dir}")
             return render_template("404.html", message="Report not found"), 404
         
         # For security, verify this is a report for the requested model/port
         test_name = f"{model}_{port}"
         if not report_id.startswith(test_name):
+            perf_logger.warning(f"Invalid report ID requested: {report_id} (expected pattern: {test_name})")
             return render_template("404.html", message="Invalid report ID"), 404
         
         # Find HTML report in this directory
         html_reports = list(report_dir.glob("*_report.html"))
         if not html_reports:
+            perf_logger.warning(f"No HTML report file found in directory: {report_dir}")
             return render_template("404.html", message="Report file not found"), 404
         
         report_file = html_reports[0]
-        with open(report_file, "r") as f:
+        perf_logger.debug(f"Loading report content from: {report_file}")
+        with open(report_file, "r", encoding='utf-8', errors='replace') as f:
             report_content = f.read()
         
         # Find CSV files for additional data
         csv_files = {}
         for csv_file in report_dir.glob("*.csv"):
-            with open(csv_file, "r") as f:
+            with open(csv_file, "r", encoding='utf-8', errors='replace') as f:
                 csv_files[csv_file.stem] = f.read()
         
         # Find graph images
@@ -2396,6 +2485,7 @@ def view_performance_report(model: str, port: int, report_id: str):
                 "path": f"/static/performance_reports/{report_id}/{graph_file.name}"
             })
         
+        perf_logger.info(f"Rendering report with {len(graphs)} graphs and {len(csv_files)} CSV files")
         return render_template(
             "performance_report_viewer.html", 
             model=model, 
@@ -2406,7 +2496,7 @@ def view_performance_report(model: str, port: int, report_id: str):
             graphs=graphs
         )
     except Exception as e:
-        logger.exception(f"Error viewing performance report: {e}")
+        perf_logger.exception(f"Error viewing performance report {report_id}: {e}")
         return render_template("500.html", error=str(e)), 500
 
 
@@ -2424,11 +2514,15 @@ def get_performance_results(model: str, port: int, report_id: str):
     Returns:
         JSON with test results
     """
+    perf_logger = create_logger_for_component('performance')
+    perf_logger.info(f"Getting raw performance results for {report_id}")
+    
     try:
         base_dir = current_app.config.get("BASE_DIR", Path("."))
         report_dir = base_dir / "performance_reports" / report_id
         
         if not report_dir.exists():
+            perf_logger.warning(f"Results directory not found: {report_dir}")
             return APIResponse(
                 success=False,
                 error="Report not found",
@@ -2438,12 +2532,14 @@ def get_performance_results(model: str, port: int, report_id: str):
         # Look for a JSON results file
         json_files = list(report_dir.glob("*_results.json"))
         if json_files:
-            with open(json_files[0], "r") as f:
+            perf_logger.debug(f"Loading JSON results from: {json_files[0]}")
+            with open(json_files[0], "r", encoding='utf-8', errors='replace') as f:
                 return json.load(f)
         
         # If no JSON file, try to parse the stats CSV
         stats_files = list(report_dir.glob("*_stats.csv"))
         if stats_files:
+            perf_logger.debug(f"No JSON results file found. Using CSV file: {stats_files[0]}")
             # This would require a function to parse the CSV into a result object
             # For now, we'll return a simplified structure
             return {
@@ -2452,13 +2548,14 @@ def get_performance_results(model: str, port: int, report_id: str):
                 "csv_file": f"/static/performance_reports/{report_id}/{stats_files[0].name}"
             }
         
+        perf_logger.warning(f"No result data found in directory: {report_dir}")
         return APIResponse(
             success=False,
             error="No result data found",
             code=404
         )
     except Exception as e:
-        logger.exception(f"Error getting performance results: {e}")
+        perf_logger.exception(f"Error getting performance results for {report_id}: {e}")
         return APIResponse(
             success=False,
             error=str(e),
@@ -2480,11 +2577,15 @@ def delete_performance_report(model: str, port: int, report_id: str):
     Returns:
         JSON with deletion result
     """
+    perf_logger = create_logger_for_component('performance')
+    perf_logger.info(f"Request to delete performance report {report_id}")
+    
     try:
         base_dir = current_app.config.get("BASE_DIR", Path("."))
         report_dir = base_dir / "performance_reports" / report_id
         
         if not report_dir.exists():
+            perf_logger.warning(f"Report directory not found for deletion: {report_dir}")
             return APIResponse(
                 success=False,
                 error="Report not found",
@@ -2494,6 +2595,7 @@ def delete_performance_report(model: str, port: int, report_id: str):
         # For security, verify this is a report for the requested model/port
         test_name = f"{model}_{port}"
         if not report_id.startswith(test_name):
+            perf_logger.warning(f"Invalid report ID for deletion: {report_id}")
             return APIResponse(
                 success=False,
                 error="Invalid report ID",
@@ -2501,25 +2603,27 @@ def delete_performance_report(model: str, port: int, report_id: str):
             )
         
         # Delete all files in the directory
+        file_count = 0
         for file in report_dir.iterdir():
             file.unlink()
+            file_count += 1
         
         # Remove the directory
         report_dir.rmdir()
+        perf_logger.info(f"Successfully deleted report {report_id} with {file_count} files")
         
         return {
             "status": "success",
             "message": f"Report {report_id} deleted successfully"
         }
     except Exception as e:
-        logger.exception(f"Error deleting performance report: {e}")
+        perf_logger.exception(f"Error deleting performance report {report_id}: {e}")
         return APIResponse(
             success=False,
             error=str(e),
             code=500
         )
     
-
 
 # ----- GPT4All Routes -----
 @gpt4all_bp.route("/analyze-gpt4all/<string:analysis_type>", methods=["POST"])
@@ -2534,29 +2638,38 @@ def analyze_gpt4all(analysis_type: str):
     Returns:
         JSON with analysis results
     """
+    gpt4all_logger = create_logger_for_component('gpt4all')
+    gpt4all_logger.info(f"Running GPT4All analysis: {analysis_type}")
+    
     try:
         data = request.get_json()
         directory = Path(data.get("directory", current_app.config["BASE_DIR"]))
         file_patterns = data.get("file_patterns", ["*.py", "*.js", "*.ts", "*.react"])
+        
+        gpt4all_logger.info(f"Analyzing directory: {directory} with patterns: {file_patterns}")
         analyzer = GPT4AllAnalyzer(directory)
         
         # Handle asyncio in Flask properly
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
+        
+        gpt4all_logger.debug(f"Starting asyncio loop for {analysis_type} analysis")
         issues, summary = loop.run_until_complete(analyzer.analyze_directory(
             directory=directory, file_patterns=file_patterns, analysis_type=analysis_type
         ))
         loop.close()
         
         if not isinstance(summary, dict):
+            gpt4all_logger.debug("Converting analysis summary to dictionary")
             summary = analyzer.get_analysis_summary(issues)
-            
+        
+        gpt4all_logger.info(f"Analysis complete. Found {len(issues)} issues")
         return {
             "issues": [asdict(issue) for issue in issues], 
             "summary": summary
         }
     except Exception as e:
-        logger.error(f"GPT4All analysis failed: {e}")
+        gpt4all_logger.exception(f"GPT4All analysis failed: {e}")
         return APIResponse(
             success=False,
             error=str(e),
@@ -2566,13 +2679,18 @@ def analyze_gpt4all(analysis_type: str):
 @gpt4all_bp.route("/gpt4all-analysis", methods=["GET", "POST"])
 def gpt4all_analysis():
     """Flask route for checking requirements against code."""
+    gpt4all_logger = create_logger_for_component('gpt4all')
+    
     try:
         # Extract parameters
         model = request.args.get("model") or request.form.get("model")
         app_num_str = request.args.get("app_num") or request.form.get("app_num")
         
+        gpt4all_logger.info(f"GPT4All analysis requested for {model}/app{app_num_str}")
+        
         # Validate required parameters
         if not model or not app_num_str:
+            gpt4all_logger.warning("Missing required parameters: model or app_num")
             return render_template(
                 "requirements_check.html",
                 model=None,
@@ -2585,6 +2703,7 @@ def gpt4all_analysis():
         try:
             app_num = int(app_num_str)
         except ValueError:
+            gpt4all_logger.warning(f"Invalid app number format: {app_num_str}")
             return render_template(
                 "requirements_check.html",
                 model=model,
@@ -2600,6 +2719,7 @@ def gpt4all_analysis():
         
         if not directory:
             # Try harder to find a valid directory
+            gpt4all_logger.debug(f"Application directory not found initially, trying alternative paths")
             all_possible_dirs = [
                 get_app_directory(current_app, model, app_num),
                 base_dir / f"{model}/app{app_num}",
@@ -2607,6 +2727,8 @@ def gpt4all_analysis():
                 base_dir / "z_interface_app" / f"{model}/app{app_num}",
                 base_dir / "z_interface_app" / f"{model.lower()}/app{app_num}"
             ]
+            
+            gpt4all_logger.warning(f"Directory not found for {model}/app{app_num}")
             
             # Show more informative error
             error_msg = f"Directory not found: Tried paths: {', '.join(str(p) for p in all_possible_dirs)}"
@@ -2630,6 +2752,7 @@ def gpt4all_analysis():
             
             if req_list:
                 # Initialize analyzer with the correct directory
+                gpt4all_logger.info(f"Checking {len(req_list)} requirements for {model}/app{app_num}")
                 analyzer = GPT4AllAnalyzer(directory)
                 
                 # Run check for each requirement using proper asyncio handling in Flask
@@ -2639,7 +2762,7 @@ def gpt4all_analysis():
                 loop.close()
                 
                 # Log success
-                logger.info(f"Successfully analyzed requirements for {model}/app{app_num}")
+                gpt4all_logger.info(f"Successfully analyzed requirements for {model}/app{app_num}")
         
         # Render template with form or results
         return render_template(
@@ -2652,7 +2775,7 @@ def gpt4all_analysis():
         )
         
     except Exception as e:
-        logger.error(f"Requirements check failed: {e}")
+        gpt4all_logger.exception(f"Requirements check failed: {e}")
         return render_template(
             "requirements_check.html",
             model=model if "model" in locals() else None,
@@ -2667,8 +2790,11 @@ def gpt4all_analysis():
 # =============================================================================
 def register_error_handlers(app: Flask) -> None:
     """Register Flask error handlers."""
+    error_logger = create_logger_for_component('errors')
+    
     @app.errorhandler(404)
     def not_found(error):
+        error_logger.warning(f"404 error: {request.path} - {error}")
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return jsonify({
                 "success": False,
@@ -2679,7 +2805,7 @@ def register_error_handlers(app: Flask) -> None:
 
     @app.errorhandler(500)
     def server_error(error):
-        logger.error(f"Server error: {error}")
+        error_logger.error(f"500 error: {request.path} - {error}")
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return jsonify({
                 "success": False,
@@ -2690,7 +2816,7 @@ def register_error_handlers(app: Flask) -> None:
 
     @app.errorhandler(Exception)
     def handle_exception(error):
-        logger.error(f"Unhandled exception: {error}")
+        error_logger.exception(f"Unhandled exception: {request.path} - {error}")
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return jsonify({
                 "success": False,
@@ -2707,13 +2833,19 @@ def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
         app: Flask app instance
         docker_manager: Docker manager instance
     """
+    hooks_logger = create_logger_for_component('hooks')
+    
     @app.before_request
     def before():
         # Occasional cleanup
         if random.random() < 0.01:
-            docker_manager.cleanup_containers()
-            if "ZAP_SCANS" in app.config:
-                stop_zap_scanners(app.config["ZAP_SCANS"])
+            hooks_logger.debug("Running occasional cleanup tasks")
+            try:
+                docker_manager.cleanup_containers()
+                if "ZAP_SCANS" in app.config:
+                    stop_zap_scanners(app.config["ZAP_SCANS"])
+            except Exception as e:
+                hooks_logger.exception(f"Error during cleanup tasks: {e}")
 
     @app.after_request
     def after(response):
@@ -2735,7 +2867,11 @@ def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
 
     @app.teardown_appcontext
     def teardown(exception=None):
+        if exception:
+            hooks_logger.warning(f"Context teardown with exception: {exception}")
+            
         if "ZAP_SCANS" in app.config:
+            hooks_logger.debug("Stopping active ZAP scans during teardown")
             stop_zap_scanners(app.config["ZAP_SCANS"])
 
 # =============================================================================
@@ -2756,67 +2892,105 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     app.config.from_object(app_config)
     app.config["BASE_DIR"] = app_config.BASE_DIR
     
-    # Configure enhanced logging
-    LoggingService.configure(app_config.LOG_LEVEL)
-    
-    # Apply request logger middleware
-    RequestLoggerMiddleware(app)
+    # Initialize the enhanced logging system
+    initialize_logging(app)
+    app_logger = create_logger_for_component('app')
+    app_logger.info("Starting application setup")
     
     # Use enhanced JSON encoder
     app.json_encoder = CustomJSONEncoder
-
+    
+    # Log base path information
     base_path = app_config.BASE_DIR.parent
-    logger.info(f"Initializing analyzers with base path: {base_path}")
+    app_logger.info(f"Application base path: {app_config.BASE_DIR}")
+    app_logger.info(f"Parent base path: {base_path}")
 
-    # Initialize analyzers and other services.
+    # Initialize analyzers and other services
+    app_logger.info("Initializing security analyzers")
     app.backend_security_analyzer = BackendSecurityAnalyzer(base_path)
     app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
+    
+    app_logger.info("Initializing GPT4All analyzer")
     app.gpt4all_analyzer = GPT4AllAnalyzer(base_path)
+    
+    app_logger.info("Initializing performance tester")
     app.performance_tester = LocustPerformanceTester(base_path)
+    
+    app_logger.info("Initializing ZAP scanner")
     app.zap_scanner = create_scanner(app_config.BASE_DIR)
 
+    app_logger.info("Creating Docker manager")
     docker_manager = DockerManager()
     app.config["docker_manager"] = docker_manager
 
+    app_logger.info("Configuring proxy fix middleware")
     app.wsgi_app = ProxyFix(app.wsgi_app)
 
-    # Register blueprints.
+    # Register blueprints
+    app_logger.info("Registering application blueprints")
     app.register_blueprint(main_bp)
     app.register_blueprint(api_bp, url_prefix="/api")
     app.register_blueprint(analysis_bp)
     app.register_blueprint(performance_bp, url_prefix="/performance")
-    app.register_blueprint(gpt4all_bp)  # This registers both the original and new routes
+    app.register_blueprint(gpt4all_bp)
     app.register_blueprint(zap_bp, url_prefix="/zap")
 
     # Initialize batch analysis module
+    app_logger.info("Initializing batch analysis module")
     init_batch_analysis(app)
+    
     # Register batch analysis blueprint
     app.register_blueprint(batch_analysis_bp, url_prefix="/batch-analysis")
 
+    app_logger.info("Registering error handlers and request hooks")
     register_error_handlers(app)
     register_request_hooks(app, docker_manager)
     
-    logger.info("Application initialization complete")
+    app_logger.info("Application initialization complete")
     return app
 
 # =============================================================================
 # Main Entry Point
 # =============================================================================
+# =============================================================================
+# Main Entry Point
+# =============================================================================
 if __name__ == "__main__":
+    # Create loggers without relying on flask context
+    import logging
+    main_logger = logging.getLogger('main')
+    main_logger.setLevel(logging.INFO)
+    
+    # Add a simple handler that doesn't rely on request context
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s'))
+    main_logger.addHandler(handler)
+    
+    main_logger.info("Application starting")
+    
     config = AppConfig.from_env()
-    LoggingService.configure(config.LOG_LEVEL)
+    
     try:
+        main_logger.info(f"Creating application with LOG_LEVEL={config.LOG_LEVEL}")
         app = create_app(config)
-        docker_manager = DockerManager()
-        if docker_manager.client and not SystemHealthMonitor.check_health(docker_manager.client):
-            logger.warning("System health check failed - reduced functionality expected.")
-        elif not docker_manager.client:
-            logger.warning("Docker client unavailable - reduced functionality expected.")
+        
+        # System health checks should be done within app context
+        with app.app_context():
+            docker_manager = DockerManager()
+            system_health = True
+            
+            if docker_manager.client:
+                system_health = SystemHealthMonitor.check_health(docker_manager.client)
+                if not system_health:
+                    main_logger.warning("System health check failed - reduced functionality expected")
+            else:
+                main_logger.warning("Docker client unavailable - reduced functionality expected")
+        
+        main_logger.info(f"Starting Flask server on {config.HOST}:{config.PORT} (debug={config.DEBUG})")
         app.run(host=config.HOST, port=config.PORT, debug=config.DEBUG)
     except Exception as e:
-        logger.critical(f"Failed to start: {e}")
+        main_logger.critical(f"Failed to start application: {e}", exc_info=True)
         raise e
-
 # =============================================================================
 # Optional: Database Manager for Storing Scan Data
 # =============================================================================
@@ -2830,11 +3004,14 @@ class DatabaseManager:
         Args:
             db_path: Path to the SQLite database file
         """
+        self.logger = create_logger_for_component('database')
+        self.logger.info(f"Initializing database connection: {db_path}")
         self.conn = sqlite3.connect(db_path)
         self._create_tables()
 
     def _create_tables(self):
         """Create database tables if they don't exist."""
+        self.logger.debug("Creating database tables if they don't exist")
         self.conn.executescript('''
             CREATE TABLE IF NOT EXISTS security_scans (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -2870,13 +3047,18 @@ class DatabaseManager:
             ID of the new database record
         """
         issues_json = json.dumps(issues)
+        self.logger.info(f"Storing {scan_type} scan results for {model}/app{app_num} with {len(issues)} issues")
+        
         cursor = self.conn.cursor()
         cursor.execute(
             "INSERT INTO security_scans (scan_type, model, app_num, issues) VALUES (?, ?, ?, ?)",
             (scan_type, model, app_num, issues_json)
         )
         self.conn.commit()
-        return cursor.lastrowid
+        last_id = cursor.lastrowid
+        
+        self.logger.debug(f"Security scan stored with ID: {last_id}")
+        return last_id
         
     def get_security_scans(self, model=None, app_num=None, limit=10):
         """
@@ -2894,24 +3076,29 @@ class DatabaseManager:
         query = "SELECT * FROM security_scans"
         params = []
         
-        if model or app_num:
-            query += " WHERE"
-            if model:
-                query += " model = ?"
-                params.append(model)
-                if app_num:
-                    query += " AND"
-            if app_num:
-                query += " app_num = ?"
-                params.append(app_num)
+        filter_conditions = []
+        if model:
+            filter_conditions.append("model = ?")
+            params.append(model)
+        if app_num:
+            filter_conditions.append("app_num = ?")
+            params.append(app_num)
+            
+        if filter_conditions:
+            query += " WHERE " + " AND ".join(filter_conditions)
                 
         query += " ORDER BY timestamp DESC LIMIT ?"
         params.append(limit)
         
+        self.logger.debug(f"Executing query: {query} with params: {params}")
         cursor.execute(query, params)
-        return cursor.fetchall()
+        results = cursor.fetchall()
+        
+        self.logger.info(f"Retrieved {len(results)} security scans")
+        return results
         
     def __del__(self):
         """Close database connection when object is deleted."""
         if hasattr(self, 'conn'):
+            self.logger.debug("Closing database connection")
             self.conn.close()

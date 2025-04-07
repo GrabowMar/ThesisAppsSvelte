@@ -1,0 +1,65 @@
+2025-04-07 23:03:34 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-07 23:03:34 [INFO] [MainThread] app: Starting application setup
+2025-04-07 23:03:34 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-07 23:03:34 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-07 23:03:34 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-07 23:03:34 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-07 23:03:34 [INFO] [MainThread] frontend_security_analysis: Available tools: pattern_scan, jsx_analyzer, dependency_check, eslint
+2025-04-07 23:03:34 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-07 23:03:34 [INFO] [MainThread] app: Initializing performance tester
+2025-04-07 23:03:34 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-07 23:03:34 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-07 23:03:35 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-07 23:03:35 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-07 23:03:35 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-07 23:03:35 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-07 23:03:35 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-07 23:03:35 [INFO] [MainThread] app: Creating Docker manager
+2025-04-07 23:03:35 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-07 23:03:35 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-07 23:03:35 [INFO] [MainThread] app: Registering application blueprints
+2025-04-07 23:03:35 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-07 23:03:35 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-07 23:03:35 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-07 23:03:35 [INFO] [MainThread] app: Application initialization complete
+2025-04-07 23:03:35 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-07 23:03:35 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-07 23:03:35 [CRITICAL] [MainThread] main: Failed to start application: Working outside of application context.
+
+This typically means that you attempted to use functionality that needed
+the current application. To solve this, set up an application context
+with app.app_context(). See the documentation for more information.
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 2976, in <module>
+    app.run(host=config.HOST, port=config.PORT, debug=config.DEBUG)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 662, in run
+    run_simple(t.cast(str, host), port, self, **options)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\serving.py", line 1108, in run_simple
+    srv.log_startup()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\serving.py", line 865, in log_startup
+    _log("info", "\n".join(messages))
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\_internal.py", line 97, in _log
+    getattr(_logger, type)(message.rstrip(), *args, **kwargs)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1539, in info
+    self._log(INFO, msg, args, **kwargs)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1684, in _log
+    self.handle(record)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 1695, in handle
+    maybe_record = self.filter(record)
+                   ^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\logging\__init__.py", line 858, in filter
+    result = f.filter(record)
+             ^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\logging_service.py", line 106, in filter
+    record.request_id = getattr(g, 'request_id', '-')
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\local.py", line 318, in __get__
+    obj = instance._get_current_object()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\local.py", line 519, in _get_current_object
+    raise RuntimeError(unbound_message) from None
+RuntimeError: Working outside of application context.
+
+This typically means that you attempted to use functionality that needed
+the current application. To solve this, set up an application context
+with app.app_context(). See the documentation for more information.
