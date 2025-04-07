@@ -15,46 +15,60 @@ import os
 import random
 import sqlite3
 import subprocess
+import tempfile
 import threading
 import time
 import uuid
+import functools
+from collections import namedtuple
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from functools import wraps
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Generator, List, Optional, Tuple, Union
 
 # =============================================================================
 # Third-Party Imports
 # =============================================================================
 import docker
+import gevent
+import pandas as pd
+import matplotlib.pyplot as plt
+import requests
 from docker.errors import NotFound
 from flask import (
-    Flask,
     Blueprint,
+    Flask,
     Response,
     current_app,
     flash,
     g,
     jsonify,
+    make_response,
     redirect,
     render_template,
     request,
+    send_from_directory,
     url_for,
 )
-from werkzeug.exceptions import BadRequest, HTTPException
+from locust import HttpUser, User, task, constant, events, between
+from locust.env import Environment
+from locust.stats import stats_printer, StatsEntry
+from locust.runners import Runner, LocalRunner, MasterRunner, WorkerRunner
+from werkzeug.exceptions import BadRequest, HTTPException, NotFound, InternalServerError
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 # =============================================================================
 # Custom Module Imports
 # =============================================================================
 from backend_security_analysis import BackendSecurityAnalyzer
+from batch_analysis import init_batch_analysis, batch_analysis_bp
 from frontend_security_analysis import FrontendSecurityAnalyzer
 from gpt4all_analysis import GPT4AllAnalyzer
-from performance_analysis import PerformanceTester
-from zap_scanner import ZAPScanner, create_scanner
-from batch_analysis import init_batch_analysis, batch_analysis_bp
 from path_utils import PathUtils
+from performance_analysis import LocustPerformanceTester, PerformanceResult, EndpointStats, ErrorStats
+from zap_scanner import ZAPScanner, create_scanner
 
 
 # =============================================================================
@@ -1076,7 +1090,7 @@ def call_ai_service(model: str, prompt: str) -> str:
 main_bp = Blueprint("main", __name__)
 api_bp = Blueprint("api", __name__)
 analysis_bp = Blueprint("analysis", __name__)
-performance_bp = Blueprint("performance", __name__)
+performance_bp = Blueprint("performance", __name__, url_prefix="/performance")
 gpt4all_bp = Blueprint("gpt4all", __name__)
 zap_bp = Blueprint("zap", __name__)
 
@@ -2118,6 +2132,35 @@ def analyze_single_file():
         )
 
 # ----- Performance Testing Routes -----
+# Helper function for AJAX compatible responses
+def ajax_compatible(f):
+    @functools.wraps(f)
+    def decorated_function(*args, **kwargs):
+        response = f(*args, **kwargs)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            if isinstance(response, tuple) and len(response) >= 2:
+                if isinstance(response[0], dict):
+                    return jsonify(response[0]), response[1]
+            elif isinstance(response, dict):
+                return jsonify(response)
+        return response
+    return decorated_function
+
+# Helper class for API responses
+class APIResponse(dict):
+    def __init__(self, success=True, message="", error="", data=None, code=200):
+        super().__init__(
+            success=success,
+            message=message,
+            error=error,
+            data=data or {}
+        )
+        self.code = code
+
+    def __call__(self):
+        return self, self.code
+
+
 @performance_bp.route("/<string:model>/<int:port>", methods=["GET", "POST"])
 @ajax_compatible
 def performance_test(model: str, port: int):
@@ -2132,7 +2175,12 @@ def performance_test(model: str, port: int):
         On GET: Renders the performance test page
         On POST: Runs the test and returns JSON results
     """
-    tester = PerformanceTester(current_app.config["BASE_DIR"])
+    # Get the base directory from app config for storing test results
+    base_dir = current_app.config.get("BASE_DIR", Path("."))
+    output_dir = base_dir / "performance_reports"
+    
+    # Create the tester instance
+    tester = LocustPerformanceTester(output_dir=output_dir)
     
     if request.method == "POST":
         try:
@@ -2142,27 +2190,49 @@ def performance_test(model: str, port: int):
             spawn_rate = int(data.get("spawn_rate", 1))
             endpoints = data.get("endpoints", ["/"])
             
-            result, info = tester.run_test(
-                model=model,
-                port=port,
-                num_users=num_users,
-                duration=duration,
+            # Convert simple endpoint strings to endpoint dictionaries
+            formatted_endpoints = []
+            for endpoint in endpoints:
+                if isinstance(endpoint, str):
+                    formatted_endpoints.append({
+                        "path": endpoint,
+                        "method": "GET",
+                        "weight": 1
+                    })
+                else:
+                    formatted_endpoints.append(endpoint)
+            
+            # Generate a unique test name
+            test_name = f"{model}_{port}"
+            
+            # Run the test using the CLI approach (easier for web integration)
+            result = tester.run_test_cli(
+                test_name=test_name,
+                host=f"http://localhost:{port}",
+                endpoints=formatted_endpoints,
+                user_count=num_users,
                 spawn_rate=spawn_rate,
-                endpoints=endpoints
+                run_time=f"{duration}s",
+                html_report=True
             )
             
+            # If test completed successfully
             if result:
-                # Convert the result object to a dictionary for JSON serialization
+                # Find the generated report file
+                report_files = list(output_dir.glob(f"{test_name}_*/*_report.html"))
+                report_path = report_files[0] if report_files else None
+                
+                relative_path = str(report_path.relative_to(base_dir)) if report_path else ""
+                
                 return {
                     "status": "success",
                     "data": result.to_dict(),
-                    "report_path": info.get("report_path", "")
+                    "report_path": f"/static/{relative_path}"
                 }
             else:
                 return APIResponse(
                     success=False,
-                    error=info.get("error", "Unknown error"),
-                    data={"command": info.get("command", "")},
+                    error="Test execution failed. Check server logs for details.",
                     code=500
                 )
         except Exception as e:
@@ -2173,6 +2243,7 @@ def performance_test(model: str, port: int):
                 code=500
             )
     
+    # GET request - render the test form
     return render_template("performance_test.html", model=model, port=port)
 
 
@@ -2190,8 +2261,15 @@ def stop_performance_test(model: str, port: int):
         JSON with stop operation result
     """
     try:
-        # For now, we'll just return success
-        return {"status": "success", "message": "Test stopped successfully"}
+        # In a real implementation, you would:
+        # 1. Check if there's a running test for this model/port
+        # 2. Use subprocess to kill the Locust process or terminate the test
+        
+        # For now, we'll tell the user this is a placeholder
+        return {
+            "status": "success", 
+            "message": "Test stop requested. Note: Actual test stopping depends on your environment setup."
+        }
     except Exception as e:
         logger.exception(f"Error stopping performance test: {e}")
         return APIResponse(
@@ -2215,22 +2293,51 @@ def list_performance_reports(model: str, port: int):
         JSON with available reports
     """
     try:
-        report_dir = current_app.config["BASE_DIR"] / "performance_reports"
+        base_dir = current_app.config.get("BASE_DIR", Path("."))
+        report_dir = base_dir / "performance_reports"
         if not report_dir.exists():
             return {"reports": []}
-            
-        # Find all reports for this model/port
+        
+        # Search for test directories with this model/port pattern
         reports = []
-        for report_file in report_dir.glob(f"report_{model}_{port}_*.html"):
-            timestamp = report_file.stem.split("_")[-1]
-            reports.append({
-                "filename": report_file.name,
-                "path": f"/static/performance_reports/{report_file.name}",
-                "timestamp": timestamp,
-                "created": datetime.fromtimestamp(report_file.stat().st_mtime).strftime("%Y-%m-%d %H:%M:%S")
-            })
+        test_name = f"{model}_{port}"
+        
+        # First, find all test directories
+        test_dirs = [d for d in report_dir.iterdir() if d.is_dir() and d.name.startswith(test_name)]
+        
+        for test_dir in test_dirs:
+            # Extract timestamp from directory name
+            try:
+                timestamp = test_dir.name.split('_')[-1]
+                formatted_time = datetime.strptime(timestamp, "%Y%m%d_%H%M%S").strftime("%Y-%m-%d %H:%M:%S")
+            except (ValueError, IndexError):
+                timestamp = ""
+                formatted_time = "Unknown date"
             
-        return {"reports": sorted(reports, key=lambda x: x["timestamp"], reverse=True)}
+            # Find HTML report in this directory
+            html_reports = list(test_dir.glob("*_report.html"))
+            if html_reports:
+                report_file = html_reports[0]
+                
+                # Also look for any graphs
+                graphs = []
+                for graph_file in test_dir.glob("*.png"):
+                    graphs.append({
+                        "name": graph_file.stem,
+                        "path": f"/static/performance_reports/{test_dir.name}/{graph_file.name}"
+                    })
+                
+                reports.append({
+                    "id": test_dir.name,
+                    "test_name": test_name,
+                    "filename": report_file.name,
+                    "path": f"/static/performance_reports/{test_dir.name}/{report_file.name}",
+                    "timestamp": timestamp,
+                    "created": formatted_time,
+                    "graphs": graphs
+                })
+        
+        return {"reports": sorted(reports, key=lambda x: x.get("timestamp", ""), reverse=True)}
     except Exception as e:
         logger.exception(f"Error listing performance reports: {e}")
         return APIResponse(
@@ -2240,42 +2347,179 @@ def list_performance_reports(model: str, port: int):
         )
 
 
-@performance_bp.route("/<string:model>/<int:port>/reports/<path:report_name>", methods=["GET"])
+@performance_bp.route("/<string:model>/<int:port>/reports/<path:report_id>", methods=["GET"])
 @ajax_compatible
-def view_performance_report(model: str, port: int, report_name: str):
+def view_performance_report(model: str, port: int, report_id: str):
     """
     View a specific performance report.
     
     Args:
         model: Model name
         port: Port number
-        report_name: Report filename
+        report_id: Report directory ID (usually contains timestamp)
         
     Returns:
         Rendered template with report content
     """
     try:
-        report_path = current_app.config["BASE_DIR"] / "performance_reports" / report_name
-        if not report_path.exists():
-            return render_template("404.html"), 404
-            
+        base_dir = current_app.config.get("BASE_DIR", Path("."))
+        report_dir = base_dir / "performance_reports" / report_id
+        
+        if not report_dir.exists():
+            return render_template("404.html", message="Report not found"), 404
+        
         # For security, verify this is a report for the requested model/port
-        if not report_name.startswith(f"report_{model}_{port}_"):
-            return render_template("404.html"), 404
-            
-        with open(report_path, "r") as f:
+        test_name = f"{model}_{port}"
+        if not report_id.startswith(test_name):
+            return render_template("404.html", message="Invalid report ID"), 404
+        
+        # Find HTML report in this directory
+        html_reports = list(report_dir.glob("*_report.html"))
+        if not html_reports:
+            return render_template("404.html", message="Report file not found"), 404
+        
+        report_file = html_reports[0]
+        with open(report_file, "r") as f:
             report_content = f.read()
-            
+        
+        # Find CSV files for additional data
+        csv_files = {}
+        for csv_file in report_dir.glob("*.csv"):
+            with open(csv_file, "r") as f:
+                csv_files[csv_file.stem] = f.read()
+        
+        # Find graph images
+        graphs = []
+        for graph_file in report_dir.glob("*.png"):
+            graphs.append({
+                "name": graph_file.stem.replace("_", " ").title(),
+                "path": f"/static/performance_reports/{report_id}/{graph_file.name}"
+            })
+        
         return render_template(
             "performance_report_viewer.html", 
             model=model, 
             port=port, 
-            report_name=report_name,
-            report_content=report_content
+            report_id=report_id,
+            report_content=report_content,
+            csv_files=csv_files,
+            graphs=graphs
         )
     except Exception as e:
         logger.exception(f"Error viewing performance report: {e}")
         return render_template("500.html", error=str(e)), 500
+
+
+@performance_bp.route("/<string:model>/<int:port>/results/<path:report_id>", methods=["GET"])
+@ajax_compatible
+def get_performance_results(model: str, port: int, report_id: str):
+    """
+    Get the raw JSON results for a specific test.
+    
+    Args:
+        model: Model name
+        port: Port number
+        report_id: Report directory ID
+        
+    Returns:
+        JSON with test results
+    """
+    try:
+        base_dir = current_app.config.get("BASE_DIR", Path("."))
+        report_dir = base_dir / "performance_reports" / report_id
+        
+        if not report_dir.exists():
+            return APIResponse(
+                success=False,
+                error="Report not found",
+                code=404
+            )
+        
+        # Look for a JSON results file
+        json_files = list(report_dir.glob("*_results.json"))
+        if json_files:
+            with open(json_files[0], "r") as f:
+                return json.load(f)
+        
+        # If no JSON file, try to parse the stats CSV
+        stats_files = list(report_dir.glob("*_stats.csv"))
+        if stats_files:
+            # This would require a function to parse the CSV into a result object
+            # For now, we'll return a simplified structure
+            return {
+                "status": "success",
+                "message": "Raw results not available, but CSV files exist",
+                "csv_file": f"/static/performance_reports/{report_id}/{stats_files[0].name}"
+            }
+        
+        return APIResponse(
+            success=False,
+            error="No result data found",
+            code=404
+        )
+    except Exception as e:
+        logger.exception(f"Error getting performance results: {e}")
+        return APIResponse(
+            success=False,
+            error=str(e),
+            code=500
+        )
+
+
+@performance_bp.route("/<string:model>/<int:port>/reports/<path:report_id>/delete", methods=["POST"])
+@ajax_compatible
+def delete_performance_report(model: str, port: int, report_id: str):
+    """
+    Delete a specific performance report.
+    
+    Args:
+        model: Model name
+        port: Port number
+        report_id: Report directory ID
+        
+    Returns:
+        JSON with deletion result
+    """
+    try:
+        base_dir = current_app.config.get("BASE_DIR", Path("."))
+        report_dir = base_dir / "performance_reports" / report_id
+        
+        if not report_dir.exists():
+            return APIResponse(
+                success=False,
+                error="Report not found",
+                code=404
+            )
+        
+        # For security, verify this is a report for the requested model/port
+        test_name = f"{model}_{port}"
+        if not report_id.startswith(test_name):
+            return APIResponse(
+                success=False,
+                error="Invalid report ID",
+                code=400
+            )
+        
+        # Delete all files in the directory
+        for file in report_dir.iterdir():
+            file.unlink()
+        
+        # Remove the directory
+        report_dir.rmdir()
+        
+        return {
+            "status": "success",
+            "message": f"Report {report_id} deleted successfully"
+        }
+    except Exception as e:
+        logger.exception(f"Error deleting performance report: {e}")
+        return APIResponse(
+            success=False,
+            error=str(e),
+            code=500
+        )
+    
+
 
 # ----- GPT4All Routes -----
 @gpt4all_bp.route("/analyze-gpt4all/<string:analysis_type>", methods=["POST"])
@@ -2528,7 +2772,7 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     app.backend_security_analyzer = BackendSecurityAnalyzer(base_path)
     app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
     app.gpt4all_analyzer = GPT4AllAnalyzer(base_path)
-    app.performance_tester = PerformanceTester(base_path)
+    app.performance_tester = LocustPerformanceTester(base_path)
     app.zap_scanner = create_scanner(app_config.BASE_DIR)
 
     docker_manager = DockerManager()
