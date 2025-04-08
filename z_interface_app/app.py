@@ -2786,38 +2786,29 @@ def analyze_gpt4all(analysis_type: str):
     Returns:
         JSON with analysis results
     """
-    gpt4all_logger = create_logger_for_component('gpt4all')
-    gpt4all_logger.info(f"Running GPT4All analysis: {analysis_type}")
-    
     try:
         data = request.get_json()
         directory = Path(data.get("directory", current_app.config["BASE_DIR"]))
         file_patterns = data.get("file_patterns", ["*.py", "*.js", "*.ts", "*.react"])
-        
-        gpt4all_logger.info(f"Analyzing directory: {directory} with patterns: {file_patterns}")
         analyzer = GPT4AllAnalyzer(directory)
         
         # Handle asyncio in Flask properly
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        
-        gpt4all_logger.debug(f"Starting asyncio loop for {analysis_type} analysis")
         issues, summary = loop.run_until_complete(analyzer.analyze_directory(
             directory=directory, file_patterns=file_patterns, analysis_type=analysis_type
         ))
         loop.close()
         
         if not isinstance(summary, dict):
-            gpt4all_logger.debug("Converting analysis summary to dictionary")
             summary = analyzer.get_analysis_summary(issues)
-        
-        gpt4all_logger.info(f"Analysis complete. Found {len(issues)} issues")
+            
         return {
             "issues": [asdict(issue) for issue in issues], 
             "summary": summary
         }
     except Exception as e:
-        gpt4all_logger.exception(f"GPT4All analysis failed: {e}")
+        logger.error(f"GPT4All analysis failed: {e}")
         return APIResponse(
             success=False,
             error=str(e),
@@ -2827,18 +2818,13 @@ def analyze_gpt4all(analysis_type: str):
 @gpt4all_bp.route("/gpt4all-analysis", methods=["GET", "POST"])
 def gpt4all_analysis():
     """Flask route for checking requirements against code."""
-    gpt4all_logger = create_logger_for_component('gpt4all')
-    
     try:
         # Extract parameters
         model = request.args.get("model") or request.form.get("model")
         app_num_str = request.args.get("app_num") or request.form.get("app_num")
         
-        gpt4all_logger.info(f"GPT4All analysis requested for {model}/app{app_num_str}")
-        
         # Validate required parameters
         if not model or not app_num_str:
-            gpt4all_logger.warning("Missing required parameters: model or app_num")
             return render_template(
                 "requirements_check.html",
                 model=None,
@@ -2851,7 +2837,6 @@ def gpt4all_analysis():
         try:
             app_num = int(app_num_str)
         except ValueError:
-            gpt4all_logger.warning(f"Invalid app number format: {app_num_str}")
             return render_template(
                 "requirements_check.html",
                 model=model,
@@ -2867,7 +2852,6 @@ def gpt4all_analysis():
         
         if not directory:
             # Try harder to find a valid directory
-            gpt4all_logger.debug(f"Application directory not found initially, trying alternative paths")
             all_possible_dirs = [
                 get_app_directory(current_app, model, app_num),
                 base_dir / f"{model}/app{app_num}",
@@ -2875,8 +2859,6 @@ def gpt4all_analysis():
                 base_dir / "z_interface_app" / f"{model}/app{app_num}",
                 base_dir / "z_interface_app" / f"{model.lower()}/app{app_num}"
             ]
-            
-            gpt4all_logger.warning(f"Directory not found for {model}/app{app_num}")
             
             # Show more informative error
             error_msg = f"Directory not found: Tried paths: {', '.join(str(p) for p in all_possible_dirs)}"
@@ -2900,7 +2882,6 @@ def gpt4all_analysis():
             
             if req_list:
                 # Initialize analyzer with the correct directory
-                gpt4all_logger.info(f"Checking {len(req_list)} requirements for {model}/app{app_num}")
                 analyzer = GPT4AllAnalyzer(directory)
                 
                 # Run check for each requirement using proper asyncio handling in Flask
@@ -2910,7 +2891,7 @@ def gpt4all_analysis():
                 loop.close()
                 
                 # Log success
-                gpt4all_logger.info(f"Successfully analyzed requirements for {model}/app{app_num}")
+                logger.info(f"Successfully analyzed requirements for {model}/app{app_num}")
         
         # Render template with form or results
         return render_template(
@@ -2923,7 +2904,7 @@ def gpt4all_analysis():
         )
         
     except Exception as e:
-        gpt4all_logger.exception(f"Requirements check failed: {e}")
+        logger.error(f"Requirements check failed: {e}")
         return render_template(
             "requirements_check.html",
             model=model if "model" in locals() else None,
@@ -2932,6 +2913,8 @@ def gpt4all_analysis():
             results=None,
             error=str(e)
         )
+
+
 
 # =============================================================================
 # Error Handlers & Request Hooks
@@ -3097,9 +3080,6 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     app_logger.info("Application initialization complete")
     return app
 
-# =============================================================================
-# Main Entry Point
-# =============================================================================
 # =============================================================================
 # Main Entry Point
 # =============================================================================
