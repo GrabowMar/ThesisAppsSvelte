@@ -20,6 +20,9 @@
           <h2 class="font-bold text-sm">Requirements Check 
             {% if model and app_num %}
               for {{ model }} App {{ app_num }}
+              {% if template_name %}
+                ({{ template_name }})
+              {% endif %}
             {% endif %}
           </h2>
         </div>
@@ -30,6 +33,12 @@
             <strong>Error:</strong> {{ error }}
           </div>
           {% endif %}
+          
+          <!-- Server Status -->
+          <div id="server-status" class="mb-4 text-xs">
+            <span id="status-indicator" class="inline-block w-3 h-3 rounded-full bg-gray-300 mr-1"></span>
+            <span id="status-text">Checking GPT4All server status...</span>
+          </div>
           
           <!-- Requirements Input Form -->
           <form method="POST" action="{{ url_for('gpt4all.gpt4all_analysis') }}?model={{ model }}&app_num={{ app_num }}">
@@ -165,12 +174,41 @@ The application must follow secure coding practices{% endif %}</textarea>
 <script>
 // Initialize when DOM is ready
 $(document).ready(function() {
+  // Check GPT4All server status
+  checkServerStatus();
+  
   // Initialize core App functionality
-  if (typeof App !== 'undefined' && App.Features.requirementsAnalysis) {
+  if (typeof App !== 'undefined' && App.Features && App.Features.requirementsAnalysis) {
     App.Features.requirementsAnalysis.init();
   } else {
     // Fallback implementation if App object isn't available
     setupRequirementsAnalysis();
+  }
+
+  function checkServerStatus() {
+    const $indicator = $('#status-indicator');
+    const $statusText = $('#status-text');
+    
+    $.ajax({
+      url: '/api/check-gpt4all-status',
+      method: 'GET',
+      timeout: 5000,
+      success: function(data) {
+        if (data.available) {
+          $indicator.removeClass('bg-gray-300 bg-red-500').addClass('bg-green-500');
+          $statusText.text('GPT4All server is available');
+        } else {
+          $indicator.removeClass('bg-gray-300 bg-green-500').addClass('bg-red-500');
+          $statusText.text('GPT4All server is not available');
+          $('#submitBtn').prop('disabled', true).addClass('opacity-50');
+        }
+      },
+      error: function() {
+        $indicator.removeClass('bg-gray-300 bg-green-500').addClass('bg-red-500');
+        $statusText.text('GPT4All server check failed');
+        $('#submitBtn').prop('disabled', true).addClass('opacity-50');
+      }
+    });
   }
 
   function setupRequirementsAnalysis() {

@@ -2379,3 +2379,37 @@
 2025-04-08 09:30:12 [INFO] [76b9242c] Request completed: GET /api/system-info - Status: 200 - Duration: 0.664s
 2025-04-08 09:30:13 [INFO] [4f00a57c] Request started: POST /gpt4all-analysis - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
 2025-04-08 09:30:13 [INFO] [58d7b852] Request started: POST /gpt4all-analysis - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-08 09:33:02 [INFO] [ebce0a03] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-08 09:33:02 [INFO] [2604f9d0] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-08 09:33:04 [INFO] [2604f9d0] Request completed: GET / - Status: 200 [SLOW] - Duration: 1.786s
+2025-04-08 09:33:04 [INFO] [f2e8849c] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-08 09:33:04 [INFO] [cd1812f5] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-08 09:33:04 [INFO] [cd1812f5] Request completed: GET / - Status: 200 - Duration: 0.033s
+2025-04-08 09:33:04 [INFO] [da30d9a9] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-08 09:33:04 [INFO] [c3caa7b9] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-08 09:33:05 [INFO] [c3caa7b9] Request completed: GET /api/system-info - Status: 200 - Duration: 0.649s
+2025-04-08 09:33:06 [INFO] [431031a2] Request started: GET /gpt4all-analysis - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-08 09:33:06 [INFO] [025aa9de] Request started: GET /gpt4all-analysis - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-08 09:33:06 [INFO] [025aa9de] Request completed: GET /gpt4all-analysis - Status: 200 - Duration: 0.026s
+2025-04-08 09:33:06 [INFO] [a45654eb] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-08 09:33:06 [INFO] [94e8aec1] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-08 09:33:06 [INFO] [94e8aec1] Request completed: GET /api/system-info - Status: 200 - Duration: 0.664s
+2025-04-08 09:33:07 [INFO] [8cac9c65] Request started: POST /gpt4all-analysis - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-08 09:33:07 [INFO] [e81d466e] Request started: POST /gpt4all-analysis - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-08 09:42:11 [INFO] [2b889ad9] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-08 09:42:11 [INFO] [b0513703] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-08 09:42:13 [INFO] [b0513703] Request completed: GET / - Status: 200 [SLOW] - Duration: 2.211s
+2025-04-08 09:42:14 [INFO] [f0afd7fd] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-08 09:42:14 [INFO] [064906aa] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-08 09:42:14 [INFO] [064906aa] Request completed: GET / - Status: 200 - Duration: 0.039s
+2025-04-08 09:42:15 [INFO] [3de37566] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-08 09:42:15 [INFO] [98ecb54d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-08 09:42:16 [INFO] [98ecb54d] Request completed: GET /api/system-info - Status: 200 - Duration: 0.639s
+2025-04-08 09:42:16 [INFO] [04399e4b] Request started: GET /gpt4all-analysis - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-08 09:42:16 [INFO] [90d11daa] Request started: GET /gpt4all-analysis - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-08 09:42:16 [INFO] [90d11daa] Request completed: GET /gpt4all-analysis - Status: 200 - Duration: 0.029s
+2025-04-08 09:42:16 [INFO] [842d44b6] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-08 09:42:16 [INFO] [916b7359] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-08 09:42:17 [INFO] [916b7359] Request completed: GET /api/system-info - Status: 200 - Duration: 0.710s
+2025-04-08 09:42:18 [INFO] [f914d18f] Request started: POST /gpt4all-analysis - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-08 09:42:18 [INFO] [85da2db6] Request started: POST /gpt4all-analysis - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1

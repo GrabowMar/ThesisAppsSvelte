@@ -4028,3 +4028,222 @@ werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'zap.do
 2025-04-08 09:31:16 [INFO] [Thread-10 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
 2025-04-08 09:32:17 [ERROR] [Thread-10 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 2/3)
 2025-04-08 09:32:21 [INFO] [Thread-10 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:32:59 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-08 09:32:59 [INFO] [MainThread] app: Starting application setup
+2025-04-08 09:32:59 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 09:32:59 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-08 09:32:59 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-08 09:32:59 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-08 09:32:59 [INFO] [MainThread] frontend_security_analysis: Available tools: pattern_scan, jsx_analyzer, dependency_check, eslint
+2025-04-08 09:32:59 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-08 09:32:59 [INFO] [MainThread] app: Initializing performance tester
+2025-04-08 09:32:59 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-08 09:32:59 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-08 09:33:00 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-08 09:33:00 [INFO] [MainThread] zap_scanner: Found free port: 8091
+2025-04-08 09:33:00 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 09:33:00 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8091
+2025-04-08 09:33:00 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 09:33:00 [INFO] [MainThread] app: Creating Docker manager
+2025-04-08 09:33:00 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-08 09:33:00 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-08 09:33:00 [INFO] [MainThread] app: Registering application blueprints
+2025-04-08 09:33:00 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-08 09:33:00 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-08 09:33:00 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-08 09:33:00 [INFO] [MainThread] app: Application initialization complete
+2025-04-08 09:33:00 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-08 09:33:00 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-08 09:33:00 [INFO] [MainThread] werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-08 09:33:00 [INFO] [MainThread] werkzeug: [33mPress CTRL+C to quit[0m
+2025-04-08 09:33:00 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-08 09:33:02 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-08 09:33:02 [INFO] [MainThread] app: Starting application setup
+2025-04-08 09:33:02 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 09:33:02 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-08 09:33:02 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-08 09:33:02 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-08 09:33:02 [INFO] [MainThread] frontend_security_analysis: Available tools: pattern_scan, jsx_analyzer, dependency_check, eslint
+2025-04-08 09:33:02 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-08 09:33:02 [INFO] [MainThread] app: Initializing performance tester
+2025-04-08 09:33:02 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-08 09:33:02 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-08 09:33:02 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-08 09:33:02 [INFO] [MainThread] zap_scanner: Found free port: 8091
+2025-04-08 09:33:02 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 09:33:02 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8091
+2025-04-08 09:33:02 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 09:33:02 [INFO] [MainThread] app: Creating Docker manager
+2025-04-08 09:33:02 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-08 09:33:02 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-08 09:33:02 [INFO] [MainThread] app: Registering application blueprints
+2025-04-08 09:33:02 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-08 09:33:02 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-08 09:33:02 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-08 09:33:02 [INFO] [MainThread] app: Application initialization complete
+2025-04-08 09:33:02 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-08 09:33:02 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-08 09:33:02 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-08 09:33:02 [INFO] [MainThread] werkzeug:  * Debugger PIN: 250-086-610
+2025-04-08 09:33:02 [INFO] [Thread-2 (process_request_thread)] routes: Rendering main dashboard
+2025-04-08 09:33:04 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:33:04] "GET / HTTP/1.1" 200 -
+2025-04-08 09:33:04 [INFO] [Thread-3 (process_request_thread)] routes: Rendering main dashboard
+2025-04-08 09:33:04 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:33:04] "GET / HTTP/1.1" 200 -
+2025-04-08 09:33:04 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:33:04] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-08 09:33:04 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:33:04] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-08 09:33:05 [INFO] [Thread-6 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:33:05] "GET /api/system-info?_=1744097584647 HTTP/1.1" 200 -
+2025-04-08 09:33:06 [INFO] [Thread-7 (process_request_thread)] gpt4all: GPT4All analysis requested for Llama/app2
+2025-04-08 09:33:06 [INFO] [Thread-7 (process_request_thread)] path_utils: Adjusted path from c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app to c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-08 09:33:06 [INFO] [Thread-7 (process_request_thread)] path_utils: Adjusted path from c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app to c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-08 09:33:06 [INFO] [Thread-7 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:33:06] "GET /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-08 09:33:06 [INFO] [Thread-8 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:33:06] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-08 09:33:06 [INFO] [Thread-9 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:33:06] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-08 09:33:06 [INFO] [Thread-10 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:33:06] "GET /api/system-info?_=1744097586088 HTTP/1.1" 200 -
+2025-04-08 09:33:07 [INFO] [Thread-11 (process_request_thread)] gpt4all: GPT4All analysis requested for Llama/app2
+2025-04-08 09:33:07 [INFO] [Thread-11 (process_request_thread)] path_utils: Adjusted path from c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app to c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-08 09:33:07 [INFO] [Thread-11 (process_request_thread)] path_utils: Adjusted path from c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app to c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-08 09:33:07 [INFO] [Thread-11 (process_request_thread)] gpt4all: Checking 5 requirements for Llama/app2
+2025-04-08 09:33:07 [INFO] [Thread-11 (process_request_thread)] path_utils: Adjusted path from c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2 to c:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2
+2025-04-08 09:33:07 [INFO] [Thread-11 (process_request_thread)] path_utils: Adjusted path from c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2 to c:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2
+2025-04-08 09:33:07 [INFO] [Thread-11 (process_request_thread)] gpt4all_analysis: Found 4 frontend files and 1 backend files
+2025-04-08 09:33:07 [INFO] [Thread-11 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:34:08 [ERROR] [Thread-11 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 1/3)
+2025-04-08 09:34:10 [INFO] [Thread-11 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:35:11 [ERROR] [Thread-11 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 2/3)
+2025-04-08 09:35:15 [INFO] [Thread-11 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:36:16 [ERROR] [Thread-11 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 3/3)
+2025-04-08 09:36:24 [ERROR] [Thread-11 (process_request_thread)] gpt4all_analysis: All 3 attempts failed
+2025-04-08 09:36:24 [INFO] [Thread-11 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:37:25 [ERROR] [Thread-11 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 1/3)
+2025-04-08 09:37:27 [INFO] [Thread-11 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:38:28 [ERROR] [Thread-11 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 2/3)
+2025-04-08 09:38:32 [INFO] [Thread-11 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:39:33 [ERROR] [Thread-11 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 3/3)
+2025-04-08 09:39:41 [ERROR] [Thread-11 (process_request_thread)] gpt4all_analysis: All 3 attempts failed
+2025-04-08 09:39:41 [INFO] [Thread-11 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:40:42 [ERROR] [Thread-11 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 1/3)
+2025-04-08 09:40:44 [INFO] [Thread-11 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:42:08 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-08 09:42:08 [INFO] [MainThread] app: Starting application setup
+2025-04-08 09:42:08 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 09:42:08 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-08 09:42:08 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-08 09:42:08 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-08 09:42:08 [INFO] [MainThread] frontend_security_analysis: Available tools: pattern_scan, jsx_analyzer, dependency_check, eslint
+2025-04-08 09:42:08 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-08 09:42:08 [INFO] [MainThread] app: Initializing performance tester
+2025-04-08 09:42:08 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-08 09:42:08 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-08 09:42:08 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-08 09:42:08 [INFO] [MainThread] zap_scanner: Found free port: 8091
+2025-04-08 09:42:08 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 09:42:08 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8091
+2025-04-08 09:42:08 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 09:42:08 [INFO] [MainThread] app: Creating Docker manager
+2025-04-08 09:42:08 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-08 09:42:09 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-08 09:42:09 [INFO] [MainThread] app: Registering application blueprints
+2025-04-08 09:42:09 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-08 09:42:09 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-08 09:42:09 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-08 09:42:09 [INFO] [MainThread] app: Application initialization complete
+2025-04-08 09:42:09 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-08 09:42:09 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-08 09:42:09 [INFO] [MainThread] werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-08 09:42:09 [INFO] [MainThread] werkzeug: [33mPress CTRL+C to quit[0m
+2025-04-08 09:42:09 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-08 09:42:11 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-08 09:42:11 [INFO] [MainThread] app: Starting application setup
+2025-04-08 09:42:11 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 09:42:11 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-08 09:42:11 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-08 09:42:11 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-08 09:42:11 [INFO] [MainThread] frontend_security_analysis: Available tools: pattern_scan, jsx_analyzer, dependency_check, eslint
+2025-04-08 09:42:11 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-08 09:42:11 [INFO] [MainThread] app: Initializing performance tester
+2025-04-08 09:42:11 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-08 09:42:11 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-08 09:42:11 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-08 09:42:11 [INFO] [MainThread] zap_scanner: Found free port: 8091
+2025-04-08 09:42:11 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 09:42:11 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8091
+2025-04-08 09:42:11 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 09:42:11 [INFO] [MainThread] app: Creating Docker manager
+2025-04-08 09:42:11 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-08 09:42:11 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-08 09:42:11 [INFO] [MainThread] app: Registering application blueprints
+2025-04-08 09:42:11 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-08 09:42:11 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-08 09:42:11 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-08 09:42:11 [INFO] [MainThread] app: Application initialization complete
+2025-04-08 09:42:11 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-08 09:42:11 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-08 09:42:11 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-08 09:42:11 [INFO] [MainThread] werkzeug:  * Debugger PIN: 250-086-610
+2025-04-08 09:42:11 [INFO] [Thread-2 (process_request_thread)] routes: Rendering main dashboard
+2025-04-08 09:42:13 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:42:13] "GET / HTTP/1.1" 200 -
+2025-04-08 09:42:13 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:42:13] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-08 09:42:14 [INFO] [Thread-4 (process_request_thread)] routes: Rendering main dashboard
+2025-04-08 09:42:14 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:42:14] "GET / HTTP/1.1" 200 -
+2025-04-08 09:42:14 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:42:14] "GET /static/style.css HTTP/1.1" 200 -
+2025-04-08 09:42:14 [INFO] [Thread-6 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:42:14] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-08 09:42:16 [INFO] [Thread-7 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:42:16] "GET /api/system-info?_=1744098134761 HTTP/1.1" 200 -
+2025-04-08 09:42:16 [INFO] [Thread-8 (process_request_thread)] gpt4all: GPT4All analysis requested for Llama/app2
+2025-04-08 09:42:16 [INFO] [Thread-8 (process_request_thread)] path_utils: Adjusted path from c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app to c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-08 09:42:16 [INFO] [Thread-8 (process_request_thread)] path_utils: Adjusted path from c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app to c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-08 09:42:16 [INFO] [Thread-8 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:42:16] "GET /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-08 09:42:16 [INFO] [Thread-9 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:42:16] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-08 09:42:16 [INFO] [Thread-10 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:42:16] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-08 09:42:17 [INFO] [Thread-11 (process_request_thread)] werkzeug: 127.0.0.1 - - [08/Apr/2025 09:42:17] "GET /api/system-info?_=1744098136515 HTTP/1.1" 200 -
+2025-04-08 09:42:18 [INFO] [Thread-12 (process_request_thread)] gpt4all: GPT4All analysis requested for Llama/app2
+2025-04-08 09:42:18 [INFO] [Thread-12 (process_request_thread)] path_utils: Adjusted path from c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app to c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-08 09:42:18 [INFO] [Thread-12 (process_request_thread)] path_utils: Adjusted path from c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app to c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-08 09:42:18 [INFO] [Thread-12 (process_request_thread)] gpt4all: Checking 5 requirements for Llama/app2
+2025-04-08 09:42:18 [INFO] [Thread-12 (process_request_thread)] path_utils: Adjusted path from c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2 to c:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2
+2025-04-08 09:42:18 [INFO] [Thread-12 (process_request_thread)] path_utils: Adjusted path from c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2 to c:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2
+2025-04-08 09:42:18 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Found 4 frontend files and 1 backend files
+2025-04-08 09:42:18 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:43:19 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 1/3)
+2025-04-08 09:43:21 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:44:22 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 2/3)
+2025-04-08 09:44:26 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:45:27 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 3/3)
+2025-04-08 09:45:35 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: All 3 attempts failed
+2025-04-08 09:45:35 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:46:36 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 1/3)
+2025-04-08 09:46:38 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:47:39 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 2/3)
+2025-04-08 09:47:43 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:48:44 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 3/3)
+2025-04-08 09:48:52 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: All 3 attempts failed
+2025-04-08 09:48:52 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:49:53 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 1/3)
+2025-04-08 09:49:55 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:50:56 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 2/3)
+2025-04-08 09:51:00 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:52:01 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 3/3)
+2025-04-08 09:52:09 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: All 3 attempts failed
+2025-04-08 09:52:09 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:53:10 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 1/3)
+2025-04-08 09:53:12 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:54:13 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 2/3)
+2025-04-08 09:54:17 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:55:18 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 3/3)
+2025-04-08 09:55:26 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: All 3 attempts failed
+2025-04-08 09:55:26 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:56:27 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 1/3)
+2025-04-08 09:56:29 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:57:30 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 2/3)
+2025-04-08 09:57:34 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:58:35 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 3/3)
+2025-04-08 09:58:43 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: All 3 attempts failed
+2025-04-08 09:58:43 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 09:59:44 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 1/3)
+2025-04-08 09:59:46 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 10:00:47 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 2/3)
+2025-04-08 10:00:51 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-08 10:01:52 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 3/3)
+2025-04-08 10:02:00 [ERROR] [Thread-12 (process_request_thread)] gpt4all_analysis: All 3 attempts failed
+2025-04-08 10:02:00 [INFO] [Thread-12 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
