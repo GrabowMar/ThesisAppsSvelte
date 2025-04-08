@@ -3611,3 +3611,518 @@ The home directory is already in use. Ensure no other ZAP instances are running 
 2025-04-08 01:08:23,739 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
 2025-04-08 01:08:23,739 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
 2025-04-08 01:08:23,739 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 01:08:48,854 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-08 01:08:48,947 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-08 01:08:48,948 - zap_scanner - INFO - Found free port: 8090
+2025-04-08 01:08:48,950 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 01:08:48,950 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-08 01:08:48,950 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 01:09:12,876 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-08 01:09:12,942 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-08 01:09:12,943 - zap_scanner - INFO - Found free port: 8090
+2025-04-08 01:09:12,943 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 01:09:12,944 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-08 01:09:12,944 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 01:09:12,944 - zap_scanner - INFO - Source code root directory set to: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app3
+2025-04-08 01:09:12,945 - zap_scanner - INFO - Source code root directory set to: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app3
+2025-04-08 01:09:12,945 - zap_scanner - INFO - Starting comprehensive scan Llama-3 for http://localhost:5505
+2025-04-08 01:09:12,945 - zap_scanner - INFO - Starting comprehensive scan of target: http://localhost:5505
+2025-04-08 01:09:12,945 - zap_scanner - INFO - Starting ZAP daemon...
+2025-04-08 01:09:12,945 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-08 01:09:19,212 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-08 01:09:19,213 - zap_scanner - INFO - Found ZAP JAR at: C:\Program Files\ZAP\Zed Attack Proxy\zap-2.16.1.jar
+2025-04-08 01:09:19,214 - zap_scanner - INFO - Starting ZAP with command: java -Xmx4G -Djava.io.tmpdir=c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\tmp -Djava.net.preferIPv4Stack=true -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -jar C:\Program Files\ZAP\Zed Attack Proxy\zap-2.16.1.jar -daemon -port 8090 -host 127.0.0.1 -config api.key=5tjkc409k4oaacd69qob5p6uri -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true -config connection.timeoutInSecs=1200 -config ascan.maxScanDurationInMins=120 -config ascan.threadPerHost=8 -config view.mode=standard -config ascan.attackStrength=HIGH -config ascan.alertThreshold=LOW -config pscan.maxAlertsPerRule=0 -config pscan.maxBodySizeInBytes=10000000 -config ajaxSpider.browserId=chrome-headless -config ajaxSpider.maxDuration=600 -config ajaxSpider.clickDefaultElems=true -config ajaxSpider.clickElemsOnce=false -config ajaxSpider.eventWait=2000 -config ajaxSpider.maxCrawlDepth=10 -config ajaxSpider.maxCrawlStates=0 -config ajaxSpider.numberOfBrowsers=4 -config ajaxSpider.randomInputs=true -config pscans.pscanner(10020).enabled=true -config pscans.pscanner(10020).alertThreshold=LOW -config pscans.pscanner(10021).enabled=true -config pscans.pscanner(10021).alertThreshold=LOW -config pscans.pscanner(10038).enabled=true -config pscans.pscanner(10038).alertThreshold=LOW -config pscans.pscanner(10035).enabled=true -config pscans.pscanner(10035).alertThreshold=LOW -config pscans.pscanner(10063).enabled=true -config pscans.pscanner(10063).alertThreshold=LOW -config pscans.pscanner(10054).enabled=true -config pscans.pscanner(10054).alertThreshold=LOW -config pscans.pscanner(10024).enabled=true -config pscans.pscanner(10024).alertThreshold=LOW -config pscans.pscanner(10025).enabled=true -config pscans.pscanner(10025).alertThreshold=LOW -config pscans.pscanner(10027).enabled=true -config pscans.pscanner(10027).alertThreshold=LOW -config pscans.pscanner(10096).enabled=true -config pscans.pscanner(10096).alertThreshold=LOW -config pscans.pscanner(10097).enabled=true -config pscans.pscanner(10097).alertThreshold=LOW -config pscans.pscanner(10094).enabled=true -config pscans.pscanner(10094).alertThreshold=LOW -config pscans.pscanner(90022).enabled=true -config pscans.pscanner(90022).alertThreshold=LOW -config pscans.pscanner(10109).enabled=true -config pscans.pscanner(10109).alertThreshold=LOW -config pscans.pscanner(10110).enabled=true -config pscans.pscanner(10110).alertThreshold=LOW -config ascan.attackStrength=HIGH -config ascan.alertThreshold=LOW
+2025-04-08 01:09:19,220 - zap_scanner - INFO - Waiting for ZAP to initialize (15 seconds)...
+2025-04-08 01:09:34,230 - zap_scanner - INFO - Connecting to ZAP API (attempt 1/5)...
+2025-04-08 01:09:34,369 - zap_scanner - INFO - Successfully connected to ZAP 2.16.1
+2025-04-08 01:09:34,370 - zap_scanner - INFO - ZAP startup completed in 21.43 seconds
+2025-04-08 01:09:34,370 - zap_scanner - INFO - Configuring comprehensive passive scanning...
+2025-04-08 01:09:34,370 - zap_scanner - INFO - Enabling ALL passive scanners...
+2025-04-08 01:09:34,385 - zap_scanner - INFO - Setting passive scan to analyze ALL traffic (not just in-scope)...
+2025-04-08 01:09:34,394 - zap_scanner - INFO - Setting LOW alert threshold for all passive scanners to increase detection rate...
+2025-04-08 01:09:34,778 - zap_scanner - INFO - Setting unlimited maximum alerts per rule...
+2025-04-08 01:09:34,783 - zap_scanner - INFO - Passive scanning fully configured with 57 enabled scanners.
+2025-04-08 01:09:34,784 - zap_scanner - INFO - Accessing target URL: http://localhost:5505
+2025-04-08 01:09:34,842 - zap_scanner - INFO - Initial target access complete
+2025-04-08 01:09:36,847 - zap_scanner - INFO - Performing extended spidering...
+2025-04-08 01:10:37,246 - zap_scanner - INFO - Extended spidering completed
+2025-04-08 01:10:37,247 - zap_scanner - INFO - Checking passive scan status after initial discovery...
+2025-04-08 01:10:37,247 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-08 01:10:37,252 - zap_scanner - INFO - Passive scan in progress: 4 records left to scan (elapsed: 0.0s)
+2025-04-08 01:10:42,268 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 5.0s)
+2025-04-08 01:10:42,269 - zap_scanner - INFO - Passive scan completed in 5.0 seconds
+2025-04-08 01:10:42,269 - zap_scanner - INFO - Starting traditional spider scan with maxChildren=30
+2025-04-08 01:10:42,278 - zap_scanner - INFO - Spider scan started with ID: 0
+2025-04-08 01:10:42,278 - zap_scanner - INFO - Monitoring Spider progress for scan ID: 0
+2025-04-08 01:10:42,283 - zap_scanner - INFO - Spider progress: 0% (elapsed: 0.0s)
+2025-04-08 01:10:44,293 - zap_scanner - INFO - Spider progress: 100% (elapsed: 2.0s)
+2025-04-08 01:10:44,294 - zap_scanner - INFO - Spider scan completed in 2.0 seconds
+2025-04-08 01:10:44,294 - zap_scanner - INFO - Starting AJAX Spider for JavaScript-rendered content...
+2025-04-08 01:10:44,298 - zap_scanner - INFO - Running AJAX Spider on target: http://localhost:5505
+2025-04-08 01:10:44,310 - zap_scanner - INFO - AJAX Spider started: OK
+2025-04-08 01:10:44,310 - zap_scanner - INFO - Monitoring AJAX Spider progress...
+2025-04-08 01:10:44,315 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 0%, elapsed: 0.0s)
+2025-04-08 01:10:49,334 - zap_scanner - INFO - AJAX Spider completed with status: stopped (elapsed: 5.0s)
+2025-04-08 01:10:49,339 - zap_scanner - INFO - AJAX Spider found 0 results
+2025-04-08 01:10:49,345 - zap_scanner - INFO - AJAX Spider completed with 0 URLs discovered
+2025-04-08 01:10:49,345 - zap_scanner - INFO - Waiting for passive scan to process all discovered content...
+2025-04-08 01:10:49,346 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-08 01:10:49,351 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 0.0s)
+2025-04-08 01:10:49,352 - zap_scanner - INFO - Passive scan completed in 0.0 seconds
+2025-04-08 01:10:49,352 - zap_scanner - INFO - Configuring comprehensive active scanning...
+2025-04-08 01:10:49,352 - zap_scanner - INFO - Enabling ALL active scanners...
+2025-04-08 01:10:49,377 - zap_scanner - INFO - Setting HIGH attack strength for all policies...
+2025-04-08 01:10:49,465 - zap_scanner - INFO - Setting LOW alert threshold for all policies...
+2025-04-08 01:10:49,534 - zap_scanner - INFO - Configuring scan policy options...
+2025-04-08 01:10:49,595 - zap_scanner - INFO - Enabled 47 active scanners in category: Other
+2025-04-08 01:10:49,596 - zap_scanner - INFO - Active scanning fully configured with 47 enabled scanners
+2025-04-08 01:10:49,596 - zap_scanner - INFO - Starting active scan with comprehensive settings...
+2025-04-08 01:10:49,608 - zap_scanner - INFO - Active scan started with ID: 0
+2025-04-08 01:10:49,610 - zap_scanner - INFO - Monitoring Active scan progress for scan ID: 0
+2025-04-08 01:10:49,616 - zap_scanner - INFO - Active scan progress: 0% (elapsed: 0.0s)
+2025-04-08 01:10:54,642 - zap_scanner - INFO - Active scan progress: 1% (elapsed: 5.0s)
+2025-04-08 01:10:59,657 - zap_scanner - INFO - Active scan progress: 3% (elapsed: 10.0s)
+2025-04-08 01:11:04,675 - zap_scanner - INFO - Active scan progress: 12% (elapsed: 15.1s)
+2025-04-08 01:11:09,691 - zap_scanner - INFO - Active scan progress: 14% (elapsed: 20.1s)
+2025-04-08 01:11:14,709 - zap_scanner - INFO - Active scan progress: 16% (elapsed: 25.1s)
+2025-04-08 01:11:19,729 - zap_scanner - INFO - Active scan progress: 17% (elapsed: 30.1s)
+2025-04-08 01:11:24,741 - zap_scanner - INFO - Active scan progress: 20% (elapsed: 35.1s)
+2025-04-08 01:11:29,759 - zap_scanner - INFO - Active scan progress: 26% (elapsed: 40.1s)
+2025-04-08 01:11:34,791 - zap_scanner - INFO - Active scan progress: 28% (elapsed: 45.2s)
+2025-04-08 01:11:39,800 - zap_scanner - INFO - Active scan progress: 29% (elapsed: 50.2s)
+2025-04-08 01:11:44,818 - zap_scanner - INFO - Active scan progress: 31% (elapsed: 55.2s)
+2025-04-08 01:11:49,836 - zap_scanner - INFO - Active scan progress: 33% (elapsed: 60.2s)
+2025-04-08 01:11:54,851 - zap_scanner - INFO - Active scan progress: 34% (elapsed: 65.2s)
+2025-04-08 01:11:59,872 - zap_scanner - INFO - Active scan progress: 36% (elapsed: 70.3s)
+2025-04-08 01:12:04,891 - zap_scanner - INFO - Active scan progress: 38% (elapsed: 75.3s)
+2025-04-08 01:12:24,013 - zap_scanner - INFO - Active scan progress: 40% (elapsed: 94.4s)
+2025-04-08 01:12:29,029 - zap_scanner - INFO - Active scan progress: 42% (elapsed: 99.4s)
+2025-04-08 01:12:34,049 - zap_scanner - INFO - Active scan progress: 47% (elapsed: 104.4s)
+2025-04-08 01:12:39,061 - zap_scanner - INFO - Active scan progress: 48% (elapsed: 109.5s)
+2025-04-08 01:12:44,067 - zap_scanner - INFO - Active scan progress: 50% (elapsed: 114.5s)
+2025-04-08 01:12:49,083 - zap_scanner - INFO - Active scan progress: 52% (elapsed: 119.5s)
+2025-04-08 01:12:54,100 - zap_scanner - INFO - Active scan progress: 60% (elapsed: 124.5s)
+2025-04-08 01:12:59,113 - zap_scanner - INFO - Active scan progress: 64% (elapsed: 129.5s)
+2025-04-08 01:13:04,122 - zap_scanner - INFO - Active scan progress: 68% (elapsed: 134.5s)
+2025-04-08 01:13:09,132 - zap_scanner - INFO - Active scan progress: 70% (elapsed: 139.5s)
+2025-04-08 01:13:14,145 - zap_scanner - INFO - Active scan progress: 72% (elapsed: 144.5s)
+2025-04-08 01:13:19,163 - zap_scanner - INFO - Active scan progress: 88% (elapsed: 149.6s)
+2025-04-08 01:13:24,177 - zap_scanner - INFO - Active scan progress: 92% (elapsed: 154.6s)
+2025-04-08 01:13:29,187 - zap_scanner - INFO - Active scan progress: 100% (elapsed: 159.6s)
+2025-04-08 01:13:29,188 - zap_scanner - INFO - Active scan scan completed in 159.6 seconds
+2025-04-08 01:13:29,188 - zap_scanner - INFO - Performing final passive scan check...
+2025-04-08 01:13:29,188 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-08 01:13:29,210 - zap_scanner - INFO - Passive scan in progress: 130 records left to scan (elapsed: 0.0s)
+2025-04-08 01:13:34,220 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 5.0s)
+2025-04-08 01:13:34,220 - zap_scanner - INFO - Passive scan completed in 5.0 seconds
+2025-04-08 01:13:34,220 - zap_scanner - INFO - Collecting source files for code analysis...
+2025-04-08 01:13:39,830 - zap_scanner - INFO - Collected 0 potential source files for analysis
+2025-04-08 01:13:39,850 - zap_scanner - INFO - Collected 0 source files for code analysis
+2025-04-08 01:13:39,850 - zap_scanner - INFO - Retrieving final scan alerts...
+2025-04-08 01:13:39,989 - zap_scanner - INFO - Found 387 total alerts
+2025-04-08 01:13:39,989 - zap_scanner - INFO - Processing alert details and extracting affected code...
+2025-04-08 01:13:39,989 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505
+2025-04-08 01:13:45,407 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505 - Affected code identified
+2025-04-08 01:13:45,409 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.well-known/security.txt
+2025-04-08 01:13:45,410 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/robots.txt
+2025-04-08 01:13:45,410 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/sitemap.xml
+2025-04-08 01:13:47,269 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.well-known/security.txt - Affected code identified
+2025-04-08 01:13:49,032 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/robots.txt - Affected code identified
+2025-04-08 01:13:50,865 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/sitemap.xml - Affected code identified
+2025-04-08 01:13:50,865 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/crossdomain.xml
+2025-04-08 01:13:50,866 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/humans.txt
+2025-04-08 01:13:50,866 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/manifest.json
+2025-04-08 01:13:50,867 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/clientaccesspolicy.xml
+2025-04-08 01:13:52,670 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/crossdomain.xml - Affected code identified
+2025-04-08 01:13:54,542 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/manifest.json - Affected code identified
+2025-04-08 01:13:56,362 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/clientaccesspolicy.xml - Affected code identified
+2025-04-08 01:13:58,202 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/humans.txt - Affected code identified
+2025-04-08 01:13:58,203 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/login
+2025-04-08 01:13:59,939 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/login - Affected code identified
+2025-04-08 01:13:59,939 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/package.json - Parameter: x-frame-options
+2025-04-08 01:13:59,940 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/package.json
+2025-04-08 01:14:01,772 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/package.json - Affected code identified
+2025-04-08 01:14:01,773 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/register
+2025-04-08 01:14:01,773 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/signin
+2025-04-08 01:14:01,773 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/authentication
+2025-04-08 01:14:01,774 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/join
+2025-04-08 01:14:01,774 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/signup
+2025-04-08 01:14:03,614 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/register - Affected code identified
+2025-04-08 01:14:03,614 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/auth
+2025-04-08 01:14:03,615 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/account
+2025-04-08 01:14:05,398 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/signin - Affected code identified
+2025-04-08 01:14:07,154 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/authentication - Affected code identified
+2025-04-08 01:14:08,860 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/account - Affected code identified
+2025-04-08 01:14:10,597 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/signup - Affected code identified
+2025-04-08 01:14:12,337 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/join - Affected code identified
+2025-04-08 01:14:14,163 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/auth - Affected code identified
+2025-04-08 01:14:14,163 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/profile
+2025-04-08 01:14:14,163 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/user
+2025-04-08 01:14:14,164 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/backend
+2025-04-08 01:14:14,164 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/admin
+2025-04-08 01:14:16,030 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/profile - Affected code identified
+2025-04-08 01:14:16,031 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/administrator
+2025-04-08 01:14:16,031 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/manage
+2025-04-08 01:14:17,932 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/backend - Affected code identified
+2025-04-08 01:14:19,748 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/user - Affected code identified
+2025-04-08 01:14:21,515 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/admin - Affected code identified
+2025-04-08 01:14:23,628 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/manage - Affected code identified
+2025-04-08 01:14:25,312 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/administrator - Affected code identified
+2025-04-08 01:14:25,313 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/management
+2025-04-08 01:14:25,314 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/control
+2025-04-08 01:14:25,314 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/cp
+2025-04-08 01:14:27,083 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/management - Affected code identified
+2025-04-08 01:14:27,084 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/dashboard
+2025-04-08 01:14:27,084 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/portal
+2025-04-08 01:14:30,678 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/control - Affected code identified
+2025-04-08 01:14:32,488 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/cp - Affected code identified
+2025-04-08 01:14:34,302 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/dashboard - Affected code identified
+2025-04-08 01:14:34,303 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/api
+2025-04-08 01:14:36,056 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/portal - Affected code identified
+2025-04-08 01:14:37,762 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/api - Affected code identified
+2025-04-08 01:14:39,374 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/api/v1
+2025-04-08 01:14:41,310 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/swagger-ui
+2025-04-08 01:14:41,310 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/api/v2
+2025-04-08 01:14:41,311 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/swagger-ui.html
+2025-04-08 01:14:41,311 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/swagger
+2025-04-08 01:14:45,025 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/swagger-ui - Affected code identified
+2025-04-08 01:14:46,923 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/api/v1 - Affected code identified
+2025-04-08 01:14:48,674 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/swagger-ui.html - Affected code identified
+2025-04-08 01:14:48,674 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/api/docs
+2025-04-08 01:14:50,461 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/api/v2 - Affected code identified
+2025-04-08 01:14:52,403 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/swagger - Affected code identified
+2025-04-08 01:14:54,191 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/api/docs - Affected code identified
+2025-04-08 01:14:54,192 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/graphiql
+2025-04-08 01:14:54,193 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/graphql
+2025-04-08 01:14:54,193 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/docs
+2025-04-08 01:14:54,194 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/documentation
+2025-04-08 01:14:56,032 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/graphiql - Affected code identified
+2025-04-08 01:14:56,033 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/playground
+2025-04-08 01:14:56,033 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/manual
+2025-04-08 01:14:56,034 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/help
+2025-04-08 01:14:57,873 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/graphql - Affected code identified
+2025-04-08 01:14:59,654 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/docs - Affected code identified
+2025-04-08 01:15:01,471 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/documentation - Affected code identified
+2025-04-08 01:15:03,222 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/manual - Affected code identified
+2025-04-08 01:15:05,029 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/playground - Affected code identified
+2025-04-08 01:15:06,810 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/help - Affected code identified
+2025-04-08 01:15:06,810 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/guide
+2025-04-08 01:15:06,810 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/readme
+2025-04-08 01:15:06,811 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/tutorial
+2025-04-08 01:15:08,528 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/guide - Affected code identified
+2025-04-08 01:15:10,375 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/readme - Affected code identified
+2025-04-08 01:15:10,375 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/js/
+2025-04-08 01:15:10,376 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/changelog
+2025-04-08 01:15:12,289 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/tutorial - Affected code identified
+2025-04-08 01:15:12,289 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/license
+2025-04-08 01:15:14,079 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/license - Affected code identified
+2025-04-08 01:15:15,919 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/js/ - Affected code identified
+2025-04-08 01:15:17,579 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/changelog - Affected code identified
+2025-04-08 01:15:17,580 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/javascript/
+2025-04-08 01:15:17,580 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/css/
+2025-04-08 01:15:17,580 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/styles/
+2025-04-08 01:15:19,366 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/javascript/ - Affected code identified
+2025-04-08 01:15:19,366 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/images/
+2025-04-08 01:15:19,366 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/img/
+2025-04-08 01:15:19,367 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/media/
+2025-04-08 01:15:20,983 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/styles/ - Affected code identified
+2025-04-08 01:15:22,861 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/css/ - Affected code identified
+2025-04-08 01:15:24,751 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/img/ - Affected code identified
+2025-04-08 01:15:26,564 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/images/ - Affected code identified
+2025-04-08 01:15:28,258 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/media/ - Affected code identified
+2025-04-08 01:15:28,258 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/assets/
+2025-04-08 01:15:28,258 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/static/
+2025-04-08 01:15:28,258 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/public/
+2025-04-08 01:15:28,258 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/dist/
+2025-04-08 01:15:30,146 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/assets/ - Affected code identified
+2025-04-08 01:15:31,887 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/static/ - Affected code identified
+2025-04-08 01:15:31,887 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/uploads/
+2025-04-08 01:15:33,675 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/public/ - Affected code identified
+2025-04-08 01:15:33,676 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/build/
+2025-04-08 01:15:33,676 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/files/
+2025-04-08 01:15:35,461 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/dist/ - Affected code identified
+2025-04-08 01:15:37,256 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/uploads/ - Affected code identified
+2025-04-08 01:15:39,025 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/build/ - Affected code identified
+2025-04-08 01:15:40,703 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/files/ - Affected code identified
+2025-04-08 01:15:40,703 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/downloads/
+2025-04-08 01:15:40,704 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/vendor/
+2025-04-08 01:15:40,704 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/lib/
+2025-04-08 01:15:40,705 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/libs/
+2025-04-08 01:15:42,443 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/downloads/ - Affected code identified
+2025-04-08 01:15:44,259 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/vendor/ - Affected code identified
+2025-04-08 01:15:44,260 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/node_modules/
+2025-04-08 01:15:44,260 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/components/
+2025-04-08 01:15:46,333 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/libs/ - Affected code identified
+2025-04-08 01:15:48,168 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/node_modules/ - Affected code identified
+2025-04-08 01:15:49,971 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/components/ - Affected code identified
+2025-04-08 01:15:51,692 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/lib/ - Affected code identified
+2025-04-08 01:15:51,693 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/plugins/
+2025-04-08 01:15:51,693 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/modules/
+2025-04-08 01:15:51,693 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/themes/
+2025-04-08 01:15:51,694 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/templates/
+2025-04-08 01:15:51,694 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.svn/
+2025-04-08 01:15:53,475 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/plugins/ - Affected code identified
+2025-04-08 01:15:55,143 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/modules/ - Affected code identified
+2025-04-08 01:15:56,945 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/themes/ - Affected code identified
+2025-04-08 01:15:56,946 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.git/
+2025-04-08 01:15:58,697 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/templates/ - Affected code identified
+2025-04-08 01:16:00,460 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.svn/ - Affected code identified
+2025-04-08 01:16:02,371 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.git/ - Affected code identified
+2025-04-08 01:16:02,372 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.env
+2025-04-08 01:16:02,372 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.gitignore
+2025-04-08 01:16:02,373 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/config.json
+2025-04-08 01:16:02,373 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/config.php
+2025-04-08 01:16:02,374 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.npmrc
+2025-04-08 01:16:02,374 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/config.js
+2025-04-08 01:16:02,375 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.editorconfig
+2025-04-08 01:16:04,133 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.env - Affected code identified
+2025-04-08 01:16:05,964 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/config.js - Affected code identified
+2025-04-08 01:16:07,646 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.npmrc - Affected code identified
+2025-04-08 01:16:09,302 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/config.json - Affected code identified
+2025-04-08 01:16:11,137 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.gitignore - Affected code identified
+2025-04-08 01:16:12,911 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/config.php - Affected code identified
+2025-04-08 01:16:14,592 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.editorconfig - Affected code identified
+2025-04-08 01:16:14,593 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/info.php
+2025-04-08 01:16:14,594 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/server.xml
+2025-04-08 01:16:14,594 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/composer.json
+2025-04-08 01:16:14,594 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/web.config
+2025-04-08 01:16:14,595 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/settings.json
+2025-04-08 01:16:14,595 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/phpinfo.php
+2025-04-08 01:16:16,327 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/info.php - Affected code identified
+2025-04-08 01:16:18,186 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/server.xml - Affected code identified
+2025-04-08 01:16:20,026 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/web.config - Affected code identified
+2025-04-08 01:16:21,711 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/composer.json - Affected code identified
+2025-04-08 01:16:23,528 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/phpinfo.php - Affected code identified
+2025-04-08 01:16:25,293 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/settings.json - Affected code identified
+2025-04-08 01:16:25,294 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/test.php
+2025-04-08 01:16:25,294 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/server-info
+2025-04-08 01:16:25,294 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/debug
+2025-04-08 01:16:25,294 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/test
+2025-04-08 01:16:25,294 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/test.html
+2025-04-08 01:16:25,294 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/server-status
+2025-04-08 01:16:27,024 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/server-info - Affected code identified
+2025-04-08 01:16:28,726 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/test.php - Affected code identified
+2025-04-08 01:16:30,544 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/debug - Affected code identified
+2025-04-08 01:16:32,393 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/server-status - Affected code identified
+2025-04-08 01:16:34,262 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/test.html - Affected code identified
+2025-04-08 01:16:36,093 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/test - Affected code identified
+2025-04-08 01:16:36,094 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/metrics
+2025-04-08 01:16:36,094 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/wp-admin/
+2025-04-08 01:16:36,095 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/health
+2025-04-08 01:16:36,095 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/status
+2025-04-08 01:16:36,095 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/wp-config.php
+2025-04-08 01:16:36,095 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/wp-content/
+2025-04-08 01:16:36,095 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/wp-login.php
+2025-04-08 01:16:37,802 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/metrics - Affected code identified
+2025-04-08 01:16:39,582 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/wp-admin/ - Affected code identified
+2025-04-08 01:16:41,376 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/status - Affected code identified
+2025-04-08 01:16:43,104 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/wp-content/ - Affected code identified
+2025-04-08 01:16:44,867 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/wp-config.php - Affected code identified
+2025-04-08 01:16:46,870 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/health - Affected code identified
+2025-04-08 01:16:48,510 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/wp-login.php - Affected code identified
+2025-04-08 01:16:48,511 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/wp-includes/
+2025-04-08 01:16:50,277 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/wp-includes/ - Affected code identified
+2025-04-08 01:16:50,278 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/health
+2025-04-08 01:16:50,278 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator
+2025-04-08 01:16:50,278 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/metrics
+2025-04-08 01:16:50,279 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/info
+2025-04-08 01:16:50,279 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/env
+2025-04-08 01:16:52,136 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/actuator - Affected code identified
+2025-04-08 01:16:53,820 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/actuator/info - Affected code identified
+2025-04-08 01:16:55,456 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/actuator/env - Affected code identified
+2025-04-08 01:16:57,257 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/actuator/health - Affected code identified
+2025-04-08 01:16:58,984 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/actuator/metrics - Affected code identified
+2025-04-08 01:16:58,984 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/heapdump
+2025-04-08 01:16:58,984 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/actuator/trace
+2025-04-08 01:16:58,984 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/elmah.axd
+2025-04-08 01:16:58,985 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/trace.axd
+2025-04-08 01:17:00,805 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/actuator/trace - Affected code identified
+2025-04-08 01:17:00,806 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/app_data
+2025-04-08 01:17:02,741 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/actuator/heapdump - Affected code identified
+2025-04-08 01:17:04,548 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/elmah.axd - Affected code identified
+2025-04-08 01:17:06,478 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/trace.axd - Affected code identified
+2025-04-08 01:17:08,462 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/app_data - Affected code identified
+2025-04-08 01:17:08,463 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/WEB-INF/web.xml
+2025-04-08 01:17:08,463 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/META-INF/
+2025-04-08 01:17:10,161 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/WEB-INF/web.xml - Affected code identified
+2025-04-08 01:17:10,162 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/bak/
+2025-04-08 01:17:10,162 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/backup/
+2025-04-08 01:17:12,085 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/bak/ - Affected code identified
+2025-04-08 01:17:12,086 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/dev/
+2025-04-08 01:17:13,790 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/META-INF/ - Affected code identified
+2025-04-08 01:17:13,791 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/old/
+2025-04-08 01:17:15,563 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/backup/ - Affected code identified
+2025-04-08 01:17:15,564 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/console/
+2025-04-08 01:17:17,411 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/old/ - Affected code identified
+2025-04-08 01:17:19,239 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/dev/ - Affected code identified
+2025-04-08 01:17:21,041 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/console/ - Affected code identified
+2025-04-08 01:17:21,041 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/temp/
+2025-04-08 01:17:21,041 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/tmp/
+2025-04-08 01:17:21,042 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/private/
+2025-04-08 01:17:22,664 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/temp/ - Affected code identified
+2025-04-08 01:17:22,665 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/archive/
+2025-04-08 01:17:24,449 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/tmp/ - Affected code identified
+2025-04-08 01:17:26,105 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/private/ - Affected code identified
+2025-04-08 01:17:26,106 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/404
+2025-04-08 01:17:27,922 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/archive/ - Affected code identified
+2025-04-08 01:17:27,922 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/500
+2025-04-08 01:17:29,726 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/404 - Affected code identified
+2025-04-08 01:17:31,374 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/500 - Affected code identified
+2025-04-08 01:17:31,375 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/error
+2025-04-08 01:17:31,375 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/403
+2025-04-08 01:17:31,375 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.aws/
+2025-04-08 01:17:31,375 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.azure/
+2025-04-08 01:17:31,375 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.well-known/
+2025-04-08 01:17:33,161 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/403 - Affected code identified
+2025-04-08 01:17:33,161 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.gcp/
+2025-04-08 01:17:34,878 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/error - Affected code identified
+2025-04-08 01:17:36,583 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.gcp/ - Affected code identified
+2025-04-08 01:17:38,277 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.well-known/ - Affected code identified
+2025-04-08 01:17:39,993 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.aws/ - Affected code identified
+2025-04-08 01:17:41,774 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.azure/ - Affected code identified
+2025-04-08 01:17:41,775 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/angular/
+2025-04-08 01:17:41,775 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/react/
+2025-04-08 01:17:41,776 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/vue/
+2025-04-08 01:17:41,776 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/svelte/
+2025-04-08 01:17:43,595 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/react/ - Affected code identified
+2025-04-08 01:17:43,596 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/app/
+2025-04-08 01:17:45,492 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/angular/ - Affected code identified
+2025-04-08 01:17:47,340 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/vue/ - Affected code identified
+2025-04-08 01:17:47,340 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/oauth/
+2025-04-08 01:17:49,068 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/svelte/ - Affected code identified
+2025-04-08 01:17:50,774 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/app/ - Affected code identified
+2025-04-08 01:17:50,775 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/src/
+2025-04-08 01:17:52,487 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/oauth/ - Affected code identified
+2025-04-08 01:17:54,165 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/src/ - Affected code identified
+2025-04-08 01:17:54,165 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/auth/
+2025-04-08 01:17:54,166 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/logout
+2025-04-08 01:17:54,166 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/sso/
+2025-04-08 01:17:54,166 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/forgot-password
+2025-04-08 01:17:54,167 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/reset-password
+2025-04-08 01:17:55,957 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/auth/ - Affected code identified
+2025-04-08 01:17:57,721 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/logout - Affected code identified
+2025-04-08 01:17:57,721 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/verify
+2025-04-08 01:17:59,381 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/reset-password - Affected code identified
+2025-04-08 01:18:01,185 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/forgot-password - Affected code identified
+2025-04-08 01:18:03,011 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/verify - Affected code identified
+2025-04-08 01:18:04,758 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/sso/ - Affected code identified
+2025-04-08 01:18:04,759 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/activate
+2025-04-08 01:18:04,759 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/cart
+2025-04-08 01:18:04,760 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/shop
+2025-04-08 01:18:06,545 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/activate - Affected code identified
+2025-04-08 01:18:06,545 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/checkout
+2025-04-08 01:18:08,162 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/shop - Affected code identified
+2025-04-08 01:18:09,770 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/cart - Affected code identified
+2025-04-08 01:18:09,771 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/order
+2025-04-08 01:18:09,771 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/catalog
+2025-04-08 01:18:09,772 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/store
+2025-04-08 01:18:11,781 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/checkout - Affected code identified
+2025-04-08 01:18:13,652 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/catalog - Affected code identified
+2025-04-08 01:18:15,408 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/order - Affected code identified
+2025-04-08 01:18:17,081 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/store - Affected code identified
+2025-04-08 01:18:17,082 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/product
+2025-04-08 01:18:17,082 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/category
+2025-04-08 01:18:17,083 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/about
+2025-04-08 01:18:17,083 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/feedback
+2025-04-08 01:18:19,050 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/product - Affected code identified
+2025-04-08 01:18:19,050 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/support
+2025-04-08 01:18:19,051 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/contact
+2025-04-08 01:18:21,045 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/about - Affected code identified
+2025-04-08 01:18:22,865 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/category - Affected code identified
+2025-04-08 01:18:24,697 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/support - Affected code identified
+2025-04-08 01:18:26,687 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/feedback - Affected code identified
+2025-04-08 01:18:28,521 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/contact - Affected code identified
+2025-04-08 01:18:28,522 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/connect
+2025-04-08 01:18:28,523 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/faq
+2025-04-08 01:18:28,523 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/social
+2025-04-08 01:18:28,523 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/follow
+2025-04-08 01:18:28,523 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/share
+2025-04-08 01:18:28,524 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/comments
+2025-04-08 01:18:30,357 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/connect - Affected code identified
+2025-04-08 01:18:32,086 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/faq - Affected code identified
+2025-04-08 01:18:33,910 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/share - Affected code identified
+2025-04-08 01:18:35,702 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/social - Affected code identified
+2025-04-08 01:18:37,432 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/follow - Affected code identified
+2025-04-08 01:18:39,171 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/comments - Affected code identified
+2025-04-08 01:18:39,172 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/forum
+2025-04-08 01:18:39,172 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/reviews
+2025-04-08 01:18:39,172 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/ratings
+2025-04-08 01:18:39,173 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/events
+2025-04-08 01:18:39,173 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/blog
+2025-04-08 01:18:39,173 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/news
+2025-04-08 01:18:39,173 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/search
+2025-04-08 01:18:41,013 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/forum - Affected code identified
+2025-04-08 01:18:42,756 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/reviews - Affected code identified
+2025-04-08 01:18:44,467 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/ratings - Affected code identified
+2025-04-08 01:18:46,327 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/events - Affected code identified
+2025-04-08 01:18:48,099 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/news - Affected code identified
+2025-04-08 01:18:49,811 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/search - Affected code identified
+2025-04-08 01:18:51,576 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/blog - Affected code identified
+2025-04-08 01:18:51,576 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/query
+2025-04-08 01:18:51,576 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/find
+2025-04-08 01:18:53,331 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/query - Affected code identified
+2025-04-08 01:18:53,331 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/m/
+2025-04-08 01:18:54,986 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/find - Affected code identified
+2025-04-08 01:18:54,987 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/results
+2025-04-08 01:18:54,988 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/mobile
+2025-04-08 01:18:56,737 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/m/ - Affected code identified
+2025-04-08 01:18:58,451 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/mobile - Affected code identified
+2025-04-08 01:19:00,197 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/results - Affected code identified
+2025-04-08 01:19:02,099 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.xml
+2025-04-08 01:19:02,099 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.csv
+2025-04-08 01:19:02,099 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.yml
+2025-04-08 01:19:02,100 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/api/mobile
+2025-04-08 01:19:03,972 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.xml - Affected code identified
+2025-04-08 01:19:03,972 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.json
+2025-04-08 01:19:03,972 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.yaml
+2025-04-08 01:19:05,797 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.csv - Affected code identified
+2025-04-08 01:19:07,532 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.yml - Affected code identified
+2025-04-08 01:19:09,443 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/api/mobile - Affected code identified
+2025-04-08 01:19:11,143 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.yaml - Affected code identified
+2025-04-08 01:19:12,947 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.json - Affected code identified
+2025-04-08 01:19:12,948 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.log
+2025-04-08 01:19:12,948 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.bak
+2025-04-08 01:19:14,659 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.log - Affected code identified
+2025-04-08 01:19:14,659 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.sample
+2025-04-08 01:19:14,660 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.sql
+2025-04-08 01:19:16,511 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.bak - Affected code identified
+2025-04-08 01:19:16,512 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.config
+2025-04-08 01:19:18,253 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.sample - Affected code identified
+2025-04-08 01:19:19,892 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.sql - Affected code identified
+2025-04-08 01:19:21,612 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.config - Affected code identified
+2025-04-08 01:19:21,613 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5505/.txt - Parameter: x-frame-options
+2025-04-08 01:19:21,614 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.txt
+2025-04-08 01:19:23,467 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.txt - Affected code identified
+2025-04-08 01:19:23,468 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.example
+2025-04-08 01:19:23,468 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.old
+2025-04-08 01:19:23,468 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.zip
+2025-04-08 01:19:23,469 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5505/.tar.gz
+2025-04-08 01:19:25,165 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.example - Affected code identified
+2025-04-08 01:19:26,976 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.old - Affected code identified
+2025-04-08 01:19:28,767 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.zip - Affected code identified
+2025-04-08 01:19:30,418 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5505/.tar.gz - Affected code identified
+2025-04-08 01:19:30,418 - zap_scanner - INFO - Alert categories summary:
+2025-04-08 01:19:30,418 - zap_scanner - INFO - Category 'Security Headers': 193 alerts
+2025-04-08 01:19:30,420 - zap_scanner - INFO -   Examples: Content Security Policy (CSP) Header Not Set, Content Security Policy (CSP) Header Not Set, Content Security Policy (CSP) Header Not Set
+2025-04-08 01:19:30,420 - zap_scanner - INFO - Category 'Other': 194 alerts
+2025-04-08 01:19:30,420 - zap_scanner - INFO -   Examples: Cross-Domain Misconfiguration, Cross-Domain Misconfiguration, Cross-Domain Misconfiguration
+2025-04-08 01:19:30,421 - zap_scanner - INFO - Scan completed in 617 seconds (10.3 minutes)
+2025-04-08 01:19:30,421 - zap_scanner - INFO - Risk breakdown: High=0, Medium=380, Low=7, Info=0
+2025-04-08 01:19:30,421 - zap_scanner - INFO - Vulnerabilities with affected code identified: 194/387
+2025-04-08 01:19:30,422 - zap_scanner - INFO - Cleaning up ZAP resources...
+2025-04-08 01:19:30,422 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-08 01:19:30,422 - zap_scanner - INFO - Terminating existing ZAP process...
+2025-04-08 01:19:37,104 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-08 01:19:37,104 - zap_scanner - INFO - Generating affected code report...
+2025-04-08 01:19:37,108 - zap_scanner - INFO - Saved affected code report to: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app3\.zap_code_report.md
+2025-04-08 01:19:37,108 - zap_scanner - INFO - Saving scan results to c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app3\.zap_results.json
+2025-04-08 01:19:37,127 - zap_scanner - INFO - Scan Llama-3 completed successfully with 0 high, 380 medium, 7 low risks
+2025-04-08 01:19:37,149 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-08 01:19:37,150 - zap_scanner - INFO - Terminating existing ZAP process...
+2025-04-08 01:19:43,715 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-08 01:27:29,641 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-08 01:27:29,719 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-08 01:27:29,720 - zap_scanner - INFO - Found free port: 8090
+2025-04-08 01:27:29,721 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 01:27:29,721 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-08 01:27:29,721 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
