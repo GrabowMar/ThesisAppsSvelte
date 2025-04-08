@@ -2958,31 +2958,7 @@ def gpt4all_analysis():
             error=str(e)
         )
     
-# Add this to your route file:
 
-@gpt4all_bp.route("/api/check-gpt4all-status", methods=["GET"])
-def check_gpt4all_status():
-    """
-    Check if the GPT4All server is available.
-    Returns a JSON response with availability status.
-    """
-    logger.info("Checking GPT4All server availability")
-    
-    try:
-        # Create a temporary analyzer
-        analyzer = GPT4AllAnalyzer(Path.cwd())
-        
-        # Test server connection
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        available = loop.run_until_complete(analyzer.check_server_availability())
-        loop.close()
-        
-        logger.info(f"GPT4All server available: {available}")
-        return jsonify({"available": available})
-    except Exception as e:
-        logger.error(f"Error checking GPT4All server: {e}")
-        return jsonify({"available": False, "error": str(e)})
 # =============================================================================
 # Error Handlers & Request Hooks
 # =============================================================================

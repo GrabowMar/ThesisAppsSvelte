@@ -22,10 +22,31 @@ import aiohttp
 from flask import request, render_template, url_for, Blueprint, current_app, jsonify, redirect
 
 # Set up module-level logger
-logger = logging.getLogger(__name__)
+try:
+    from logging_service import create_logger_for_component
+    logger = create_logger_for_component('gpt4all_analysis')
+except ImportError:
+    logger = logging.getLogger(__name__)
+    # Ensure handler exists for console output if logging_service is not available
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter(
+            '%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+            '%Y-%m-%d %H:%M:%S'
+        )
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        logger.setLevel(logging.INFO)
 
 # Blueprint for routes
 gpt4all_bp = Blueprint("gpt4all", __name__)
+
+# Cache for server status to prevent too many checks
+_server_status_cache = {
+    "last_check": 0,
+    "status": False,
+    "checking": False
+}
 
 
 @dataclass
@@ -59,8 +80,10 @@ class AnalysisConfig:
     request_timeout: int = 60
     max_retries: int = 3
     retry_delay: int = 2
-    concurrent_requests: int = 3  # Reduced to avoid overwhelming server
+    concurrent_requests: int = 2  # Reduced to avoid overwhelming server
     server_available: bool = False  # Track if server is available
+    check_interval: int = 30  # Seconds between status checks
+    status_timeout: int = 5  # Timeout for server status check
 
 
 # Error handler decorator
@@ -75,6 +98,48 @@ def error_handler(f):
                 return jsonify({"error": str(e)}), 500
             return render_template("500.html", error=str(e)), 500
     return wrapped
+
+
+def handle_asyncio_timeout(coroutine, timeout=5.0):
+    """
+    Safely handles asyncio timeouts and cleanup.
+    
+    Args:
+        coroutine: Async coroutine to execute
+        timeout: Timeout in seconds
+        
+    Returns:
+        Result of coroutine or None on timeout/error
+    """
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+        # Add a timeout to prevent hanging
+        result = loop.run_until_complete(
+            asyncio.wait_for(coroutine, timeout=timeout)
+        )
+        return result
+    except asyncio.TimeoutError:
+        logger.warning(f"Operation timed out after {timeout} seconds")
+        return None
+    except Exception as e:
+        logger.error(f"Error in asyncio operation: {str(e)}")
+        return None
+    finally:
+        try:
+            # Clean up pending tasks
+            pending = asyncio.all_tasks(loop)
+            for task in pending:
+                task.cancel()
+                
+            # Run loop until tasks complete/cancel
+            if pending:
+                loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
+            
+            loop.close()
+        except Exception as e:
+            logger.error(f"Error cleaning up asyncio loop: {str(e)}")
 
 
 # Load requirements from JSON
@@ -131,12 +196,236 @@ def load_requirements_json(json_path=None):
                         "Error handling"
                     ]
                 },
-                # Note: Truncated for brevity, would include all templates from the JSON
+                {
+                    "template": "Chat Application",
+                    "requirements": [
+                        "Real-time message exchange",
+                        "User identification",
+                        "Message history",
+                        "Online status",
+                        "Chat rooms"
+                    ]
+                },
+                {
+                    "template": "Feedback Form Application",
+                    "requirements": [
+                        "Multi-field feedback form",
+                        "Form validation",
+                        "Submission handling",
+                        "Response storage",
+                        "Success notifications"
+                    ]
+                },
+                {
+                    "template": "Blog Application",
+                    "requirements": [
+                        "User authentication (login/register)",
+                        "Blog post creation and editing",
+                        "Comment system",
+                        "Post categorization",
+                        "Responsive design",
+                        "Markdown support for blog content"
+                    ]
+                },
+                {
+                    "template": "E-Commerce Cart Application",
+                    "requirements": [
+                        "Product listing",
+                        "Cart management",
+                        "Checkout",
+                        "Order summary",
+                        "Inventory tracking"
+                    ]
+                },
+                {
+                    "template": "Notes Application",
+                    "requirements": [
+                        "Note creation/editing",
+                        "Note listing/viewing",
+                        "Categorization",
+                        "Search",
+                        "Note archiving"
+                    ]
+                },
+                {
+                    "template": "File Uploader Application",
+                    "requirements": [
+                        "File upload",
+                        "File listing",
+                        "Download functionality",
+                        "File preview",
+                        "Organization"
+                    ]
+                },
+                {
+                    "template": "Forum Application",
+                    "requirements": [
+                        "Thread creation/viewing",
+                        "Comment system",
+                        "Categories",
+                        "Sorting",
+                        "Thread search"
+                    ]
+                },
+                {
+                    "template": "CRUD Inventory Application",
+                    "requirements": [
+                        "Item management (CRUD)",
+                        "Inventory tracking",
+                        "Categorization",
+                        "Stock level alerts",
+                        "Search/filter items"
+                    ]
+                },
+                {
+                    "template": "CRUD Microblog Application",
+                    "requirements": [
+                        "Post creation and management (CRUD)",
+                        "User profile management",
+                        "Post timeline/feed",
+                        "Post interactions (likes/comments)",
+                        "Post search"
+                    ]
+                }
             ]
         }
     except Exception as e:
         logger.error(f"Failed to load requirements JSON: {e}")
         return {"generalRequirements": [], "templateSpecificRequirements": []}
+
+
+class GPT4AllClient:
+    """
+    Robust client for interacting with GPT4All API with improved error handling.
+    """
+    
+    def __init__(self, base_url="http://localhost:4891/v1", timeout=10):
+        self.base_url = base_url
+        self.timeout = timeout
+        self.last_check_time = 0
+        self.last_status = False
+        self.check_interval = 30  # Seconds between status checks
+        
+    async def check_availability(self) -> bool:
+        """
+        Check if the GPT4All server is available with better timeout handling.
+        
+        Returns:
+            True if server is available, False otherwise
+        """
+        # Rate limit checks to avoid too many requests
+        current_time = time.time()
+        if current_time - self.last_check_time < self.check_interval:
+            logger.debug(f"Using cached status: {self.last_status}")
+            return self.last_status
+            
+        logger.info(f"Checking GPT4All server at {self.base_url}")
+        try:
+            # Use a shorter timeout for availability check
+            check_timeout = aiohttp.ClientTimeout(total=3)
+            
+            async with aiohttp.ClientSession(timeout=check_timeout) as session:
+                try:
+                    # Try a simple models endpoint request
+                    async with session.get(f"{self.base_url}/models") as response:
+                        if response.status == 200:
+                            data = await response.json()
+                            model_count = len(data.get("data", []))
+                            logger.info(f"GPT4All server available with {model_count} models")
+                            self.last_status = True
+                            self.last_check_time = current_time
+                            return True
+                        else:
+                            logger.warning(f"GPT4All server returned status {response.status}")
+                            self.last_status = False
+                            self.last_check_time = current_time
+                            return False
+                            
+                except asyncio.TimeoutError:
+                    logger.error("GPT4All server check timed out")
+                    self.last_status = False
+                    self.last_check_time = current_time
+                    return False
+                except aiohttp.ClientError as e:
+                    logger.error(f"Connection error to GPT4All server: {str(e)}")
+                    self.last_status = False
+                    self.last_check_time = current_time
+                    return False
+        except Exception as e:
+            logger.exception(f"Unexpected error checking GPT4All server: {str(e)}")
+            self.last_status = False
+            self.last_check_time = current_time
+            return False
+            
+    async def send_chat_request(
+        self, 
+        prompt: str,
+        model_name: str = "deepseek-r1-distill-qwen-7b", 
+        max_tokens: int = 4096,
+        temperature: float = 0.1
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Send a chat request to the GPT4All API with robust error handling.
+        
+        Args:
+            prompt: The prompt to send
+            model_name: The model to use
+            max_tokens: Maximum tokens to generate
+            temperature: Temperature for generation
+            
+        Returns:
+            Response dictionary or None if failed
+        """
+        # First check if server is available
+        if not await self.check_availability():
+            logger.error("Cannot send request - GPT4All server is not available")
+            return None
+            
+        logger.info(f"Sending prompt to GPT4All API (length: {len(prompt)})")
+        
+        try:
+            # Use full timeout for actual request
+            request_timeout = aiohttp.ClientTimeout(total=self.timeout)
+            
+            async with aiohttp.ClientSession(timeout=request_timeout) as session:
+                payload = {
+                    "model": model_name,
+                    "messages": [{"role": "user", "content": prompt}],
+                    "max_tokens": max_tokens,
+                    "temperature": temperature
+                }
+                
+                try:
+                    async with session.post(
+                        f"{self.base_url}/chat/completions", 
+                        json=payload
+                    ) as response:
+                        if response.status == 200:
+                            data = await response.json()
+                            return data
+                        else:
+                            error_text = await response.text()
+                            logger.error(f"GPT4All API request failed with status {response.status}: {error_text}")
+                            return None
+                            
+                except asyncio.TimeoutError:
+                    logger.error(f"Request to GPT4All API timed out after {self.timeout}s")
+                    return None
+                except aiohttp.ClientError as e:
+                    logger.error(f"Connection error to GPT4All API: {str(e)}")
+                    return None
+                    
+        except Exception as e:
+            logger.exception(f"Unexpected error sending request to GPT4All API: {str(e)}")
+            return None
+
+
+def get_cached_status(max_age=30):
+    """Get server status with caching to avoid excessive checks"""
+    current_time = time.time()
+    if current_time - _server_status_cache["last_check"] < max_age:
+        return _server_status_cache["status"]
+    return None
 
 
 class GPT4AllAnalyzer:
@@ -147,6 +436,8 @@ class GPT4AllAnalyzer:
     
     # Cache for requirements data
     _requirements_data = None
+    # GPT4All client instance
+    _client = None
     
     @staticmethod
     def adjust_path(p: Optional[Path]) -> Path:
@@ -181,6 +472,10 @@ class GPT4AllAnalyzer:
         self.base_path = self.adjust_path(base_path)
         self.config = AnalysisConfig()
         self.semaphore = asyncio.Semaphore(self.config.concurrent_requests)
+        
+        # Initialize the GPT4All client if needed
+        if GPT4AllAnalyzer._client is None:
+            GPT4AllAnalyzer._client = GPT4AllClient(base_url=self.config.api_url)
         
         # Check if the base path exists
         if not self.base_path.exists():
@@ -224,33 +519,44 @@ class GPT4AllAnalyzer:
         Returns:
             True if server is available, False otherwise
         """
+        # Check cache first
+        cached_status = get_cached_status(max_age=self.config.check_interval)
+        if cached_status is not None:
+            self.config.server_available = cached_status
+            return cached_status
+            
+        # Prevent multiple simultaneous checks
+        if _server_status_cache["checking"]:
+            logger.debug("Another check is in progress, waiting...")
+            for _ in range(10):  # Wait up to 1 second for the other check to complete
+                await asyncio.sleep(0.1)
+                cached_status = get_cached_status(max_age=self.config.check_interval)
+                if cached_status is not None:
+                    self.config.server_available = cached_status
+                    return cached_status
+                    
+        # Set checking flag
+        _server_status_cache["checking"] = True
+        
         try:
-            logger.info(f"Checking GPT4All server availability at {self.config.api_url}")
-            async with aiohttp.ClientSession() as session:
-                # Try a simple request to the models endpoint
-                async with session.get(
-                    f"{self.config.api_url}/models", 
-                    timeout=aiohttp.ClientTimeout(total=5)
-                ) as resp:
-                    if resp.status == 200:
-                        # Server is available
-                        data = await resp.json()
-                        logger.info(f"GPT4All server is available with models: {data}")
-                        self.config.server_available = True
-                        return True
-                    else:
-                        error_text = await resp.text()
-                        logger.error(f"GPT4All server check failed: {resp.status} {error_text}")
-                        self.config.server_available = False
-                        return False
-        except aiohttp.ClientError as e:
-            logger.error(f"Connection error while checking GPT4All server: {e}")
-            self.config.server_available = False
-            return False
+            # Use the client to check availability
+            status = await GPT4AllAnalyzer._client.check_availability()
+            
+            # Update cache
+            _server_status_cache["status"] = status
+            _server_status_cache["last_check"] = time.time()
+            self.config.server_available = status
+            
+            return status
         except Exception as e:
             logger.exception(f"Error checking GPT4All server: {e}")
+            _server_status_cache["status"] = False
+            _server_status_cache["last_check"] = time.time()
             self.config.server_available = False
             return False
+        finally:
+            # Clear checking flag
+            _server_status_cache["checking"] = False
 
     def get_requirements_for_app(self, app_num: int) -> Tuple[List[str], str]:
         """
@@ -386,8 +692,8 @@ class GPT4AllAnalyzer:
             return [], {
                 "total_issues": 0,
                 "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
-                "frontend_files": len(frontend_files),
-                "backend_files": len(backend_files),
+                "frontend_files": len(frontend_files) if 'frontend_files' in locals() else 0,
+                "backend_files": len(backend_files) if 'backend_files' in locals() else 0,
                 "files_affected": 0,
                 "issue_types": {},
                 "tool_counts": {"GPT4All": 0},
@@ -557,70 +863,32 @@ class GPT4AllAnalyzer:
         Returns:
             Response string or None if failed
         """
+        # Ensure server is available before trying
         if not self.config.server_available:
             await self.check_server_availability()
             if not self.config.server_available:
-                return "GPT4All server is not available"
-                
-        for attempt in range(self.config.max_retries):
-            try:
-                async with self.semaphore:  # Limit concurrent requests
-                    async with aiohttp.ClientSession() as session:
-                        payload = {
-                            "model": self.config.model_name,
-                            "messages": [{"role": "user", "content": prompt}],
-                            "max_tokens": self.config.max_tokens,
-                            "temperature": 0.1  # Lower temperature for more deterministic responses
-                        }
-                        logger.info(f"Sending request to GPT4All API at {self.config.api_url}")
-                        
-                        try:
-                            async with session.post(
-                                f"{self.config.api_url}/chat/completions", 
-                                json=payload,
-                                timeout=aiohttp.ClientTimeout(total=self.config.request_timeout)
-                            ) as resp:
-                                if resp.status != 200:
-                                    error_text = await resp.text()
-                                    logger.error(f"GPT4All API request failed with status {resp.status}: {error_text}")
-                                    # Retry on certain status codes (e.g., 429, 500, 502, 503, 504)
-                                    if resp.status in {429, 500, 502, 503, 504}:
-                                        wait_time = self.config.retry_delay * (attempt + 1)
-                                        logger.warning(f"Retrying in {wait_time}s (attempt {attempt+1}/{self.config.max_retries})")
-                                        await asyncio.sleep(wait_time)
-                                        continue
-                                    
-                                    # If we can't connect, try a simpler fallback response
-                                    if resp.status in {404, 400, 401}:
-                                        return self._generate_fallback_response(prompt)
-                                    return None
-                                    
-                                data = await resp.json()
-                                if not data.get("choices"):
-                                    logger.error(f"Unexpected API response format: {data}")
-                                    return self._generate_fallback_response(prompt)
-                                    
-                                return data["choices"][0]["message"]["content"]
-                        except aiohttp.ClientError as e:
-                            logger.error(f"Connection error: {e}")
-                            wait_time = self.config.retry_delay * (2 ** attempt)
-                            await asyncio.sleep(wait_time)
-                            continue
-                            
-            except asyncio.TimeoutError:
-                logger.error(f"Request timed out (attempt {attempt+1}/{self.config.max_retries})")
-                # Retry with exponential backoff
-                wait_time = self.config.retry_delay * (2 ** attempt)
-                await asyncio.sleep(wait_time)
-            except Exception as e:
-                logger.exception(f"Exception during GPT4All API request (attempt {attempt+1}/{self.config.max_retries}): {e}")
-                # Retry with exponential backoff
-                wait_time = self.config.retry_delay * (2 ** attempt)
-                await asyncio.sleep(wait_time)
+                return self._generate_fallback_response(prompt)
         
-        # After all retries failed, generate a fallback response
-        logger.error(f"All {self.config.max_retries} attempts failed")
-        return self._generate_fallback_response(prompt)
+        # Use the client to send the request
+        response = await GPT4AllAnalyzer._client.send_chat_request(
+            prompt=prompt,
+            model_name=self.config.model_name,
+            max_tokens=self.config.max_tokens
+        )
+        
+        if response is None:
+            return self._generate_fallback_response(prompt)
+            
+        # Extract content from response
+        try:
+            content = response.get("choices", [{}])[0].get("message", {}).get("content", "")
+            if not content:
+                logger.error("Empty content in GPT4All response")
+                return self._generate_fallback_response(prompt)
+            return content
+        except (IndexError, KeyError) as e:
+            logger.error(f"Error extracting content from GPT4All response: {e}")
+            return self._generate_fallback_response(prompt)
 
     def _generate_fallback_response(self, prompt: str) -> str:
         """
@@ -1288,6 +1556,8 @@ class GPT4AllAnalyzer:
             Path(base_dir) / f"models/{model}/app{app_num}",
             Path(base_dir) / f"apps/{model}/app{app_num}",
             Path(base_dir) / f"apps/{model.lower()}/app{app_num}",
+            Path(base_dir) / f"z_interface_app/{model}/app{app_num}",
+            Path(base_dir) / f"z_interface_app/{model.lower()}/app{app_num}"
         ]
         
         # Try each pattern
@@ -1324,6 +1594,8 @@ def get_app_directory(app, model: str, app_num: int) -> Path:
         Path(base_dir) / f"models/{model}/app{app_num}",
         Path(base_dir) / f"apps/{model}/app{app_num}",
         Path(base_dir) / f"apps/{model.lower()}/app{app_num}",
+        Path(base_dir) / f"z_interface_app/{model}/app{app_num}",
+        Path(base_dir) / f"z_interface_app/{model.lower()}/app{app_num}"
     ]
     
     # Try each pattern
@@ -1424,18 +1696,17 @@ def get_analysis_summary(issues: List[AnalysisIssue]) -> Dict[str, Any]:
 def analyze_gpt4all(analysis_type: str):
     try:
         data = request.get_json()
-        directory = Path(data.get("directory", current_app.config["BASE_DIR"]))
+        directory = Path(data.get("directory", current_app.config.get("BASE_DIR", Path.cwd())))
         file_patterns = data.get("file_patterns", ["*.py", "*.js", "*.ts", "*.react"])
         analyzer = GPT4AllAnalyzer(directory)
         
-        # Handle asyncio in Flask properly
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
+        # Use safer asyncio handling with timeout
+        server_available = handle_asyncio_timeout(
+            analyzer.check_server_availability(),
+            timeout=5.0
+        )
         
-        # First check if server is available
-        server_available = loop.run_until_complete(analyzer.check_server_availability())
         if not server_available:
-            loop.close()
             return jsonify({
                 "error": "GPT4All server is not available. Please ensure the server is running.",
                 "issues": [],
@@ -1445,10 +1716,27 @@ def analyze_gpt4all(analysis_type: str):
                 }
             }), 503
             
-        issues, summary = loop.run_until_complete(analyzer.analyze_directory(
-            directory=directory, file_patterns=file_patterns, analysis_type=analysis_type
-        ))
-        loop.close()
+        # Run the analysis with proper timeout handling
+        result = handle_asyncio_timeout(
+            analyzer.analyze_directory(
+                directory=directory, 
+                file_patterns=file_patterns, 
+                analysis_type=analysis_type
+            ),
+            timeout=120.0  # Longer timeout for analysis
+        )
+        
+        if not result:
+            return jsonify({
+                "error": "Analysis timed out or failed.",
+                "issues": [],
+                "summary": {
+                    "total_issues": 0,
+                    "error": "Analysis timed out or failed"
+                }
+            }), 500
+            
+        issues, summary = result
         
         if not isinstance(summary, dict):
             summary = get_analysis_summary(issues)
@@ -1456,6 +1744,46 @@ def analyze_gpt4all(analysis_type: str):
     except Exception as e:
         logger.error(f"GPT4All analysis failed: {e}")
         return jsonify({"error": str(e)}), 500
+
+
+# ----- API Route for Server Status Check -----
+@gpt4all_bp.route("/api/check-gpt4all-status", methods=["GET"])
+def check_gpt4all_status():
+    """
+    Check if the GPT4All server is available.
+    Returns a JSON response with availability status.
+    """
+    logger.info("Checking GPT4All server availability")
+    
+    # Check cache first
+    cached_status = get_cached_status(max_age=30)  # 30 seconds cache
+    if cached_status is not None:
+        logger.debug(f"Using cached GPT4All status: {cached_status}")
+        return jsonify({"available": cached_status})
+    
+    try:
+        # Create a temporary analyzer
+        analyzer = GPT4AllAnalyzer(Path.cwd())
+        
+        # Test server connection with safe handling
+        result = handle_asyncio_timeout(
+            analyzer.check_server_availability(),
+            timeout=3.0  # Short timeout for UI responsiveness
+        )
+        
+        # Update cache
+        status = bool(result)
+        _server_status_cache["status"] = status
+        _server_status_cache["last_check"] = time.time()
+        
+        logger.info(f"GPT4All server available: {status}")
+        return jsonify({"available": status})
+    except Exception as e:
+        logger.error(f"Error checking GPT4All server: {e}")
+        # Update cache with error state
+        _server_status_cache["status"] = False
+        _server_status_cache["last_check"] = time.time()
+        return jsonify({"available": False, "error": str(e)})
 
 
 # ----- Main Route for Requirements Checking -----
@@ -1466,10 +1794,13 @@ def gpt4all_analysis():
     try:
         # Extract parameters
         model = request.args.get("model") or request.form.get("model")
-        app_num = request.args.get("app_num") or request.form.get("app_num")
+        app_num_str = request.args.get("app_num") or request.form.get("app_num")
+        
+        logger.info(f"GPT4All analysis requested for {model}/app{app_num_str}")
         
         # Validate required parameters
-        if not model or not app_num:
+        if not model or not app_num_str:
+            logger.warning("Missing required parameters: model or app_num")
             return render_template(
                 "requirements_check.html",
                 model=None,
@@ -1480,15 +1811,16 @@ def gpt4all_analysis():
             )
             
         try:
-            app_num = int(app_num)
+            app_num = int(app_num_str)
         except ValueError:
+            logger.warning(f"Invalid app number format: {app_num_str}")
             return render_template(
                 "requirements_check.html",
                 model=model,
                 app_num=None,
                 requirements=[],
                 results=None,
-                error=f"Invalid app number: {app_num}"
+                error=f"Invalid app number: {app_num_str}"
             )
             
         # Find the application directory
@@ -1496,22 +1828,6 @@ def gpt4all_analysis():
         
         # Setup analyzer
         analyzer = GPT4AllAnalyzer(directory)
-        
-        # Check server availability first
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        server_available = loop.run_until_complete(analyzer.check_server_availability())
-        
-        if not server_available:
-            loop.close()
-            return render_template(
-                "requirements_check.html",
-                model=model,
-                app_num=app_num,
-                requirements=[],
-                results=None,
-                error="GPT4All server is not available. Please ensure the server is running."
-            )
         
         # Get requirements from JSON based on app number
         requirements, template_name = analyzer.get_requirements_for_app(app_num)
@@ -1521,14 +1837,49 @@ def gpt4all_analysis():
         # Handle requirements from POST (overrides JSON requirements)
         if request.method == "POST" and "requirements" in request.form:
             requirements_text = request.form.get("requirements", "")
-            req_list = [r.strip() for r in requirements_text.strip().splitlines() if r.strip()]
+            custom_reqs = [r.strip() for r in requirements_text.strip().splitlines() if r.strip()]
+            if custom_reqs:
+                req_list = custom_reqs
+                logger.info(f"Using {len(req_list)} custom requirements from form")
             
         # Check requirements if we have any
-        if req_list:
-            # Run check for each requirement using proper asyncio handling in Flask
-            results = loop.run_until_complete(analyzer.check_requirements(directory, req_list))
-        
-        loop.close()
+        if req_list and request.method == "POST":
+            # Check server availability first with safe handling
+            server_available = handle_asyncio_timeout(
+                analyzer.check_server_availability(),
+                timeout=5.0
+            )
+            
+            if not server_available:
+                return render_template(
+                    "requirements_check.html",
+                    model=model,
+                    app_num=app_num,
+                    requirements=req_list,
+                    template_name=template_name,
+                    results=None,
+                    error="GPT4All server is not available. Please ensure the server is running."
+                )
+                
+            # Run check for each requirement
+            logger.info(f"Checking {len(req_list)} requirements for {model}/app{app_num}")
+            results = handle_asyncio_timeout(
+                analyzer.check_requirements(directory, req_list),
+                timeout=60.0  # Longer timeout for requirements checking
+            )
+            
+            if not results:
+                return render_template(
+                    "requirements_check.html",
+                    model=model,
+                    app_num=app_num,
+                    requirements=req_list,
+                    template_name=template_name,
+                    results=None,
+                    error="Requirements check timed out. Please try again with fewer requirements."
+                )
+                
+            logger.info(f"Successfully analyzed requirements for {model}/app{app_num}")
         
         # Render template with form or results
         return render_template(
@@ -1542,7 +1893,7 @@ def gpt4all_analysis():
         )
         
     except Exception as e:
-        logger.error(f"Requirements check failed: {e}")
+        logger.exception(f"Requirements check failed: {e}")
         return render_template(
             "requirements_check.html",
             model=model if "model" in locals() else None,
