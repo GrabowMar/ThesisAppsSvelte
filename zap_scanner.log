@@ -4939,3 +4939,9 @@ The home directory is already in use. Ensure no other ZAP instances are running 
 2025-04-08 11:53:42,056 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
 2025-04-08 11:53:42,056 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8091
 2025-04-08 11:53:42,056 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 11:54:53,286 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-08 11:54:53,348 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-08 11:54:53,348 - zap_scanner - INFO - Found free port: 8091
+2025-04-08 11:54:53,349 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-08 11:54:53,349 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8091
+2025-04-08 11:54:53,349 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
