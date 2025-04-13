@@ -40064,3 +40064,211 @@ NameError: name 'DockerManager' is not defined
 2025-04-13 20:44:36 [INFO] [Thread-107 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 20:44:36] "GET /api/system-info?_=1744551421694 HTTP/1.1" 200 -
 2025-04-13 20:44:36 [INFO] [Thread-109 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 20:44:36] "GET /api/system-info?_=1744555037044 HTTP/1.1" 200 -
 2025-04-13 20:44:55 [INFO] [Thread-110 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 20:44:55] "GET /api/system-info?_=1744540951293 HTTP/1.1" 200 -
+2025-04-13 21:33:30 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-13 21:33:30 [INFO] [MainThread] app: Starting application setup
+2025-04-13 21:33:30 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 21:33:30 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-13 21:33:30 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-13 21:33:30 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-13 21:33:30 [INFO] [MainThread] frontend_security_analysis: Available tools: pattern_scan, jsx_analyzer, dependency_check, eslint
+2025-04-13 21:33:30 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-13 21:33:30 [INFO] [MainThread] app: Initializing performance tester
+2025-04-13 21:33:30 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-13 21:33:30 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-13 21:33:30 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 21:33:30 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-13 21:33:30 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 21:33:30 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 21:33:30 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 21:33:30 [INFO] [MainThread] app: Creating Docker manager
+2025-04-13 21:33:30 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-13 21:33:30 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-13 21:33:30 [INFO] [MainThread] app: Registering application blueprints
+2025-04-13 21:33:30 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-13 21:33:30 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-13 21:33:30 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-13 21:33:30 [INFO] [MainThread] app: Application initialization complete
+2025-04-13 21:33:30 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-13 21:33:30 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-13 21:33:30 [INFO] [MainThread] werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-13 21:33:30 [INFO] [MainThread] werkzeug: [33mPress CTRL+C to quit[0m
+2025-04-13 21:33:30 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-13 21:33:35 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-13 21:33:35 [INFO] [MainThread] app: Starting application setup
+2025-04-13 21:33:35 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 21:33:35 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-13 21:33:35 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-13 21:33:35 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-13 21:33:35 [INFO] [MainThread] frontend_security_analysis: Available tools: pattern_scan, jsx_analyzer, dependency_check, eslint
+2025-04-13 21:33:35 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-13 21:33:35 [INFO] [MainThread] app: Initializing performance tester
+2025-04-13 21:33:35 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-13 21:33:35 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-13 21:33:35 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 21:33:35 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-13 21:33:35 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 21:33:35 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 21:33:35 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 21:33:35 [INFO] [MainThread] app: Creating Docker manager
+2025-04-13 21:33:35 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-13 21:33:35 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-13 21:33:35 [INFO] [MainThread] app: Registering application blueprints
+2025-04-13 21:33:35 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-13 21:33:35 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-13 21:33:35 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-13 21:33:35 [INFO] [MainThread] app: Application initialization complete
+2025-04-13 21:33:35 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-13 21:33:35 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-13 21:33:35 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-13 21:33:35 [INFO] [MainThread] werkzeug:  * Debugger PIN: 320-128-263
+2025-04-13 21:33:56 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:33:56] "GET /api/system-info?_=1744555037093 HTTP/1.1" 200 -
+2025-04-13 21:33:56 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:33:56] "GET /api/system-info?_=1744551421743 HTTP/1.1" 200 -
+2025-04-13 21:33:56 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:33:56] "GET /api/system-info?_=1744540951342 HTTP/1.1" 200 -
+2025-04-13 21:34:20 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\frontend_security_analysis.py', reloading
+2025-04-13 21:34:21 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-13 21:34:24 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-13 21:34:24 [INFO] [MainThread] app: Starting application setup
+2025-04-13 21:34:24 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 21:34:24 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-13 21:34:24 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-13 21:34:24 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-13 21:34:24 [INFO] [MainThread] frontend_security_analysis: Available tools: pattern_scan, jsx_analyzer, dependency_check, eslint
+2025-04-13 21:34:24 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-13 21:34:25 [INFO] [MainThread] app: Initializing performance tester
+2025-04-13 21:34:25 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-13 21:34:25 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-13 21:34:25 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 21:34:25 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-13 21:34:25 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 21:34:25 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 21:34:25 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 21:34:25 [INFO] [MainThread] app: Creating Docker manager
+2025-04-13 21:34:25 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-13 21:34:25 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-13 21:34:25 [INFO] [MainThread] app: Registering application blueprints
+2025-04-13 21:34:25 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-13 21:34:25 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-13 21:34:25 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-13 21:34:25 [INFO] [MainThread] app: Application initialization complete
+2025-04-13 21:34:25 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-13 21:34:25 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-13 21:34:25 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-13 21:34:25 [INFO] [MainThread] werkzeug:  * Debugger PIN: 320-128-263
+2025-04-13 21:34:27 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:34:27] "GET /api/system-info?_=1744563657076 HTTP/1.1" 200 -
+2025-04-13 21:34:55 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:34:55] "GET /api/system-info?_=1744551421744 HTTP/1.1" 200 -
+2025-04-13 21:34:56 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:34:56] "GET /api/system-info?_=1744555037094 HTTP/1.1" 200 -
+2025-04-13 21:34:56 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:34:56] "GET /api/system-info?_=1744540951343 HTTP/1.1" 200 -
+2025-04-13 21:35:28 [INFO] [Thread-6 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:35:28] "GET /api/system-info?_=1744563657077 HTTP/1.1" 200 -
+2025-04-13 21:35:55 [INFO] [Thread-7 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:35:55] "GET /api/system-info?_=1744551421745 HTTP/1.1" 200 -
+2025-04-13 21:35:56 [INFO] [Thread-9 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:35:56] "GET /api/system-info?_=1744540951344 HTTP/1.1" 200 -
+2025-04-13 21:35:56 [INFO] [Thread-8 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:35:56] "GET /api/system-info?_=1744555037095 HTTP/1.1" 200 -
+2025-04-13 21:36:30 [INFO] [Thread-10 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:36:30] "GET /api/system-info?_=1744563657078 HTTP/1.1" 200 -
+2025-04-13 21:36:56 [INFO] [Thread-11 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:36:56] "GET /api/system-info?_=1744551421746 HTTP/1.1" 200 -
+2025-04-13 21:36:56 [INFO] [Thread-12 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:36:56] "GET /api/system-info?_=1744540951345 HTTP/1.1" 200 -
+2025-04-13 21:36:56 [INFO] [Thread-13 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:36:56] "GET /api/system-info?_=1744555037096 HTTP/1.1" 200 -
+2025-04-13 21:37:30 [INFO] [Thread-14 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:37:30] "GET /api/system-info?_=1744563657079 HTTP/1.1" 200 -
+2025-04-13 21:37:56 [INFO] [Thread-15 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:37:56] "GET /api/system-info?_=1744551421747 HTTP/1.1" 200 -
+2025-04-13 21:37:56 [INFO] [Thread-16 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:37:56] "GET /api/system-info?_=1744540951346 HTTP/1.1" 200 -
+2025-04-13 21:37:56 [INFO] [Thread-17 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:37:56] "GET /api/system-info?_=1744555037097 HTTP/1.1" 200 -
+2025-04-13 21:38:31 [INFO] [Thread-18 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:38:31] "GET /api/system-info?_=1744563657080 HTTP/1.1" 200 -
+2025-04-13 21:38:56 [INFO] [Thread-19 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:38:56] "GET /api/system-info?_=1744555037098 HTTP/1.1" 200 -
+2025-04-13 21:38:56 [INFO] [Thread-20 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:38:56] "GET /api/system-info?_=1744551421748 HTTP/1.1" 200 -
+2025-04-13 21:38:57 [INFO] [Thread-21 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:38:57] "GET /api/system-info?_=1744540951347 HTTP/1.1" 200 -
+2025-04-13 21:39:32 [INFO] [Thread-22 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:39:32] "GET /api/system-info?_=1744563657081 HTTP/1.1" 200 -
+2025-04-13 21:39:56 [INFO] [Thread-23 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:39:56] "GET /api/system-info?_=1744551421749 HTTP/1.1" 200 -
+2025-04-13 21:39:56 [INFO] [Thread-24 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:39:56] "GET /api/system-info?_=1744555037099 HTTP/1.1" 200 -
+2025-04-13 21:39:56 [INFO] [Thread-25 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:39:56] "GET /api/system-info?_=1744540951348 HTTP/1.1" 200 -
+2025-04-13 21:40:33 [INFO] [Thread-26 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:40:33] "GET /api/system-info?_=1744563657082 HTTP/1.1" 200 -
+2025-04-13 21:40:56 [INFO] [Thread-27 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:40:56] "GET /api/system-info?_=1744555037100 HTTP/1.1" 200 -
+2025-04-13 21:40:56 [INFO] [Thread-28 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:40:56] "GET /api/system-info?_=1744551421750 HTTP/1.1" 200 -
+2025-04-13 21:40:56 [INFO] [Thread-29 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:40:56] "GET /api/system-info?_=1744540951349 HTTP/1.1" 200 -
+2025-04-13 21:41:34 [INFO] [Thread-30 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:41:34] "GET /api/system-info?_=1744563657083 HTTP/1.1" 200 -
+2025-04-13 21:41:55 [INFO] [Thread-31 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:41:55] "GET /api/system-info?_=1744540951350 HTTP/1.1" 200 -
+2025-04-13 21:41:56 [INFO] [Thread-32 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:41:56] "GET /api/system-info?_=1744555037101 HTTP/1.1" 200 -
+2025-04-13 21:41:56 [INFO] [Thread-33 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:41:56] "GET /api/system-info?_=1744551421751 HTTP/1.1" 200 -
+2025-04-13 21:42:35 [INFO] [Thread-34 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:42:35] "GET /api/system-info?_=1744563657084 HTTP/1.1" 200 -
+2025-04-13 21:42:56 [INFO] [Thread-35 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:42:56] "GET /api/system-info?_=1744555037102 HTTP/1.1" 200 -
+2025-04-13 21:42:56 [INFO] [Thread-37 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:42:56] "GET /api/system-info?_=1744551421752 HTTP/1.1" 200 -
+2025-04-13 21:42:56 [INFO] [Thread-36 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:42:56] "GET /api/system-info?_=1744540951351 HTTP/1.1" 200 -
+2025-04-13 21:43:03 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\app.py', reloading
+2025-04-13 21:43:03 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-13 21:43:07 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-13 21:43:07 [INFO] [MainThread] app: Starting application setup
+2025-04-13 21:43:07 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 21:43:07 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-13 21:43:07 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-13 21:43:07 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-13 21:43:07 [INFO] [MainThread] frontend_security_analysis: Available tools: pattern_scan, jsx_analyzer, dependency_check, eslint
+2025-04-13 21:43:07 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-13 21:43:07 [INFO] [MainThread] app: Initializing performance tester
+2025-04-13 21:43:07 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-13 21:43:07 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-13 21:43:07 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 21:43:07 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-13 21:43:07 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 21:43:07 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 21:43:07 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 21:43:07 [INFO] [MainThread] app: Creating Docker manager
+2025-04-13 21:43:07 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-13 21:43:07 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-13 21:43:07 [INFO] [MainThread] app: Registering application blueprints
+2025-04-13 21:43:07 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-13 21:43:07 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-13 21:43:07 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-13 21:43:07 [INFO] [MainThread] app: Application initialization complete
+2025-04-13 21:43:07 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-13 21:43:07 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-13 21:43:07 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-13 21:43:07 [INFO] [MainThread] werkzeug:  * Debugger PIN: 320-128-263
+2025-04-13 21:43:37 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:43:37] "GET /api/system-info?_=1744563657085 HTTP/1.1" 200 -
+2025-04-13 21:43:56 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:43:56] "GET /api/system-info?_=1744540951352 HTTP/1.1" 200 -
+2025-04-13 21:43:56 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:43:56] "GET /api/system-info?_=1744555037103 HTTP/1.1" 200 -
+2025-04-13 21:43:56 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:43:56] "GET /api/system-info?_=1744551421753 HTTP/1.1" 200 -
+2025-04-13 21:44:37 [INFO] [Thread-6 (process_request_thread)] docker: Cleaning up stopped containers older than 24 hours
+2025-04-13 21:44:38 [INFO] [Thread-6 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:44:38] "GET /api/system-info?_=1744563657086 HTTP/1.1" 200 -
+2025-04-13 21:44:55 [INFO] [Thread-7 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:44:55] "GET /api/system-info?_=1744551421754 HTTP/1.1" 200 -
+2025-04-13 21:44:56 [INFO] [Thread-8 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:44:56] "GET /api/system-info?_=1744555037104 HTTP/1.1" 200 -
+2025-04-13 21:44:56 [INFO] [Thread-9 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:44:56] "GET /api/system-info?_=1744540951353 HTTP/1.1" 200 -
+2025-04-13 21:45:39 [INFO] [Thread-10 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:45:39] "GET /api/system-info?_=1744563657087 HTTP/1.1" 200 -
+2025-04-13 21:45:56 [INFO] [Thread-11 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:45:56] "GET /api/system-info?_=1744555037105 HTTP/1.1" 200 -
+2025-04-13 21:45:56 [INFO] [Thread-12 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:45:56] "GET /api/system-info?_=1744551421755 HTTP/1.1" 200 -
+2025-04-13 21:45:56 [INFO] [Thread-13 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:45:56] "GET /api/system-info?_=1744540951354 HTTP/1.1" 200 -
+2025-04-13 21:46:39 [INFO] [Thread-14 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:46:39] "GET /api/system-info?_=1744563657088 HTTP/1.1" 200 -
+2025-04-13 21:46:56 [INFO] [Thread-15 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:46:56] "GET /api/system-info?_=1744555037106 HTTP/1.1" 200 -
+2025-04-13 21:46:56 [INFO] [Thread-16 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:46:56] "GET /api/system-info?_=1744540951355 HTTP/1.1" 200 -
+2025-04-13 21:46:56 [INFO] [Thread-17 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:46:56] "GET /api/system-info?_=1744551421756 HTTP/1.1" 200 -
+2025-04-13 21:47:40 [INFO] [Thread-18 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:47:40] "GET /api/system-info?_=1744563657089 HTTP/1.1" 200 -
+2025-04-13 21:47:56 [INFO] [Thread-19 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:47:56] "GET /api/system-info?_=1744551421757 HTTP/1.1" 200 -
+2025-04-13 21:47:56 [INFO] [Thread-20 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:47:56] "GET /api/system-info?_=1744540951356 HTTP/1.1" 200 -
+2025-04-13 21:47:56 [INFO] [Thread-21 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:47:56] "GET /api/system-info?_=1744555037107 HTTP/1.1" 200 -
+2025-04-13 21:48:42 [INFO] [Thread-22 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:48:42] "GET /api/system-info?_=1744563657090 HTTP/1.1" 200 -
+2025-04-13 21:48:55 [INFO] [Thread-23 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:48:55] "GET /api/system-info?_=1744555037108 HTTP/1.1" 200 -
+2025-04-13 21:48:56 [INFO] [Thread-24 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:48:56] "GET /api/system-info?_=1744551421758 HTTP/1.1" 200 -
+2025-04-13 21:48:56 [INFO] [Thread-25 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:48:56] "GET /api/system-info?_=1744540951357 HTTP/1.1" 200 -
+2025-04-13 21:49:42 [INFO] [Thread-26 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:49:42] "GET /api/system-info?_=1744563657091 HTTP/1.1" 200 -
+2025-04-13 21:49:55 [INFO] [Thread-27 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:49:55] "GET /api/system-info?_=1744540951358 HTTP/1.1" 200 -
+2025-04-13 21:49:56 [INFO] [Thread-28 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:49:56] "GET /api/system-info?_=1744555037109 HTTP/1.1" 200 -
+2025-04-13 21:49:56 [INFO] [Thread-29 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:49:56] "GET /api/system-info?_=1744551421759 HTTP/1.1" 200 -
+2025-04-13 21:50:43 [INFO] [Thread-30 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:50:43] "GET /api/system-info?_=1744563657092 HTTP/1.1" 200 -
+2025-04-13 21:50:56 [INFO] [Thread-31 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:50:56] "GET /api/system-info?_=1744555037110 HTTP/1.1" 200 -
+2025-04-13 21:50:56 [INFO] [Thread-32 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:50:56] "GET /api/system-info?_=1744551421760 HTTP/1.1" 200 -
+2025-04-13 21:50:56 [INFO] [Thread-33 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:50:56] "GET /api/system-info?_=1744540951359 HTTP/1.1" 200 -
+2025-04-13 21:51:44 [INFO] [Thread-34 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:51:44] "GET /api/system-info?_=1744563657093 HTTP/1.1" 200 -
+2025-04-13 21:51:56 [INFO] [Thread-35 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:51:56] "GET /api/system-info?_=1744540951360 HTTP/1.1" 200 -
+2025-04-13 21:51:56 [INFO] [Thread-37 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:51:56] "GET /api/system-info?_=1744551421761 HTTP/1.1" 200 -
+2025-04-13 21:51:56 [INFO] [Thread-36 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:51:56] "GET /api/system-info?_=1744555037111 HTTP/1.1" 200 -
+2025-04-13 21:52:45 [INFO] [Thread-38 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:52:45] "GET /api/system-info?_=1744563657094 HTTP/1.1" 200 -
+2025-04-13 21:52:56 [INFO] [Thread-39 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:52:56] "GET /api/system-info?_=1744540951361 HTTP/1.1" 200 -
+2025-04-13 21:52:56 [INFO] [Thread-40 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:52:56] "GET /api/system-info?_=1744551421762 HTTP/1.1" 200 -
+2025-04-13 21:52:56 [INFO] [Thread-41 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:52:56] "GET /api/system-info?_=1744555037112 HTTP/1.1" 200 -
+2025-04-13 21:53:47 [INFO] [Thread-42 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:53:47] "GET /api/system-info?_=1744563657095 HTTP/1.1" 200 -
+2025-04-13 21:53:56 [INFO] [Thread-43 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:53:56] "GET /api/system-info?_=1744540951362 HTTP/1.1" 200 -
+2025-04-13 21:53:56 [INFO] [Thread-44 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:53:56] "GET /api/system-info?_=1744555037113 HTTP/1.1" 200 -
+2025-04-13 21:53:56 [INFO] [Thread-45 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:53:56] "GET /api/system-info?_=1744551421763 HTTP/1.1" 200 -
+2025-04-13 21:54:47 [INFO] [Thread-46 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:54:47] "GET /api/system-info?_=1744563657096 HTTP/1.1" 200 -
+2025-04-13 21:54:55 [INFO] [Thread-47 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:54:55] "GET /api/system-info?_=1744555037114 HTTP/1.1" 200 -
+2025-04-13 21:54:56 [INFO] [Thread-49 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:54:56] "GET /api/system-info?_=1744540951363 HTTP/1.1" 200 -
+2025-04-13 21:54:56 [INFO] [Thread-48 (process_request_thread)] werkzeug: 127.0.0.1 - - [13/Apr/2025 21:54:56] "GET /api/system-info?_=1744551421764 HTTP/1.1" 200 -
+2025-04-13 21:55:23 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\app.py', reloading
+2025-04-13 21:55:23 [INFO] [MainThread] werkzeug:  * Restarting with stat

@@ -10687,3 +10687,264 @@
 2025-04-13 20:44:55 [INFO] [8a75f06d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
 2025-04-13 20:44:55 [INFO] [fce7308d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
 2025-04-13 20:44:55 [INFO] [fce7308d] Request completed: GET /api/system-info - Status: 200 - Duration: 0.697s
+2025-04-13 21:33:55 [INFO] [28fa430f] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:33:55 [INFO] [2a52b579] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:33:55 [INFO] [616997d8] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:33:55 [INFO] [24dff006] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:33:55 [INFO] [691dd2ea] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:33:55 [INFO] [6658f827] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:33:56 [INFO] [2a52b579] Request completed: GET /api/system-info - Status: 200 - Duration: 0.875s
+2025-04-13 21:33:56 [INFO] [24dff006] Request completed: GET /api/system-info - Status: 200 - Duration: 0.985s
+2025-04-13 21:33:56 [INFO] [6658f827] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.064s
+2025-04-13 21:34:27 [INFO] [228e3cad] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:34:27 [INFO] [b943a065] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:34:27 [INFO] [b943a065] Request completed: GET /api/system-info - Status: 200 - Duration: 0.861s
+2025-04-13 21:34:55 [INFO] [5b21f179] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:34:55 [INFO] [cd107f08] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:34:55 [INFO] [fce7859d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:34:55 [INFO] [127c4833] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:34:55 [INFO] [ae95525b] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:34:55 [INFO] [4944ec07] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:34:55 [INFO] [cd107f08] Request completed: GET /api/system-info - Status: 200 - Duration: 0.912s
+2025-04-13 21:34:56 [INFO] [127c4833] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.040s
+2025-04-13 21:34:56 [INFO] [4944ec07] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.170s
+2025-04-13 21:35:28 [INFO] [45fd1f8d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:35:28 [INFO] [eadd8ee3] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:35:28 [INFO] [eadd8ee3] Request completed: GET /api/system-info - Status: 200 - Duration: 0.914s
+2025-04-13 21:35:55 [INFO] [2e0f832a] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:35:55 [INFO] [f547dd5e] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:35:55 [INFO] [d2a68451] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:35:55 [INFO] [af9bf31c] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:35:55 [INFO] [7fc47f7b] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:35:55 [INFO] [50e5f88b] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:35:55 [INFO] [f547dd5e] Request completed: GET /api/system-info - Status: 200 - Duration: 0.892s
+2025-04-13 21:35:56 [INFO] [50e5f88b] Request completed: GET /api/system-info - Status: 200 - Duration: 0.999s
+2025-04-13 21:35:56 [INFO] [af9bf31c] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.109s
+2025-04-13 21:36:29 [INFO] [bfc314ec] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:36:29 [INFO] [ce4cac90] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:36:30 [INFO] [ce4cac90] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.048s
+2025-04-13 21:36:55 [INFO] [47d82866] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:36:55 [INFO] [f3c3aa6b] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:36:55 [INFO] [aa25988c] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:36:55 [INFO] [d1ddd7be] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:36:55 [INFO] [7ca6643f] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:36:55 [INFO] [49fbc6c8] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:36:56 [INFO] [f3c3aa6b] Request completed: GET /api/system-info - Status: 200 - Duration: 0.980s
+2025-04-13 21:36:56 [INFO] [d1ddd7be] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.097s
+2025-04-13 21:36:56 [INFO] [49fbc6c8] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.228s
+2025-04-13 21:37:30 [INFO] [04122ea3] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:37:30 [INFO] [4c0dfa06] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:37:30 [INFO] [4c0dfa06] Request completed: GET /api/system-info - Status: 200 - Duration: 0.928s
+2025-04-13 21:37:55 [INFO] [1320656a] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:37:55 [INFO] [6ac5db1c] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:37:55 [INFO] [3a431761] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:37:55 [INFO] [7e082de7] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:37:55 [INFO] [5095c76d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:37:55 [INFO] [6cf45802] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:37:56 [INFO] [6ac5db1c] Request completed: GET /api/system-info - Status: 200 - Duration: 0.997s
+2025-04-13 21:37:56 [INFO] [7e082de7] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.262s
+2025-04-13 21:37:56 [INFO] [6cf45802] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.375s
+2025-04-13 21:38:31 [INFO] [dd9e7f4a] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:38:31 [INFO] [873c57ab] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:38:31 [INFO] [873c57ab] Request completed: GET /api/system-info - Status: 200 - Duration: 0.878s
+2025-04-13 21:38:55 [INFO] [be5786f0] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:38:55 [INFO] [bc5b846c] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:38:55 [INFO] [26fbf546] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:38:55 [INFO] [3867efd5] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:38:55 [INFO] [6c152a0e] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:38:55 [INFO] [51bbc502] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:38:56 [INFO] [bc5b846c] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.126s
+2025-04-13 21:38:56 [INFO] [3867efd5] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.256s
+2025-04-13 21:38:57 [INFO] [51bbc502] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 2.026s
+2025-04-13 21:39:32 [INFO] [4b696f24] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:39:32 [INFO] [052cda5f] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:39:32 [INFO] [052cda5f] Request completed: GET /api/system-info - Status: 200 - Duration: 0.869s
+2025-04-13 21:39:55 [INFO] [453f4172] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:39:55 [INFO] [2cff8c5d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:39:55 [INFO] [b673c95d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:39:55 [INFO] [4ae289af] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:39:55 [INFO] [f7700f3e] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:39:55 [INFO] [ccb4dddf] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:39:56 [INFO] [2cff8c5d] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.097s
+2025-04-13 21:39:56 [INFO] [4ae289af] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.216s
+2025-04-13 21:39:56 [INFO] [ccb4dddf] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.338s
+2025-04-13 21:40:33 [INFO] [bfd489b0] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:40:33 [INFO] [99979b11] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:40:33 [INFO] [99979b11] Request completed: GET /api/system-info - Status: 200 - Duration: 0.893s
+2025-04-13 21:40:55 [INFO] [127edf44] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:40:55 [INFO] [080a6119] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:40:55 [INFO] [cfe825e1] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:40:55 [INFO] [1cbb0f1c] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:40:55 [INFO] [7e61e787] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:40:55 [INFO] [c37b2a36] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:40:56 [INFO] [080a6119] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.180s
+2025-04-13 21:40:56 [INFO] [1cbb0f1c] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.316s
+2025-04-13 21:40:56 [INFO] [c37b2a36] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.435s
+2025-04-13 21:41:34 [INFO] [8c5f8b3b] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:41:34 [INFO] [876e21d3] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:41:34 [INFO] [876e21d3] Request completed: GET /api/system-info - Status: 200 - Duration: 0.923s
+2025-04-13 21:41:55 [INFO] [df8b6b3d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:41:55 [INFO] [ad06c811] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:41:55 [INFO] [36e80161] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:41:55 [INFO] [6202efec] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:41:55 [INFO] [5e3d6d0b] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:41:55 [INFO] [14ceafa4] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:41:55 [INFO] [ad06c811] Request completed: GET /api/system-info - Status: 200 - Duration: 0.918s
+2025-04-13 21:41:56 [INFO] [6202efec] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.025s
+2025-04-13 21:41:56 [INFO] [14ceafa4] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.139s
+2025-04-13 21:42:35 [INFO] [47190ac8] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:42:35 [INFO] [bb806363] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:42:35 [INFO] [bb806363] Request completed: GET /api/system-info - Status: 200 - Duration: 0.917s
+2025-04-13 21:42:55 [INFO] [1bd2670f] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:42:55 [INFO] [7c760499] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:42:55 [INFO] [11615f40] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:42:55 [INFO] [373068af] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:42:55 [INFO] [82a7d436] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:42:55 [INFO] [57bbc14e] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:42:56 [INFO] [7c760499] Request completed: GET /api/system-info - Status: 200 - Duration: 0.965s
+2025-04-13 21:42:56 [INFO] [57bbc14e] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.080s
+2025-04-13 21:42:56 [INFO] [373068af] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.195s
+2025-04-13 21:43:36 [INFO] [5a7fa4ca] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:43:36 [INFO] [140cbc15] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:43:37 [INFO] [140cbc15] Request completed: GET /api/system-info - Status: 200 - Duration: 0.958s
+2025-04-13 21:43:55 [INFO] [8c41d3d6] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:43:55 [INFO] [624c0a3a] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:43:55 [INFO] [82bd6b61] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:43:55 [INFO] [c1c44260] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:43:55 [INFO] [6b3a7c93] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:43:55 [INFO] [5588f348] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:43:56 [INFO] [624c0a3a] Request completed: GET /api/system-info - Status: 200 - Duration: 0.974s
+2025-04-13 21:43:56 [INFO] [c1c44260] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.121s
+2025-04-13 21:43:56 [INFO] [5588f348] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.259s
+2025-04-13 21:44:37 [INFO] [1facef01] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:44:37 [INFO] [59bac224] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:44:38 [INFO] [59bac224] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.063s
+2025-04-13 21:44:55 [INFO] [ed13274c] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:44:55 [INFO] [59396025] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:44:55 [INFO] [41db4f67] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:44:55 [INFO] [54970b49] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:44:55 [INFO] [762c5dbc] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:44:55 [INFO] [7a812dcd] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:44:55 [INFO] [59396025] Request completed: GET /api/system-info - Status: 200 - Duration: 0.911s
+2025-04-13 21:44:56 [INFO] [54970b49] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.043s
+2025-04-13 21:44:56 [INFO] [7a812dcd] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.159s
+2025-04-13 21:45:38 [INFO] [24f66ee4] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:45:38 [INFO] [267b6820] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:45:39 [INFO] [267b6820] Request completed: GET /api/system-info - Status: 200 - Duration: 0.974s
+2025-04-13 21:45:55 [INFO] [8ac22e2d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:45:55 [INFO] [d65c7075] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:45:55 [INFO] [7154f756] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:45:55 [INFO] [e5c3f552] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:45:55 [INFO] [b0f0240d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:45:55 [INFO] [e43ba048] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:45:56 [INFO] [d65c7075] Request completed: GET /api/system-info - Status: 200 - Duration: 0.999s
+2025-04-13 21:45:56 [INFO] [e5c3f552] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.094s
+2025-04-13 21:45:56 [INFO] [e43ba048] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.224s
+2025-04-13 21:46:39 [INFO] [3bf8d737] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:46:39 [INFO] [ccafa722] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:46:39 [INFO] [ccafa722] Request completed: GET /api/system-info - Status: 200 - Duration: 0.950s
+2025-04-13 21:46:55 [INFO] [f4f6b69e] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:46:55 [INFO] [02d3fad8] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:46:55 [INFO] [56e20817] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:46:55 [INFO] [7c28fe43] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:46:55 [INFO] [3ec4bd7b] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:46:55 [INFO] [327b6266] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:46:56 [INFO] [02d3fad8] Request completed: GET /api/system-info - Status: 200 - Duration: 0.948s
+2025-04-13 21:46:56 [INFO] [7c28fe43] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.060s
+2025-04-13 21:46:56 [INFO] [327b6266] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.167s
+2025-04-13 21:47:40 [INFO] [8fd2d604] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:47:40 [INFO] [1661c4a0] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:47:40 [INFO] [1661c4a0] Request completed: GET /api/system-info - Status: 200 - Duration: 0.903s
+2025-04-13 21:47:55 [INFO] [0a305765] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:47:55 [INFO] [aed372f7] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:47:55 [INFO] [4516bbef] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:47:55 [INFO] [c8f4f32a] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:47:55 [INFO] [b169b758] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:47:55 [INFO] [9c75c6eb] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:47:56 [INFO] [aed372f7] Request completed: GET /api/system-info - Status: 200 - Duration: 0.918s
+2025-04-13 21:47:56 [INFO] [c8f4f32a] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.030s
+2025-04-13 21:47:56 [INFO] [9c75c6eb] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.168s
+2025-04-13 21:48:41 [INFO] [2a7eb77c] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:48:41 [INFO] [288ec482] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:48:42 [INFO] [288ec482] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.028s
+2025-04-13 21:48:55 [INFO] [eb7f5f7c] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:48:55 [INFO] [f9991177] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:48:55 [INFO] [21d743e6] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:48:55 [INFO] [b3f63ba7] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:48:55 [INFO] [a2a8f524] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:48:55 [INFO] [bfa740b3] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:48:55 [INFO] [f9991177] Request completed: GET /api/system-info - Status: 200 - Duration: 0.902s
+2025-04-13 21:48:56 [INFO] [b3f63ba7] Request completed: GET /api/system-info - Status: 200 - Duration: 0.903s
+2025-04-13 21:48:56 [INFO] [bfa740b3] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.022s
+2025-04-13 21:49:42 [INFO] [e0082ab2] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:49:42 [INFO] [265d99d2] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:49:42 [INFO] [265d99d2] Request completed: GET /api/system-info - Status: 200 - Duration: 0.909s
+2025-04-13 21:49:55 [INFO] [bd806574] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:49:55 [INFO] [3ddd8165] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:49:55 [INFO] [0b8d0e01] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:49:55 [INFO] [622869cd] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:49:55 [INFO] [7e2df4f5] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:49:55 [INFO] [803333d8] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:49:55 [INFO] [3ddd8165] Request completed: GET /api/system-info - Status: 200 - Duration: 0.905s
+2025-04-13 21:49:56 [INFO] [622869cd] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.015s
+2025-04-13 21:49:56 [INFO] [803333d8] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.110s
+2025-04-13 21:50:43 [INFO] [564a6464] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:50:43 [INFO] [8858db4a] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:50:43 [INFO] [8858db4a] Request completed: GET /api/system-info - Status: 200 - Duration: 0.863s
+2025-04-13 21:50:55 [INFO] [b27c519d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:50:55 [INFO] [6ee75fce] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:50:55 [INFO] [d9c71232] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:50:55 [INFO] [8093021d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:50:55 [INFO] [aa102f48] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:50:55 [INFO] [dbc240d4] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:50:56 [INFO] [6ee75fce] Request completed: GET /api/system-info - Status: 200 - Duration: 0.930s
+2025-04-13 21:50:56 [INFO] [8093021d] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.042s
+2025-04-13 21:50:56 [INFO] [dbc240d4] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.125s
+2025-04-13 21:51:44 [INFO] [c87db30d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:51:44 [INFO] [ccc63e49] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:51:44 [INFO] [ccc63e49] Request completed: GET /api/system-info - Status: 200 - Duration: 0.923s
+2025-04-13 21:51:55 [INFO] [e0b7201b] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:51:55 [INFO] [98bff522] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:51:55 [INFO] [6f0761a9] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:51:55 [INFO] [bae13e70] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:51:55 [INFO] [1c949cf5] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:51:55 [INFO] [22d03ba4] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:51:56 [INFO] [98bff522] Request completed: GET /api/system-info - Status: 200 - Duration: 0.961s
+2025-04-13 21:51:56 [INFO] [22d03ba4] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.195s
+2025-04-13 21:51:56 [INFO] [bae13e70] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.318s
+2025-04-13 21:52:45 [INFO] [823c7434] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:52:45 [INFO] [0a266eb0] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:52:45 [INFO] [0a266eb0] Request completed: GET /api/system-info - Status: 200 - Duration: 0.914s
+2025-04-13 21:52:55 [INFO] [28c1104d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:52:55 [INFO] [045764c8] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:52:55 [INFO] [009ef093] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:52:55 [INFO] [a33ecb5c] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:52:55 [INFO] [a269b3f5] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:52:55 [INFO] [52d70d5d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:52:56 [INFO] [045764c8] Request completed: GET /api/system-info - Status: 200 - Duration: 0.968s
+2025-04-13 21:52:56 [INFO] [a33ecb5c] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.077s
+2025-04-13 21:52:56 [INFO] [52d70d5d] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.183s
+2025-04-13 21:53:46 [INFO] [069bde00] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:53:46 [INFO] [954e032b] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:53:47 [INFO] [954e032b] Request completed: GET /api/system-info - Status: 200 - Duration: 0.967s
+2025-04-13 21:53:55 [INFO] [1530acc9] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:53:55 [INFO] [f174e319] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:53:55 [INFO] [41fc9379] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:53:55 [INFO] [42888122] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:53:55 [INFO] [604d1a4e] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:53:55 [INFO] [5f900f87] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:53:56 [INFO] [f174e319] Request completed: GET /api/system-info - Status: 200 - Duration: 0.936s
+2025-04-13 21:53:56 [INFO] [42888122] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.082s
+2025-04-13 21:53:56 [INFO] [5f900f87] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.193s
+2025-04-13 21:54:47 [INFO] [9716f7d3] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:54:47 [INFO] [81d689e3] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-13 21:54:47 [INFO] [81d689e3] Request completed: GET /api/system-info - Status: 200 - Duration: 0.900s
+2025-04-13 21:54:55 [INFO] [52eb8eb1] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:54:55 [INFO] [34bb7c87] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:54:55 [INFO] [2d8b1c36] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:54:55 [INFO] [7723f6c1] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-13 21:54:55 [INFO] [804364e9] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:54:55 [INFO] [e5d44ba4] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all-... - IP: 127.0.0.1
+2025-04-13 21:54:55 [INFO] [34bb7c87] Request completed: GET /api/system-info - Status: 200 - Duration: 0.879s
+2025-04-13 21:54:56 [INFO] [e5d44ba4] Request completed: GET /api/system-info - Status: 200 - Duration: 0.984s
+2025-04-13 21:54:56 [INFO] [7723f6c1] Request completed: GET /api/system-info - Status: 200 [SLOW] - Duration: 1.238s
