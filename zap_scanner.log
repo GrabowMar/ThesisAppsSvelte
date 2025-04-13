@@ -5234,3 +5234,712 @@ Log excerpt:
 2025-04-13 11:32:43,995 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
 2025-04-13 11:32:43,996 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8091
 2025-04-13 11:32:43,996 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 12:24:11,503 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 12:24:11,569 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 12:24:11,570 - zap_scanner - INFO - Found free port: 8091
+2025-04-13 12:24:11,570 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 12:24:11,570 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8091
+2025-04-13 12:24:11,570 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 12:24:11,570 - zap_scanner - INFO - Source code root directory set to: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2
+2025-04-13 12:24:11,571 - zap_scanner - INFO - Source code root directory set to: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2
+2025-04-13 12:24:11,571 - zap_scanner - INFO - Starting comprehensive scan Llama-2 for http://localhost:5503
+2025-04-13 12:24:11,571 - zap_scanner - INFO - Starting comprehensive scan of target: http://localhost:5503
+2025-04-13 12:24:11,572 - zap_scanner - INFO - Starting ZAP daemon...
+2025-04-13 12:24:11,572 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-13 12:24:16,792 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-13 12:24:16,793 - zap_scanner - INFO - Found ZAP JAR at: C:\Program Files\ZAP\Zed Attack Proxy\zap-2.16.1.jar
+2025-04-13 12:24:16,794 - zap_scanner - INFO - Starting ZAP with command: java -Xmx4G -Djava.io.tmpdir=c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\tmp -Djava.net.preferIPv4Stack=true -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -jar C:\Program Files\ZAP\Zed Attack Proxy\zap-2.16.1.jar -daemon -port 8091 -host 127.0.0.1 -config api.key=5tjkc409k4oaacd69qob5p6uri -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true -config connection.timeoutInSecs=1200 -config ascan.maxScanDurationInMins=120 -config ascan.threadPerHost=8 -config view.mode=standard -config ascan.attackStrength=HIGH -config ascan.alertThreshold=LOW -config pscan.maxAlertsPerRule=0 -config pscan.maxBodySizeInBytes=10000000 -config ajaxSpider.browserId=chrome-headless -config ajaxSpider.maxDuration=600 -config ajaxSpider.clickDefaultElems=true -config ajaxSpider.clickElemsOnce=false -config ajaxSpider.eventWait=2000 -config ajaxSpider.maxCrawlDepth=10 -config ajaxSpider.maxCrawlStates=0 -config ajaxSpider.numberOfBrowsers=4 -config ajaxSpider.randomInputs=true -config pscans.pscanner(10020).enabled=true -config pscans.pscanner(10020).alertThreshold=LOW -config pscans.pscanner(10021).enabled=true -config pscans.pscanner(10021).alertThreshold=LOW -config pscans.pscanner(10038).enabled=true -config pscans.pscanner(10038).alertThreshold=LOW -config pscans.pscanner(10035).enabled=true -config pscans.pscanner(10035).alertThreshold=LOW -config pscans.pscanner(10063).enabled=true -config pscans.pscanner(10063).alertThreshold=LOW -config pscans.pscanner(10054).enabled=true -config pscans.pscanner(10054).alertThreshold=LOW -config pscans.pscanner(10024).enabled=true -config pscans.pscanner(10024).alertThreshold=LOW -config pscans.pscanner(10025).enabled=true -config pscans.pscanner(10025).alertThreshold=LOW -config pscans.pscanner(10027).enabled=true -config pscans.pscanner(10027).alertThreshold=LOW -config pscans.pscanner(10096).enabled=true -config pscans.pscanner(10096).alertThreshold=LOW -config pscans.pscanner(10097).enabled=true -config pscans.pscanner(10097).alertThreshold=LOW -config pscans.pscanner(10094).enabled=true -config pscans.pscanner(10094).alertThreshold=LOW -config pscans.pscanner(90022).enabled=true -config pscans.pscanner(90022).alertThreshold=LOW -config pscans.pscanner(10109).enabled=true -config pscans.pscanner(10109).alertThreshold=LOW -config pscans.pscanner(10110).enabled=true -config pscans.pscanner(10110).alertThreshold=LOW -config ascan.attackStrength=HIGH -config ascan.alertThreshold=LOW
+2025-04-13 12:24:16,821 - zap_scanner - INFO - Waiting for ZAP to initialize (15 seconds)...
+2025-04-13 12:24:31,830 - zap_scanner - INFO - Connecting to ZAP API (attempt 1/5)...
+2025-04-13 12:24:31,915 - zap_scanner - INFO - Successfully connected to ZAP 2.16.1
+2025-04-13 12:24:31,916 - zap_scanner - INFO - ZAP startup completed in 20.34 seconds
+2025-04-13 12:24:31,916 - zap_scanner - INFO - Configuring comprehensive passive scanning...
+2025-04-13 12:24:31,917 - zap_scanner - INFO - Enabling ALL passive scanners...
+2025-04-13 12:24:31,945 - zap_scanner - INFO - Setting passive scan to analyze ALL traffic (not just in-scope)...
+2025-04-13 12:24:31,952 - zap_scanner - INFO - Setting LOW alert threshold for all passive scanners to increase detection rate...
+2025-04-13 12:24:32,351 - zap_scanner - INFO - Setting unlimited maximum alerts per rule...
+2025-04-13 12:24:32,355 - zap_scanner - INFO - Passive scanning fully configured with 57 enabled scanners.
+2025-04-13 12:24:32,355 - zap_scanner - INFO - Accessing target URL: http://localhost:5503
+2025-04-13 12:24:32,402 - zap_scanner - INFO - Initial target access complete
+2025-04-13 12:24:34,414 - zap_scanner - INFO - Performing extended spidering...
+2025-04-13 12:25:34,336 - zap_scanner - INFO - Extended spidering completed
+2025-04-13 12:25:34,336 - zap_scanner - INFO - Checking passive scan status after initial discovery...
+2025-04-13 12:25:34,336 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-13 12:25:34,342 - zap_scanner - INFO - Passive scan in progress: 5 records left to scan (elapsed: 0.0s)
+2025-04-13 12:25:39,364 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 5.0s)
+2025-04-13 12:25:39,365 - zap_scanner - INFO - Passive scan completed in 5.0 seconds
+2025-04-13 12:25:39,365 - zap_scanner - INFO - Starting traditional spider scan with maxChildren=30
+2025-04-13 12:25:39,377 - zap_scanner - INFO - Spider scan started with ID: 0
+2025-04-13 12:25:39,377 - zap_scanner - INFO - Monitoring Spider progress for scan ID: 0
+2025-04-13 12:25:39,382 - zap_scanner - INFO - Spider progress: 0% (elapsed: 0.0s)
+2025-04-13 12:25:41,387 - zap_scanner - INFO - Spider progress: 100% (elapsed: 2.0s)
+2025-04-13 12:25:41,387 - zap_scanner - INFO - Spider scan completed in 2.0 seconds
+2025-04-13 12:25:41,387 - zap_scanner - INFO - Starting AJAX Spider for JavaScript-rendered content...
+2025-04-13 12:25:41,391 - zap_scanner - INFO - Running AJAX Spider on target: http://localhost:5503
+2025-04-13 12:25:41,401 - zap_scanner - INFO - AJAX Spider started: OK
+2025-04-13 12:25:41,401 - zap_scanner - INFO - Monitoring AJAX Spider progress...
+2025-04-13 12:25:41,406 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 0%, elapsed: 0.0s)
+2025-04-13 12:25:46,426 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 0%, elapsed: 5.0s)
+2025-04-13 12:25:51,440 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 1%, elapsed: 10.0s)
+2025-04-13 12:25:56,472 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 2%, elapsed: 15.1s)
+2025-04-13 12:26:01,493 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 3%, elapsed: 20.1s)
+2025-04-13 12:26:06,508 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 4%, elapsed: 25.1s)
+2025-04-13 12:26:11,523 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 5%, elapsed: 30.1s)
+2025-04-13 12:26:16,528 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 5%, elapsed: 35.1s)
+2025-04-13 12:26:21,549 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 6%, elapsed: 40.1s)
+2025-04-13 12:26:26,567 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 7%, elapsed: 45.2s)
+2025-04-13 12:26:31,582 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 8%, elapsed: 50.2s)
+2025-04-13 12:26:36,589 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 9%, elapsed: 55.2s)
+2025-04-13 12:26:41,596 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 10%, elapsed: 60.2s)
+2025-04-13 12:26:46,609 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 10%, elapsed: 65.2s)
+2025-04-13 12:26:51,639 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 11%, elapsed: 70.2s)
+2025-04-13 12:26:56,657 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 12%, elapsed: 75.3s)
+2025-04-13 12:27:01,665 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 13%, elapsed: 80.3s)
+2025-04-13 12:27:06,760 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 14%, elapsed: 85.4s)
+2025-04-13 12:27:11,772 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 15%, elapsed: 90.4s)
+2025-04-13 12:27:16,782 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 15%, elapsed: 95.4s)
+2025-04-13 12:27:21,796 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 16%, elapsed: 100.4s)
+2025-04-13 12:27:26,818 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 17%, elapsed: 105.4s)
+2025-04-13 12:27:31,829 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 18%, elapsed: 110.4s)
+2025-04-13 12:27:36,839 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 19%, elapsed: 115.4s)
+2025-04-13 12:27:41,854 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 20%, elapsed: 120.5s)
+2025-04-13 12:27:46,867 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 20%, elapsed: 125.5s)
+2025-04-13 12:27:51,875 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 21%, elapsed: 130.5s)
+2025-04-13 12:27:56,893 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 22%, elapsed: 135.5s)
+2025-04-13 12:28:01,910 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 23%, elapsed: 140.5s)
+2025-04-13 12:28:06,918 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 24%, elapsed: 145.5s)
+2025-04-13 12:28:11,923 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 25%, elapsed: 150.5s)
+2025-04-13 12:28:16,929 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 25%, elapsed: 155.5s)
+2025-04-13 12:28:21,948 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 26%, elapsed: 160.5s)
+2025-04-13 12:28:26,964 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 27%, elapsed: 165.6s)
+2025-04-13 12:28:31,975 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 28%, elapsed: 170.6s)
+2025-04-13 12:28:36,984 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 29%, elapsed: 175.6s)
+2025-04-13 12:28:42,001 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 30%, elapsed: 180.6s)
+2025-04-13 12:28:47,013 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 30%, elapsed: 185.6s)
+2025-04-13 12:28:52,018 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 31%, elapsed: 190.6s)
+2025-04-13 12:28:57,024 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 32%, elapsed: 195.6s)
+2025-04-13 12:29:02,029 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 33%, elapsed: 200.6s)
+2025-04-13 12:29:07,042 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 34%, elapsed: 205.6s)
+2025-04-13 12:29:12,059 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 35%, elapsed: 210.7s)
+2025-04-13 12:29:17,073 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 35%, elapsed: 215.7s)
+2025-04-13 12:29:22,098 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 36%, elapsed: 220.7s)
+2025-04-13 12:29:27,107 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 37%, elapsed: 225.7s)
+2025-04-13 12:29:32,116 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 38%, elapsed: 230.7s)
+2025-04-13 12:29:37,130 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 39%, elapsed: 235.7s)
+2025-04-13 12:29:42,141 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 40%, elapsed: 240.7s)
+2025-04-13 12:29:47,147 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 40%, elapsed: 245.7s)
+2025-04-13 12:29:52,164 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 41%, elapsed: 250.8s)
+2025-04-13 12:29:57,184 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 42%, elapsed: 255.8s)
+2025-04-13 12:30:02,191 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 43%, elapsed: 260.8s)
+2025-04-13 12:30:07,201 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 44%, elapsed: 265.8s)
+2025-04-13 12:30:12,221 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 45%, elapsed: 270.8s)
+2025-04-13 12:30:17,229 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 45%, elapsed: 275.8s)
+2025-04-13 12:30:22,238 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 46%, elapsed: 280.8s)
+2025-04-13 12:30:27,252 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 47%, elapsed: 285.9s)
+2025-04-13 12:30:32,265 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 48%, elapsed: 290.9s)
+2025-04-13 12:30:37,282 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 49%, elapsed: 295.9s)
+2025-04-13 12:30:42,292 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 50%, elapsed: 300.9s)
+2025-04-13 12:30:47,307 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 50%, elapsed: 305.9s)
+2025-04-13 12:30:52,320 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 51%, elapsed: 310.9s)
+2025-04-13 12:30:57,339 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 52%, elapsed: 315.9s)
+2025-04-13 12:31:02,352 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 53%, elapsed: 321.0s)
+2025-04-13 12:31:07,363 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 54%, elapsed: 326.0s)
+2025-04-13 12:31:12,369 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 55%, elapsed: 331.0s)
+2025-04-13 12:31:17,378 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 55%, elapsed: 336.0s)
+2025-04-13 12:31:22,396 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 56%, elapsed: 341.0s)
+2025-04-13 12:31:27,404 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 57%, elapsed: 346.0s)
+2025-04-13 12:31:32,413 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 58%, elapsed: 351.0s)
+2025-04-13 12:31:37,424 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 59%, elapsed: 356.0s)
+2025-04-13 12:31:42,430 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 60%, elapsed: 361.0s)
+2025-04-13 12:31:47,442 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 61%, elapsed: 366.0s)
+2025-04-13 12:31:52,458 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 61%, elapsed: 371.1s)
+2025-04-13 12:31:57,474 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 62%, elapsed: 376.1s)
+2025-04-13 12:32:02,492 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 63%, elapsed: 381.1s)
+2025-04-13 12:32:07,499 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 64%, elapsed: 386.1s)
+2025-04-13 12:32:12,505 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 65%, elapsed: 391.1s)
+2025-04-13 12:32:17,521 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 66%, elapsed: 396.1s)
+2025-04-13 12:32:22,539 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 66%, elapsed: 401.1s)
+2025-04-13 12:32:27,547 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 67%, elapsed: 406.1s)
+2025-04-13 12:32:32,559 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 68%, elapsed: 411.2s)
+2025-04-13 12:32:37,577 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 69%, elapsed: 416.2s)
+2025-04-13 12:32:42,587 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 70%, elapsed: 421.2s)
+2025-04-13 12:32:47,599 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 71%, elapsed: 426.2s)
+2025-04-13 12:32:52,610 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 71%, elapsed: 431.2s)
+2025-04-13 12:32:57,620 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 72%, elapsed: 436.2s)
+2025-04-13 12:33:02,629 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 73%, elapsed: 441.2s)
+2025-04-13 12:33:07,646 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 74%, elapsed: 446.2s)
+2025-04-13 12:33:12,667 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 75%, elapsed: 451.3s)
+2025-04-13 12:33:17,682 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 76%, elapsed: 456.3s)
+2025-04-13 12:33:22,695 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 76%, elapsed: 461.3s)
+2025-04-13 12:33:27,711 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 77%, elapsed: 466.3s)
+2025-04-13 12:33:32,725 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 78%, elapsed: 471.3s)
+2025-04-13 12:33:37,737 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 79%, elapsed: 476.3s)
+2025-04-13 12:33:42,746 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 80%, elapsed: 481.3s)
+2025-04-13 12:33:47,760 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 81%, elapsed: 486.4s)
+2025-04-13 12:33:52,767 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 81%, elapsed: 491.4s)
+2025-04-13 12:33:57,775 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 82%, elapsed: 496.4s)
+2025-04-13 12:34:02,791 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 83%, elapsed: 501.4s)
+2025-04-13 12:34:07,796 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 84%, elapsed: 506.4s)
+2025-04-13 12:34:12,803 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 85%, elapsed: 511.4s)
+2025-04-13 12:34:17,810 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 86%, elapsed: 516.4s)
+2025-04-13 12:34:22,825 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 86%, elapsed: 521.4s)
+2025-04-13 12:34:27,838 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 87%, elapsed: 526.4s)
+2025-04-13 12:34:32,850 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 88%, elapsed: 531.4s)
+2025-04-13 12:34:37,867 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 89%, elapsed: 536.5s)
+2025-04-13 12:34:42,882 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 90%, elapsed: 541.5s)
+2025-04-13 12:34:47,894 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 91%, elapsed: 546.5s)
+2025-04-13 12:34:52,910 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 91%, elapsed: 551.5s)
+2025-04-13 12:34:57,961 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 92%, elapsed: 556.6s)
+2025-04-13 12:35:02,970 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 93%, elapsed: 561.6s)
+2025-04-13 12:35:08,001 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 94%, elapsed: 566.6s)
+2025-04-13 12:35:13,018 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 95%, elapsed: 571.6s)
+2025-04-13 12:35:18,035 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 96%, elapsed: 576.6s)
+2025-04-13 12:35:23,044 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 96%, elapsed: 581.6s)
+2025-04-13 12:35:28,061 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 97%, elapsed: 586.7s)
+2025-04-13 12:35:33,088 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 98%, elapsed: 591.7s)
+2025-04-13 12:35:38,098 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 99%, elapsed: 596.7s)
+2025-04-13 12:35:43,109 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 99%, elapsed: 601.7s)
+2025-04-13 12:35:43,110 - zap_scanner - WARNING - AJAX Spider exceeded maximum time of 600 seconds. Stopping...
+2025-04-13 12:35:43,577 - zap_scanner - INFO - AJAX Spider completed with 3375 URLs discovered
+2025-04-13 12:35:43,577 - zap_scanner - INFO - Sample of AJAX-discovered URLs:
+2025-04-13 12:35:43,577 - zap_scanner - INFO -  - Unknown URL
+2025-04-13 12:35:43,577 - zap_scanner - INFO -  - Unknown URL
+2025-04-13 12:35:43,577 - zap_scanner - INFO -  - Unknown URL
+2025-04-13 12:35:43,577 - zap_scanner - INFO -  - Unknown URL
+2025-04-13 12:35:43,578 - zap_scanner - INFO -  - Unknown URL
+2025-04-13 12:35:43,579 - zap_scanner - INFO - Waiting for passive scan to process all discovered content...
+2025-04-13 12:35:43,579 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-13 12:35:43,584 - zap_scanner - INFO - Passive scan in progress: 2 records left to scan (elapsed: 0.0s)
+2025-04-13 12:35:48,594 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 5.0s)
+2025-04-13 12:35:48,594 - zap_scanner - INFO - Passive scan completed in 5.0 seconds
+2025-04-13 12:35:48,594 - zap_scanner - INFO - Configuring comprehensive active scanning...
+2025-04-13 12:35:48,594 - zap_scanner - INFO - Enabling ALL active scanners...
+2025-04-13 12:35:48,611 - zap_scanner - INFO - Setting HIGH attack strength for all policies...
+2025-04-13 12:35:48,669 - zap_scanner - INFO - Setting LOW alert threshold for all policies...
+2025-04-13 12:35:48,710 - zap_scanner - INFO - Configuring scan policy options...
+2025-04-13 12:35:48,753 - zap_scanner - INFO - Enabled 47 active scanners in category: Other
+2025-04-13 12:35:48,753 - zap_scanner - INFO - Active scanning fully configured with 47 enabled scanners
+2025-04-13 12:35:48,753 - zap_scanner - INFO - Starting active scan with comprehensive settings...
+2025-04-13 12:35:48,765 - zap_scanner - INFO - Active scan started with ID: 0
+2025-04-13 12:35:48,765 - zap_scanner - INFO - Monitoring Active scan progress for scan ID: 0
+2025-04-13 12:35:48,774 - zap_scanner - INFO - Active scan progress: 0% (elapsed: 0.0s)
+2025-04-13 12:36:08,910 - zap_scanner - INFO - Active scan progress: 1% (elapsed: 20.1s)
+2025-04-13 12:36:13,925 - zap_scanner - INFO - Active scan progress: 2% (elapsed: 25.2s)
+2025-04-13 12:36:18,941 - zap_scanner - INFO - Active scan progress: 2% (elapsed: 30.2s)
+2025-04-13 12:36:29,023 - zap_scanner - INFO - Active scan progress: 3% (elapsed: 40.3s)
+2025-04-13 12:36:34,040 - zap_scanner - INFO - Active scan progress: 8% (elapsed: 45.3s)
+2025-04-13 12:36:39,058 - zap_scanner - INFO - Active scan progress: 11% (elapsed: 50.3s)
+2025-04-13 12:36:44,094 - zap_scanner - INFO - Active scan progress: 13% (elapsed: 55.3s)
+2025-04-13 12:36:49,206 - zap_scanner - INFO - Active scan progress: 14% (elapsed: 60.4s)
+2025-04-13 12:36:54,223 - zap_scanner - INFO - Active scan progress: 15% (elapsed: 65.5s)
+2025-04-13 12:36:59,240 - zap_scanner - INFO - Active scan progress: 16% (elapsed: 70.5s)
+2025-04-13 12:37:04,254 - zap_scanner - INFO - Active scan progress: 17% (elapsed: 75.5s)
+2025-04-13 12:37:09,263 - zap_scanner - INFO - Active scan progress: 18% (elapsed: 80.5s)
+2025-04-13 12:37:14,288 - zap_scanner - INFO - Active scan progress: 19% (elapsed: 85.5s)
+2025-04-13 12:37:19,308 - zap_scanner - INFO - Active scan progress: 22% (elapsed: 90.5s)
+2025-04-13 12:37:24,323 - zap_scanner - INFO - Active scan progress: 25% (elapsed: 95.6s)
+2025-04-13 12:37:29,335 - zap_scanner - INFO - Active scan progress: 26% (elapsed: 100.6s)
+2025-04-13 12:37:34,361 - zap_scanner - INFO - Active scan progress: 27% (elapsed: 105.6s)
+2025-04-13 12:37:44,396 - zap_scanner - INFO - Active scan progress: 28% (elapsed: 115.6s)
+2025-04-13 12:37:49,447 - zap_scanner - INFO - Active scan progress: 29% (elapsed: 120.7s)
+2025-04-13 12:37:54,479 - zap_scanner - INFO - Active scan progress: 30% (elapsed: 125.7s)
+2025-04-13 12:37:59,493 - zap_scanner - INFO - Active scan progress: 31% (elapsed: 130.7s)
+2025-04-13 12:38:04,505 - zap_scanner - INFO - Active scan progress: 32% (elapsed: 135.7s)
+2025-04-13 12:38:09,517 - zap_scanner - INFO - Active scan progress: 33% (elapsed: 140.8s)
+2025-04-13 12:38:14,575 - zap_scanner - INFO - Active scan progress: 34% (elapsed: 145.8s)
+2025-04-13 12:38:19,585 - zap_scanner - INFO - Active scan progress: 35% (elapsed: 150.8s)
+2025-04-13 12:38:24,599 - zap_scanner - INFO - Active scan progress: 36% (elapsed: 155.8s)
+2025-04-13 12:38:34,724 - zap_scanner - INFO - Active scan progress: 37% (elapsed: 166.0s)
+2025-04-13 12:38:40,502 - zap_scanner - INFO - Active scan progress: 38% (elapsed: 171.7s)
+2025-04-13 12:38:50,726 - zap_scanner - INFO - Active scan progress: 38% (elapsed: 182.0s)
+2025-04-13 12:39:06,061 - zap_scanner - INFO - Active scan progress: 39% (elapsed: 197.3s)
+2025-04-13 12:39:22,859 - zap_scanner - INFO - Active scan progress: 39% (elapsed: 214.1s)
+2025-04-13 12:39:51,660 - zap_scanner - INFO - Active scan progress: 39% (elapsed: 242.9s)
+2025-04-13 12:40:18,906 - zap_scanner - INFO - Active scan progress: 39% (elapsed: 270.1s)
+2025-04-13 12:40:53,198 - zap_scanner - INFO - Active scan progress: 39% (elapsed: 304.4s)
+2025-04-13 12:41:20,730 - zap_scanner - INFO - Active scan progress: 39% (elapsed: 332.0s)
+2025-04-13 12:41:53,748 - zap_scanner - INFO - Active scan progress: 39% (elapsed: 365.0s)
+2025-04-13 12:42:53,649 - zap_scanner - INFO - Active scan progress: 39% (elapsed: 424.9s)
+2025-04-13 12:43:21,519 - zap_scanner - INFO - Active scan progress: 39% (elapsed: 452.8s)
+2025-04-13 12:43:43,559 - zap_scanner - INFO - Active scan progress: 40% (elapsed: 474.8s)
+2025-04-13 12:43:48,575 - zap_scanner - INFO - Active scan progress: 41% (elapsed: 479.8s)
+2025-04-13 12:43:53,583 - zap_scanner - INFO - Active scan progress: 42% (elapsed: 484.8s)
+2025-04-13 12:43:58,604 - zap_scanner - INFO - Active scan progress: 45% (elapsed: 489.8s)
+2025-04-13 12:44:03,637 - zap_scanner - INFO - Active scan progress: 47% (elapsed: 494.9s)
+2025-04-13 12:44:08,649 - zap_scanner - INFO - Active scan progress: 48% (elapsed: 499.9s)
+2025-04-13 12:44:13,659 - zap_scanner - INFO - Active scan progress: 49% (elapsed: 504.9s)
+2025-04-13 12:44:23,689 - zap_scanner - INFO - Active scan progress: 49% (elapsed: 514.9s)
+2025-04-13 12:44:28,702 - zap_scanner - INFO - Active scan progress: 50% (elapsed: 519.9s)
+2025-04-13 12:44:33,718 - zap_scanner - INFO - Active scan progress: 51% (elapsed: 525.0s)
+2025-04-13 12:44:38,738 - zap_scanner - INFO - Active scan progress: 52% (elapsed: 530.0s)
+2025-04-13 12:44:43,750 - zap_scanner - INFO - Active scan progress: 55% (elapsed: 535.0s)
+2025-04-13 12:44:48,764 - zap_scanner - INFO - Active scan progress: 60% (elapsed: 540.0s)
+2025-04-13 12:44:53,786 - zap_scanner - INFO - Active scan progress: 61% (elapsed: 545.0s)
+2025-04-13 12:44:58,797 - zap_scanner - INFO - Active scan progress: 62% (elapsed: 550.0s)
+2025-04-13 12:45:03,813 - zap_scanner - INFO - Active scan progress: 65% (elapsed: 555.0s)
+2025-04-13 12:45:08,831 - zap_scanner - INFO - Active scan progress: 69% (elapsed: 560.1s)
+2025-04-13 12:45:13,844 - zap_scanner - INFO - Active scan progress: 70% (elapsed: 565.1s)
+2025-04-13 12:45:18,851 - zap_scanner - INFO - Active scan progress: 71% (elapsed: 570.1s)
+2025-04-13 12:45:23,856 - zap_scanner - INFO - Active scan progress: 72% (elapsed: 575.1s)
+2025-04-13 12:45:28,874 - zap_scanner - INFO - Active scan progress: 87% (elapsed: 580.1s)
+2025-04-13 12:45:33,892 - zap_scanner - INFO - Active scan progress: 88% (elapsed: 585.1s)
+2025-04-13 12:45:38,919 - zap_scanner - INFO - Active scan progress: 89% (elapsed: 590.2s)
+2025-04-13 12:45:43,927 - zap_scanner - INFO - Active scan progress: 92% (elapsed: 595.2s)
+2025-04-13 12:45:48,933 - zap_scanner - INFO - Active scan progress: 93% (elapsed: 600.2s)
+2025-04-13 12:45:53,953 - zap_scanner - INFO - Active scan progress: 100% (elapsed: 605.2s)
+2025-04-13 12:45:53,954 - zap_scanner - INFO - Active scan scan completed in 605.2 seconds
+2025-04-13 12:45:53,954 - zap_scanner - INFO - Performing final passive scan check...
+2025-04-13 12:45:53,954 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-13 12:45:53,958 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 0.0s)
+2025-04-13 12:45:53,958 - zap_scanner - INFO - Passive scan completed in 0.0 seconds
+2025-04-13 12:45:53,958 - zap_scanner - INFO - Collecting source files for code analysis...
+2025-04-13 12:46:25,157 - zap_scanner - INFO - Collected 0 potential source files for analysis
+2025-04-13 12:46:25,253 - zap_scanner - INFO - Collected 0 source files for code analysis
+2025-04-13 12:46:25,253 - zap_scanner - INFO - Retrieving final scan alerts...
+2025-04-13 12:46:26,047 - zap_scanner - INFO - Found 467 total alerts
+2025-04-13 12:46:26,047 - zap_scanner - INFO - Processing alert details and extracting affected code...
+2025-04-13 12:46:26,047 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503
+2025-04-13 12:47:00,024 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503 - Affected code identified
+2025-04-13 12:47:00,024 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/.well-known/security.txt
+2025-04-13 12:47:00,025 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/crossdomain.xml
+2025-04-13 12:47:00,025 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/sitemap.xml
+2025-04-13 12:47:00,025 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/robots.txt
+2025-04-13 12:47:00,025 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/clientaccesspolicy.xml
+2025-04-13 12:47:00,026 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/manifest.json
+2025-04-13 12:47:05,324 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/.well-known/security.txt - Affected code identified
+2025-04-13 12:47:10,708 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/crossdomain.xml - Affected code identified
+2025-04-13 12:47:16,061 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/sitemap.xml - Affected code identified
+2025-04-13 12:47:21,375 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/clientaccesspolicy.xml - Affected code identified
+2025-04-13 12:47:26,627 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/robots.txt - Affected code identified
+2025-04-13 12:47:26,627 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5503/package.json - Parameter: x-frame-options
+2025-04-13 12:47:31,786 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/manifest.json - Affected code identified
+2025-04-13 12:47:31,787 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/package.json
+2025-04-13 12:47:37,042 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/package.json - Affected code identified
+2025-04-13 12:47:37,042 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/humans.txt
+2025-04-13 12:47:37,042 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/login
+2025-04-13 12:47:42,587 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/humans.txt - Affected code identified
+2025-04-13 12:47:42,587 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/register
+2025-04-13 12:47:48,735 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/login - Affected code identified
+2025-04-13 12:47:48,735 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/signin
+2025-04-13 12:47:48,735 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/join
+2025-04-13 12:47:48,736 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/signup
+2025-04-13 12:47:55,059 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/register - Affected code identified
+2025-04-13 12:48:01,222 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/signin - Affected code identified
+2025-04-13 12:48:07,523 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/signup - Affected code identified
+2025-04-13 12:48:13,882 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/join - Affected code identified
+2025-04-13 12:48:13,882 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/auth
+2025-04-13 12:48:13,883 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/authentication
+2025-04-13 12:48:19,927 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/auth - Affected code identified
+2025-04-13 12:48:19,927 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/account
+2025-04-13 12:48:25,945 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/authentication - Affected code identified
+2025-04-13 12:48:25,946 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/admin
+2025-04-13 12:48:25,946 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/profile
+2025-04-13 12:48:31,826 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/account - Affected code identified
+2025-04-13 12:48:31,827 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/user
+2025-04-13 12:48:37,885 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/admin - Affected code identified
+2025-04-13 12:48:43,911 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/profile - Affected code identified
+2025-04-13 12:48:49,980 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/user - Affected code identified
+2025-04-13 12:48:49,980 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/administrator
+2025-04-13 12:48:49,981 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/management
+2025-04-13 12:48:55,442 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/administrator - Affected code identified
+2025-04-13 12:48:55,442 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/control
+2025-04-13 12:48:55,442 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/backend
+2025-04-13 12:49:01,756 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/management - Affected code identified
+2025-04-13 12:49:07,788 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/control - Affected code identified
+2025-04-13 12:49:07,788 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/manage
+2025-04-13 12:49:07,789 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/dashboard
+2025-04-13 12:49:07,789 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/cp
+2025-04-13 12:49:13,271 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/backend - Affected code identified
+2025-04-13 12:49:18,743 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/cp - Affected code identified
+2025-04-13 12:49:24,142 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/manage - Affected code identified
+2025-04-13 12:49:29,600 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/dashboard - Affected code identified
+2025-04-13 12:49:29,600 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/portal
+2025-04-13 12:49:56,070 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/portal - Affected code identified
+2025-04-13 12:50:01,491 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/api/v2
+2025-04-13 12:50:01,491 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/swagger
+2025-04-13 12:50:01,492 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/api/v1
+2025-04-13 12:50:01,492 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/api
+2025-04-13 12:50:01,492 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/api/docs
+2025-04-13 12:50:11,770 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/api - Affected code identified
+2025-04-13 12:50:17,167 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/api/v1 - Affected code identified
+2025-04-13 12:50:22,539 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/swagger - Affected code identified
+2025-04-13 12:50:28,059 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/api/docs - Affected code identified
+2025-04-13 12:50:33,379 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/api/v2 - Affected code identified
+2025-04-13 12:50:33,379 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/swagger-ui
+2025-04-13 12:50:33,380 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/swagger-ui.html
+2025-04-13 12:50:33,380 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/graphql
+2025-04-13 12:50:33,380 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/graphiql
+2025-04-13 12:50:33,380 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/playground
+2025-04-13 12:50:38,769 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/swagger-ui.html - Affected code identified
+2025-04-13 12:50:44,117 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/swagger-ui - Affected code identified
+2025-04-13 12:50:49,459 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/graphql - Affected code identified
+2025-04-13 12:50:49,460 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/docs
+2025-04-13 12:50:55,049 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/playground - Affected code identified
+2025-04-13 12:51:00,567 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/graphiql - Affected code identified
+2025-04-13 12:51:05,950 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/docs - Affected code identified
+2025-04-13 12:51:05,950 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/tutorial
+2025-04-13 12:51:05,950 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/manual
+2025-04-13 12:51:05,951 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/guide
+2025-04-13 12:51:05,951 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/readme
+2025-04-13 12:51:05,951 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/documentation
+2025-04-13 12:51:05,951 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/changelog
+2025-04-13 12:51:11,389 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/tutorial - Affected code identified
+2025-04-13 12:51:16,630 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/guide - Affected code identified
+2025-04-13 12:51:21,871 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/manual - Affected code identified
+2025-04-13 12:51:21,871 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/help
+2025-04-13 12:51:27,158 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/changelog - Affected code identified
+2025-04-13 12:51:32,567 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/documentation - Affected code identified
+2025-04-13 12:51:38,067 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/readme - Affected code identified
+2025-04-13 12:51:43,358 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/help - Affected code identified
+2025-04-13 12:51:43,358 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/license
+2025-04-13 12:51:43,359 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/javascript/
+2025-04-13 12:51:43,359 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/css/
+2025-04-13 12:51:43,359 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/js/
+2025-04-13 12:51:48,491 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/license - Affected code identified
+2025-04-13 12:51:53,932 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/css/ - Affected code identified
+2025-04-13 12:51:53,933 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/styles/
+2025-04-13 12:51:59,054 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/javascript/ - Affected code identified
+2025-04-13 12:52:04,232 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/js/ - Affected code identified
+2025-04-13 12:52:04,232 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/images/
+2025-04-13 12:52:09,430 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/styles/ - Affected code identified
+2025-04-13 12:52:14,691 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/images/ - Affected code identified
+2025-04-13 12:52:14,691 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/img/
+2025-04-13 12:52:14,692 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/media/
+2025-04-13 12:52:19,911 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/img/ - Affected code identified
+2025-04-13 12:52:19,911 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/assets/
+2025-04-13 12:52:25,045 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/media/ - Affected code identified
+2025-04-13 12:52:25,045 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/static/
+2025-04-13 12:52:25,045 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/dist/
+2025-04-13 12:52:30,117 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/assets/ - Affected code identified
+2025-04-13 12:52:30,118 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/build/
+2025-04-13 12:52:30,118 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/public/
+2025-04-13 12:52:35,332 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/dist/ - Affected code identified
+2025-04-13 12:52:40,806 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/static/ - Affected code identified
+2025-04-13 12:52:46,232 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/public/ - Affected code identified
+2025-04-13 12:52:51,487 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/build/ - Affected code identified
+2025-04-13 12:52:51,487 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/uploads/
+2025-04-13 12:52:51,488 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/files/
+2025-04-13 12:52:51,488 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/downloads/
+2025-04-13 12:52:56,699 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/uploads/ - Affected code identified
+2025-04-13 12:52:56,700 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/vendor/
+2025-04-13 12:53:01,913 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/downloads/ - Affected code identified
+2025-04-13 12:53:07,105 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/files/ - Affected code identified
+2025-04-13 12:53:07,105 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/lib/
+2025-04-13 12:53:07,105 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/libs/
+2025-04-13 12:53:12,453 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/vendor/ - Affected code identified
+2025-04-13 12:53:17,895 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/lib/ - Affected code identified
+2025-04-13 12:53:23,298 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/libs/ - Affected code identified
+2025-04-13 12:53:23,298 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/plugins/
+2025-04-13 12:53:23,298 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/templates/
+2025-04-13 12:53:28,612 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/plugins/ - Affected code identified
+2025-04-13 12:53:28,612 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/components/
+2025-04-13 12:53:33,848 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/templates/ - Affected code identified
+2025-04-13 12:53:33,848 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/modules/
+2025-04-13 12:53:33,848 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/themes/
+2025-04-13 12:53:39,032 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/components/ - Affected code identified
+2025-04-13 12:53:39,032 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/node_modules/
+2025-04-13 12:53:44,409 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/modules/ - Affected code identified
+2025-04-13 12:53:59,322 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/node_modules/ - Affected code identified
+2025-04-13 12:54:04,705 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/themes/ - Affected code identified
+2025-04-13 12:54:04,705 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/.git/
+2025-04-13 12:54:04,705 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/.svn/
+2025-04-13 12:54:04,705 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/.env
+2025-04-13 12:54:09,863 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/.git/ - Affected code identified
+2025-04-13 12:54:09,864 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/.npmrc
+2025-04-13 12:54:15,063 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/.env - Affected code identified
+2025-04-13 12:54:15,064 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/.gitignore
+2025-04-13 12:54:15,064 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/config.js
+2025-04-13 12:54:20,230 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/.npmrc - Affected code identified
+2025-04-13 12:54:25,399 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/.svn/ - Affected code identified
+2025-04-13 12:54:25,400 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/.editorconfig
+2025-04-13 12:54:30,629 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/.gitignore - Affected code identified
+2025-04-13 12:54:35,893 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/.editorconfig - Affected code identified
+2025-04-13 12:54:41,105 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/config.js - Affected code identified
+2025-04-13 12:54:41,106 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/composer.json
+2025-04-13 12:54:41,106 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/settings.json
+2025-04-13 12:54:41,106 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/web.config
+2025-04-13 12:54:41,106 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/server.xml
+2025-04-13 12:54:41,106 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/config.json
+2025-04-13 12:54:41,107 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/config.php
+2025-04-13 12:54:46,388 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/settings.json - Affected code identified
+2025-04-13 12:54:51,705 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/composer.json - Affected code identified
+2025-04-13 12:54:56,971 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/web.config - Affected code identified
+2025-04-13 12:55:01,127 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 12:55:01,199 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 12:55:01,201 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 12:55:01,201 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 12:55:01,201 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 12:55:01,201 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 12:55:07,337 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 12:55:07,399 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 12:55:07,400 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 12:55:07,400 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 12:55:07,400 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 12:55:07,400 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 12:55:07,401 - zap_scanner - INFO - Source code root directory set to: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2
+2025-04-13 12:55:07,401 - zap_scanner - INFO - Source code root directory set to: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2
+2025-04-13 12:55:07,401 - zap_scanner - INFO - Starting comprehensive scan Llama-2 for http://localhost:5503
+2025-04-13 12:55:07,401 - zap_scanner - INFO - Starting comprehensive scan of target: http://localhost:5503
+2025-04-13 12:55:07,402 - zap_scanner - INFO - Starting ZAP daemon...
+2025-04-13 12:55:07,402 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-13 12:55:12,641 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-13 12:55:12,643 - zap_scanner - INFO - Found ZAP JAR at: C:\Program Files\ZAP\Zed Attack Proxy\zap-2.16.1.jar
+2025-04-13 12:55:12,643 - zap_scanner - INFO - Starting ZAP with command: java -Xmx4G -Djava.io.tmpdir=c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\tmp -Djava.net.preferIPv4Stack=true -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -jar C:\Program Files\ZAP\Zed Attack Proxy\zap-2.16.1.jar -daemon -port 8090 -host 127.0.0.1 -config api.key=5tjkc409k4oaacd69qob5p6uri -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true -config connection.timeoutInSecs=1200 -config ascan.maxScanDurationInMins=120 -config ascan.threadPerHost=8 -config view.mode=standard -config ascan.attackStrength=HIGH -config ascan.alertThreshold=LOW -config pscan.maxAlertsPerRule=0 -config pscan.maxBodySizeInBytes=10000000 -config ajaxSpider.browserId=chrome-headless -config ajaxSpider.maxDuration=600 -config ajaxSpider.clickDefaultElems=true -config ajaxSpider.clickElemsOnce=false -config ajaxSpider.eventWait=2000 -config ajaxSpider.maxCrawlDepth=10 -config ajaxSpider.maxCrawlStates=0 -config ajaxSpider.numberOfBrowsers=4 -config ajaxSpider.randomInputs=true -config pscans.pscanner(10020).enabled=true -config pscans.pscanner(10020).alertThreshold=LOW -config pscans.pscanner(10021).enabled=true -config pscans.pscanner(10021).alertThreshold=LOW -config pscans.pscanner(10038).enabled=true -config pscans.pscanner(10038).alertThreshold=LOW -config pscans.pscanner(10035).enabled=true -config pscans.pscanner(10035).alertThreshold=LOW -config pscans.pscanner(10063).enabled=true -config pscans.pscanner(10063).alertThreshold=LOW -config pscans.pscanner(10054).enabled=true -config pscans.pscanner(10054).alertThreshold=LOW -config pscans.pscanner(10024).enabled=true -config pscans.pscanner(10024).alertThreshold=LOW -config pscans.pscanner(10025).enabled=true -config pscans.pscanner(10025).alertThreshold=LOW -config pscans.pscanner(10027).enabled=true -config pscans.pscanner(10027).alertThreshold=LOW -config pscans.pscanner(10096).enabled=true -config pscans.pscanner(10096).alertThreshold=LOW -config pscans.pscanner(10097).enabled=true -config pscans.pscanner(10097).alertThreshold=LOW -config pscans.pscanner(10094).enabled=true -config pscans.pscanner(10094).alertThreshold=LOW -config pscans.pscanner(90022).enabled=true -config pscans.pscanner(90022).alertThreshold=LOW -config pscans.pscanner(10109).enabled=true -config pscans.pscanner(10109).alertThreshold=LOW -config pscans.pscanner(10110).enabled=true -config pscans.pscanner(10110).alertThreshold=LOW -config ascan.attackStrength=HIGH -config ascan.alertThreshold=LOW
+2025-04-13 12:55:12,653 - zap_scanner - INFO - Waiting for ZAP to initialize (15 seconds)...
+2025-04-13 12:55:27,668 - zap_scanner - INFO - Connecting to ZAP API (attempt 1/5)...
+2025-04-13 12:55:27,739 - zap_scanner - INFO - Successfully connected to ZAP 2.16.1
+2025-04-13 12:55:27,740 - zap_scanner - INFO - ZAP startup completed in 20.34 seconds
+2025-04-13 12:55:27,740 - zap_scanner - INFO - Configuring comprehensive passive scanning...
+2025-04-13 12:55:27,740 - zap_scanner - INFO - Enabling ALL passive scanners...
+2025-04-13 12:55:27,750 - zap_scanner - INFO - Setting passive scan to analyze ALL traffic (not just in-scope)...
+2025-04-13 12:55:27,755 - zap_scanner - INFO - Setting LOW alert threshold for all passive scanners to increase detection rate...
+2025-04-13 12:55:28,074 - zap_scanner - INFO - Setting unlimited maximum alerts per rule...
+2025-04-13 12:55:28,078 - zap_scanner - INFO - Passive scanning fully configured with 57 enabled scanners.
+2025-04-13 12:55:28,078 - zap_scanner - INFO - Accessing target URL: http://localhost:5503
+2025-04-13 12:55:28,129 - zap_scanner - INFO - Initial target access complete
+2025-04-13 12:55:30,143 - zap_scanner - INFO - Performing extended spidering...
+2025-04-13 12:55:32,679 - zap_scanner - INFO - Extended spidering completed
+2025-04-13 12:55:32,679 - zap_scanner - INFO - Checking passive scan status after initial discovery...
+2025-04-13 12:55:32,679 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-13 12:55:32,695 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 0.0s)
+2025-04-13 12:55:32,696 - zap_scanner - INFO - Passive scan completed in 0.0 seconds
+2025-04-13 12:55:32,696 - zap_scanner - INFO - Starting traditional spider scan with maxChildren=30
+2025-04-13 12:55:32,716 - zap_scanner - INFO - Spider scan started with ID: 0
+2025-04-13 12:55:32,716 - zap_scanner - INFO - Monitoring Spider progress for scan ID: 0
+2025-04-13 12:55:32,721 - zap_scanner - INFO - Spider progress: 0% (elapsed: 0.0s)
+2025-04-13 12:55:34,736 - zap_scanner - INFO - Spider progress: 100% (elapsed: 2.0s)
+2025-04-13 12:55:34,737 - zap_scanner - INFO - Spider scan completed in 2.0 seconds
+2025-04-13 12:55:34,738 - zap_scanner - INFO - Starting AJAX Spider for JavaScript-rendered content...
+2025-04-13 12:55:34,763 - zap_scanner - INFO - Running AJAX Spider on target: http://localhost:5503
+2025-04-13 12:55:34,771 - zap_scanner - INFO - AJAX Spider started: OK
+2025-04-13 12:55:34,772 - zap_scanner - INFO - Monitoring AJAX Spider progress...
+2025-04-13 12:55:34,776 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 0%, elapsed: 0.0s)
+2025-04-13 12:55:39,789 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 0%, elapsed: 5.0s)
+2025-04-13 12:55:44,807 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 1%, elapsed: 10.0s)
+2025-04-13 12:55:49,816 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 2%, elapsed: 15.0s)
+2025-04-13 12:55:54,823 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 3%, elapsed: 20.1s)
+2025-04-13 12:55:59,837 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 4%, elapsed: 25.1s)
+2025-04-13 12:56:04,848 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 5%, elapsed: 30.1s)
+2025-04-13 12:56:09,859 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 5%, elapsed: 35.1s)
+2025-04-13 12:56:14,863 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 6%, elapsed: 40.1s)
+2025-04-13 12:56:19,881 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 7%, elapsed: 45.1s)
+2025-04-13 12:56:24,889 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 8%, elapsed: 50.1s)
+2025-04-13 12:56:29,899 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 9%, elapsed: 55.1s)
+2025-04-13 12:56:34,907 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 10%, elapsed: 60.1s)
+2025-04-13 12:56:39,924 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 10%, elapsed: 65.2s)
+2025-04-13 12:56:44,941 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 11%, elapsed: 70.2s)
+2025-04-13 12:56:49,954 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 12%, elapsed: 75.2s)
+2025-04-13 12:56:54,974 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 13%, elapsed: 80.2s)
+2025-04-13 12:56:59,994 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 14%, elapsed: 85.2s)
+2025-04-13 12:57:04,999 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 15%, elapsed: 90.2s)
+2025-04-13 12:57:10,007 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 15%, elapsed: 95.2s)
+2025-04-13 12:57:15,021 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 16%, elapsed: 100.2s)
+2025-04-13 12:57:20,029 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 17%, elapsed: 105.3s)
+2025-04-13 12:57:25,037 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 18%, elapsed: 110.3s)
+2025-04-13 12:57:30,044 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 19%, elapsed: 115.3s)
+2025-04-13 12:57:35,049 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 20%, elapsed: 120.3s)
+2025-04-13 12:57:40,054 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 20%, elapsed: 125.3s)
+2025-04-13 12:57:45,064 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 21%, elapsed: 130.3s)
+2025-04-13 12:57:50,077 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 22%, elapsed: 135.3s)
+2025-04-13 12:57:55,093 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 23%, elapsed: 140.3s)
+2025-04-13 12:58:00,101 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 24%, elapsed: 145.3s)
+2025-04-13 12:58:05,119 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 25%, elapsed: 150.3s)
+2025-04-13 12:58:10,126 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 25%, elapsed: 155.4s)
+2025-04-13 12:58:15,138 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 26%, elapsed: 160.4s)
+2025-04-13 12:58:20,151 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 27%, elapsed: 165.4s)
+2025-04-13 12:58:25,169 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 28%, elapsed: 170.4s)
+2025-04-13 12:58:30,210 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 29%, elapsed: 175.4s)
+2025-04-13 12:58:35,224 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 30%, elapsed: 180.5s)
+2025-04-13 12:58:40,232 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 30%, elapsed: 185.5s)
+2025-04-13 12:58:45,245 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 31%, elapsed: 190.5s)
+2025-04-13 12:58:50,263 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 32%, elapsed: 195.5s)
+2025-04-13 12:58:55,271 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 33%, elapsed: 200.5s)
+2025-04-13 12:59:00,287 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 34%, elapsed: 205.5s)
+2025-04-13 12:59:05,308 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 35%, elapsed: 210.5s)
+2025-04-13 12:59:10,325 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 35%, elapsed: 215.6s)
+2025-04-13 12:59:15,340 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 36%, elapsed: 220.6s)
+2025-04-13 12:59:20,359 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 37%, elapsed: 225.6s)
+2025-04-13 12:59:25,371 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 38%, elapsed: 230.6s)
+2025-04-13 12:59:30,377 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 39%, elapsed: 235.6s)
+2025-04-13 12:59:35,395 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 40%, elapsed: 240.6s)
+2025-04-13 12:59:40,407 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 40%, elapsed: 245.6s)
+2025-04-13 12:59:45,437 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 41%, elapsed: 250.7s)
+2025-04-13 12:59:50,449 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 42%, elapsed: 255.7s)
+2025-04-13 12:59:55,463 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 43%, elapsed: 260.7s)
+2025-04-13 13:00:00,468 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 44%, elapsed: 265.7s)
+2025-04-13 13:00:05,477 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 45%, elapsed: 270.7s)
+2025-04-13 13:00:10,490 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 45%, elapsed: 275.7s)
+2025-04-13 13:00:15,499 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 46%, elapsed: 280.7s)
+2025-04-13 13:00:20,518 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 47%, elapsed: 285.7s)
+2025-04-13 13:00:25,529 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 48%, elapsed: 290.8s)
+2025-04-13 13:00:30,547 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 49%, elapsed: 295.8s)
+2025-04-13 13:00:35,559 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 50%, elapsed: 300.8s)
+2025-04-13 13:00:40,566 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 50%, elapsed: 305.8s)
+2025-04-13 13:00:45,572 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 51%, elapsed: 310.8s)
+2025-04-13 13:00:50,631 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 52%, elapsed: 315.9s)
+2025-04-13 13:00:55,710 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 53%, elapsed: 320.9s)
+2025-04-13 13:01:00,728 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 54%, elapsed: 326.0s)
+2025-04-13 13:01:05,742 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 55%, elapsed: 331.0s)
+2025-04-13 13:01:10,758 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 55%, elapsed: 336.0s)
+2025-04-13 13:01:15,778 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 56%, elapsed: 341.0s)
+2025-04-13 13:01:20,792 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 57%, elapsed: 346.0s)
+2025-04-13 13:01:25,805 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 58%, elapsed: 351.0s)
+2025-04-13 13:04:55,490 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 93%, elapsed: 560.7s)
+2025-04-13 13:05:00,504 - zap_scanner - INFO - AJAX Spider completed with status: stopped (elapsed: 565.7s)
+2025-04-13 13:05:00,845 - zap_scanner - INFO - AJAX Spider found 2000 results
+2025-04-13 13:05:01,143 - zap_scanner - INFO - AJAX Spider completed with 2000 URLs discovered
+2025-04-13 13:05:01,143 - zap_scanner - INFO - Sample of AJAX-discovered URLs:
+2025-04-13 13:05:01,144 - zap_scanner - INFO -  - Unknown URL
+2025-04-13 13:05:01,144 - zap_scanner - INFO -  - Unknown URL
+2025-04-13 13:05:01,144 - zap_scanner - INFO -  - Unknown URL
+2025-04-13 13:05:01,145 - zap_scanner - INFO -  - Unknown URL
+2025-04-13 13:05:01,145 - zap_scanner - INFO -  - Unknown URL
+2025-04-13 13:05:01,146 - zap_scanner - INFO - Waiting for passive scan to process all discovered content...
+2025-04-13 13:05:01,146 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-13 13:05:01,153 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 0.0s)
+2025-04-13 13:05:01,153 - zap_scanner - INFO - Passive scan completed in 0.0 seconds
+2025-04-13 13:05:01,153 - zap_scanner - INFO - Configuring comprehensive active scanning...
+2025-04-13 13:05:01,154 - zap_scanner - INFO - Enabling ALL active scanners...
+2025-04-13 13:05:01,176 - zap_scanner - INFO - Setting HIGH attack strength for all policies...
+2025-04-13 13:05:01,225 - zap_scanner - INFO - Setting LOW alert threshold for all policies...
+2025-04-13 13:05:01,264 - zap_scanner - INFO - Configuring scan policy options...
+2025-04-13 13:05:01,317 - zap_scanner - INFO - Enabled 47 active scanners in category: Other
+2025-04-13 13:05:01,317 - zap_scanner - INFO - Active scanning fully configured with 47 enabled scanners
+2025-04-13 13:05:01,317 - zap_scanner - INFO - Starting active scan with comprehensive settings...
+2025-04-13 13:05:01,326 - zap_scanner - INFO - Active scan started with ID: 0
+2025-04-13 13:05:01,326 - zap_scanner - INFO - Monitoring Active scan progress for scan ID: 0
+2025-04-13 13:05:01,330 - zap_scanner - INFO - Active scan progress: 0% (elapsed: 0.0s)
+2025-04-13 13:05:11,366 - zap_scanner - INFO - Active scan progress: 1% (elapsed: 10.0s)
+2025-04-13 13:05:16,388 - zap_scanner - INFO - Active scan progress: 2% (elapsed: 15.1s)
+2025-04-13 13:05:21,419 - zap_scanner - INFO - Active scan progress: 3% (elapsed: 20.1s)
+2025-04-13 13:05:31,456 - zap_scanner - INFO - Active scan progress: 11% (elapsed: 30.1s)
+2025-04-13 13:05:36,480 - zap_scanner - INFO - Active scan progress: 13% (elapsed: 35.2s)
+2025-04-13 13:05:41,492 - zap_scanner - INFO - Active scan progress: 15% (elapsed: 40.2s)
+2025-04-13 13:05:46,504 - zap_scanner - INFO - Active scan progress: 18% (elapsed: 45.2s)
+2025-04-13 13:05:51,524 - zap_scanner - INFO - Active scan progress: 20% (elapsed: 50.2s)
+2025-04-13 13:05:56,542 - zap_scanner - INFO - Active scan progress: 25% (elapsed: 55.2s)
+2025-04-13 13:06:01,557 - zap_scanner - INFO - Active scan progress: 27% (elapsed: 60.2s)
+2025-04-13 13:06:16,587 - zap_scanner - INFO - Active scan progress: 29% (elapsed: 75.3s)
+2025-04-13 13:06:21,599 - zap_scanner - INFO - Active scan progress: 32% (elapsed: 80.3s)
+2025-04-13 13:06:26,618 - zap_scanner - INFO - Active scan progress: 35% (elapsed: 85.3s)
+2025-04-13 13:06:31,629 - zap_scanner - INFO - Active scan progress: 37% (elapsed: 90.3s)
+2025-04-13 13:06:37,407 - zap_scanner - INFO - Active scan progress: 40% (elapsed: 96.1s)
+2025-04-13 13:06:42,426 - zap_scanner - INFO - Active scan progress: 41% (elapsed: 101.1s)
+2025-04-13 13:06:47,437 - zap_scanner - INFO - Active scan progress: 45% (elapsed: 106.1s)
+2025-04-13 13:06:52,468 - zap_scanner - INFO - Active scan progress: 48% (elapsed: 111.1s)
+2025-04-13 13:06:57,491 - zap_scanner - INFO - Active scan progress: 49% (elapsed: 116.2s)
+2025-04-13 13:07:02,505 - zap_scanner - INFO - Active scan progress: 50% (elapsed: 121.2s)
+2025-04-13 13:07:07,542 - zap_scanner - INFO - Active scan progress: 51% (elapsed: 126.2s)
+2025-04-13 13:07:12,551 - zap_scanner - INFO - Active scan progress: 59% (elapsed: 131.2s)
+2025-04-13 13:07:17,565 - zap_scanner - INFO - Active scan progress: 62% (elapsed: 136.2s)
+2025-04-13 13:07:22,572 - zap_scanner - INFO - Active scan progress: 70% (elapsed: 141.2s)
+2025-04-13 13:07:27,583 - zap_scanner - INFO - Active scan progress: 73% (elapsed: 146.3s)
+2025-04-13 13:07:32,600 - zap_scanner - INFO - Active scan progress: 89% (elapsed: 151.3s)
+2025-04-13 13:07:37,624 - zap_scanner - INFO - Active scan progress: 100% (elapsed: 156.3s)
+2025-04-13 13:07:37,625 - zap_scanner - INFO - Active scan scan completed in 156.3 seconds
+2025-04-13 13:07:37,625 - zap_scanner - INFO - Performing final passive scan check...
+2025-04-13 13:07:37,626 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-13 13:07:37,631 - zap_scanner - INFO - Passive scan in progress: 59 records left to scan (elapsed: 0.0s)
+2025-04-13 13:07:42,642 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 5.0s)
+2025-04-13 13:07:42,643 - zap_scanner - INFO - Passive scan completed in 5.0 seconds
+2025-04-13 13:07:42,643 - zap_scanner - INFO - Collecting source files for code analysis...
+2025-04-13 13:08:00,739 - zap_scanner - INFO - Collected 0 potential source files for analysis
+2025-04-13 13:08:00,778 - zap_scanner - INFO - Collected 0 source files for code analysis
+2025-04-13 13:08:00,778 - zap_scanner - INFO - Retrieving final scan alerts...
+2025-04-13 13:08:01,120 - zap_scanner - INFO - Found 102 total alerts
+2025-04-13 13:08:01,121 - zap_scanner - INFO - Processing alert details and extracting affected code...
+2025-04-13 13:08:01,121 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503
+2025-04-13 13:08:18,101 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503 - Affected code identified
+2025-04-13 13:08:18,103 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/robots.txt
+2025-04-13 13:08:18,103 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/sitemap.xml
+2025-04-13 13:08:20,920 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/robots.txt - Affected code identified
+2025-04-13 13:08:23,639 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/sitemap.xml - Affected code identified
+2025-04-13 13:08:23,640 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/.well-known/security.txt
+2025-04-13 13:08:23,640 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/crossdomain.xml
+2025-04-13 13:08:23,640 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/manifest.json
+2025-04-13 13:08:23,640 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/clientaccesspolicy.xml
+2025-04-13 13:08:26,333 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/.well-known/security.txt - Affected code identified
+2025-04-13 13:08:29,103 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/crossdomain.xml - Affected code identified
+2025-04-13 13:08:29,104 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/humans.txt
+2025-04-13 13:08:31,780 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/manifest.json - Affected code identified
+2025-04-13 13:08:34,525 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/clientaccesspolicy.xml - Affected code identified
+2025-04-13 13:08:37,448 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/humans.txt - Affected code identified
+2025-04-13 13:08:37,449 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5503/package.json - Parameter: x-frame-options
+2025-04-13 13:08:37,449 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/package.json
+2025-04-13 13:08:41,180 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/package.json - Affected code identified
+2025-04-13 13:08:41,181 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/.well-known
+2025-04-13 13:08:44,960 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/.well-known - Affected code identified
+2025-04-13 13:08:44,960 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5503/node_modules/.vite/deps/react.js?v=2c498bac - Parameter: x-frame-options
+2025-04-13 13:08:44,960 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5503/@id/__x00__react/jsx-dev-runtime - Parameter: x-frame-options
+2025-04-13 13:08:44,961 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5503/ - Parameter: x-frame-options
+2025-04-13 13:08:44,961 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5503/node_modules/.vite/deps/chunk-FAW2VN4A.js?v=2c498bac - Parameter: x-frame-options
+2025-04-13 13:08:47,733 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5503/node_modules/vite/dist/client/env.mjs - Parameter: x-frame-options
+2025-04-13 13:08:47,733 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/@id/__x00__react/jsx-dev-runtime
+2025-04-13 13:08:47,733 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/favicon.ico
+2025-04-13 13:08:47,735 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/node_modules/.vite/deps/react.js?v=2c498bac
+2025-04-13 13:08:47,735 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/node_modules/.vite/deps/chunk-FAW2VN4A.js?v=2c498bac
+2025-04-13 13:08:47,735 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/api/get_chat_rooms
+2025-04-13 13:08:47,735 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/
+2025-04-13 13:08:50,422 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/node_modules/.vite/deps/react.js?v=2c498bac - Affected code identified
+2025-04-13 13:08:53,074 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/favicon.ico - Affected code identified
+2025-04-13 13:08:55,810 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/@id/__x00__react/jsx-dev-runtime - Affected code identified
+2025-04-13 13:08:55,810 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/node_modules/vite/dist/client/env.mjs
+2025-04-13 13:08:55,810 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5503/src/App.jsx - Parameter: x-frame-options
+2025-04-13 13:09:13,225 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/ - Affected code identified
+2025-04-13 13:09:15,863 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/api/get_chat_rooms - Affected code identified
+2025-04-13 13:09:15,863 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5503/@react-refresh - Parameter: x-frame-options
+2025-04-13 13:09:18,824 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/node_modules/.vite/deps/chunk-FAW2VN4A.js?v=2c498bac - Affected code identified
+2025-04-13 13:09:21,629 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/node_modules/vite/dist/client/env.mjs - Affected code identified
+2025-04-13 13:09:21,629 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/@react-refresh
+2025-04-13 13:09:24,311 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/@react-refresh - Affected code identified
+2025-04-13 13:09:24,311 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/src/App.jsx
+2025-04-13 13:09:24,339 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/src/App.jsx - Affected code identified
+2025-04-13 13:09:24,339 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5503/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=2c498bac - Parameter: x-frame-options
+2025-04-13 13:09:44,610 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=2c498bac
+2025-04-13 13:09:47,553 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=2c498bac - Affected code identified
+2025-04-13 13:09:47,554 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5503/@vite/client - Parameter: x-frame-options
+2025-04-13 13:09:47,554 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5503/node_modules/.vite/deps/axios.js?v=2c498bac - Parameter: x-frame-options
+2025-04-13 13:09:47,554 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5503/node_modules/.vite/deps/chunk-SAOJIHTQ.js?v=2c498bac - Parameter: x-frame-options
+2025-04-13 13:09:51,238 - zap_scanner - INFO - [Medium] Application Error Disclosure - URL: http://localhost:5503/@vite/client - Affected code identified at line 388
+2025-04-13 13:09:51,239 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/@vite/client
+2025-04-13 13:09:54,827 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/@vite/client - Affected code identified
+2025-04-13 13:10:02,105 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/node_modules/.vite/deps/chunk-SAOJIHTQ.js?v=2c498bac
+2025-04-13 13:10:02,106 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/node_modules/.vite/deps/axios.js?v=2c498bac
+2025-04-13 13:10:05,157 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/node_modules/.vite/deps/chunk-SAOJIHTQ.js?v=2c498bac - Affected code identified
+2025-04-13 13:10:08,271 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/node_modules/.vite/deps/axios.js?v=2c498bac - Affected code identified
+2025-04-13 13:10:14,386 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5503/node_modules/.vite/deps/react-dom_client.js?v=2c498bac - Parameter: x-frame-options
+2025-04-13 13:10:14,387 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/node_modules/.vite/deps/react-dom_client.js?v=2c498bac
+2025-04-13 13:10:22,033 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/node_modules/.vite/deps/react-dom_client.js?v=2c498bac - Affected code identified
+2025-04-13 13:10:49,127 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/api/login
+2025-04-13 13:10:53,390 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/api/login - Affected code identified
+2025-04-13 13:10:57,133 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/api/logout
+2025-04-13 13:11:00,813 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/api/logout - Affected code identified
+2025-04-13 13:11:03,823 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/api/send_message
+2025-04-13 13:11:06,875 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/api/send_message - Affected code identified
+2025-04-13 13:11:09,531 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/api/get_messages
+2025-04-13 13:11:12,182 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/api/get_messages - Affected code identified
+2025-04-13 13:11:14,754 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5503/api/create_chat_room
+2025-04-13 13:11:17,386 - zap_scanner - INFO - [Medium] Cross-Domain Misconfiguration - URL: http://localhost:5503/api/create_chat_room - Affected code identified
+2025-04-13 13:11:17,387 - zap_scanner - INFO - [High] Obchodzenie Œcie¿ki - URL: http://localhost:5503/node_modules/.vite/deps/chunk-FAW2VN4A.js?v=%2Fchunk-FAW2VN4A.js - Parameter: v
+2025-04-13 13:11:17,387 - zap_scanner - INFO - [High] Obchodzenie Œcie¿ki - URL: http://localhost:5503/node_modules/.vite/deps/react.js?v=%2Freact.js - Parameter: v
+2025-04-13 13:11:17,388 - zap_scanner - INFO - Alert categories summary:
+2025-04-13 13:11:17,388 - zap_scanner - INFO - Category 'Security Headers': 55 alerts
+2025-04-13 13:11:17,388 - zap_scanner - INFO -   Examples: Content Security Policy (CSP) Header Not Set, Content Security Policy (CSP) Header Not Set, Content Security Policy (CSP) Header Not Set
+2025-04-13 13:11:17,388 - zap_scanner - INFO - Category 'Other': 41 alerts
+2025-04-13 13:11:17,389 - zap_scanner - INFO -   Examples: Cross-Domain Misconfiguration, Cross-Domain Misconfiguration, Cross-Domain Misconfiguration
+2025-04-13 13:11:17,389 - zap_scanner - INFO - Category 'Information Disclosure': 6 alerts
+2025-04-13 13:11:17,389 - zap_scanner - INFO -   Examples: Information Disclosure - Suspicious Comments, Information Disclosure - Debug Error Messages, Information Disclosure - Suspicious Comments
+2025-04-13 13:11:17,389 - zap_scanner - INFO - Scan completed in 969 seconds (16.1 minutes)
+2025-04-13 13:11:17,389 - zap_scanner - INFO - Risk breakdown: High=2, Medium=72, Low=22, Info=0
+2025-04-13 13:11:17,390 - zap_scanner - INFO - Vulnerabilities with affected code identified: 45/102
+2025-04-13 13:11:17,390 - zap_scanner - INFO - Cleaning up ZAP resources...
+2025-04-13 13:11:17,390 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-13 13:11:17,390 - zap_scanner - INFO - Terminating existing ZAP process...
+2025-04-13 13:11:22,979 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-13 13:11:22,980 - zap_scanner - INFO - Generating affected code report...
+2025-04-13 13:11:22,983 - zap_scanner - INFO - Saved affected code report to: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2\.zap_code_report.md
+2025-04-13 13:11:22,984 - zap_scanner - INFO - Saving scan results to c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2\.zap_results.json
+2025-04-13 13:11:22,993 - zap_scanner - INFO - Scan Llama-2 completed successfully with 2 high, 72 medium, 22 low risks
+2025-04-13 13:11:23,013 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-13 13:11:23,014 - zap_scanner - INFO - Terminating existing ZAP process...
+2025-04-13 13:11:28,292 - zap_scanner - INFO - ZAP process cleanup complete

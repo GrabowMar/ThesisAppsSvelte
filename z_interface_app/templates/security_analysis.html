@@ -4,27 +4,23 @@
 <div class="flex min-h-screen bg-gray-100">
   <!-- Main Content Area -->
   <div class="flex-1 flex flex-col overflow-hidden">
-    <!-- Top Navigation and Filter Bar -->
+    <!-- Top Navigation and Filter Bar - Maps to UIController.setupFilters -->
     <div class="bg-gray-200 border-b border-gray-400 p-1">
       <div class="flex justify-between items-center">
         <!-- Left Side Controls -->
         <div class="flex items-center space-x-2">
           <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs rounded-sm">Back</a>
           <button id="refreshAnalysis" class="action-btn h-6 px-2 text-xs rounded-sm">Run Analysis</button>
-          {% if not full_scan %}
-          <a href="?full=true" class="action-btn h-6 px-2 text-xs rounded-sm">Full Scan</a>
-          {% endif %}
+          {% if not full_scan %}<a href="?full=true" class="action-btn h-6 px-2 text-xs rounded-sm">Full Scan</a>{% endif %}
         </div>
         
-        <!-- Right Side Filters -->
+        <!-- Right Side Filters - Maps to SecurityAnalysisPage.setupFilters -->
         <div class="flex items-center space-x-2">
           <input type="text" id="searchIssues" placeholder="Search issues..." 
                  class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
           <select id="toolFilter" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
             <option value="all">All Tools</option>
-            {% for tool in summary.tool_counts.keys() %}
-            <option value="{{ tool }}">{{ tool }}</option>
-            {% endfor %}
+            {% for tool in summary.tool_counts.keys() %}<option value="{{ tool }}">{{ tool }}</option>{% endfor %}
           </select>
           <select id="severityFilter" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
             <option value="all">All Severities</option>
@@ -48,7 +44,7 @@
 
     <!-- Analysis Content Area -->
     <div class="p-2 flex-1 overflow-auto space-y-2">
-      <!-- Analysis Summary -->
+      <!-- Analysis Summary - Maps to StateManager properties -->
       <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
           <h2 class="font-bold text-sm">Security Analysis Summary</h2>
@@ -68,22 +64,16 @@
               </div>
             </div>
             
-            <!-- Severity distribution -->
+            <!-- Severity distribution - Maps to SecurityAnalysis metrics -->
             <div class="border border-gray-300 p-2 rounded-sm">
               <div class="text-xs font-bold mb-1">Severity</div>
               <div class="flex flex-col space-y-1">
+                {% for severity, color in [('high', 'red'), ('medium', 'yellow'), ('low', 'blue')] %}
                 <div class="flex items-center">
-                  <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-                  <div class="text-xs text-gray-700">High: {{ summary.severity_counts.high if summary and summary.severity_counts else 0 }}</div>
+                  <div class="w-3 h-3 rounded-full bg-{{ color }}-500 mr-2"></div>
+                  <div class="text-xs text-gray-700">{{ severity|title }}: {{ summary.severity_counts[severity] if summary and summary.severity_counts else 0 }}</div>
                 </div>
-                <div class="flex items-center">
-                  <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
-                  <div class="text-xs text-gray-700">Medium: {{ summary.severity_counts.medium if summary and summary.severity_counts else 0 }}</div>
-                </div>
-                <div class="flex items-center">
-                  <div class="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
-                  <div class="text-xs text-gray-700">Low: {{ summary.severity_counts.low if summary and summary.severity_counts else 0 }}</div>
-                </div>
+                {% endfor %}
               </div>
             </div>
             
@@ -114,7 +104,7 @@
         </div>
       </div>
 
-      <!-- Issues List -->
+      <!-- Issues List - Maps to SecurityAnalysisPage.setupFilters target -->
       {% if issues %}
       <div id="filterStatus" class="bg-blue-50 border border-blue-300 rounded-sm p-2 text-xs text-blue-800 mb-2 hidden"></div>
       
@@ -129,29 +119,24 @@
           <!-- Issue Header -->
           <div class="p-2">
             <div class="flex items-center space-x-2 mb-1">
-              <!-- Tool Badge -->
-              <span class="text-xs px-2 py-0.5 border rounded-sm
-                {% if issue.tool == 'pattern_scan' %}bg-green-100 text-green-800 border-green-700
-                {% elif issue.tool == 'dependency_check' %}bg-purple-100 text-purple-800 border-purple-700
-                {% elif issue.tool == 'semgrep' %}bg-orange-100 text-orange-800 border-orange-700
-                {% elif issue.tool == 'jshint' %}bg-indigo-100 text-indigo-800 border-indigo-700
-                {% else %}bg-gray-100 text-gray-800 border-gray-700{% endif %}">
-                {{ issue.tool }}
-              </span>
+              <!-- Tool & Severity Badges - UIController components -->
+              {% set tool_colors = {
+                'pattern_scan': 'green',
+                'dependency_check': 'purple',
+                'semgrep': 'orange',
+                'jshint': 'indigo'
+              } %}
+              {% set severity_colors = {
+                'high': 'red',
+                'medium': 'yellow',
+                'low': 'blue'
+              } %}
               
-              <!-- Severity Badge -->
-              <span class="text-xs px-2 py-0.5 border rounded-sm
-                {% if issue.severity == 'high' %}bg-red-100 text-red-800 border-red-700
-                {% elif issue.severity == 'medium' %}bg-yellow-100 text-yellow-800 border-yellow-700
-                {% elif issue.severity == 'low' %}bg-blue-100 text-blue-800 border-blue-700
-                {% else %}bg-gray-100 text-gray-800 border-gray-700{% endif %}">
-                {{ issue.severity }}
-              </span>
-              
-              <!-- Confidence Badge -->
+              <span class="text-xs px-2 py-0.5 border rounded-sm bg-{{ tool_colors.get(issue.tool, 'gray') }}-100 text-{{ tool_colors.get(issue.tool, 'gray') }}-800 border-{{ tool_colors.get(issue.tool, 'gray') }}-700">{{ issue.tool }}</span>
+              <span class="text-xs px-2 py-0.5 border rounded-sm bg-{{ severity_colors.get(issue.severity, 'gray') }}-100 text-{{ severity_colors.get(issue.severity, 'gray') }}-800 border-{{ severity_colors.get(issue.severity, 'gray') }}-700">{{ issue.severity }}</span>
               <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400 rounded-sm">{{ issue.confidence }}</span>
               
-              <!-- Expand Button -->
+              <!-- Expand Button - SecurityAnalysisPage.setupExpandButtons target -->
               <button class="ml-auto action-btn h-6 px-2 text-xs expand-btn rounded-sm">Expand</button>
             </div>
             
@@ -162,7 +147,7 @@
                 <div class="text-xs text-gray-600">{{ issue.issue_text }}</div>
               </div>
               
-              <!-- Collapsible Details -->
+              <!-- Collapsible Details - SecurityAnalysisPage.setupExpandButtons toggle target -->
               <div class="issue-details hidden space-y-2">
                 {% if issue.fix_suggestion %}
                 <div class="text-xs bg-white border border-gray-300 p-2 rounded-sm">
@@ -223,7 +208,7 @@
     </div>
   </div>
 
-  <!-- Right Sidebar -->
+  <!-- Right Sidebar - Feature-specific components -->
   <aside class="w-64 bg-gray-200 border-l border-gray-400 flex flex-col">
     <div class="p-2 space-y-2 flex-1 overflow-auto">
       <!-- Analysis Information Card -->
@@ -232,26 +217,18 @@
           <h2 class="font-bold text-xs">Analysis Info</h2>
         </div>
         <div class="p-2 text-xs space-y-1">
+          {% for label, value in [
+            ('Model:', model),
+            ('App:', app_num),
+            ('Scan Type:', "Full" if full_scan else "Quick"),
+            ('Last Scan:', summary.scan_time if summary else 'Never'),
+            ('Files Affected:', summary.files_affected if summary else 0)
+          ] %}
           <div class="flex justify-between">
-            <span class="text-gray-600">Model:</span>
-            <span class="font-bold">{{ model }}</span>
+            <span class="text-gray-600">{{ label }}</span>
+            <span class="font-bold">{{ value }}</span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">App:</span>
-            <span class="font-bold">{{ app_num }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Scan Type:</span>
-            <span class="font-bold">{{ "Full" if full_scan else "Quick" }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Last Scan:</span>
-            <span class="font-bold">{{ summary.scan_time if summary else 'Never' }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Files Affected:</span>
-            <span class="font-bold">{{ summary.files_affected if summary else 0 }}</span>
-          </div>
+          {% endfor %}
         </div>
       </div>
 
@@ -283,37 +260,44 @@
           <h2 class="font-bold text-xs">Security Resources</h2>
         </div>
         <div class="p-2 text-xs space-y-2">
-          <div class="font-medium">Common Security Resources:</div>
+          {% for section, links in [
+            ('Common Security Resources:', [
+              ('https://owasp.org/www-project-top-ten/', 'OWASP Top 10'),
+              ('https://cheatsheetseries.owasp.org/', 'OWASP Cheat Sheets'),
+              ('https://developer.mozilla.org/en-US/docs/Web/Security', 'MDN Web Security')
+            ]),
+            ('Tool Documentation:', [
+              ('https://semgrep.dev/docs/', 'Semgrep Docs'),
+              ('https://jshint.com/docs/', 'JSHint Docs')
+            ])
+          ] %}
+          <div class="font-medium">{{ section }}</div>
           <ul class="list-disc pl-4 space-y-1">
-            <li><a href="https://owasp.org/www-project-top-ten/" target="_blank" class="text-blue-600 hover:underline">OWASP Top 10</a></li>
-            <li><a href="https://cheatsheetseries.owasp.org/" target="_blank" class="text-blue-600 hover:underline">OWASP Cheat Sheets</a></li>
-            <li><a href="https://developer.mozilla.org/en-US/docs/Web/Security" target="_blank" class="text-blue-600 hover:underline">MDN Web Security</a></li>
+            {% for url, text in links %}
+            <li><a href="{{ url }}" target="_blank" class="text-blue-600 hover:underline">{{ text }}</a></li>
+            {% endfor %}
           </ul>
-
-          <!-- Tool specific resources -->
-          <div class="font-medium">Tool Documentation:</div>
-          <ul class="list-disc pl-4 space-y-1">
-            <li><a href="https://semgrep.dev/docs/" target="_blank" class="text-blue-600 hover:underline">Semgrep Docs</a></li>
-            <li><a href="https://jshint.com/docs/" target="_blank" class="text-blue-600 hover:underline">JSHint Docs</a></li>
-          </ul>
+          {% endfor %}
         </div>
       </div>
 
-      <!-- AI Analysis Card -->
+      <!-- AI Analysis Card - SecurityAnalysisPage feature component -->
       <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
           <h2 class="font-bold text-xs">AI Analysis</h2>
         </div>
         <div class="p-2">
           <div class="space-y-2">
-            <button id="aiAnalyzeBtn" class="action-btn h-6 px-2 text-xs w-full rounded-sm">
-              Analyze with Claude
-            </button>
+            <button id="aiAnalyzeBtn" class="action-btn h-6 px-2 text-xs w-full rounded-sm">Analyze with Claude</button>
             <select id="aiModel" class="h-6 px-2 text-xs w-full border border-gray-300 rounded-sm">
-              <option value="claude-3-opus-20240229">Claude 3 Opus</option>
-              <option value="claude-3-sonnet-20240229">Claude 3 Sonnet</option>
-              <option value="gpt-4">GPT-4</option>
-              <option value="gpt-3.5-turbo">GPT-3.5</option>
+              {% for model_id, model_name in [
+                ('claude-3-opus-20240229', 'Claude 3 Opus'),
+                ('claude-3-sonnet-20240229', 'Claude 3 Sonnet'),
+                ('gpt-4', 'GPT-4'),
+                ('gpt-3.5-turbo', 'GPT-3.5')
+              ] %}
+              <option value="{{ model_id }}">{{ model_name }}</option>
+              {% endfor %}
             </select>
           </div>
           
@@ -321,8 +305,7 @@
           <div id="aiResponse" class="mt-2 text-xs hidden">
             <div class="flex justify-between items-center mb-1">
               <div class="font-bold">AI Analysis:</div>
-              <button id="closeAiResponse" aria-label="Close AI analysis" 
-                      class="text-xs text-gray-500 hover:text-gray-700">×</button>
+              <button id="closeAiResponse" aria-label="Close AI analysis" class="text-xs text-gray-500 hover:text-gray-700">×</button>
             </div>
             <div class="border border-gray-300 p-2 whitespace-pre-wrap rounded-sm overflow-auto max-h-80" id="aiContent"></div>
           </div>
@@ -333,27 +316,22 @@
 </div>
 
 <script>
-  // Initialize when DOM is ready
+// Initialize when DOM is ready - Follows initialization pattern in dashboard.js
 $(document).ready(function() {
-  // Initialize core App functionality
-  if (typeof App !== 'undefined' && App.Features.securityAnalysisPage) {
-    App.Features.securityAnalysisPage.init();
+  // Try to use the structured App object if available (matches FeatureManager pattern)
+  if (typeof window.dashboardApp !== 'undefined' && window.dashboardApp.featureManager?.securityAnalysisPage) {
+    // Let the feature manager initialize this feature
+    window.dashboardApp.featureManager.securityAnalysisPage.init();
   } else {
-    // Fallback implementation if App object isn't available
+    // Fallback implementation - SecurityAnalysisPage class methods
     setupSecurityAnalysis();
   }
 
   function setupSecurityAnalysis() {
-    // Setup filter functionality
+    // Methods matching SecurityAnalysisPage class methods
     setupFilters();
-    
-    // Setup expand/collapse functionality
     setupExpandButtons();
-    
-    // Setup refresh button
     setupRefreshButton();
-    
-    // Setup AI analysis button
     setupAiAnalysis();
   }
   
@@ -364,7 +342,8 @@ $(document).ready(function() {
     const $fileFilter = $('#fileFilter');
     const $filterStatus = $('#filterStatus');
     
-    function applyFilters() {
+    // Apply filters with debounce (similar to UIController's debounce method)
+    const applyFilters = function() {
       const searchText = $searchInput.val()?.toLowerCase() || '';
       const selectedTool = $toolFilter.val() || 'all';
       const selectedSeverity = $severityFilter.val() || 'all';
@@ -381,12 +360,11 @@ $(document).ready(function() {
         const file = $issue.data('file');
         const searchable = $issue.data('searchable')?.toLowerCase() || '';
         
-        const toolMatch = selectedTool === 'all' || tool === selectedTool;
-        const severityMatch = selectedSeverity === 'all' || severity === selectedSeverity;
-        const fileMatch = selectedFile === 'all' || file === selectedFile;
-        const searchMatch = !searchText || searchable.includes(searchText);
+        const isVisible = (selectedTool === 'all' || tool === selectedTool) && 
+                          (selectedSeverity === 'all' || severity === selectedSeverity) && 
+                          (selectedFile === 'all' || file === selectedFile) && 
+                          (!searchText || searchable.includes(searchText));
         
-        const isVisible = toolMatch && severityMatch && fileMatch && searchMatch;
         $issue.toggle(isVisible);
         
         if (isVisible) {
@@ -400,31 +378,27 @@ $(document).ready(function() {
       
       // Update filter status indicator
       if (selectedTool !== 'all' || selectedSeverity !== 'all' || selectedFile !== 'all' || searchText) {
-        // Create summary text for visible issues
-        const toolText = Object.entries(toolCounts)
-          .map(([tool, count]) => `${tool}: ${count}`)
-          .join(', ');
+        const filterDetails = [
+          `${visibleCount} filtered issues`,
+          Object.entries(toolCounts).map(([tool, count]) => `${tool}: ${count}`).join(', '),
+          Object.entries(severityCounts).filter(([_, count]) => count > 0)
+                .map(([sev, count]) => `${sev}: ${count}`).join(', ')
+        ].filter(Boolean).join(' | ');
         
-        const severityText = Object.entries(severityCounts)
-          .filter(([_, count]) => count > 0)
-          .map(([sev, count]) => `${sev}: ${count}`)
-          .join(', ');
-        
-        $filterStatus.text(`Showing ${visibleCount} filtered issues (${toolText} | ${severityText})`);
+        $filterStatus.text(`Showing ${filterDetails}`);
         $filterStatus.removeClass('hidden');
       } else {
         $filterStatus.addClass('hidden');
       }
-    }
+    };
     
-    // Add search with debounce
+    // Use debounce pattern from UtilityService
     let searchTimeout;
     $searchInput.on('input', function() {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(applyFilters, 300);
     });
     
-    // Add filter change handlers
     $toolFilter.on('change', applyFilters);
     $severityFilter.on('change', applyFilters);
     $fileFilter.on('change', applyFilters);
@@ -460,33 +434,33 @@ $(document).ready(function() {
     $aiAnalyzeBtn.on('click', function() {
       const aiModel = $('#aiModel').val() || 'claude-3-opus-20240229';
       
-      // Button loading state
+      // Button loading state - Similar to UIController loading indicator
       const originalText = $aiAnalyzeBtn.text();
       $aiAnalyzeBtn.prop('disabled', true);
       $aiAnalyzeBtn.text('Analyzing...');
       
-      // Collect visible issues for analysis
-      const issueData = [];
-      $('#issueList > div:not([style*="display: none"])').each(function() {
+      // Collect visible issues for analysis - Filter based on current state
+      const issueData = $('#issueList > div:visible').map(function() {
         const $issue = $(this);
-        issueData.push({
+        return {
           type: $issue.find('.font-bold').text() || 'Unknown',
           text: $issue.find('.text-gray-600').text() || '',
           severity: $issue.data('severity') || 'unknown',
           tool: $issue.data('tool') || 'unknown',
           file: $issue.data('file') || 'unknown',
           code: $issue.find('code').text() || ''
-        });
-      });
+        };
+      }).get();
       
       if (issueData.length === 0) {
+        // Show error toast - Similar to UIController.showToast method
         alert('No issues found to analyze');
         $aiAnalyzeBtn.prop('disabled', false);
         $aiAnalyzeBtn.text(originalText);
         return;
       }
       
-      // Call API for analysis
+      // Call API for analysis - Uses ApiService pattern
       $.ajax({
         url: '/api/analyze-security',
         method: 'POST',
@@ -501,7 +475,7 @@ $(document).ready(function() {
         $aiResponse.removeClass('hidden');
       })
       .fail(function(jqXHR) {
-        // Handle specific error cases
+        // Error handling - Similar to UtilityService.logError
         let errorMsg = jqXHR.responseJSON?.error || 'Analysis failed';
         if (errorMsg.includes('quota')) {
           errorMsg = 'API quota exceeded. Please try again later or use a different model.';
@@ -519,7 +493,6 @@ $(document).ready(function() {
       });
     });
     
-    // Close AI response
     $closeAiResponse.on('click', function() {
       $aiResponse.addClass('hidden');
     });

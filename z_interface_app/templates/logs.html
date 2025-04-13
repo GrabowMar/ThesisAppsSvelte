@@ -1,8 +1,6 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="space-y-2 max-w-7xl mx-auto"><!-- Centered container with vertical spacing -->
-
+<div class="space-y-2 max-w-7xl mx-auto" data-feature="logs-view" data-model="{{ model }}" data-app-num="{{ app_num }}">
   <!-- Header Section -->
   <div class="border border-gray-400 bg-white p-2">
     <div class="flex items-center justify-between">
@@ -11,34 +9,28 @@
         <p class="text-xs text-gray-600 mt-1">{{ model }} - App {{ app_num }}</p>
       </div>
       <div class="flex items-center space-x-2">
-        <!-- Back to Dashboard Button -->
         <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs flex items-center">
           <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
           </svg>
           Back to Dashboard
         </a>
-        <!-- Refresh Logs Button -->
-        <button id="refreshLogs" class="action-btn h-6 px-2 text-xs bg-blue-600 text-white hover:bg-blue-700 flex items-center">
+        <button id="refreshLogs" class="action-btn h-6 px-2 text-xs bg-blue-600 text-white hover:bg-blue-700 flex items-center" data-action="refresh-logs">
           <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
           </svg>
           Refresh Logs
         </button>
       </div>
     </div>
   </div>
-
   <!-- Control Panel -->
   <div class="border border-gray-400 bg-white p-2">
     <h2 class="font-bold text-sm mb-2">Control Panel</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
       <div>
         <label class="block text-xs font-medium text-gray-700">Log Level Filter</label>
-        <select id="logLevel"
-                class="mt-1 h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full">
+        <select id="logLevel" data-filter="log-level" class="mt-1 h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full">
           <option value="all">All Levels</option>
           <option value="error">Error</option>
           <option value="warning">Warning</option>
@@ -48,8 +40,7 @@
       </div>
       <div>
         <label class="block text-xs font-medium text-gray-700">Auto-Refresh Interval</label>
-        <select id="refreshInterval"
-                class="mt-1 h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full">
+        <select id="refreshInterval" data-config="refresh-interval" class="mt-1 h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full">
           <option value="0">Manual Refresh</option>
           <option value="5000">5 seconds</option>
           <option value="15000">15 seconds</option>
@@ -59,7 +50,6 @@
       </div>
     </div>
   </div>
-
   <!-- Logs Section -->
   <div class="border border-gray-400 bg-white p-2">
     <h2 class="font-bold text-sm mb-2">Logs</h2>
@@ -68,140 +58,202 @@
       <div class="border border-gray-300 p-2">
         <div class="flex justify-between items-center mb-2">
           <h3 class="font-bold text-xs text-gray-900">Backend Logs</h3>
-          <button class="copy-logs-btn action-btn h-6 px-2 text-xs bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  data-target="backendLogs">
+          <button class="copy-logs-btn action-btn h-6 px-2 text-xs bg-gray-100 text-gray-700 hover:bg-gray-200" 
+                  data-action="copy-logs" data-target="backendLogs">
             Copy Logs
           </button>
         </div>
-        <div id="backendLogs" class="relative">
-          <pre class="bg-gray-50 rounded p-2 overflow-x-auto overflow-y-auto max-h-[600px] text-xs font-mono whitespace-pre-wrap break-words text-gray-700"
-               style="scrollbar-width: thin;">
+        <div id="backendLogs" class="relative" data-logs-type="backend">
+          <pre class="bg-gray-50 rounded p-2 overflow-x-auto overflow-y-auto max-h-[600px] text-xs font-mono whitespace-pre-wrap break-words text-gray-700" style="scrollbar-width: thin;">
 <code>{{ logs.backend }}</code></pre>
-          <div class="absolute top-0 right-0 mt-2 mr-2 hidden">
+          <div class="copy-notification absolute top-0 right-0 mt-2 mr-2 hidden">
             <span class="px-2 py-1 bg-green-500 text-white text-xs rounded">Copied!</span>
           </div>
         </div>
       </div>
-
-      <!-- Frontend Logs -->
-      <div class="border border-gray-300 p-2">
-        <div class="flex justify-between items-center mb-2">
-          <h3 class="font-bold text-xs text-gray-900">Frontend Logs</h3>
-          <button class="copy-logs-btn action-btn h-6 px-2 text-xs bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  data-target="frontendLogs">
-            Copy Logs
-          </button>
-        </div>
-        <div id="frontendLogs" class="relative">
-          <pre class="bg-gray-50 rounded p-2 overflow-x-auto overflow-y-auto max-h-[600px] text-xs font-mono whitespace-pre-wrap break-words text-gray-700"
-               style="scrollbar-width: thin;">
-<code>{{ logs.frontend }}</code></pre>
-          <div class="absolute top-0 right-0 mt-2 mr-2 hidden">
-            <span class="px-2 py-1 bg-green-500 text-white text-xs rounded">Copied!</span>
-          </div>
-        </div>
-      </div>
+  <!-- Frontend Logs -->
+  <div class="border border-gray-300 p-2">
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="font-bold text-xs text-gray-900">Frontend Logs</h3>
+      <button class="copy-logs-btn action-btn h-6 px-2 text-xs bg-gray-100 text-gray-700 hover:bg-gray-200" 
+              data-action="copy-logs" data-target="frontendLogs">
+        Copy Logs
+      </button>
     </div>
+    <div id="frontendLogs" class="relative" data-logs-type="frontend">
+      <pre class="bg-gray-50 rounded p-2 overflow-x-auto overflow-y-auto max-h-[600px] text-xs font-mono whitespace-pre-wrap break-words text-gray-700" style="scrollbar-width: thin;">
+<code>{{ logs.frontend }}</code></pre>
+<div class="copy-notification absolute top-0 right-0 mt-2 mr-2 hidden">
+<span class="px-2 py-1 bg-green-500 text-white text-xs rounded">Copied!</span>
+</div>
+</div>
+</div>
+</div>
   </div>
-</div><!-- End unified container -->
-
+</div>
+{% block extra_scripts %}
 <script>
-// Initialize when DOM is ready
-$(document).ready(function() {
-  let refreshInterval;
-  
-  // Set up copy buttons functionality
-  $('.copy-logs-btn').on('click', function() {
-    const targetId = $(this).data('target');
-    const logsText = $(`#${targetId} pre code`).text();
+/**
+ * LogsViewFeature - Manages log viewing functionality
+ * Follows FeatureManager pattern in dashboard.js
+ */
+class LogsViewFeature {
+  constructor(dashboard) {
+    this.dashboard = dashboard;
+    this.refreshTimer = null;
+    this.logContentCache = {};
     
-    // Use clipboard API to copy text
-    navigator.clipboard.writeText(logsText).then(function() {
-      const $notification = $(`#${targetId} .absolute`);
-      $notification.removeClass('hidden');
-      setTimeout(function() {
-        $notification.addClass('hidden');
-      }, 2000);
-    });
-  });
+    this.selectors = {
+      refreshButton: '#refreshLogs',
+      refreshInterval: '#refreshInterval',
+      logLevel: '#logLevel',
+      copyButtons: '.copy-logs-btn',
+      logContainers: '[data-logs-type]'
+    };
+  }
 
-  // Set up refresh logs functionality
-  function refreshLogs() {
-    $.ajax({
-      url: window.location.href,
-      method: 'GET'
-    })
-    .done(function(html) {
-      const $parsedHtml = $(html);
-      
-      // Update backend logs
-      const backendLogs = $parsedHtml.find('#backendLogs pre code').text();
-      $('#backendLogs pre code').text(backendLogs);
-      
-      // Update frontend logs
-      const frontendLogs = $parsedHtml.find('#frontendLogs pre code').text();
-      $('#frontendLogs pre code').text(frontendLogs);
-    })
-    .fail(function(jqXHR) {
-      console.error('Error refreshing logs:', jqXHR.statusText);
+  init() {
+    this.cacheLogContents();
+    this.setupEventListeners();
+    this.initAutoRefresh();
+  }
+
+  cacheLogContents() {
+    $(this.selectors.logContainers).each((i, container) => {
+      const $container = $(container);
+      const type = $container.data('logs-type');
+      this.logContentCache[type] = $container.find('pre code').text();
     });
   }
 
-  // Manual refresh button
-  $('#refreshLogs').on('click', refreshLogs);
+  setupEventListeners() {
+    $(this.selectors.refreshButton).on('click', () => this.refreshLogs());
+    $(this.selectors.refreshInterval).on('change', e => this.updateRefreshInterval($(e.target).val()));
+    $(this.selectors.logLevel).on('change', e => this.filterLogs($(e.target).val()));
+    $(this.selectors.copyButtons).on('click', e => this.copyLogs($(e.currentTarget).data('target')));
+    $(document).on('visibilitychange', () => this.handleVisibilityChange());
+  }
 
-  // Auto-refresh interval handling
-  $('#refreshInterval').on('change', function() {
-    if (refreshInterval) clearInterval(refreshInterval);
-    
-    const interval = parseInt($(this).val(), 10);
+  initAutoRefresh() {
+    const interval = parseInt($(this.selectors.refreshInterval).val(), 10);
     if (interval > 0) {
-      refreshInterval = setInterval(refreshLogs, interval);
+      this.startAutoRefresh(interval);
     }
-  });
+  }
 
-  // Log level filtering
-  $('#logLevel').on('change', function() {
-    const level = $(this).val().toLowerCase();
+  startAutoRefresh(interval) {
+    this.stopAutoRefresh();
+    if (interval > 0) {
+      this.refreshTimer = setInterval(() => this.refreshLogs(), interval);
+    }
+  }
+
+  stopAutoRefresh() {
+    if (this.refreshTimer) {
+      clearInterval(this.refreshTimer);
+      this.refreshTimer = null;
+    }
+  }
+
+  updateRefreshInterval(interval) {
+    this.startAutoRefresh(parseInt(interval, 10));
+  }
+
+  handleVisibilityChange() {
+    if (document.hidden) {
+      this.stopAutoRefresh();
+    } else {
+      const interval = parseInt($(this.selectors.refreshInterval).val(), 10);
+      this.startAutoRefresh(interval);
+    }
+  }
+
+  filterLogs(level) {
+    level = level.toLowerCase();
     
-    $('pre code').each(function() {
-      const $code = $(this);
-      
-      if (!$code.data('fullText')) {
-        $code.data('fullText', $code.text());
-      }
-      
-      const fullText = $code.data('fullText');
+    $(this.selectors.logContainers).each((i, container) => {
+      const $container = $(container);
+      const type = $container.data('logs-type');
+      const $code = $container.find('pre code');
       
       if (level === 'all') {
-        $code.text(fullText);
+        $code.text(this.logContentCache[type] || '');
       } else {
-        const lines = fullText.split('\n');
-        const filtered = lines.filter(function(line) {
-          return line.toLowerCase().includes(level);
-        });
+        const lines = this.logContentCache[type].split('\n');
+        const filtered = lines.filter(line => line.toLowerCase().includes(level));
         $code.text(filtered.join('\n'));
       }
     });
-  });
-
-  // Initialize auto-refresh if an interval is set by default
-  const initialInterval = parseInt($('#refreshInterval').val(), 10);
-  if (initialInterval > 0) {
-    refreshInterval = setInterval(refreshLogs, initialInterval);
   }
 
-  // Pause auto-refresh when page is hidden
-  $(document).on('visibilitychange', function() {
-    if (document.hidden) {
-      if (refreshInterval) clearInterval(refreshInterval);
-    } else {
-      const interval = parseInt($('#refreshInterval').val(), 10);
-      if (interval > 0) {
-        refreshInterval = setInterval(refreshLogs, interval);
+  refreshLogs() {
+    $.ajax({
+      url: window.location.href,
+      method: 'GET',
+      cache: false
+    })
+    .done(html => {
+      const $parsedHtml = $(html);
+      
+      $(this.selectors.logContainers).each((i, container) => {
+        const $container = $(container);
+        const type = $container.data('logs-type');
+        const selector = `#${$container.attr('id')} pre code`;
+        
+        // Update cache with new content
+        this.logContentCache[type] = $parsedHtml.find(selector).text();
+        
+        // Apply current filter
+        this.filterLogs($(this.selectors.logLevel).val());
+      });
+    })
+    .fail(error => {
+      console.error('Error refreshing logs:', error);
+      if (this.dashboard.utilityService) {
+        this.dashboard.utilityService.logError({
+          message: 'Failed to refresh logs',
+          error
+        });
+      }
+    });
+  }
+
+  copyLogs(targetId) {
+    const text = $(`#${targetId} pre code`).text();
+    
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        const $notification = $(`#${targetId} .copy-notification`);
+        $notification.removeClass('hidden');
+        setTimeout(() => $notification.addClass('hidden'), 2000);
+      })
+      .catch(err => {
+        console.error('Failed to copy logs:', err);
+        if (this.dashboard.utilityService) {
+          this.dashboard.utilityService.logError({
+            message: 'Failed to copy logs to clipboard',
+            error: err
+          });
+        }
+      });
+  }
+}
+
+// Initialize when DOM is ready - Matches Dashboard initialization pattern
+$(document).ready(function() {
+  // Create a minimal dashboard instance for the LogsViewFeature
+  const dashboardConfig = {
+    utilityService: {
+      logError: function(data) {
+        console.error('Error:', data.message, data.error);
       }
     }
-  });
+  };
+  
+  // Initialize logs feature
+  window.logsFeature = new LogsViewFeature(dashboardConfig);
+  window.logsFeature.init();
 });
 </script>
+{% endblock %}
 {% endblock %}

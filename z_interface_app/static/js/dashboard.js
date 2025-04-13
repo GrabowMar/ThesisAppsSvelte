@@ -1965,6 +1965,28 @@ class ZapScan {
         document.getElementById('progressLog').textContent = '';
       });
     }
+    
+    // Add this new code for expand buttons
+    document.addEventListener('click', (event) => {
+      // Check if the clicked element is an expand button
+      if (event.target.classList.contains('expand-btn')) {
+        // Find the details container within the alert item
+        const alertItem = event.target.closest('.alert-item');
+        if (!alertItem) return;
+        
+        const details = alertItem.querySelector('.alert-details');
+        if (!details) return;
+        
+        // Toggle visibility
+        if (details.classList.contains('hidden')) {
+          details.classList.remove('hidden');
+          event.target.textContent = 'Collapse';
+        } else {
+          details.classList.add('hidden');
+          event.target.textContent = 'Expand';
+        }
+      }
+    });
   }
 
   /**

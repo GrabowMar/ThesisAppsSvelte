@@ -4,7 +4,7 @@
 <div class="flex min-h-screen bg-gray-100">
   <!-- Main Content Area -->
   <div class="flex-1 flex flex-col overflow-hidden">
-    <!-- Top Navigation and Filter Bar -->
+    <!-- Top Navigation and Filter Bar - ZapScan.setupEventListeners target elements -->
     <div class="bg-gray-200 border-b border-gray-400 p-1">
       <div class="flex justify-between items-center">
         <div class="flex items-center space-x-2">
@@ -13,31 +13,24 @@
           <button id="stopScan" class="action-btn h-6 px-2 text-xs hidden rounded-sm">Stop Scan</button>
         </div>
         <div class="flex items-center space-x-2">
-          <input type="text" id="searchIssues" placeholder="Search issues..." 
-                 aria-label="Search issues" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
+          <input type="text" id="searchIssues" placeholder="Search issues..." aria-label="Search issues" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
           <select id="riskFilter" aria-label="Filter by risk level" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
             <option value="all">All Risks</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-            <option value="Informational">Info</option>
+            <option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option><option value="Informational">Info</option>
           </select>
           <select id="confidenceFilter" aria-label="Filter by confidence level" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
             <option value="all">All Confidence</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
+            <option value="High">High</option><option value="Medium">Medium</option><option value="Low">Low</option>
           </select>
           <select id="codeFilter" aria-label="Filter by code availability" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
             <option value="all">All Alerts</option>
-            <option value="hasCode">With Code</option>
-            <option value="noCode">Without Code</option>
+            <option value="hasCode">With Code</option><option value="noCode">Without Code</option>
           </select>
         </div>
       </div>
     </div>
 
-    <!-- Status Cards Section -->
+    <!-- Status Cards Section - matches ZapScan state properties -->
     <div class="p-2 grid grid-cols-5 gap-2">
       <div class="border border-gray-400 bg-white p-2 rounded-sm shadow-sm">
         <div class="text-xs text-gray-600">Scan Status</div>
@@ -79,28 +72,14 @@
           <!-- Vulnerability Distribution -->
           <div class="border border-gray-300 bg-gray-50 p-2 rounded-sm">
             <h3 class="text-xs font-bold mb-1">Vulnerability Distribution</h3>
-            <div class="flex flex-col space-y-1">
-              <div id="vulnDistribution" class="h-20 w-full">
-                <!-- Canvas for chart -->
-                <canvas id="vulnerabilityChart" height="80"></canvas>
-              </div>
-            </div>
+            <div class="h-20 w-full"><canvas id="vulnerabilityChart" height="80"></canvas></div>
           </div>
           
           <!-- Vulnerability Categories -->
           <div class="border border-gray-300 bg-gray-50 p-2 rounded-sm">
             <h3 class="text-xs font-bold mb-1">Vulnerability Categories</h3>
             <div class="text-xs space-y-1 max-h-20 overflow-y-auto" id="vulnCategories">
-              {% set categories = {
-                "Injection": 0,
-                "XSS": 0,
-                "Information Disclosure": 0,
-                "Security Headers": 0, 
-                "Authentication": 0,
-                "Authorization": 0,
-                "Other": 0
-              } %}
-              
+              {% set categories = {"Injection": 0, "XSS": 0, "Information Disclosure": 0, "Security Headers": 0, "Authentication": 0, "Authorization": 0, "Other": 0} %}
               {% for alert in alerts %}
                 {% if "SQL Injection" in alert.name or "Command Injection" in alert.name or "LDAP Injection" in alert.name %}
                   {% set _ = categories.update({"Injection": categories["Injection"] + 1}) %}
@@ -121,10 +100,7 @@
               
               {% for category, count in categories.items() %}
                 {% if count > 0 %}
-                  <div class="flex justify-between">
-                    <span>{{ category }}:</span>
-                    <span class="font-medium">{{ count }}</span>
-                  </div>
+                  <div class="flex justify-between"><span>{{ category }}:</span><span class="font-medium">{{ count }}</span></div>
                 {% endif %}
               {% endfor %}
               
@@ -138,34 +114,22 @@
           <div class="border border-gray-300 bg-gray-50 p-2 rounded-sm">
             <h3 class="text-xs font-bold mb-1">Code Analysis Metrics</h3>
             <div class="text-xs space-y-1">
-              <!-- Count vulnerabilities with code -->
-              {% set code_count = 0 %}
+              {% set code_count = namespace(value=0) %}
               {% for alert in alerts %}
                 {% if alert.affected_code is defined and alert.affected_code and alert.affected_code.snippet %}
-                  {% set code_count = code_count + 1 %}
+                  {% set code_count.value = code_count.value + 1 %}
                 {% endif %}
               {% endfor %}
               
               <div class="flex justify-between">
-                <span>Vulnerabilities with code:</span>
-                <span class="font-medium">{{ code_count }}</span>
+                <span>Vulnerabilities with code:</span><span class="font-medium">{{ code_count.value }}</span>
               </div>
               <div class="flex justify-between">
                 <span>Code coverage:</span>
-                <span class="font-medium">
-                  {% if alerts|length > 0 %}
-                    {{ (code_count / alerts|length * 100)|round|int }}%
-                  {% else %}
-                    0%
-                  {% endif %}
-                </span>
+                <span class="font-medium">{% if alerts|length > 0 %}{{ (code_count.value / alerts|length * 100)|round|int }}%{% else %}0%{% endif %}</span>
               </div>
               <div class="flex justify-between">
-                <span>Source files analyzed:</span>
-                <span class="font-medium" id="sourceFilesAnalyzed">
-                  <!-- Will be populated by JavaScript -->
-                  {{ code_count }}
-                </span>
+                <span>Source files analyzed:</span><span class="font-medium" id="sourceFilesAnalyzed">{{ code_count.value }}</span>
               </div>
             </div>
           </div>
@@ -177,30 +141,12 @@
           <div class="border border-gray-300 bg-gray-50 p-2 rounded-sm">
             <h3 class="text-xs font-bold mb-1">Scan Configuration</h3>
             <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-              <div class="flex justify-between">
-                <span>Active Scan Rules:</span>
-                <span class="font-medium">100+</span>
-              </div>
-              <div class="flex justify-between">
-                <span>Passive Scan Rules:</span>
-                <span class="font-medium">50+</span>
-              </div>
-              <div class="flex justify-between">
-                <span>Attack Strength:</span>
-                <span class="font-medium">High</span>
-              </div>
-              <div class="flex justify-between">
-                <span>Alert Threshold:</span>
-                <span class="font-medium">Low</span>
-              </div>
-              <div class="flex justify-between">
-                <span>Spider Depth:</span>
-                <span class="font-medium">Unlimited</span>
-              </div>
-              <div class="flex justify-between">
-                <span>AJAX Spider:</span>
-                <span class="font-medium">Enabled</span>
-              </div>
+              <div class="flex justify-between"><span>Active Scan Rules:</span><span class="font-medium">100+</span></div>
+              <div class="flex justify-between"><span>Passive Scan Rules:</span><span class="font-medium">50+</span></div>
+              <div class="flex justify-between"><span>Attack Strength:</span><span class="font-medium">High</span></div>
+              <div class="flex justify-between"><span>Alert Threshold:</span><span class="font-medium">Low</span></div>
+              <div class="flex justify-between"><span>Spider Depth:</span><span class="font-medium">Unlimited</span></div>
+              <div class="flex justify-between"><span>AJAX Spider:</span><span class="font-medium">Enabled</span></div>
             </div>
           </div>
           
@@ -208,56 +154,24 @@
           <div class="border border-gray-300 bg-gray-50 p-2 rounded-sm">
             <h3 class="text-xs font-bold mb-1">Scan Performance</h3>
             <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-              <div class="flex justify-between">
-                <span>Total Duration:</span>
-                <span class="font-medium" id="totalDuration">
-                  {% if alerts|length > 0 %}
-                    <!-- This will be set by JavaScript -->
-                  {% else %}
-                    Not completed
-                  {% endif %}
-                </span>
-              </div>
-              <div class="flex justify-between">
-                <span>Spider Time:</span>
-                <span class="font-medium" id="spiderTime">-</span>
-              </div>
-              <div class="flex justify-between">
-                <span>Passive Scan Time:</span>
-                <span class="font-medium" id="passiveScanTime">-</span>
-              </div>
-              <div class="flex justify-between">
-                <span>Active Scan Time:</span>
-                <span class="font-medium" id="activeScanTime">-</span>
-              </div>
-              <div class="flex justify-between">
-                <span>URLs Discovered:</span>
-                <span class="font-medium" id="urlsDiscovered">-</span>
-              </div>
-              <div class="flex justify-between">
-                <span>Requests Sent:</span>
-                <span class="font-medium" id="requestsSent">-</span>
-              </div>
+              <div class="flex justify-between"><span>Total Duration:</span><span class="font-medium" id="totalDuration">{% if alerts|length > 0 %}{% else %}Not completed{% endif %}</span></div>
+              <div class="flex justify-between"><span>Spider Time:</span><span class="font-medium" id="spiderTime">-</span></div>
+              <div class="flex justify-between"><span>Passive Scan Time:</span><span class="font-medium" id="passiveScanTime">-</span></div>
+              <div class="flex justify-between"><span>Active Scan Time:</span><span class="font-medium" id="activeScanTime">-</span></div>
+              <div class="flex justify-between"><span>URLs Discovered:</span><span class="font-medium" id="urlsDiscovered">-</span></div>
+              <div class="flex justify-between"><span>Requests Sent:</span><span class="font-medium" id="requestsSent">-</span></div>
             </div>
           </div>
         </div>
         
-        <!-- CWE Top 10 Coverage -->
+        <!-- CWE Coverage -->
         <div class="border border-gray-300 bg-gray-50 p-2 rounded-sm">
           <h3 class="text-xs font-bold mb-1">Common Weakness Enumeration (CWE) Coverage</h3>
           <div class="grid grid-cols-5 gap-2 text-xs">
-            {% set cwe_coverage = {
-              "CWE-79": ["XSS", 0],
-              "CWE-89": ["SQL Injection", 0],
-              "CWE-352": ["CSRF", 0],
-              "CWE-434": ["File Upload", 0],
-              "CWE-306": ["Auth Issues", 0],
-              "CWE-601": ["Open Redirect", 0],
-              "CWE-798": ["Hard-coded Creds", 0],
-              "CWE-287": ["Auth Problems", 0],
-              "CWE-22": ["Path Traversal", 0],
-              "CWE-611": ["XXE", 0]
-            } %}
+            {% set cwe_coverage = {"CWE-79": ["XSS", 0], "CWE-89": ["SQL Injection", 0], "CWE-352": ["CSRF", 0], 
+                                  "CWE-434": ["File Upload", 0], "CWE-306": ["Auth Issues", 0], "CWE-601": ["Open Redirect", 0], 
+                                  "CWE-798": ["Hard-coded Creds", 0], "CWE-287": ["Auth Problems", 0], 
+                                  "CWE-22": ["Path Traversal", 0], "CWE-611": ["XXE", 0]} %}
             
             {% for alert in alerts %}
               {% if alert.cwe_id %}
@@ -273,9 +187,7 @@
               <div class="flex flex-col items-center border rounded-sm p-1 {% if details[1] > 0 %}bg-purple-50 border-purple-300{% else %}bg-gray-100 border-gray-300{% endif %}">
                 <div class="font-bold">{{ cwe_id }}</div>
                 <div class="text-center">{{ details[0] }}</div>
-                <div class="{% if details[1] > 0 %}text-purple-700 font-bold{% else %}text-gray-500{% endif %}">
-                  {{ details[1] }}
-                </div>
+                <div class="{% if details[1] > 0 %}text-purple-700 font-bold{% else %}text-gray-500{% endif %}">{{ details[1] }}</div>
               </div>
             {% endfor %}
           </div>
@@ -285,13 +197,12 @@
 
     <!-- Main Content Section -->
     <div class="p-2 flex-1 overflow-auto space-y-2">
-      <!-- Progress Bar Section -->
+      <!-- Progress Bar Section - ZapScan.pollProgress targets -->
       <div id="scanProgress" class="hidden border border-gray-400 bg-white p-2 rounded-sm shadow-sm">
         <div class="text-xs font-bold mb-1">Scan Progress</div>
         <div class="space-y-1">
           <div class="flex justify-between text-xs">
-            <span>Overall Progress:</span>
-            <span id="progressPercentage">0%</span>
+            <span>Overall Progress:</span><span id="progressPercentage">0%</span>
           </div>
           <div class="w-full bg-gray-200 rounded-full h-2">
             <div id="progressBar" class="bg-blue-600 rounded-full h-2 transition-all duration-500" style="width: 0%"></div>
@@ -300,28 +211,19 @@
           <!-- Detailed Phase Progress -->
           <div class="mt-2 grid grid-cols-3 gap-1 text-xs">
             <div>
-              <div class="flex justify-between">
-                <span>Spider:</span>
-                <span id="spiderProgress">0%</span>
-              </div>
+              <div class="flex justify-between"><span>Spider:</span><span id="spiderProgress">0%</span></div>
               <div class="w-full bg-gray-200 rounded-full h-1">
                 <div id="spiderProgressBar" class="bg-green-600 rounded-full h-1" style="width: 0%"></div>
               </div>
             </div>
             <div>
-              <div class="flex justify-between">
-                <span>Passive Scan:</span>
-                <span id="passiveProgress">0%</span>
-              </div>
+              <div class="flex justify-between"><span>Passive Scan:</span><span id="passiveProgress">0%</span></div>
               <div class="w-full bg-gray-200 rounded-full h-1">
                 <div id="passiveProgressBar" class="bg-yellow-600 rounded-full h-1" style="width: 0%"></div>
               </div>
             </div>
             <div>
-              <div class="flex justify-between">
-                <span>Active Scan:</span>
-                <span id="activeProgress">0%</span>
-              </div>
+              <div class="flex justify-between"><span>Active Scan:</span><span id="activeProgress">0%</span></div>
               <div class="w-full bg-gray-200 rounded-full h-1">
                 <div id="activeProgressBar" class="bg-red-600 rounded-full h-1" style="width: 0%"></div>
               </div>
@@ -330,7 +232,7 @@
         </div>
       </div>
 
-      <!-- Log Output Section -->
+      <!-- Log Output Section - ZapScan.appendToLog target -->
       <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
           <h2 class="font-bold text-xs">Scan Log</h2>
@@ -346,8 +248,7 @@
         {% if alerts %}
           {% for alert in alerts %}
             <div class="border border-gray-400 bg-white alert-item rounded-sm shadow-sm" 
-                 data-risk="{{ alert.risk }}" 
-                 data-confidence="{{ alert.confidence }}"
+                 data-risk="{{ alert.risk }}" data-confidence="{{ alert.confidence }}"
                  data-has-code="{{ alert.affected_code is defined and alert.affected_code and alert.affected_code.snippet }}"
                  data-searchable="{{ alert.name }} {{ alert.description }} {{ alert.url }}"
                  data-cwe="{{ alert.cwe_id }}">
@@ -356,27 +257,18 @@
                 <div class="flex items-center space-x-2 mb-1">
                   <!-- Risk Badge -->
                   <span class="text-xs px-2 py-0.5 border rounded-sm
-                    {% if alert.risk == 'High' %}
-                      bg-red-100 text-red-800 border-red-700
-                    {% elif alert.risk == 'Medium' %}
-                      bg-yellow-100 text-yellow-800 border-yellow-700
-                    {% elif alert.risk == 'Low' %}
-                      bg-blue-100 text-blue-800 border-blue-700
-                    {% else %}
-                      bg-gray-100 text-gray-800 border-gray-700
-                    {% endif %}">
-                    {{ alert.risk }}
-                  </span>
+                    {% if alert.risk == 'High' %}bg-red-100 text-red-800 border-red-700
+                    {% elif alert.risk == 'Medium' %}bg-yellow-100 text-yellow-800 border-yellow-700
+                    {% elif alert.risk == 'Low' %}bg-blue-100 text-blue-800 border-blue-700
+                    {% else %}bg-gray-100 text-gray-800 border-gray-700{% endif %}">{{ alert.risk }}</span>
                   
                   <!-- Confidence Badge -->
                   <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400 rounded-sm">{{ alert.confidence }}</span>
                   
-                  <!-- CWE Badge (if available) -->
-                  {% if alert.cwe_id %}
-                    <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400 rounded-sm">CWE-{{ alert.cwe_id }}</span>
-                  {% endif %}
+                  <!-- CWE Badge -->
+                  {% if alert.cwe_id %}<span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400 rounded-sm">CWE-{{ alert.cwe_id }}</span>{% endif %}
                   
-                  <!-- Code Badge (if available) -->
+                  <!-- Code Badge -->
                   {% if alert.affected_code is defined and alert.affected_code and alert.affected_code.snippet %}
                     <span class="text-xs px-2 py-0.5 bg-purple-100 text-purple-800 border border-purple-400 rounded-sm">Code Available</span>
                   {% endif %}
@@ -390,9 +282,7 @@
                   <div>
                     <div class="text-xs font-bold">{{ alert.name }}</div>
                     <div class="text-xs text-gray-600">{{ alert.url }}</div>
-                    {% if alert.parameter %}
-                      <div class="text-xs text-gray-600">Parameter: {{ alert.parameter }}</div>
-                    {% endif %}
+                    {% if alert.parameter %}<div class="text-xs text-gray-600">Parameter: {{ alert.parameter }}</div>{% endif %}
                   </div>
                   
                   <!-- Collapsible Details -->
@@ -407,16 +297,8 @@
                     {% if alert.affected_code is defined and alert.affected_code and alert.affected_code.snippet %}
                       <div class="text-xs bg-gray-50 p-2 border border-gray-300 rounded-sm space-y-1">
                         <div class="font-bold">Affected Code:</div>
-                        {% if alert.affected_code.file_path %}
-                          <div class="text-xs text-gray-600 mb-1">
-                            <span class="font-semibold">File:</span> {{ alert.affected_code.file_path }}
-                          </div>
-                        {% endif %}
-                        {% if alert.affected_code.line_number %}
-                          <div class="text-xs text-gray-600 mb-1">
-                            <span class="font-semibold">Line:</span> {{ alert.affected_code.line_number }}
-                          </div>
-                        {% endif %}
+                        {% if alert.affected_code.file_path %}<div class="text-xs text-gray-600 mb-1"><span class="font-semibold">File:</span> {{ alert.affected_code.file_path }}</div>{% endif %}
+                        {% if alert.affected_code.line_number %}<div class="text-xs text-gray-600 mb-1"><span class="font-semibold">Line:</span> {{ alert.affected_code.line_number }}</div>{% endif %}
                         <div class="font-mono text-xs bg-gray-900 text-white p-2 overflow-x-auto rounded-sm code-block whitespace-pre">
                           {% if alert.affected_code.start_line > 0 %}
                             {% set lines = alert.affected_code.snippet.split('\n') %}
@@ -424,9 +306,7 @@
                               <div class="code-line {% if i in alert.affected_code.vulnerable_lines %}bg-red-900 vulnerable-line{% endif %}">
                                 <span class="line-number text-gray-500 inline-block w-10 text-right pr-2 select-none border-r border-gray-600 mr-2">{{ i }}</span>
                                 <span class="line-content">{{ lines[loop.index0] }}</span>
-                                {% if i in alert.affected_code.vulnerable_lines %}
-                                  <span class="text-red-400 ml-2 inline-block">← VULNERABILITY</span>
-                                {% endif %}
+                                {% if i in alert.affected_code.vulnerable_lines %}<span class="text-red-400 ml-2 inline-block">← VULNERABILITY</span>{% endif %}
                               </div>
                             {% endfor %}
                           {% else %}
@@ -496,20 +376,16 @@
         </div>
         <div class="p-2 text-xs space-y-1">
           <div class="flex justify-between">
-            <span class="text-gray-600">Model:</span>
-            <span class="font-bold">{{ model }}</span>
+            <span class="text-gray-600">Model:</span><span class="font-bold">{{ model }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-600">App:</span>
-            <span class="font-bold">{{ app_num }}</span>
+            <span class="text-gray-600">App:</span><span class="font-bold">{{ app_num }}</span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-600">Target:</span>
-            <span class="font-bold" id="targetUrl"></span>
+            <span class="text-gray-600">Target:</span><span class="font-bold" id="targetUrl"></span>
           </div>
           <div class="flex justify-between">
-            <span class="text-gray-600">Last Scan:</span>
-            <span class="font-bold" id="lastScanTime">Never</span>
+            <span class="text-gray-600">Last Scan:</span><span class="font-bold" id="lastScanTime">Never</span>
           </div>
         </div>
       </div>
@@ -520,34 +396,13 @@
           <h2 class="font-bold text-xs">Scan Configuration</h2>
         </div>
         <div class="p-2 text-xs space-y-1">
-          <div class="flex justify-between">
-            <span class="text-gray-600">Scan Mode:</span>
-            <span class="font-bold">Comprehensive</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Spider:</span>
-            <span class="font-bold">Enabled</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Passive Scan:</span>
-            <span class="font-bold">Enabled</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Active Scan:</span>
-            <span class="font-bold">Enabled</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Scan Depth:</span>
-            <span class="font-bold">Comprehensive</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Policy:</span>
-            <span class="font-bold">Default Policy</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Code Analysis:</span>
-            <span class="font-bold text-purple-700">Enabled</span>
-          </div>
+          <div class="flex justify-between"><span class="text-gray-600">Scan Mode:</span><span class="font-bold">Comprehensive</span></div>
+          <div class="flex justify-between"><span class="text-gray-600">Spider:</span><span class="font-bold">Enabled</span></div>
+          <div class="flex justify-between"><span class="text-gray-600">Passive Scan:</span><span class="font-bold">Enabled</span></div>
+          <div class="flex justify-between"><span class="text-gray-600">Active Scan:</span><span class="font-bold">Enabled</span></div>
+          <div class="flex justify-between"><span class="text-gray-600">Scan Depth:</span><span class="font-bold">Comprehensive</span></div>
+          <div class="flex justify-between"><span class="text-gray-600">Policy:</span><span class="font-bold">Default Policy</span></div>
+          <div class="flex justify-between"><span class="text-gray-600">Code Analysis:</span><span class="font-bold text-purple-700">Enabled</span></div>
           <div class="mt-2 p-2 bg-gray-50 border border-gray-300 rounded-sm">
             <p class="text-xs text-gray-700">This scanner runs a comprehensive security assessment including spider crawling, passive analysis, active vulnerability testing, and source code analysis.</p>
           </div>
@@ -560,22 +415,10 @@
           <h2 class="font-bold text-xs">Scan Statistics</h2>
         </div>
         <div class="p-2 text-xs space-y-1">
-          <div class="flex justify-between">
-            <span class="text-gray-600">Start Time:</span>
-            <span class="font-bold" id="scanStartTime">-</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Duration:</span>
-            <span class="font-bold" id="scanDuration">-</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Total Alerts:</span>
-            <span class="font-bold" id="totalAlerts">0</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">With Code:</span>
-            <span class="font-bold text-purple-700" id="alertsWithCode">0</span>
-          </div>
+          <div class="flex justify-between"><span class="text-gray-600">Start Time:</span><span class="font-bold" id="scanStartTime">-</span></div>
+          <div class="flex justify-between"><span class="text-gray-600">Duration:</span><span class="font-bold" id="scanDuration">-</span></div>
+          <div class="flex justify-between"><span class="text-gray-600">Total Alerts:</span><span class="font-bold" id="totalAlerts">0</span></div>
+          <div class="flex justify-between"><span class="text-gray-600">With Code:</span><span class="font-bold text-purple-700" id="alertsWithCode">0</span></div>
         </div>
       </div>
       
@@ -597,733 +440,435 @@
 </div>
 
 <script>
-// Initialize when DOM is ready
+// ZapScan integration - Structure matches ZapScan class in dashboard.js
 $(document).ready(function() {
-  // Initialize core App functionality
-  if (typeof App !== 'undefined' && App.Features.zapScan) {
+  // Use dashboard.js Feature Manager integration if available
+  if (typeof App !== 'undefined' && App.Features && App.Features.zapScan) {
     App.Features.zapScan.init();
   } else {
-    // Fallback implementation if App object isn't available
-    setupZapScan();
-  }
-
-  function setupZapScan() {
-    let pollingActive = false;
-    let filterTimeout = null;
-    let scanStartTimestamp = null;
-    let durationInterval = null;
-    
-    // DOM Elements
-    const elements = {
-      startScanBtn: $('#startScan'),
-      stopScanBtn: $('#stopScan'),
-      searchInput: $('#searchIssues'),
-      riskFilter: $('#riskFilter'),
-      confidenceFilter: $('#confidenceFilter'),
-      codeFilter: $('#codeFilter'),
-      toggleStatsBtn: $('#toggleStats'),
-      statsContent: $('#statsContent'),
-      toggleStatsText: $('#toggleStatsText'),
-      toggleStatsIcon: $('#toggleStatsIcon'),
-      progressBar: $('#progressBar'),
-      scanProgress: $('#scanProgress'),
-      targetUrlElem: $('#targetUrl'),
-      lastScanTimeElem: $('#lastScanTime'),
-      scanStatusElem: $('#scanStatus'),
-      progressLogElem: $('#progressLog'),
-      clearLogBtn: $('#clearLog'),
-      countElements: {
-        high: $('#highCount'),
-        medium: $('#mediumCount'),
-        low: $('#lowCount'),
-        info: $('#infoCount')
+    // Fallback implementation
+    const zapScan = {
+      pollingActive: false,
+      pollingErrorCount: 0,
+      scanStartTimestamp: null,
+      durationInterval: null,
+      filterTimeout: null,
+      
+      init: function() {
+        this.updateTargetUrl();
+        this.setupEventListeners();
+        this.initializeData();
+        this.appendToLog('ZAP Scanner interface ready. Click "Start Scan" to begin security assessment.');
       },
-      progressElements: {
-        percentage: $('#progressPercentage'),
-        spider: $('#spiderProgress'),
-        spiderBar: $('#spiderProgressBar'),
-        passive: $('#passiveProgress'),
-        passiveBar: $('#passiveProgressBar'),
-        active: $('#activeProgress'),
-        activeBar: $('#activeProgressBar')
+      
+      setupEventListeners: function() {
+        // Main control buttons
+        $('#startScan').on('click', this.startScan.bind(this));
+        $('#stopScan').on('click', this.stopScan.bind(this));
+        $('#clearLog').on('click', () => $('#progressLog').text(''));
+        
+        // Filter elements
+        $('#searchIssues').on('input', () => {
+          clearTimeout(this.filterTimeout);
+          this.filterTimeout = setTimeout(this.applyFilters.bind(this), 300);
+        });
+        $('#riskFilter, #confidenceFilter, #codeFilter').on('change', this.applyFilters.bind(this));
+        
+        // Stats toggle
+        $('#toggleStats').on('click', () => {
+          $('#statsContent').slideToggle(200, function() {
+            const isVisible = $(this).is(':visible');
+            $('#toggleStatsText').text(isVisible ? 'Collapse' : 'Expand');
+            $('#toggleStatsIcon').html(isVisible ? 
+              '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />' : 
+              '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />');
+          });
+        });
+        
+        // Expand buttons for alert details
+        $('.expand-btn').on('click', function() {
+          const $details = $(this).closest('div').next().find('.alert-details');
+          $details.toggleClass('hidden');
+          $(this).text($details.hasClass('hidden') ? 'Expand' : 'Collapse');
+        });
       },
-      statsElements: {
-        startTime: $('#scanStartTime'),
-        duration: $('#scanDuration'),
-        totalAlerts: $('#totalAlerts'),
-        withCode: $('#alertsWithCode'),
-        totalDuration: $('#totalDuration'),
-        spiderTime: $('#spiderTime'),
-        passiveScanTime: $('#passiveScanTime'),
-        activeScanTime: $('#activeScanTime'),
-        urlsDiscovered: $('#urlsDiscovered'),
-        requestsSent: $('#requestsSent'),
-        sourceFilesAnalyzed: $('#sourceFilesAnalyzed')
+      
+      updateTargetUrl: function() {
+        const urlParts = window.location.pathname.split('/');
+        const model = urlParts[urlParts.length - 2] || '';
+        const appNum = parseInt(urlParts[urlParts.length - 1]) || 1;
+        const port = this.calculatePort(model, appNum);
+        $('#targetUrl').text(`http://localhost:${port}`);
+      },
+      
+      calculatePort: function(model, appNum) {
+        // Constants matching those in PortManager
+        const BASE_FRONTEND_PORT = 5501;
+        const PORTS_PER_APP = 2;
+        const BUFFER_PORTS = 20;
+        const APPS_PER_MODEL = 30;
+        const TOTAL_PORTS_PER_MODEL = APPS_PER_MODEL * PORTS_PER_APP + BUFFER_PORTS;
+        
+        // AI_MODELS array for model indexing
+        const AI_MODELS = ["Llama", "Mistral", "DeepSeek", "GPT4o", "Claude", "Gemini", "Grok", "R1", "O3"];
+        
+        let modelIdx = AI_MODELS.indexOf(model);
+        if (modelIdx === -1) {
+          console.warn(`Model "${model}" not found in AI_MODELS list. Using default index 0.`);
+          modelIdx = 0;
+        }
+        
+        const frontendPortRangeStart = BASE_FRONTEND_PORT + (modelIdx * TOTAL_PORTS_PER_MODEL);
+        return frontendPortRangeStart + ((appNum - 1) * PORTS_PER_APP);
+      },
+      
+      initializeData: function() {
+        // Initialize counters and statistics
+        this.updateCodeCounter();
+        this.initVulnerabilityChart();
+        
+        // Set estimated values if this is a completed scan
+        if ($('#scanStatus').text() === 'Complete') {
+          if ($('#urlsDiscovered').text() === '-') $('#urlsDiscovered').text('50+');
+          if ($('#requestsSent').text() === '-') $('#requestsSent').text('2000+');
+          if ($('#spiderTime').text() === '-') $('#spiderTime').text('~1m 30s');
+          if ($('#passiveScanTime').text() === '-') $('#passiveScanTime').text('~2m 15s');
+          if ($('#activeScanTime').text() === '-') $('#activeScanTime').text('~10m');
+          if ($('#totalDuration').text() === '-') {
+            const durationText = $('#scanDuration').text();
+            $('#totalDuration').text(durationText !== '-' ? durationText : '~15m');
+          }
+        }
+      },
+      
+      updateCodeCounter: function() {
+        let withCodeCount = 0;
+        $('.alert-item').each(function() {
+          if ($(this).data('has-code')) withCodeCount++;
+        });
+        $('#alertsWithCode').text(withCodeCount);
+      },
+      
+      initVulnerabilityChart: function() {
+        if (typeof Chart === 'undefined' || !document.getElementById('vulnerabilityChart')) return;
+        
+        const highCount = parseInt($('#highCount').text()) || 0;
+        const mediumCount = parseInt($('#mediumCount').text()) || 0;
+        const lowCount = parseInt($('#lowCount').text()) || 0;
+        const infoCount = parseInt($('#infoCount').text()) || 0;
+        
+        new Chart(document.getElementById('vulnerabilityChart'), {
+          type: 'bar',
+          data: {
+            labels: ['High', 'Medium', 'Low', 'Info'],
+            datasets: [{
+              label: 'Vulnerabilities',
+              data: [highCount, mediumCount, lowCount, infoCount],
+              backgroundColor: ['rgba(220, 38, 38, 0.7)', 'rgba(252, 211, 77, 0.7)', 'rgba(59, 130, 246, 0.7)', 'rgba(156, 163, 175, 0.7)'],
+              borderColor: ['rgba(185, 28, 28, 1)', 'rgba(217, 119, 6, 1)', 'rgba(37, 99, 235, 1)', 'rgba(107, 114, 128, 1)'],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+            plugins: { legend: { display: false } }
+          }
+        });
+      },
+      
+      applyFilters: function() {
+        const searchTerm = $('#searchIssues').val().toLowerCase();
+        const selectedRisk = $('#riskFilter').val();
+        const selectedConfidence = $('#confidenceFilter').val();
+        const codeFilter = $('#codeFilter').val();
+        
+        let visibleCount = 0;
+        let withCodeCount = 0;
+        
+        $('.alert-item').each(function() {
+          const $alert = $(this);
+          const risk = $alert.data('risk');
+          const confidence = $alert.data('confidence');
+          const hasCode = $alert.data('has-code');
+          const searchText = $alert.data('searchable').toLowerCase();
+          
+          const riskMatch = selectedRisk === 'all' || risk === selectedRisk;
+          const confidenceMatch = selectedConfidence === 'all' || confidence === selectedConfidence;
+          const searchMatch = !searchTerm || searchText.includes(searchTerm);
+          const codeMatch = codeFilter === 'all' || (codeFilter === 'hasCode' && hasCode) || (codeFilter === 'noCode' && !hasCode);
+          
+          const isVisible = riskMatch && confidenceMatch && searchMatch && codeMatch;
+          $alert.toggle(isVisible);
+          
+          if (isVisible) {
+            visibleCount++;
+            if (hasCode) withCodeCount++;
+          }
+        });
+        
+        $('#alertsWithCode').text(withCodeCount);
+      },
+      
+      appendToLog: function(message) {
+        const timestamp = new Date().toLocaleTimeString();
+        const logElem = $('#progressLog');
+        logElem.append(`[${timestamp}] ${message}\n`);
+        logElem.scrollTop(logElem[0].scrollHeight);
+      },
+      
+      formatDuration: function(totalSeconds) {
+        if (!totalSeconds) return "-";
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        
+        if (hours > 0) return `${hours}h ${minutes}m ${seconds}s`;
+        else if (minutes > 0) return `${minutes}m ${seconds}s`;
+        else return `${seconds}s`;
+      },
+      
+      updateDuration: function() {
+        if (!this.scanStartTimestamp) return;
+        const durationSeconds = Math.floor((new Date() - this.scanStartTimestamp) / 1000);
+        $('#scanDuration').text(this.formatDuration(durationSeconds));
+      },
+      
+      startScan: function() {
+        // Get model and app from URL
+        const urlParts = window.location.pathname.split('/');
+        const model = urlParts[urlParts.length - 2] || '';
+        const appNum = urlParts[urlParts.length - 1] || '';
+        
+        // Update UI state
+        $('#startScan').prop('disabled', true);
+        $('#stopScan').removeClass('hidden');
+        $('#scanProgress').removeClass('hidden');
+        $('#scanStatus').text('Starting...');
+        
+        // Reset progress elements
+        $('#progressPercentage').text('0%');
+        $('#progressBar').css('width', '0%');
+        $('#spiderProgress, #passiveProgress, #activeProgress').text('0%');
+        $('#spiderProgressBar, #passiveProgressBar, #activeProgressBar').css('width', '0%');
+        
+        // Reset counters
+        $('#highCount, #mediumCount, #lowCount, #infoCount, #totalAlerts, #alertsWithCode').text('0');
+        
+        // Track timing
+        this.scanStartTimestamp = new Date();
+        const startTimeStr = this.scanStartTimestamp.toLocaleString();
+        $('#scanStartTime').text(startTimeStr);
+        $('#scanDuration').text('0s');
+        
+        if (this.durationInterval) clearInterval(this.durationInterval);
+        this.durationInterval = setInterval(this.updateDuration.bind(this), 1000);
+        
+        this.appendToLog(`Starting comprehensive scan of target: http://localhost:${this.calculatePort(model, appNum)}`);
+        
+        // Send request to server
+        $.ajax({
+          url: `/zap/scan/${model}/${appNum}`,
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({})
+        })
+        .done(() => {
+          this.appendToLog('Scan initiated successfully. Starting spider phase...');
+          this.pollProgress(model, appNum);
+        })
+        .fail((jqXHR) => {
+          const errorMsg = jqXHR.responseJSON?.error || `HTTP ${jqXHR.status}: ${jqXHR.statusText}`;
+          this.appendToLog(`Error: ${errorMsg}`);
+          
+          // Reset UI
+          $('#startScan').prop('disabled', false);
+          $('#stopScan').addClass('hidden');
+          $('#scanStatus').text('Error');
+          
+          if (this.durationInterval) {
+            clearInterval(this.durationInterval);
+            this.durationInterval = null;
+          }
+        });
+      },
+      
+      stopScan: function() {
+        const urlParts = window.location.pathname.split('/');
+        const model = urlParts[urlParts.length - 2] || '';
+        const appNum = urlParts[urlParts.length - 1] || '';
+        
+        this.appendToLog('Stopping scan...');
+        
+        $.ajax({
+          url: `/zap/scan/${model}/${appNum}/stop`,
+          method: 'POST'
+        })
+        .done(() => {
+          this.pollingActive = false;
+          $('#stopScan').addClass('hidden');
+          $('#startScan').prop('disabled', false);
+          $('#scanStatus').text('Stopped');
+          
+          if (this.durationInterval) {
+            clearInterval(this.durationInterval);
+            this.durationInterval = null;
+          }
+          
+          this.appendToLog('Scan stopped successfully');
+        })
+        .fail((jqXHR) => {
+          const errorMsg = jqXHR.responseJSON?.error || `HTTP ${jqXHR.status}: ${jqXHR.statusText}`;
+          this.appendToLog(`Error stopping scan: ${errorMsg}`);
+        });
+      },
+      
+      pollProgress: function(model, appNum) {
+        if (this.pollingActive) return;
+        this.pollingActive = true;
+        this.pollingErrorCount = 0;
+        
+        // Phase timing tracking
+        const phaseStartTimes = { spider: null, passive: null, active: null, code: null };
+        
+        const updateUI = () => {
+          $.ajax({
+            url: `/zap/scan/${model}/${appNum}/status`,
+            method: 'GET'
+          })
+          .done((data) => {
+            // Update progress
+            const progress = Math.min(Math.max(data.progress || 0, 0), 100);
+            $('#progressBar').css('width', `${progress}%`);
+            $('#progressPercentage').text(`${progress}%`);
+            
+            // Update detailed progress
+            if (data.spider_progress !== undefined) {
+              const spiderProgress = Math.min(Math.max(data.spider_progress || 0, 0), 100);
+              const passiveProgress = Math.min(Math.max(data.passive_progress || 0, 0), 100);
+              const activeProgress = Math.min(Math.max(data.active_progress || 0, 0), 100);
+              
+              $('#spiderProgress').text(`${spiderProgress}%`);
+              $('#passiveProgress').text(`${passiveProgress}%`);
+              $('#activeProgress').text(`${activeProgress}%`);
+              
+              $('#spiderProgressBar').css('width', `${spiderProgress}%`);
+              $('#passiveProgressBar').css('width', `${passiveProgress}%`);
+              $('#activeProgressBar').css('width', `${activeProgress}%`);
+            }
+            
+            // Update status
+            $('#scanStatus').text(data.status || 'Unknown');
+            
+            // Update counts
+            $('#highCount').text(data.high_count || 0);
+            $('#mediumCount').text(data.medium_count || 0);
+            $('#lowCount').text(data.low_count || 0);
+            $('#infoCount').text(data.info_count || 0);
+            
+            const total = (parseInt(data.high_count) || 0) + 
+                          (parseInt(data.medium_count) || 0) + 
+                          (parseInt(data.low_count) || 0) + 
+                          (parseInt(data.info_count) || 0);
+            $('#totalAlerts').text(total);
+            
+            // Track phase timings
+            const prevStatus = $('#scanStatus').data('prev-status');
+            if (data.status !== prevStatus) {
+              this.appendToLog(`Status changed to: ${data.status}`);
+              $('#scanStatus').data('prev-status', data.status);
+              
+              // Process phase transition
+              const now = new Date();
+              this.handlePhaseTransition(prevStatus, data.status, phaseStartTimes, now);
+            }
+            
+            // Check completion
+            if (data.status === 'Complete') {
+              this.pollingActive = false;
+              $('#stopScan').addClass('hidden');
+              $('#startScan').prop('disabled', false);
+              $('#lastScanTime').text(new Date().toLocaleString());
+              
+              if (this.durationInterval) {
+                clearInterval(this.durationInterval);
+                this.durationInterval = null;
+              }
+              
+              this.appendToLog('Scan completed successfully. Reloading page to show results...');
+              setTimeout(() => window.location.reload(), 2000);
+              return;
+            }
+            
+            // Continue polling
+            if (this.pollingActive) setTimeout(updateUI, 2000);
+          })
+          .fail((jqXHR) => {
+            this.appendToLog(`Error updating status: ${jqXHR.responseJSON?.error || jqXHR.statusText}`);
+            this.pollingErrorCount++;
+            
+            if (this.pollingErrorCount >= 3) {
+              this.pollingActive = false;
+              this.appendToLog('Stopped polling due to repeated errors');
+              return;
+            }
+            
+            if (this.pollingActive) setTimeout(updateUI, 5000);
+          });
+        };
+        
+        updateUI();
+      },
+      
+      handlePhaseTransition: function(prevStatus, newStatus, phaseStartTimes, now) {
+        // End timing for previous phase if applicable
+        if (prevStatus) {
+          if (prevStatus.includes('Spider') && phaseStartTimes.spider) {
+            const spiderTime = Math.round((now - phaseStartTimes.spider) / 1000);
+            $('#spiderTime').text(this.formatDuration(spiderTime));
+            this.appendToLog(`Spider phase completed in ${this.formatDuration(spiderTime)}`);
+          } else if (prevStatus.includes('Passive') && phaseStartTimes.passive) {
+            const passiveTime = Math.round((now - phaseStartTimes.passive) / 1000);
+            $('#passiveScanTime').text(this.formatDuration(passiveTime));
+            this.appendToLog(`Passive scan phase completed in ${this.formatDuration(passiveTime)}`);
+          } else if (prevStatus.includes('Active') && phaseStartTimes.active) {
+            const activeTime = Math.round((now - phaseStartTimes.active) / 1000);
+            $('#activeScanTime').text(this.formatDuration(activeTime));
+            this.appendToLog(`Active scan phase completed in ${this.formatDuration(activeTime)}`);
+          }
+        }
+        
+        // Start timing for new phase
+        if (newStatus.includes('Spider')) {
+          phaseStartTimes.spider = now;
+          this.appendToLog('Spider phase started - discovering web content...');
+          $('#urlsDiscovered').text('Discovering...');
+        } else if (newStatus.includes('Passive')) {
+          phaseStartTimes.passive = now;
+          this.appendToLog('Passive scanning in progress - analyzing responses...');
+        } else if (newStatus.includes('Active')) {
+          phaseStartTimes.active = now;
+          this.appendToLog('Active scanning in progress - testing for vulnerabilities...');
+          $('#requestsSent').text('~1000+');
+        } else if (newStatus.includes('Code')) {
+          phaseStartTimes.code = now;
+          this.appendToLog('Code analysis in progress - identifying affected source code...');
+        }
       }
     };
     
-    // Initialize the vulnerability chart if Chart.js is available
-    function initVulnerabilityChart() {
-      if (typeof Chart === 'undefined') return;
-      
-      const ctx = document.getElementById('vulnerabilityChart');
-      if (!ctx) return;
-      
-      // Count vulnerabilities by risk level
-      const highCount = parseInt(elements.countElements.high.text()) || 0;
-      const mediumCount = parseInt(elements.countElements.medium.text()) || 0;
-      const lowCount = parseInt(elements.countElements.low.text()) || 0;
-      const infoCount = parseInt(elements.countElements.info.text()) || 0;
-      
-      // Create the chart
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['High', 'Medium', 'Low', 'Info'],
-          datasets: [{
-            label: 'Vulnerabilities',
-            data: [highCount, mediumCount, lowCount, infoCount],
-            backgroundColor: [
-              'rgba(220, 38, 38, 0.7)',  // Red for High
-              'rgba(252, 211, 77, 0.7)',  // Yellow for Medium
-              'rgba(59, 130, 246, 0.7)',  // Blue for Low
-              'rgba(156, 163, 175, 0.7)'  // Gray for Info
-            ],
-            borderColor: [
-              'rgba(185, 28, 28, 1)',
-              'rgba(217, 119, 6, 1)',
-              'rgba(37, 99, 235, 1)',
-              'rgba(107, 114, 128, 1)'
-            ],
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                precision: 0
-              }
-            }
-          },
-          plugins: {
-            legend: {
-              display: false
-            },
-            tooltip: {
-              enabled: true
-            }
-          }
-        }
-      });
-    }
-    
-    // Toggle statistics dashboard
-    function setupStatsToggle() {
-      if (!elements.toggleStatsBtn.length || !elements.statsContent.length) return;
-      
-      elements.toggleStatsBtn.on('click', function() {
-        elements.statsContent.slideToggle(200, function() {
-          const isVisible = elements.statsContent.is(':visible');
-          elements.toggleStatsText.text(isVisible ? 'Collapse' : 'Expand');
-          elements.toggleStatsIcon.html(isVisible
-            ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />'
-            : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />'
-          );
-        });
-      });
-    }
-    
-    // Calculate frontend port based on model and app number
-    function calculatePort(model, appNum) {
-      // Constants matching those in app.py PortManager
-      const BASE_FRONTEND_PORT = 5501;
-      const PORTS_PER_APP = 2;
-      const BUFFER_PORTS = 20;
-      const APPS_PER_MODEL = 30;
-      const TOTAL_PORTS_PER_MODEL = APPS_PER_MODEL * PORTS_PER_APP + BUFFER_PORTS;
-      
-      // AI_MODELS array from app.py for model indexing
-      const AI_MODELS = [
-        "Llama", "Mistral", "DeepSeek", "GPT4o", "Claude", 
-        "Gemini", "Grok", "R1", "O3"
-      ];
-      
-      // Get model index (0-based)
-      let modelIdx = AI_MODELS.indexOf(model);
-      if (modelIdx === -1) {
-        console.warn(`Model "${model}" not found in AI_MODELS list. Using default index 0.`);
-        modelIdx = 0;
-      }
-      
-      // Calculate frontend port using the same logic as PortManager.get_app_ports
-      const frontendPortRangeStart = BASE_FRONTEND_PORT + (modelIdx * TOTAL_PORTS_PER_MODEL);
-      const port = frontendPortRangeStart + ((appNum - 1) * PORTS_PER_APP);
-      
-      return port;
-    }
-    
-    // Update target URL display based on model and app number
-    function updateTargetUrl() {
-      // Get model and app number from URL
-      const urlParts = window.location.pathname.split('/');
-      const model = urlParts[urlParts.length - 2] || '';
-      const appNum = parseInt(urlParts[urlParts.length - 1]) || 1;
-      
-      // Calculate the port using the port logic
-      const port = calculatePort(model, appNum);
-      
-      if (elements.targetUrlElem.length) {
-        elements.targetUrlElem.text(`http://localhost:${port}`);
-      }
-    }
-    
-    // Filter alerts based on search term, risk, confidence, and code availability
-    function applyFilters() {
-      if (!elements.searchInput.length || !elements.riskFilter.length || 
-          !elements.confidenceFilter.length || !elements.codeFilter.length) return;
-      
-      const searchTerm = elements.searchInput.val().toLowerCase();
-      const selectedRisk = elements.riskFilter.val();
-      const selectedConfidence = elements.confidenceFilter.val();
-      const codeFilter = elements.codeFilter.val();
-      
-      let visibleCount = 0;
-      let withCodeCount = 0;
-      
-      $('.alert-item').each(function() {
-        const $alert = $(this);
-        const risk = $alert.data('risk');
-        const confidence = $alert.data('confidence');
-        const hasCode = $alert.data('has-code');
-        const searchText = $alert.data('searchable').toLowerCase();
-        
-        const riskMatch = selectedRisk === 'all' || risk === selectedRisk;
-        const confidenceMatch = selectedConfidence === 'all' || confidence === selectedConfidence;
-        const searchMatch = !searchTerm || searchText.includes(searchTerm);
-        const codeMatch = codeFilter === 'all' || 
-                         (codeFilter === 'hasCode' && hasCode) || 
-                         (codeFilter === 'noCode' && !hasCode);
-        
-        const isVisible = riskMatch && confidenceMatch && searchMatch && codeMatch;
-        $alert.toggle(isVisible);
-        
-        if (isVisible) {
-          visibleCount++;
-          if (hasCode) withCodeCount++;
-        }
-      });
-      
-      // Update the alerts with code counter
-      if (elements.statsElements.withCode.length) {
-        elements.statsElements.withCode.text(withCodeCount);
-      }
-    }
-    
-    // Add a log message to the progress log
-    function appendToLog(message) {
-      if (!elements.progressLogElem.length) return;
-      
-      const timestamp = new Date().toLocaleTimeString();
-      elements.progressLogElem.append(`[${timestamp}] ${message}\n`);
-      elements.progressLogElem.scrollTop(elements.progressLogElem[0].scrollHeight);
-    }
-    
-    // Format duration from seconds
-    function formatDuration(totalSeconds) {
-      if (!totalSeconds) return "-";
-      
-      const hours = Math.floor(totalSeconds / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-      
-      if (hours > 0) {
-        return `${hours}h ${minutes}m ${seconds}s`;
-      } else if (minutes > 0) {
-        return `${minutes}m ${seconds}s`;
-      } else {
-        return `${seconds}s`;
-      }
-    }
-    
-    // Update duration display
-    function updateDuration() {
-      if (!scanStartTimestamp) return;
-      
-      const now = new Date();
-      const durationSeconds = Math.floor((now - scanStartTimestamp) / 1000);
-      
-      if (elements.statsElements.duration.length) {
-        elements.statsElements.duration.text(formatDuration(durationSeconds));
-      }
-    }
-    
-    // Start a new ZAP scan
-    function startScan() {
-      if (!elements.startScanBtn.length || !elements.stopScanBtn.length || !elements.scanProgress.length) return;
-      
-      // Get model and app from URL
-      const urlParts = window.location.pathname.split('/');
-      const model = urlParts[urlParts.length - 2] || '';
-      const appNum = urlParts[urlParts.length - 1] || '';
-      
-      // Update UI to scanning state
-      elements.startScanBtn.prop('disabled', true);
-      elements.stopScanBtn.removeClass('hidden');
-      elements.scanProgress.removeClass('hidden');
-      
-      if (elements.scanStatusElem.length) {
-        elements.scanStatusElem.text('Starting...');
-      }
-      
-      // Reset progress elements
-      if (elements.progressElements) {
-        elements.progressElements.percentage.text('0%');
-        elements.progressElements.spider.text('0%');
-        elements.progressElements.passive.text('0%');
-        elements.progressElements.active.text('0%');
-        elements.progressBar.css('width', '0%');
-        elements.progressElements.spiderBar.css('width', '0%');
-        elements.progressElements.passiveBar.css('width', '0%');
-        elements.progressElements.activeBar.css('width', '0%');
-      }
-      
-      // Reset counters
-      if (elements.countElements) {
-        elements.countElements.high.text('0');
-        elements.countElements.medium.text('0');
-        elements.countElements.low.text('0');
-        elements.countElements.info.text('0');
-      }
-      
-      if (elements.statsElements) {
-        const startTimeStr = new Date().toLocaleString();
-        elements.statsElements.startTime.text(startTimeStr);
-        elements.statsElements.duration.text('0s');
-        elements.statsElements.totalAlerts.text('0');
-        elements.statsElements.withCode.text('0');
-        elements.statsElements.totalDuration.text('-');
-        elements.statsElements.spiderTime.text('-');
-        elements.statsElements.passiveScanTime.text('-');
-        elements.statsElements.activeScanTime.text('-');
-        elements.statsElements.urlsDiscovered.text('-');
-        elements.statsElements.requestsSent.text('-');
-      }
-      
-      // Set scan start time and start duration timer
-      scanStartTimestamp = new Date();
-      if (durationInterval) clearInterval(durationInterval);
-      durationInterval = setInterval(updateDuration, 1000);
-      
-      appendToLog(`Starting comprehensive scan of target: http://localhost:${calculatePort(model, appNum)}`);
-      
-      // Send scan request to server - no options needed with railroaded approach
-      $.ajax({
-        url: `/zap/scan/${model}/${appNum}`,
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({})
-      })
-      .done(function() {
-        // Start progress polling
-        appendToLog('Scan initiated successfully. Starting spider phase...');
-        pollProgress(model, appNum);
-      })
-      .fail(function(jqXHR) {
-        const errorMsg = jqXHR.responseJSON?.error || `HTTP ${jqXHR.status}: ${jqXHR.statusText}`;
-        console.error('Scan error:', errorMsg);
-        appendToLog(`Error: ${errorMsg}`);
-        alert('Failed to start scan: ' + errorMsg);
-        
-        // Reset UI
-        elements.startScanBtn.prop('disabled', false);
-        elements.stopScanBtn.addClass('hidden');
-        if (elements.scanStatusElem.length) {
-          elements.scanStatusElem.text('Error');
-        }
-        
-        // Stop duration timer
-        if (durationInterval) {
-          clearInterval(durationInterval);
-          durationInterval = null;
-        }
-      });
-    }
-    
-    // Stop the currently running scan
-    function stopScan() {
-      if (!elements.startScanBtn.length || !elements.stopScanBtn.length) return;
-      
-      // Get model and app from URL
-      const urlParts = window.location.pathname.split('/');
-      const model = urlParts[urlParts.length - 2] || '';
-      const appNum = urlParts[urlParts.length - 1] || '';
-      
-      appendToLog('Stopping scan...');
-      
-      $.ajax({
-        url: `/zap/scan/${model}/${appNum}/stop`,
-        method: 'POST'
-      })
-      .done(function() {
-        // Reset UI
-        pollingActive = false;
-        elements.stopScanBtn.addClass('hidden');
-        elements.startScanBtn.prop('disabled', false);
-        
-        if (elements.scanStatusElem.length) {
-          elements.scanStatusElem.text('Stopped');
-        }
-        
-        // Stop duration timer
-        if (durationInterval) {
-          clearInterval(durationInterval);
-          durationInterval = null;
-        }
-        
-        appendToLog('Scan stopped successfully');
-      })
-      .fail(function(jqXHR) {
-        const errorMsg = jqXHR.responseJSON?.error || `HTTP ${jqXHR.status}: ${jqXHR.statusText}`;
-        console.error('Stop error:', errorMsg);
-        appendToLog(`Error stopping scan: ${errorMsg}`);
-        alert('Failed to stop scan: ' + errorMsg);
-      });
-    }
-    
-    // Poll scan progress and update UI
-    function pollProgress(model, appNum) {
-      if (pollingActive) return;
-      pollingActive = true;
-      
-      // Keep track of phase timings
-      let phaseStartTimes = {
-        spider: null,
-        passive: null,
-        active: null,
-        code: null
-      };
-      
-      function updateUI() {
-        $.ajax({
-          url: `/zap/scan/${model}/${appNum}/status`,
-          method: 'GET'
-        })
-        .done(function(data) {
-          // Update progress bar and text
-          const progress = Math.min(Math.max(data.progress || 0, 0), 100);
-          
-          if (elements.progressBar.length) {
-            elements.progressBar.css('width', `${progress}%`);
-          }
-          
-          if (elements.progressElements.percentage.length) {
-            elements.progressElements.percentage.text(`${progress}%`);
-          }
-          
-          // Update detailed progress bars if available
-          if (elements.progressElements) {
-            const spiderProgress = Math.min(Math.max(data.spider_progress || 0, 0), 100);
-            const passiveProgress = Math.min(Math.max(data.passive_progress || 0, 0), 100);
-            const activeProgress = Math.min(Math.max(data.active_progress || 0, 0), 100);
-            
-            elements.progressElements.spider.text(`${spiderProgress}%`);
-            elements.progressElements.passive.text(`${passiveProgress}%`);
-            elements.progressElements.active.text(`${activeProgress}%`);
-            
-            elements.progressElements.spiderBar.css('width', `${spiderProgress}%`);
-            elements.progressElements.passiveBar.css('width', `${passiveProgress}%`);
-            elements.progressElements.activeBar.css('width', `${activeProgress}%`);
-          }
-          
-          // Update status text
-          if (elements.scanStatusElem.length) {
-            elements.scanStatusElem.text(data.status || 'Unknown');
-          }
-          
-          // Update count elements
-          if (elements.countElements) {
-            elements.countElements.high.text(data.high_count || 0);
-            elements.countElements.medium.text(data.medium_count || 0);
-            elements.countElements.low.text(data.low_count || 0);
-            elements.countElements.info.text(data.info_count || 0);
-            
-            // Update total alerts
-            if (elements.statsElements.totalAlerts.length) {
-              const total = 
-                (parseInt(data.high_count) || 0) + 
-                (parseInt(data.medium_count) || 0) + 
-                (parseInt(data.low_count) || 0) + 
-                (parseInt(data.info_count) || 0);
-              elements.statsElements.totalAlerts.text(total);
-            }
-            
-            // Update vulnerability chart if available
-            if (typeof Chart !== 'undefined') {
-              // Refresh the chart - need to destroy and recreate
-              const chartInstance = Chart.getChart('vulnerabilityChart');
-              if (chartInstance) {
-                chartInstance.destroy();
-              }
-              initVulnerabilityChart();
-            }
-            
-            // Update vulnerabilities with code count if available
-            if (elements.statsElements.withCode.length && data.vulnerabilities_with_code !== undefined) {
-              elements.statsElements.withCode.text(data.vulnerabilities_with_code || 0);
-              
-              // Also update the source files count as an estimate
-              if (elements.statsElements.sourceFilesAnalyzed.length) {
-                elements.statsElements.sourceFilesAnalyzed.text(data.vulnerabilities_with_code || 0);
-              }
-            }
-          }
-          
-          // Track phase timings
-          const prevStatus = elements.scanStatusElem.data('prev-status');
-          if (data.status !== prevStatus) {
-            appendToLog(`Status changed to: ${data.status}`);
-            elements.scanStatusElem.data('prev-status', data.status);
-            
-            // Update phase timing
-            const now = new Date();
-            
-            // End timing for previous phase if applicable
-            if (prevStatus) {
-              if (prevStatus.includes('Spider') && phaseStartTimes.spider) {
-                const spiderTime = Math.round((now - phaseStartTimes.spider) / 1000);
-                elements.statsElements.spiderTime.text(formatDuration(spiderTime));
-                appendToLog(`Spider phase completed in ${formatDuration(spiderTime)}`);
-              } else if (prevStatus.includes('Passive') && phaseStartTimes.passive) {
-                const passiveTime = Math.round((now - phaseStartTimes.passive) / 1000);
-                elements.statsElements.passiveScanTime.text(formatDuration(passiveTime));
-                appendToLog(`Passive scan phase completed in ${formatDuration(passiveTime)}`);
-              } else if (prevStatus.includes('Active') && phaseStartTimes.active) {
-                const activeTime = Math.round((now - phaseStartTimes.active) / 1000);
-                elements.statsElements.activeScanTime.text(formatDuration(activeTime));
-                appendToLog(`Active scan phase completed in ${formatDuration(activeTime)}`);
-              }
-            }
-            
-            // Start timing for new phase
-            if (data.status.includes('Spider')) {
-              phaseStartTimes.spider = now;
-              appendToLog('Spider phase started - discovering web content...');
-              
-              // Estimate URLs discovered based on progress
-              if (elements.statsElements.urlsDiscovered.length) {
-                elements.statsElements.urlsDiscovered.text('Discovering...');
-              }
-            } else if (data.status.includes('Passive')) {
-              phaseStartTimes.passive = now;
-              appendToLog('Passive scanning in progress - analyzing responses...');
-            } else if (data.status.includes('Active')) {
-              phaseStartTimes.active = now;
-              appendToLog('Active scanning in progress - testing for vulnerabilities...');
-              
-              // Estimate requests sent
-              if (elements.statsElements.requestsSent.length) {
-                elements.statsElements.requestsSent.text('~1000+');
-              }
-            } else if (data.status.includes('Code')) {
-              phaseStartTimes.code = now;
-              appendToLog('Code analysis in progress - identifying affected source code...');
-            }
-          }
-          
-          // Update total duration if scan completed
-          if (data.status === 'Complete' && data.duration_seconds) {
-            if (elements.statsElements.totalDuration.length) {
-              elements.statsElements.totalDuration.text(formatDuration(data.duration_seconds));
-            }
-            
-            // Update URLs discovered and requests sent with estimates if not set
-            if (elements.statsElements.urlsDiscovered.length && elements.statsElements.urlsDiscovered.text() === '-') {
-              elements.statsElements.urlsDiscovered.text('50+');
-            }
-            if (elements.statsElements.requestsSent.length && elements.statsElements.requestsSent.text() === '-') {
-              elements.statsElements.requestsSent.text('2000+');
-            }
-          }
-          
-          // Check if scan is complete
-          if (data.status === 'Complete') {
-            pollingActive = false;
-            
-            if (elements.stopScanBtn.length) elements.stopScanBtn.addClass('hidden');
-            if (elements.startScanBtn.length) elements.startScanBtn.prop('disabled', false);
-            if (elements.lastScanTimeElem.length) elements.lastScanTimeElem.text(new Date().toLocaleString());
-            
-            // Stop duration timer
-            if (durationInterval) {
-              clearInterval(durationInterval);
-              durationInterval = null;
-            }
-            
-            appendToLog('Scan completed successfully. Reloading page to show results...');
-            setTimeout(() => window.location.reload(), 2000);
-            return;
-          }
-          
-          // Continue polling if still active
-          if (pollingActive) {
-            setTimeout(updateUI, 2000);
-          }
-        })
-        .fail(function(jqXHR) {
-          console.error('Polling error:', jqXHR.statusText);
-          appendToLog(`Error updating status: ${jqXHR.responseJSON?.error || jqXHR.statusText}`);
-          
-          // Retry on failure a few times
-          if (pollingActive) {
-            setTimeout(updateUI, 5000); // Longer delay on error
-          }
-        });
-      }
-      
-      // Start the polling loop
-      updateUI();
-    }
-    
-    // Set up event listeners
-    if (elements.startScanBtn.length) {
-      elements.startScanBtn.on('click', startScan);
-    }
-    
-    if (elements.stopScanBtn.length) {
-      elements.stopScanBtn.on('click', stopScan);
-    }
-    
-    if (elements.clearLogBtn.length) {
-      elements.clearLogBtn.on('click', function() {
-        if (elements.progressLogElem.length) {
-          elements.progressLogElem.text('');
-        }
-      });
-    }
-    
-    // Set up search input with debounce
-    if (elements.searchInput.length) {
-      elements.searchInput.on('input', function() {
-        clearTimeout(filterTimeout);
-        filterTimeout = setTimeout(applyFilters, 300);
-      });
-    }
-    
-    // Set up filters
-    if (elements.riskFilter.length) {
-      elements.riskFilter.on('change', applyFilters);
-    }
-    
-    if (elements.confidenceFilter.length) {
-      elements.confidenceFilter.on('change', applyFilters);
-    }
-    
-    if (elements.codeFilter.length) {
-      elements.codeFilter.on('change', applyFilters);
-    }
-    
-    // Set up stats toggle
-    setupStatsToggle();
-    
-    // Set up expand/collapse buttons for alert details
-    $('.expand-btn').on('click', function() {
-      const $details = $(this).closest('div').next().find('.alert-details');
-      if ($details.length) {
-        $details.toggleClass('hidden');
-        $(this).text($details.hasClass('hidden') ? 'Expand' : 'Collapse');
-      }
-    });
-    
-    // Initialize target URL
-    updateTargetUrl();
-    
-    // Count alerts with code and update counter
-    function updateCodeCounter() {
-      let withCodeCount = 0;
-      $('.alert-item').each(function() {
-        if ($(this).data('has-code')) {
-          withCodeCount++;
-        }
-      });
-      
-      if (elements.statsElements.withCode.length) {
-        elements.statsElements.withCode.text(withCodeCount);
-      }
-    }
-    
-    // Initialize code counter
-    updateCodeCounter();
-    
-    // Initialize vulnerability chart
-    initVulnerabilityChart();
-    
-    // Apply syntax highlighting to code blocks if highlight.js is available
-    if (typeof hljs !== 'undefined') {
-      $('.code-block code').each(function(i, block) {
-        hljs.highlightElement(block);
-      });
-    }
-    
-    // Set estimated values for statistics if this is a completed scan
-    if (elements.scanStatusElem.text() === 'Complete') {
-      // Set reasonable defaults for stats that might not be available
-      if (elements.statsElements.urlsDiscovered.text() === '-') {
-        elements.statsElements.urlsDiscovered.text('50+');
-      }
-      if (elements.statsElements.requestsSent.text() === '-') {
-        elements.statsElements.requestsSent.text('2000+');
-      }
-      if (elements.statsElements.spiderTime.text() === '-') {
-        elements.statsElements.spiderTime.text('~1m 30s');
-      }
-      if (elements.statsElements.passiveScanTime.text() === '-') {
-        elements.statsElements.passiveScanTime.text('~2m 15s');
-      }
-      if (elements.statsElements.activeScanTime.text() === '-') {
-        elements.statsElements.activeScanTime.text('~10m');
-      }
-      if (elements.statsElements.totalDuration.text() === '-') {
-        const durationText = elements.statsElements.duration.text();
-        elements.statsElements.totalDuration.text(durationText !== '-' ? durationText : '~15m');
-      }
-    }
-    
-    // Log ready message
-    appendToLog('ZAP Scanner interface ready with code analysis capabilities. Click "Start Scan" to begin comprehensive security assessment.');
+    // Initialize ZAP Scan
+    zapScan.init();
   }
 });
 </script>
 
 <style>
-/* Additional styles for code display */
-.code-block {
-  font-family: 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  tab-size: 4;
-}
-
-.vulnerable-line {
-  position: relative;
-}
-
-.line-number {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-}
-
-/* Add a subtle hover effect to code lines */
-.code-line:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-/* Make vulnerable lines more visible */
-.vulnerable-line .line-content {
-  font-weight: bold;
-  color: #ff7b72;
-}
+.code-block { font-family: 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; tab-size: 4; }
+.vulnerable-line { position: relative; }
+.line-number { user-select: none; -webkit-user-select: none; -moz-user-select: none; }
+.code-line:hover { background-color: rgba(255, 255, 255, 0.05); }
+.vulnerable-line .line-content { font-weight: bold; color: #ff7b72; }
 </style>
 {% endblock %}
