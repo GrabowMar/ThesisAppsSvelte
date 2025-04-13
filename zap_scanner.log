@@ -4945,3 +4945,201 @@ The home directory is already in use. Ensure no other ZAP instances are running 
 2025-04-08 11:54:53,349 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
 2025-04-08 11:54:53,349 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8091
 2025-04-08 11:54:53,349 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-12 11:29:03,104 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-12 11:29:03,163 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-12 11:29:03,163 - zap_scanner - INFO - Found free port: 8090
+2025-04-12 11:29:03,164 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-12 11:29:03,164 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-12 11:29:03,164 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-12 11:29:04,768 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-12 11:29:04,832 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-12 11:29:04,833 - zap_scanner - INFO - Found free port: 8090
+2025-04-12 11:29:04,833 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-12 11:29:04,833 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-12 11:29:04,834 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-12 21:15:13,105 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-12 21:15:13,178 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-12 21:15:13,179 - zap_scanner - INFO - Found free port: 8090
+2025-04-12 21:15:13,179 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-12 21:15:13,179 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-12 21:15:13,179 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-12 21:15:14,732 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-12 21:15:14,802 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-12 21:15:14,803 - zap_scanner - INFO - Found free port: 8090
+2025-04-12 21:15:14,803 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-12 21:15:14,803 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-12 21:15:14,804 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:09:56,255 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 11:09:56,361 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 11:09:56,361 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 11:09:56,361 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:09:56,361 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 11:09:56,361 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:09:58,493 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 11:09:58,557 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 11:09:58,558 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 11:09:58,558 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:09:58,558 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 11:09:58,558 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:12:26,128 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 11:12:26,211 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 11:12:26,212 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 11:12:26,212 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:12:26,212 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 11:12:26,212 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:12:27,957 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 11:12:28,047 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 11:12:28,048 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 11:12:28,048 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:12:28,049 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 11:12:28,049 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:14:46,707 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 11:14:46,769 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 11:14:46,770 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 11:14:46,770 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:14:46,771 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 11:14:46,771 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:14:46,771 - zap_scanner - INFO - Source code root directory set to: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2
+2025-04-13 11:14:46,772 - zap_scanner - INFO - Source code root directory set to: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2
+2025-04-13 11:14:46,772 - zap_scanner - INFO - Starting comprehensive scan Llama-2 for http://localhost:5503
+2025-04-13 11:14:46,772 - zap_scanner - INFO - Starting comprehensive scan of target: http://localhost:5503
+2025-04-13 11:14:46,772 - zap_scanner - INFO - Starting ZAP daemon...
+2025-04-13 11:14:46,772 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-13 11:14:51,907 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-13 11:14:51,909 - zap_scanner - INFO - Found ZAP JAR at: C:\Program Files\ZAP\Zed Attack Proxy\zap-2.16.1.jar
+2025-04-13 11:14:51,910 - zap_scanner - INFO - Starting ZAP with command: java -Xmx4G -Djava.io.tmpdir=c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\tmp -Djava.net.preferIPv4Stack=true -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -jar C:\Program Files\ZAP\Zed Attack Proxy\zap-2.16.1.jar -daemon -port 8090 -host 127.0.0.1 -config api.key=5tjkc409k4oaacd69qob5p6uri -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true -config connection.timeoutInSecs=1200 -config ascan.maxScanDurationInMins=120 -config ascan.threadPerHost=8 -config view.mode=standard -config ascan.attackStrength=HIGH -config ascan.alertThreshold=LOW -config pscan.maxAlertsPerRule=0 -config pscan.maxBodySizeInBytes=10000000 -config ajaxSpider.browserId=chrome-headless -config ajaxSpider.maxDuration=600 -config ajaxSpider.clickDefaultElems=true -config ajaxSpider.clickElemsOnce=false -config ajaxSpider.eventWait=2000 -config ajaxSpider.maxCrawlDepth=10 -config ajaxSpider.maxCrawlStates=0 -config ajaxSpider.numberOfBrowsers=4 -config ajaxSpider.randomInputs=true -config pscans.pscanner(10020).enabled=true -config pscans.pscanner(10020).alertThreshold=LOW -config pscans.pscanner(10021).enabled=true -config pscans.pscanner(10021).alertThreshold=LOW -config pscans.pscanner(10038).enabled=true -config pscans.pscanner(10038).alertThreshold=LOW -config pscans.pscanner(10035).enabled=true -config pscans.pscanner(10035).alertThreshold=LOW -config pscans.pscanner(10063).enabled=true -config pscans.pscanner(10063).alertThreshold=LOW -config pscans.pscanner(10054).enabled=true -config pscans.pscanner(10054).alertThreshold=LOW -config pscans.pscanner(10024).enabled=true -config pscans.pscanner(10024).alertThreshold=LOW -config pscans.pscanner(10025).enabled=true -config pscans.pscanner(10025).alertThreshold=LOW -config pscans.pscanner(10027).enabled=true -config pscans.pscanner(10027).alertThreshold=LOW -config pscans.pscanner(10096).enabled=true -config pscans.pscanner(10096).alertThreshold=LOW -config pscans.pscanner(10097).enabled=true -config pscans.pscanner(10097).alertThreshold=LOW -config pscans.pscanner(10094).enabled=true -config pscans.pscanner(10094).alertThreshold=LOW -config pscans.pscanner(90022).enabled=true -config pscans.pscanner(90022).alertThreshold=LOW -config pscans.pscanner(10109).enabled=true -config pscans.pscanner(10109).alertThreshold=LOW -config pscans.pscanner(10110).enabled=true -config pscans.pscanner(10110).alertThreshold=LOW -config ascan.attackStrength=HIGH -config ascan.alertThreshold=LOW
+2025-04-13 11:14:51,915 - zap_scanner - INFO - Waiting for ZAP to initialize (15 seconds)...
+2025-04-13 11:14:59,557 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-13 11:14:59,557 - zap_scanner - INFO - Terminating existing ZAP process...
+2025-04-13 11:14:59,559 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-13 11:14:59,559 - zap_scanner - INFO - Terminating existing ZAP process...
+2025-04-13 11:15:04,732 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-13 11:15:04,748 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-13 11:15:06,933 - zap_scanner - ERROR - ZAP failed to start. Exit code: 1
+Log excerpt:
+3823 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Cookie Poisoning
+3823 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: User Controllable HTML Element Attribute (Potential XSS)
+3823 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: User Controllable JavaScript Event (XSS)
+3823 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Open Redirect
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Username Hash Found
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Viewstate
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-AspNet-Version Response Header
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-Backend-Server Header Information Leak
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-ChromeLogger-Data (XCOLD) Header Information Leak
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-Content-Type-Options Header Missing
+3825 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-Debug-Token Information Leak
+3825 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Server Leaks Information via "X-Powered-By" HTTP Response Header Field(s)
+3826 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Script Passive Scan Rules
+3827 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Stats Passive Scan Rule
+3846 [ZAP-daemon] INFO  org.zaproxy.addon.network.ExtensionNetwork - ZAP is now listening on 127.0.0.1:8090
+
+2025-04-13 11:15:06,956 - zap_scanner - ERROR - Failed to start ZAP: ZAP failed to start. Exit code: 1
+Log excerpt:
+3823 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Cookie Poisoning
+3823 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: User Controllable HTML Element Attribute (Potential XSS)
+3823 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: User Controllable JavaScript Event (XSS)
+3823 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Open Redirect
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Username Hash Found
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Viewstate
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-AspNet-Version Response Header
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-Backend-Server Header Information Leak
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-ChromeLogger-Data (XCOLD) Header Information Leak
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-Content-Type-Options Header Missing
+3825 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-Debug-Token Information Leak
+3825 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Server Leaks Information via "X-Powered-By" HTTP Response Header Field(s)
+3826 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Script Passive Scan Rules
+3827 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Stats Passive Scan Rule
+3846 [ZAP-daemon] INFO  org.zaproxy.addon.network.ExtensionNetwork - ZAP is now listening on 127.0.0.1:8090
+
+2025-04-13 11:15:06,959 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-13 11:15:06,959 - zap_scanner - INFO - Terminating existing ZAP process...
+2025-04-13 11:15:12,121 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-13 11:15:12,121 - zap_scanner - ERROR - Scan error: Failed to start ZAP: ZAP failed to start. Exit code: 1
+Log excerpt:
+3823 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Cookie Poisoning
+3823 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: User Controllable HTML Element Attribute (Potential XSS)
+3823 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: User Controllable JavaScript Event (XSS)
+3823 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Open Redirect
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Username Hash Found
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Viewstate
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-AspNet-Version Response Header
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-Backend-Server Header Information Leak
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-ChromeLogger-Data (XCOLD) Header Information Leak
+3824 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-Content-Type-Options Header Missing
+3825 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-Debug-Token Information Leak
+3825 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Server Leaks Information via "X-Powered-By" HTTP Response Header Field(s)
+3826 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Script Passive Scan Rules
+3827 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Stats Passive Scan Rule
+3846 [ZAP-daemon] INFO  org.zaproxy.addon.network.ExtensionNetwork - ZAP is now listening on 127.0.0.1:8090
+
+2025-04-13 11:15:12,125 - zap_scanner - INFO - Cleaning up ZAP resources...
+2025-04-13 11:15:12,126 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-13 11:15:12,126 - zap_scanner - INFO - Terminating existing ZAP process...
+2025-04-13 11:15:17,289 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-13 11:15:17,290 - zap_scanner - INFO - Generating affected code report...
+2025-04-13 11:15:17,290 - zap_scanner - INFO - Saved affected code report to: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2\.zap_code_report.md
+2025-04-13 11:15:17,291 - zap_scanner - INFO - Saving scan results to c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2\.zap_results.json
+2025-04-13 11:15:17,291 - zap_scanner - INFO - Scan Llama-2 completed successfully with 0 high, 0 medium, 0 low risks
+2025-04-13 11:15:17,301 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-13 11:15:17,301 - zap_scanner - INFO - Terminating existing ZAP process...
+2025-04-13 11:15:22,451 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-13 11:15:45,993 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 11:15:46,064 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 11:15:46,064 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 11:15:46,065 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:15:46,065 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 11:15:46,065 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:16:07,489 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 11:16:07,547 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 11:16:07,548 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 11:16:07,548 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:16:07,548 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 11:16:07,548 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:16:08,300 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 11:16:08,349 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 11:16:08,349 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 11:16:08,350 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:16:08,350 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 11:16:08,350 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:20:39,266 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 11:20:39,334 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 11:20:39,335 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 11:20:39,335 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:20:39,335 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 11:20:39,335 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:20:51,358 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 11:20:51,407 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 11:20:51,407 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 11:20:51,408 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:20:51,408 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 11:20:51,408 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:22:20,280 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 11:22:20,345 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 11:22:20,346 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 11:22:20,346 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:22:20,346 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 11:22:20,346 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:22:22,015 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 11:22:22,072 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 11:22:22,073 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 11:22:22,073 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:22:22,074 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 11:22:22,074 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:23:36,623 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 11:23:36,690 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 11:23:36,690 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 11:23:36,691 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:23:36,692 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 11:23:36,692 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:25:00,216 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 11:25:00,285 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 11:25:00,286 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 11:25:00,286 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:25:00,286 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 11:25:00,286 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:25:02,030 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-13 11:25:02,090 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-13 11:25:02,091 - zap_scanner - INFO - Found free port: 8090
+2025-04-13 11:25:02,091 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-13 11:25:02,091 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-13 11:25:02,091 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app

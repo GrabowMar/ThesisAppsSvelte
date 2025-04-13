@@ -1,0 +1,35 @@
+2025-04-12 11:01:28,318 - model_manager.ajax - ERROR - Error in index: Could not build url for endpoint 'batch_analysis.batch_dashboard'. Did you mean 'main.batch_docker_action' instead?
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 595, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 974, in index
+    return render_template("index.html",
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 127, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 63, in block 'content'
+    <a href="{{ url_for('batch_analysis.batch_dashboard') }}" class="action-btn py-1 px-2 text-xs bg-indigo-600 hover:bg-indigo-700 text-white">
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'batch_analysis.batch_dashboard'. Did you mean 'main.batch_docker_action' instead?

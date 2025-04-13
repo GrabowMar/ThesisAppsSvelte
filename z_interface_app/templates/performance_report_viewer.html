@@ -2,130 +2,142 @@
 
 {% block content %}
 <div class="space-y-2">
-    <!-- Toolbar -->
-    <div class="bg-gray-200 border border-gray-400 p-1">
+    <!-- Toolbar - Matches UIController styling -->
+    <div class="bg-gray-100 border border-gray-300 p-2 rounded-md shadow-sm">
         <div class="flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <a href="{{ url_for('performance.performance_test', model=model, port=port) }}" class="action-btn h-6 px-2 text-xs">Back to Test Page</a>
-                <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs">Dashboard</a>
-                <button id="refreshReport" class="action-btn h-6 px-2 text-xs">Refresh Report</button>
+                <a href="{{ url_for('performance.performance_test', model=model, port=port) }}" class="action-btn h-7 px-2 text-xs">
+                    <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Back to Test
+                </a>
+                <a href="{{ url_for('main.index') }}" class="action-btn h-7 px-2 text-xs">
+                    <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Dashboard
+                </a>
+                <button id="refreshReport" class="action-btn h-7 px-2 text-xs">
+                    <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Refresh Report
+                </button>
             </div>
             <div>
-                <span class="text-xs font-bold">{{ report_id }}</span>
+                <span class="text-xs font-bold" id="reportName" data-report-name="{{ report_name }}">{{ report_name }}</span>
             </div>
         </div>
     </div>
 
-    <!-- Report Tabs -->
-    <div class="border border-gray-400 bg-white">
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex">
-            <button id="tab-report" class="font-bold text-sm mr-4 py-1 tab-button tab-active">Performance Report</button>
-            {% if graphs %}
-            <button id="tab-graphs" class="font-bold text-sm mr-4 py-1 tab-button">Graphs</button>
-            {% endif %}
-            {% if csv_files %}
-            <button id="tab-raw" class="font-bold text-sm mr-4 py-1 tab-button">Raw Data</button>
-            {% endif %}
-        </div>
-
-        <!-- Report Content Tabs -->
-        <div id="content-report" class="tab-content p-2">
-            <iframe id="reportFrame" class="w-full h-screen border-0" srcdoc="{{ report_content|safe }}"></iframe>
-        </div>
-
-        {% if graphs %}
-        <div id="content-graphs" class="tab-content p-2 hidden">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {% for graph in graphs %}
-                <div class="border border-gray-300 rounded p-2">
-                    <h3 class="font-bold text-center mb-2">{{ graph.name }}</h3>
-                    <img src="{{ graph.path }}" alt="{{ graph.name }}" class="max-w-full mx-auto">
-                </div>
-                {% endfor %}
+    <!-- Report Content - Integrated with PerformanceTest class -->
+    <div class="border border-gray-300 bg-white rounded-md shadow-sm overflow-hidden">
+        <div class="bg-gray-50 border-b border-gray-300 px-3 py-1.5 flex justify-between items-center">
+            <h2 class="font-bold text-sm text-gray-800">Performance Report</h2>
+            <div class="flex items-center text-xs text-gray-600">
+                <span id="reportStatus" class="ml-2">
+                    <span class="inline-block h-2 w-2 rounded-full bg-green-500 mr-1"></span>
+                    Report Loaded
+                </span>
             </div>
         </div>
-        {% endif %}
-
-        {% if csv_files %}
-        <div id="content-raw" class="tab-content p-2 hidden">
-            <div class="space-y-4">
-                {% for name, content in csv_files.items() %}
-                <div class="border border-gray-300 rounded">
-                    <div class="bg-gray-100 p-2 font-bold border-b border-gray-300 cursor-pointer" 
-                         onclick="toggleRawData('{{ name }}')">
-                        {{ name }}
-                    </div>
-                    <div id="raw-{{ name }}" class="p-2 hidden">
-                        <pre class="bg-gray-50 p-2 overflow-x-auto text-xs"><code>{{ content }}</code></pre>
-                    </div>
-                </div>
-                {% endfor %}
+        <div class="p-0">
+            <!-- Performance Report Frame - Used by PerformanceTest.updateStatistics -->
+            <div id="reportContainer" class="w-full">
+                <iframe id="reportFrame" class="w-full border-0" srcdoc="{{ report_content|safe }}" data-model="{{ model }}" data-port="{{ port }}"></iframe>
             </div>
         </div>
-        {% endif %}
     </div>
 </div>
+{% endblock %}
 
-<style>
-.tab-button {
-    position: relative;
-}
-.tab-active {
-    color: #4a5568;
-}
-.tab-active:after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background-color: #4a5568;
-}
-</style>
-
+{% block extra_scripts %}
 <script>
-// Initialize when DOM is ready
-$(document).ready(function() {
-    // Adjust iframe height to fit content
-    const $iframe = $('#reportFrame');
-    
-    if ($iframe.length) {
-        $iframe.on('load', function() {
-            // Try to set the height based on content
-            try {
-                const frameContent = this.contentDocument || this.contentWindow.document;
-                const height = frameContent.body.scrollHeight;
-                $iframe.css('height', (height + 50) + 'px');
-            } catch(e) {
-                console.error('Error adjusting iframe height:', e);
-            }
-        });
+  // This script aligns with the PerformanceTest class in dashboard.js
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize report viewer
+    initializeReportViewer();
+  });
+
+  function initializeReportViewer() {
+    const reportFrame = document.getElementById('reportFrame');
+    const refreshButton = document.getElementById('refreshReport');
+    const reportStatus = document.getElementById('reportStatus');
+
+    if (!reportFrame || !refreshButton || !reportStatus) return;
+
+    // Add refresh functionality - Follows PerformanceTest.runTest pattern
+    refreshButton.addEventListener('click', function() {
+      updateReportStatus('loading');
+      try {
+        reportFrame.contentWindow.location.reload();
+      } catch(e) {
+        console.error('Error refreshing report:', e);
+        updateReportStatus('error');
+      }
+    });
+
+    // Handle iframe loading - Follows UtilityService pattern
+    reportFrame.addEventListener('load', function() {
+      try {
+        // Adjust iframe height based on content
+        const frameContent = this.contentDocument || this.contentWindow.document;
+        const height = frameContent.body.scrollHeight;
+        reportFrame.style.height = (height + 50) + 'px';
+        updateReportStatus('loaded');
+        
+        // Log successful report load
+        logReportEvent('loaded');
+      } catch(e) {
+        console.error('Error adjusting iframe height:', e);
+        updateReportStatus('error');
+        
+        // Log error using UtilityService.logError pattern
+        logReportEvent('error', e);
+      }
+    });
+
+    // Update report status
+    function updateReportStatus(status) {
+      let statusHTML = '';
+      
+      switch(status) {
+        case 'loading':
+          statusHTML = '<span class="inline-block h-2 w-2 rounded-full bg-yellow-500 mr-1"></span> Loading...';
+          break;
+        case 'loaded':
+          statusHTML = '<span class="inline-block h-2 w-2 rounded-full bg-green-500 mr-1"></span> Report Loaded';
+          break;
+        case 'error':
+          statusHTML = '<span class="inline-block h-2 w-2 rounded-full bg-red-500 mr-1"></span> Error Loading Report';
+          break;
+        default:
+          statusHTML = '<span class="inline-block h-2 w-2 rounded-full bg-gray-500 mr-1"></span> Unknown Status';
+      }
+      
+      reportStatus.innerHTML = statusHTML;
     }
     
-    // Refresh button functionality
-    $('#refreshReport').on('click', function() {
-        $iframe[0].contentWindow.location.reload();
-    });
+    // Log report events - Matches UtilityService.logError
+    function logReportEvent(event, error) {
+      if (window.dashboardApp && window.dashboardApp.utilityService) {
+        const model = reportFrame.getAttribute('data-model');
+        const port = reportFrame.getAttribute('data-port');
+        const reportName = document.getElementById('reportName').getAttribute('data-report-name');
+        
+        if (event === 'error') {
+          window.dashboardApp.utilityService.logError({
+            message: 'Error loading performance report',
+            context: { model, port, reportName },
+            error: error || new Error('Failed to load report')
+          });
+        }
+      }
+    }
     
-    // Tab functionality
-    $('.tab-button').on('click', function() {
-        const tabId = $(this).attr('id');
-        const contentId = tabId.replace('tab-', 'content-');
-        
-        // Hide all content divs and show the selected one
-        $('.tab-content').addClass('hidden');
-        $('#' + contentId).removeClass('hidden');
-        
-        // Update active tab styling
-        $('.tab-button').removeClass('tab-active');
-        $(this).addClass('tab-active');
-    });
-});
-
-// Toggle raw data sections
-function toggleRawData(name) {
-    $('#raw-' + name).toggleClass('hidden');
-}
+    // Initial status update
+    updateReportStatus('loading');
+  }
 </script>
 {% endblock %}

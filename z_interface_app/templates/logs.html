@@ -4,23 +4,23 @@
 <div class="space-y-2 max-w-7xl mx-auto"><!-- Centered container with vertical spacing -->
 
   <!-- Header Section -->
-  <div class="border border-gray-400 bg-white p-2">
+  <div class="border border-gray-300 bg-white p-3 rounded-md shadow-sm">
     <div class="flex items-center justify-between">
       <div>
         <h1 class="font-bold text-xl text-gray-900">Application Logs</h1>
-        <p class="text-xs text-gray-600 mt-1">{{ model }} - App {{ app_num }}</p>
+        <p class="text-xs text-gray-600 mt-1" data-model="{{ model }}" data-app-num="{{ app_num }}">{{ model }} - App {{ app_num }}</p>
       </div>
       <div class="flex items-center space-x-2">
         <!-- Back to Dashboard Button -->
-        <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs flex items-center">
+        <a href="{{ url_for('main.index') }}" class="action-btn h-7 px-2 text-xs flex items-center">
           <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
           </svg>
           Back to Dashboard
         </a>
-        <!-- Refresh Logs Button -->
-        <button id="refreshLogs" class="action-btn h-6 px-2 text-xs bg-blue-600 text-white hover:bg-blue-700 flex items-center">
+        <!-- Refresh Logs Button - Used by UIController.handleActionButton -->
+        <button id="refreshLogs" class="action-btn h-7 px-2 text-xs bg-blue-600 text-white hover:bg-blue-700 flex items-center" data-action="refresh-logs">
           <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
@@ -31,14 +31,14 @@
     </div>
   </div>
 
-  <!-- Control Panel -->
-  <div class="border border-gray-400 bg-white p-2">
+  <!-- Control Panel - Similar to AutoRefreshService controls -->
+  <div class="border border-gray-300 bg-white p-3 rounded-md shadow-sm">
     <h2 class="font-bold text-sm mb-2">Control Panel</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
       <div>
         <label class="block text-xs font-medium text-gray-700">Log Level Filter</label>
         <select id="logLevel"
-                class="mt-1 h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full">
+                class="mt-1 h-7 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full">
           <option value="all">All Levels</option>
           <option value="error">Error</option>
           <option value="warning">Warning</option>
@@ -49,7 +49,7 @@
       <div>
         <label class="block text-xs font-medium text-gray-700">Auto-Refresh Interval</label>
         <select id="refreshInterval"
-                class="mt-1 h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full">
+                class="mt-1 h-7 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full">
           <option value="0">Manual Refresh</option>
           <option value="5000">5 seconds</option>
           <option value="15000">15 seconds</option>
@@ -58,150 +58,495 @@
         </select>
       </div>
     </div>
+    <!-- Status indicator for log refreshes -->
+    <div class="mt-2 text-xs text-gray-600">
+      <span id="lastRefreshInfo">Last refreshed: <span id="lastRefreshTime">Never</span></span>
+      <span id="autoRefreshStatus" class="ml-2">
+        <span class="h-2 w-2 rounded-full bg-green-500 inline-block"></span>
+        <span>Auto-refresh active</span>
+      </span>
+    </div>
   </div>
 
-  <!-- Logs Section -->
-  <div class="border border-gray-400 bg-white p-2">
+  <!-- Logs Section - Updated by specific logViewer class -->
+  <div class="border border-gray-300 bg-white p-3 rounded-md shadow-sm">
     <h2 class="font-bold text-sm mb-2">Logs</h2>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
       <!-- Backend Logs -->
-      <div class="border border-gray-300 p-2">
+      <div class="border border-gray-300 p-2 rounded-md">
         <div class="flex justify-between items-center mb-2">
           <h3 class="font-bold text-xs text-gray-900">Backend Logs</h3>
-          <button class="copy-logs-btn action-btn h-6 px-2 text-xs bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  data-target="backendLogs">
-            Copy Logs
-          </button>
+          <div class="flex items-center space-x-1">
+            <span id="backendLogStatus" class="text-2xs text-gray-500">
+              <span class="inline-block h-2 w-2 rounded-full bg-green-500"></span>
+              <span>Connected</span>
+            </span>
+            <button class="copy-logs-btn action-btn h-7 px-2 text-xs bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    data-target="backendLogs">
+              <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+              </svg>
+              Copy
+            </button>
+          </div>
         </div>
-        <div id="backendLogs" class="relative">
+        <div id="backendLogs" class="relative logs-container" data-log-type="backend">
           <pre class="bg-gray-50 rounded p-2 overflow-x-auto overflow-y-auto max-h-[600px] text-xs font-mono whitespace-pre-wrap break-words text-gray-700"
                style="scrollbar-width: thin;">
 <code>{{ logs.backend }}</code></pre>
-          <div class="absolute top-0 right-0 mt-2 mr-2 hidden">
+          <div class="copy-confirmation absolute top-0 right-0 mt-2 mr-2 hidden">
             <span class="px-2 py-1 bg-green-500 text-white text-xs rounded">Copied!</span>
           </div>
         </div>
       </div>
 
       <!-- Frontend Logs -->
-      <div class="border border-gray-300 p-2">
+      <div class="border border-gray-300 p-2 rounded-md">
         <div class="flex justify-between items-center mb-2">
           <h3 class="font-bold text-xs text-gray-900">Frontend Logs</h3>
-          <button class="copy-logs-btn action-btn h-6 px-2 text-xs bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  data-target="frontendLogs">
-            Copy Logs
-          </button>
+          <div class="flex items-center space-x-1">
+            <span id="frontendLogStatus" class="text-2xs text-gray-500">
+              <span class="inline-block h-2 w-2 rounded-full bg-green-500"></span>
+              <span>Connected</span>
+            </span>
+            <button class="copy-logs-btn action-btn h-7 px-2 text-xs bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    data-target="frontendLogs">
+              <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+              </svg>
+              Copy
+            </button>
+          </div>
         </div>
-        <div id="frontendLogs" class="relative">
+        <div id="frontendLogs" class="relative logs-container" data-log-type="frontend">
           <pre class="bg-gray-50 rounded p-2 overflow-x-auto overflow-y-auto max-h-[600px] text-xs font-mono whitespace-pre-wrap break-words text-gray-700"
                style="scrollbar-width: thin;">
 <code>{{ logs.frontend }}</code></pre>
-          <div class="absolute top-0 right-0 mt-2 mr-2 hidden">
+          <div class="copy-confirmation absolute top-0 right-0 mt-2 mr-2 hidden">
             <span class="px-2 py-1 bg-green-500 text-white text-xs rounded">Copied!</span>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div><!-- End unified container -->
-
-<script>
-// Initialize when DOM is ready
-$(document).ready(function() {
-  let refreshInterval;
   
-  // Set up copy buttons functionality
-  $('.copy-logs-btn').on('click', function() {
-    const targetId = $(this).data('target');
-    const logsText = $(`#${targetId} pre code`).text();
-    
-    // Use clipboard API to copy text
-    navigator.clipboard.writeText(logsText).then(function() {
-      const $notification = $(`#${targetId} .absolute`);
-      $notification.removeClass('hidden');
-      setTimeout(function() {
-        $notification.addClass('hidden');
-      }, 2000);
-    });
-  });
+  <!-- Toast Container for UIController.showToast -->
+  <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
+</div><!-- End unified container -->
+{% endblock %}
 
-  // Set up refresh logs functionality
-  function refreshLogs() {
-    $.ajax({
-      url: window.location.href,
-      method: 'GET'
-    })
-    .done(function(html) {
-      const $parsedHtml = $(html);
-      
-      // Update backend logs
-      const backendLogs = $parsedHtml.find('#backendLogs pre code').text();
-      $('#backendLogs pre code').text(backendLogs);
-      
-      // Update frontend logs
-      const frontendLogs = $parsedHtml.find('#frontendLogs pre code').text();
-      $('#frontendLogs pre code').text(frontendLogs);
-    })
-    .fail(function(jqXHR) {
-      console.error('Error refreshing logs:', jqXHR.statusText);
-    });
-  }
-
-  // Manual refresh button
-  $('#refreshLogs').on('click', refreshLogs);
-
-  // Auto-refresh interval handling
-  $('#refreshInterval').on('change', function() {
-    if (refreshInterval) clearInterval(refreshInterval);
-    
-    const interval = parseInt($(this).val(), 10);
-    if (interval > 0) {
-      refreshInterval = setInterval(refreshLogs, interval);
-    }
-  });
-
-  // Log level filtering
-  $('#logLevel').on('change', function() {
-    const level = $(this).val().toLowerCase();
-    
-    $('pre code').each(function() {
-      const $code = $(this);
-      
-      if (!$code.data('fullText')) {
-        $code.data('fullText', $code.text());
-      }
-      
-      const fullText = $code.data('fullText');
-      
-      if (level === 'all') {
-        $code.text(fullText);
-      } else {
-        const lines = fullText.split('\n');
-        const filtered = lines.filter(function(line) {
-          return line.toLowerCase().includes(level);
-        });
-        $code.text(filtered.join('\n'));
-      }
-    });
-  });
-
-  // Initialize auto-refresh if an interval is set by default
-  const initialInterval = parseInt($('#refreshInterval').val(), 10);
-  if (initialInterval > 0) {
-    refreshInterval = setInterval(refreshLogs, initialInterval);
-  }
-
-  // Pause auto-refresh when page is hidden
-  $(document).on('visibilitychange', function() {
-    if (document.hidden) {
-      if (refreshInterval) clearInterval(refreshInterval);
+{% block extra_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the log viewer if dashboard.js is loaded
+    if (window.dashboardApp && window.dashboardApp.featureManager) {
+      // The LogViewer class from dashboard.js will handle initialization
     } else {
-      const interval = parseInt($('#refreshInterval').val(), 10);
-      if (interval > 0) {
-        refreshInterval = setInterval(refreshLogs, interval);
-      }
+      // Fallback initialization if the dashboard.js framework isn't available
+      console.warn('Dashboard.js framework not detected. Using fallback initialization.');
+      initializeLogViewer();
     }
   });
-});
+
+  /**
+   * Fallback initialization function
+   * This follows the same structure as a potential LogViewer class in dashboard.js
+   */
+  function initializeLogViewer() {
+    // State variables
+    let refreshInterval;
+    let lastRefreshTime = null;
+    const model = document.querySelector('[data-model]').getAttribute('data-model');
+    const appNum = document.querySelector('[data-app-num]').getAttribute('data-app-num');
+    
+    // Cache original log content for filtering
+    const logContainers = document.querySelectorAll('.logs-container');
+    logContainers.forEach(container => {
+      const codeElement = container.querySelector('code');
+      if (codeElement) {
+        container.dataset.fullText = codeElement.textContent;
+      }
+    });
+    
+    // Set up event listeners
+    setupEventListeners();
+    setupAutoRefresh();
+    
+    /**
+     * Set up all event listeners for the log viewer
+     * Matches UIController.setupEventListeners pattern
+     */
+    function setupEventListeners() {
+      // Refresh logs button
+      const refreshBtn = document.getElementById('refreshLogs');
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+          refreshLogs();
+        });
+      }
+      
+      // Auto-refresh interval selection
+      const refreshIntervalSelect = document.getElementById('refreshInterval');
+      if (refreshIntervalSelect) {
+        refreshIntervalSelect.addEventListener('change', () => {
+          updateAutoRefresh();
+        });
+      }
+      
+      // Log level filtering
+      const logLevelSelect = document.getElementById('logLevel');
+      if (logLevelSelect) {
+        logLevelSelect.addEventListener('change', () => {
+          filterLogs(logLevelSelect.value);
+        });
+      }
+      
+      // Copy logs buttons
+      const copyButtons = document.querySelectorAll('.copy-logs-btn');
+      copyButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const targetId = button.getAttribute('data-target');
+          copyLogs(targetId);
+        });
+      });
+      
+      // Handle page visibility changes (pause auto-refresh when hidden)
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          pauseAutoRefresh();
+        } else {
+          resumeAutoRefresh();
+        }
+      });
+    }
+    
+    /**
+     * Set up auto-refresh functionality
+     * Matches AutoRefreshService.setup pattern
+     */
+    function setupAutoRefresh() {
+      const refreshIntervalSelect = document.getElementById('refreshInterval');
+      if (!refreshIntervalSelect) return;
+      
+      const interval = parseInt(refreshIntervalSelect.value, 10);
+      if (interval > 0) {
+        refreshInterval = setInterval(() => {
+          refreshLogs();
+        }, interval);
+        updateAutoRefreshStatus(true);
+      } else {
+        updateAutoRefreshStatus(false);
+      }
+    }
+    
+    /**
+     * Update auto-refresh based on selected interval
+     * Matches AutoRefreshService.toggle pattern
+     */
+    function updateAutoRefresh() {
+      const refreshIntervalSelect = document.getElementById('refreshInterval');
+      if (!refreshIntervalSelect) return;
+      
+      // Clear existing interval
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+      }
+      
+      // Set new interval if needed
+      const interval = parseInt(refreshIntervalSelect.value, 10);
+      if (interval > 0) {
+        refreshInterval = setInterval(() => {
+          refreshLogs();
+        }, interval);
+        updateAutoRefreshStatus(true);
+      } else {
+        updateAutoRefreshStatus(false);
+      }
+    }
+    
+    /**
+     * Pause auto-refresh when page is hidden
+     * Matches AutoRefreshService.pause pattern
+     */
+    function pauseAutoRefresh() {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+      }
+    }
+    
+    /**
+     * Resume auto-refresh when page becomes visible again
+     * Matches AutoRefreshService.resume pattern
+     */
+    function resumeAutoRefresh() {
+      const refreshIntervalSelect = document.getElementById('refreshInterval');
+      if (!refreshIntervalSelect) return;
+      
+      const interval = parseInt(refreshIntervalSelect.value, 10);
+      if (interval > 0) {
+        refreshInterval = setInterval(() => {
+          refreshLogs();
+        }, interval);
+      }
+    }
+    
+    /**
+     * Update auto-refresh status display
+     * @param {boolean} active - Whether auto-refresh is active
+     */
+    function updateAutoRefreshStatus(active) {
+      const statusElement = document.getElementById('autoRefreshStatus');
+      if (!statusElement) return;
+      
+      if (active) {
+        statusElement.innerHTML = '<span class="h-2 w-2 rounded-full bg-green-500 inline-block"></span> <span>Auto-refresh active</span>';
+        statusElement.classList.remove('hidden');
+      } else {
+        statusElement.innerHTML = '<span class="h-2 w-2 rounded-full bg-gray-300 inline-block"></span> <span>Auto-refresh disabled</span>';
+        statusElement.classList.remove('hidden');
+      }
+    }
+    
+    /**
+     * Refresh logs by fetching the latest from the server
+     * Follows ApiService.fetchWithRetry pattern
+     */
+    function refreshLogs() {
+      updateLogStatus('backend', 'refreshing');
+      updateLogStatus('frontend', 'refreshing');
+      
+      fetch(window.location.href, {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Cache-Control': 'no-cache'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
+        }
+        return response.text();
+      })
+      .then(html => {
+        // Create a temporary element to parse the HTML
+        const tempElement = document.createElement('div');
+        tempElement.innerHTML = html;
+        
+        // Update backend logs
+        const backendLogsElement = tempElement.querySelector('#backendLogs pre code');
+        if (backendLogsElement) {
+          const targetElement = document.querySelector('#backendLogs pre code');
+          if (targetElement) {
+            targetElement.textContent = backendLogsElement.textContent;
+            
+            // Update stored full text for filtering
+            document.getElementById('backendLogs').dataset.fullText = backendLogsElement.textContent;
+          }
+        }
+        
+        // Update frontend logs
+        const frontendLogsElement = tempElement.querySelector('#frontendLogs pre code');
+        if (frontendLogsElement) {
+          const targetElement = document.querySelector('#frontendLogs pre code');
+          if (targetElement) {
+            targetElement.textContent = frontendLogsElement.textContent;
+            
+            // Update stored full text for filtering
+            document.getElementById('frontendLogs').dataset.fullText = frontendLogsElement.textContent;
+          }
+        }
+        
+        // Apply current filter if needed
+        const logLevelSelect = document.getElementById('logLevel');
+        if (logLevelSelect && logLevelSelect.value !== 'all') {
+          filterLogs(logLevelSelect.value);
+        }
+        
+        // Update status
+        updateLogStatus('backend', 'connected');
+        updateLogStatus('frontend', 'connected');
+        
+        // Update last refresh time
+        lastRefreshTime = new Date();
+        updateRefreshTimestamp();
+      })
+      .catch(error => {
+        console.error('Error refreshing logs:', error);
+        
+        // Show toast notification
+        showToast(`Failed to refresh logs: ${error.message}`, 'error');
+        
+        // Update status
+        updateLogStatus('backend', 'error');
+        updateLogStatus('frontend', 'error');
+        
+        // Log error (would use UtilityService.logError in dashboard.js)
+        logError({
+          message: 'Failed to refresh logs',
+          context: { model, appNum },
+          error
+        });
+      });
+    }
+    
+    /**
+     * Copy logs to clipboard
+     * @param {string} targetId - ID of the log container
+     */
+    function copyLogs(targetId) {
+      const targetElement = document.getElementById(targetId);
+      if (!targetElement) return;
+      
+      const codeElement = targetElement.querySelector('pre code');
+      if (!codeElement) return;
+      
+      // Use clipboard API to copy text
+      navigator.clipboard.writeText(codeElement.textContent)
+        .then(() => {
+          const notification = targetElement.querySelector('.copy-confirmation');
+          if (notification) {
+            notification.classList.remove('hidden');
+            setTimeout(() => {
+              notification.classList.add('hidden');
+            }, 2000);
+          }
+        })
+        .catch(error => {
+          console.error('Failed to copy logs:', error);
+          showToast('Failed to copy logs to clipboard', 'error');
+        });
+    }
+    
+    /**
+     * Filter logs based on selected level
+     * @param {string} level - Log level to filter by
+     */
+    function filterLogs(level) {
+      const logContainers = document.querySelectorAll('.logs-container');
+      
+      logContainers.forEach(container => {
+        const codeElement = container.querySelector('code');
+        if (!codeElement) return;
+        
+        const fullText = container.dataset.fullText;
+        if (!fullText) return;
+        
+        if (level === 'all') {
+          codeElement.textContent = fullText;
+        } else {
+          const lines = fullText.split('\n');
+          const filtered = lines.filter(line => 
+            line.toLowerCase().includes(level.toLowerCase())
+          );
+          
+          if (filtered.length > 0) {
+            codeElement.textContent = filtered.join('\n');
+          } else {
+            codeElement.textContent = `No ${level} level logs found.`;
+          }
+        }
+      });
+    }
+    
+    /**
+     * Update log connection status
+     * @param {string} type - Log type ('backend' or 'frontend')
+     * @param {string} status - Status ('connected', 'error', 'refreshing')
+     */
+    function updateLogStatus(type, status) {
+      const statusElement = document.getElementById(`${type}LogStatus`);
+      if (!statusElement) return;
+      
+      switch (status) {
+        case 'connected':
+          statusElement.innerHTML = '<span class="inline-block h-2 w-2 rounded-full bg-green-500"></span> <span>Connected</span>';
+          break;
+        case 'error':
+          statusElement.innerHTML = '<span class="inline-block h-2 w-2 rounded-full bg-red-500"></span> <span>Connection Error</span>';
+          break;
+        case 'refreshing':
+          statusElement.innerHTML = '<span class="inline-block h-2 w-2 rounded-full bg-blue-500"></span> <span>Refreshing...</span>';
+          break;
+        default:
+          statusElement.innerHTML = '<span class="inline-block h-2 w-2 rounded-full bg-gray-500"></span> <span>Unknown</span>';
+      }
+    }
+    
+    /**
+     * Update refresh timestamp display
+     * Matches UIController.updateRefreshTimestamp pattern
+     */
+    function updateRefreshTimestamp() {
+      if (!lastRefreshTime) return;
+      
+      const timestampElement = document.getElementById('lastRefreshTime');
+      if (timestampElement) {
+        timestampElement.textContent = lastRefreshTime.toLocaleTimeString();
+      }
+    }
+    
+    /**
+     * Show a toast notification
+     * Matches UIController.showToast pattern
+     * @param {string} message - Message to display
+     * @param {string} type - Notification type (success, error, info)
+     */
+    function showToast(message, type = 'success') {
+      if (!message) return;
+      
+      // Create toast container if it doesn't exist
+      let toastContainer = document.getElementById('toastContainer');
+      if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toastContainer';
+        toastContainer.className = 'fixed bottom-4 right-4 z-50 flex flex-col gap-2';
+        document.body.appendChild(toastContainer);
+      }
+      
+      // Create toast element
+      const toast = document.createElement('div');
+      toast.className = `px-4 py-2 rounded-sm shadow-md text-sm transition-opacity duration-300 ${
+        type === 'success' ? 'bg-green-100 border border-green-300 text-green-800' :
+        type === 'error' ? 'bg-red-100 border border-red-300 text-red-800' :
+        'bg-blue-100 border border-blue-300 text-blue-800'
+      }`;
+      toast.textContent = message;
+      
+      // Add to container
+      toastContainer.appendChild(toast);
+      
+      // Remove after delay
+      setTimeout(() => {
+        toast.style.opacity = 0;
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }, 3000);
+    }
+    
+    /**
+     * Log error to console (would use UtilityService.logError in dashboard.js)
+     * @param {Object} errorData - Error data to log
+     */
+    function logError(errorData) {
+      if (!errorData) return;
+      
+      const enhancedErrorData = {
+        ...errorData,
+        error: errorData.error ? errorData.error.toString() : 'Unknown error',
+        stack: errorData.error?.stack || 'No stack trace',
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        timestamp: new Date().toISOString()
+      };
+      
+      console.error('CLIENT ERROR:', enhancedErrorData);
+    }
+  }
 </script>
 {% endblock %}

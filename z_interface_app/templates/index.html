@@ -2,10 +2,10 @@
 
 {% block content %}
 <div class="space-y-3">
-  <!-- Control Toolbar -->
+  <!-- Control Toolbar - Integrates with UIController and filters -->
   <div class="bg-gray-100 border border-gray-300 p-2 rounded-md shadow-sm">
     <div class="flex flex-wrap items-center gap-2">
-      <!-- Refresh Controls -->
+      <!-- Refresh Controls - Matches AutoRefreshService class -->
       <button id="refreshAll" class="action-btn bg-blue-600 hover:bg-blue-700 text-white text-xs py-1 px-2">
         <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -14,19 +14,19 @@
         Refresh All
       </button>
 
-      <button id="toggleAutorefresh" class="action-btn text-xs py-1 px-2 {{ 'bg-green-600 hover:bg-green-700 text-white' if autorefresh_enabled else '' }}" data-enabled="{{ 'true' if autorefresh_enabled else 'false' }}">
+      <button id="toggleAutorefresh" class="action-btn text-xs py-1 px-2 {{ 'bg-green-600 hover:bg-green-700 text-white' if autorefresh_enabled else '' }}">
         <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         <span id="autorefreshText">
-          Auto: {{ "On" if autorefresh_enabled else "Off" }}
+          Auto Refresh: {{ "On" if autorefresh_enabled else "Off" }}
         </span>
       </button>
 
       <div class="border-l border-gray-400 h-5 mx-1"></div>
 
-      <!-- Search and Filters -->
+      <!-- Search and Filters - Used by UIController.filterApps -->
       <div class="relative">
         <input type="text" id="searchApps" class="h-6 pl-7 pr-2 text-xs rounded border border-gray-300 focus:ring-1 focus:ring-blue-500" style="width: 180px" placeholder="Search apps..." />
         <svg class="w-3.5 h-3.5 text-gray-500 absolute left-2 top-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,14 +35,14 @@
       </div>
 
       <select id="filterModel" class="h-6 px-2 text-xs rounded border border-gray-300 focus:ring-1 focus:ring-blue-500">
-        <option value="">All Models</option>
+        <option value="all">All Models</option>
         {% for model in models %}
         <option value="{{ model.name }}">{{ model.name }}</option>
         {% endfor %}
       </select>
 
       <select id="filterStatus" class="h-6 px-2 text-xs rounded border border-gray-300 focus:ring-1 focus:ring-blue-500">
-        <option value="">All Statuses</option>
+        <option value="all">All Statuses</option>
         <option value="running">Running</option>
         <option value="partial">Partial</option>
         <option value="stopped">Stopped</option>
@@ -50,7 +50,7 @@
 
       <div class="border-l border-gray-400 h-5 mx-1"></div>
 
-      <!-- Security Filters -->
+      <!-- Security Filters - Used by SecurityAnalysis -->
       <select id="securitySummaryFilter" class="h-6 px-2 text-xs rounded border border-gray-300 focus:ring-1 focus:ring-blue-500">
         <option value="all">All Security</option>
         <option value="high">High Risk Only</option>
@@ -69,7 +69,7 @@
     </div>
   </div>
 
-  <!-- System Status Overview -->
+  <!-- System Status Overview - Updated by SystemInfoService and SecurityAnalysis -->
   <div class="border border-gray-300 bg-white rounded-md shadow-sm">
     <div class="bg-gray-50 border-b border-gray-300 px-3 py-1.5">
       <h2 class="font-semibold text-xs text-gray-700">System Status</h2>
@@ -104,7 +104,7 @@
           </div>
         </div>
 
-        <!-- Security Overview Cards -->
+        <!-- Security Overview Cards - Updated by SecurityAnalysis.loadSecuritySummary -->
         <div class="col-span-2 grid grid-cols-2 gap-2">
           <div class="border border-gray-200 p-2 rounded bg-gray-50 shadow-sm">
             <div class="text-xs text-gray-500 mb-0.5">Security Status</div>
@@ -133,7 +133,7 @@
     </div>
   </div>
 
-  <!-- Model Sections -->
+  <!-- Model Sections - Each section matches CoreController structure -->
   {% for model in models %}
   <div class="border border-gray-300 bg-white rounded-md shadow-sm" data-model-section="{{ model.name }}">
     <!-- Model Header with Batch Operations -->
@@ -141,8 +141,8 @@
       <div class="flex justify-between items-center">
         <div class="flex items-center">
           <h2 class="font-semibold text-xs" style="color: {{ model.color }};">{{ model.name }}</h2>
-          <!-- Batch Operations Dropdown -->
-          <div class="ml-3 relative inline-block text-left" data-model="{{ model.name }}">
+          <!-- Batch Operations Dropdown - Matches CoreController.performBatchOperation -->
+          <div class="ml-3 relative inline-block text-left">
             <button type="button" class="batch-menu-button inline-flex justify-center items-center text-2xs bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded px-2 py-0.5 transition-colors duration-150">
               <span>Batch</span>
               <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,7 +171,7 @@
               </div>
             </div>
           </div>
-          <!-- Batch Operation Status Indicator -->
+          <!-- Batch Operation Status Indicator - Updated by UIController.updateBatchProgress -->
           <div class="batch-status ml-2 hidden">
             <span class="px-1.5 py-0.5 text-2xs bg-blue-100 text-blue-800 border border-blue-300 rounded">
               <span class="batch-status-text">Processing...</span>
@@ -190,10 +190,14 @@
       </div>
     </div>
 
-    <!-- App Cards Grid -->
+    <!-- App Cards Grid - Each card is updated by UIController.updateStatusDisplay -->
     <div class="p-2 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2">
       {% for app in apps if app.model == model.name %}
-      <div class="border border-gray-300 relative rounded shadow-sm hover:shadow-md transition-shadow" data-app-id="{{ app.app_num }}" data-model="{{ app.model }}">
+      <div class="border border-gray-300 relative rounded shadow-sm hover:shadow-md transition-shadow" 
+           data-app-id="{{ app.app_num }}" 
+           data-model="{{ app.model }}" 
+           data-app-name="{{ app.name }}" 
+           data-status="{{ 'running' if app.backend_status.running and app.frontend_status.running else 'partial' if app.backend_status.running or app.frontend_status.running else 'stopped' }}">
         <!-- App Header -->
         <div class="bg-gray-50 border-b border-gray-300 px-2 py-1 flex justify-between items-center rounded-t">
           <div class="flex items-center">
@@ -226,7 +230,10 @@
               <div class="flex items-center">
                 <span class="w-2 h-2 rounded-full {{ 'bg-green-500' if app.backend_status.running else 'bg-red-500' }} mr-1.5"></span>
                 <a href="{{ app.backend_url }}" target="_blank" class="font-medium text-blue-700 hover:underline">
-                  {{ app.backend_port }}
+                  <span data-status="backend" class="{{ 'text-green-700' if app.backend_status.running else 'text-red-700' }} font-medium">
+                    {{ "Running" if app.backend_status.running else "Stopped" }}
+                  </span>
+                  <span class="ml-1">{{ app.backend_port }}</span>
                 </a>
               </div>
             </div>
@@ -235,13 +242,32 @@
               <div class="flex items-center">
                 <span class="w-2 h-2 rounded-full {{ 'bg-green-500' if app.frontend_status.running else 'bg-red-500' }} mr-1.5"></span>
                 <a href="{{ app.frontend_url }}" target="_blank" class="font-medium text-blue-700 hover:underline">
-                  {{ app.frontend_port }}
+                  <span data-status="frontend" class="{{ 'text-green-700' if app.frontend_status.running else 'text-red-700' }} font-medium">
+                    {{ "Running" if app.frontend_status.running else "Stopped" }}
+                  </span>
+                  <span class="ml-1">{{ app.frontend_port }}</span>
                 </a>
               </div>
             </div>
           </div>
 
-          <!-- Action Buttons -->
+          <!-- Metrics Display - Updated by UIController.updateMetricsDisplay -->
+          <div class="grid grid-cols-3 gap-1 p-1 bg-gray-50 rounded border border-gray-300 text-2xs mb-2">
+            <div class="text-center">
+              <div class="text-gray-700 font-medium">CPU</div>
+              <div class="metric-cpu">0.0%</div>
+            </div>
+            <div class="text-center">
+              <div class="text-gray-700 font-medium">Memory</div>
+              <div class="metric-memory">0.0 MB</div>
+            </div>
+            <div class="text-center">
+              <div class="text-gray-700 font-medium">Requests</div>
+              <div class="metric-requests">0</div>
+            </div>
+          </div>
+
+          <!-- Action Buttons - Used by UIController.handleActionButton -->
           <div class="grid grid-cols-4 gap-1">
             <!-- Control Row -->
             <button class="action-btn bg-green-600 hover:bg-green-700 text-white text-2xs py-1" title="Start App" data-action="start" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">Start</button>
@@ -262,7 +288,12 @@
           </div>
         </div>
 
-        <!-- Security Status Indicator -->
+        <!-- App Footer with Last Updated Time - Updated by UIController -->
+        <div class="bg-gray-50 border-t border-gray-300 px-2 py-1 flex justify-between items-center rounded-b">
+          <span data-last-update class="text-2xs text-gray-500">Last updated: Never</span>
+        </div>
+
+        <!-- Security Status Indicator - Updated by SecurityAnalysis.updateSecurityBadges -->
         <div class="security-status absolute top-0 right-0 mt-0.5 mr-0.5 hidden">
           <div class="rounded-full w-2.5 h-2.5 shadow-sm"></div>
         </div>
@@ -272,69 +303,19 @@
   </div>
   {% endfor %}
 
-  <!-- No Results Message -->
+  <!-- No Results Message - Shown by UIController.toggleNoResultsMessage -->
   <div id="noResultsMessage" class="hidden border border-gray-300 bg-white p-3 text-center text-xs text-gray-600 rounded-md shadow-sm">
     No apps match your search criteria
   </div>
 </div>
+{% endblock %}
 
 {% block extra_scripts %}
 <script>
-  // Initialize when DOM is ready
-$(document).ready(function() {
-  // Initialize core App functionality
-  if (typeof App !== 'undefined') {
-    // Additional dashboard-specific functionality
-    setupModelSections();
-    setupSecurityFilters();
-  }
-
-  function setupModelSections() {
-    // Handle model section toggles
-    $('.model-section-toggle').on('click', function() {
-      const targetId = $(this).data('target');
-      $(`#${targetId}`).slideToggle(200);
-      $(this).find('.toggle-icon').toggleClass('rotate-180');
-    });
-    
-    // Set up batch operation dropdowns (already handled in core App)
-    $('.batch-menu-button').each(function() {
-      // Additional model-specific initialization if needed
-    });
-  }
-  
-  function setupSecurityFilters() {
-    $('#securitySummaryFilter').on('change', function() {
-      const value = $(this).val();
-      
-      switch (value) {
-        case 'high':
-          $('.security-badge:not(.high-risk)').closest('.app-card').hide();
-          $('.security-badge.high-risk').closest('.app-card').show();
-          break;
-        case 'critical':
-          $('.app-card').hide();
-          $('.security-badge.critical').closest('.app-card').show();
-          break;
-        default:
-          $('.app-card').show();
-          break;
-      }
-      
-      // Update visible count
-      updateVisibleCount();
-    });
-  }
-  
-  function updateVisibleCount() {
-    const visibleApps = $('.app-card:visible').length;
-    const totalApps = $('.app-card').length;
-    $('#visibleAppCount').text(visibleApps);
-    $('#totalAppCount').text(totalApps);
-    
-    // Show/hide no results message
-    $('#noResultsMessage').toggle(visibleApps === 0);
-  }
-});
+  // This initialization will be replaced by the Dashboard class initialization in base.html
+  document.addEventListener('DOMContentLoaded', function() {
+    // The Dashboard initialization is now handled in base.html
+    // Additional dashboard-specific functionality can be added here if needed
+  });
 </script>
-{% endblock %}{% endblock %}
+{% endblock %}

@@ -22,31 +22,10 @@ import aiohttp
 from flask import request, render_template, url_for, Blueprint, current_app, jsonify, redirect
 
 # Set up module-level logger
-try:
-    from logging_service import create_logger_for_component
-    logger = create_logger_for_component('gpt4all_analysis')
-except ImportError:
-    logger = logging.getLogger(__name__)
-    # Ensure handler exists for console output if logging_service is not available
-    if not logger.handlers:
-        handler = logging.StreamHandler()
-        formatter = logging.Formatter(
-            '%(asctime)s [%(levelname)s] %(name)s: %(message)s',
-            '%Y-%m-%d %H:%M:%S'
-        )
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-        logger.setLevel(logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Blueprint for routes
 gpt4all_bp = Blueprint("gpt4all", __name__)
-
-# Cache for server status to prevent too many checks
-_server_status_cache = {
-    "last_check": 0,
-    "status": False,
-    "checking": False
-}
 
 
 @dataclass
@@ -80,10 +59,7 @@ class AnalysisConfig:
     request_timeout: int = 60
     max_retries: int = 3
     retry_delay: int = 2
-    concurrent_requests: int = 2  # Reduced to avoid overwhelming server
-    server_available: bool = False  # Track if server is available
-    check_interval: int = 30  # Seconds between status checks
-    status_timeout: int = 5  # Timeout for server status check
+    concurrent_requests: int = 3  # Reduced to avoid overwhelming server
 
 
 # Error handler decorator
@@ -100,349 +76,16 @@ def error_handler(f):
     return wrapped
 
 
-def handle_asyncio_timeout(coroutine, timeout=5.0):
-    """
-    Safely handles asyncio timeouts and cleanup.
-    
-    Args:
-        coroutine: Async coroutine to execute
-        timeout: Timeout in seconds
-        
-    Returns:
-        Result of coroutine or None on timeout/error
-    """
-    try:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        
-        # Add a timeout to prevent hanging
-        result = loop.run_until_complete(
-            asyncio.wait_for(coroutine, timeout=timeout)
-        )
-        return result
-    except asyncio.TimeoutError:
-        logger.warning(f"Operation timed out after {timeout} seconds")
-        return None
-    except Exception as e:
-        logger.error(f"Error in asyncio operation: {str(e)}")
-        return None
-    finally:
-        try:
-            # Clean up pending tasks
-            pending = asyncio.all_tasks(loop)
-            for task in pending:
-                task.cancel()
-                
-            # Run loop until tasks complete/cancel
-            if pending:
-                loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
-            
-            loop.close()
-        except Exception as e:
-            logger.error(f"Error cleaning up asyncio loop: {str(e)}")
-
-
-# Load requirements from JSON
-def load_requirements_json(json_path=None):
-    """
-    Load application requirements from JSON file.
-    
-    Args:
-        json_path: Path to JSON file (optional)
-        
-    Returns:
-        Dictionary with requirements data
-    """
-    try:
-        if json_path and os.path.exists(json_path):
-            with open(json_path, 'r') as f:
-                return json.load(f)
-        
-        # Try to find the JSON file in common locations
-        possible_paths = [
-            Path.cwd() / "requirements.json",
-            Path.cwd() / "data" / "requirements.json",
-            Path.cwd() / "static" / "requirements.json",
-            Path.cwd() / "config" / "requirements.json",
-            Path(__file__).parent / "requirements.json",
-            Path(__file__).parent.parent / "requirements.json"
-        ]
-        
-        for path in possible_paths:
-            if path.exists():
-                logger.info(f"Loading requirements from {path}")
-                with open(path, 'r') as f:
-                    return json.load(f)
-                
-        # If we got here, no file was found - use the data from the first document
-        # This is a fallback mechanism using the content provided in the paste
-        logger.warning("Using hardcoded requirements data as fallback")
-        return {
-            "generalRequirements": [
-                "Multipage Routing: Extendable routing on both backend and frontend for additional pages/views",
-                "Simple and modern UI",
-                "Keep all changes within app.py, App.jsx and App.css files",
-                "Feature complete production ready app with comments, fail states, etc.",
-                "App.jsx must include mounting logic with ReactDOM from react-dom/client"
-            ],
-            "templateSpecificRequirements": [
-                {
-                    "template": "Login/Register Application",
-                    "requirements": [
-                        "User registration",
-                        "Login functionality",
-                        "Password security",
-                        "Session management",
-                        "Error handling"
-                    ]
-                },
-                {
-                    "template": "Chat Application",
-                    "requirements": [
-                        "Real-time message exchange",
-                        "User identification",
-                        "Message history",
-                        "Online status",
-                        "Chat rooms"
-                    ]
-                },
-                {
-                    "template": "Feedback Form Application",
-                    "requirements": [
-                        "Multi-field feedback form",
-                        "Form validation",
-                        "Submission handling",
-                        "Response storage",
-                        "Success notifications"
-                    ]
-                },
-                {
-                    "template": "Blog Application",
-                    "requirements": [
-                        "User authentication (login/register)",
-                        "Blog post creation and editing",
-                        "Comment system",
-                        "Post categorization",
-                        "Responsive design",
-                        "Markdown support for blog content"
-                    ]
-                },
-                {
-                    "template": "E-Commerce Cart Application",
-                    "requirements": [
-                        "Product listing",
-                        "Cart management",
-                        "Checkout",
-                        "Order summary",
-                        "Inventory tracking"
-                    ]
-                },
-                {
-                    "template": "Notes Application",
-                    "requirements": [
-                        "Note creation/editing",
-                        "Note listing/viewing",
-                        "Categorization",
-                        "Search",
-                        "Note archiving"
-                    ]
-                },
-                {
-                    "template": "File Uploader Application",
-                    "requirements": [
-                        "File upload",
-                        "File listing",
-                        "Download functionality",
-                        "File preview",
-                        "Organization"
-                    ]
-                },
-                {
-                    "template": "Forum Application",
-                    "requirements": [
-                        "Thread creation/viewing",
-                        "Comment system",
-                        "Categories",
-                        "Sorting",
-                        "Thread search"
-                    ]
-                },
-                {
-                    "template": "CRUD Inventory Application",
-                    "requirements": [
-                        "Item management (CRUD)",
-                        "Inventory tracking",
-                        "Categorization",
-                        "Stock level alerts",
-                        "Search/filter items"
-                    ]
-                },
-                {
-                    "template": "CRUD Microblog Application",
-                    "requirements": [
-                        "Post creation and management (CRUD)",
-                        "User profile management",
-                        "Post timeline/feed",
-                        "Post interactions (likes/comments)",
-                        "Post search"
-                    ]
-                }
-            ]
-        }
-    except Exception as e:
-        logger.error(f"Failed to load requirements JSON: {e}")
-        return {"generalRequirements": [], "templateSpecificRequirements": []}
-
-
-class GPT4AllClient:
-    """
-    Robust client for interacting with GPT4All API with improved error handling.
-    """
-    
-    def __init__(self, base_url="http://localhost:4891/v1", timeout=10):
-        self.base_url = base_url
-        self.timeout = timeout
-        self.last_check_time = 0
-        self.last_status = False
-        self.check_interval = 30  # Seconds between status checks
-        
-    async def check_availability(self) -> bool:
-        """
-        Check if the GPT4All server is available with better timeout handling.
-        
-        Returns:
-            True if server is available, False otherwise
-        """
-        # Rate limit checks to avoid too many requests
-        current_time = time.time()
-        if current_time - self.last_check_time < self.check_interval:
-            logger.debug(f"Using cached status: {self.last_status}")
-            return self.last_status
-            
-        logger.info(f"Checking GPT4All server at {self.base_url}")
-        try:
-            # Use a shorter timeout for availability check
-            check_timeout = aiohttp.ClientTimeout(total=3)
-            
-            async with aiohttp.ClientSession(timeout=check_timeout) as session:
-                try:
-                    # Try a simple models endpoint request
-                    async with session.get(f"{self.base_url}/models") as response:
-                        if response.status == 200:
-                            data = await response.json()
-                            model_count = len(data.get("data", []))
-                            logger.info(f"GPT4All server available with {model_count} models")
-                            self.last_status = True
-                            self.last_check_time = current_time
-                            return True
-                        else:
-                            logger.warning(f"GPT4All server returned status {response.status}")
-                            self.last_status = False
-                            self.last_check_time = current_time
-                            return False
-                            
-                except asyncio.TimeoutError:
-                    logger.error("GPT4All server check timed out")
-                    self.last_status = False
-                    self.last_check_time = current_time
-                    return False
-                except aiohttp.ClientError as e:
-                    logger.error(f"Connection error to GPT4All server: {str(e)}")
-                    self.last_status = False
-                    self.last_check_time = current_time
-                    return False
-        except Exception as e:
-            logger.exception(f"Unexpected error checking GPT4All server: {str(e)}")
-            self.last_status = False
-            self.last_check_time = current_time
-            return False
-            
-    async def send_chat_request(
-        self, 
-        prompt: str,
-        model_name: str = "deepseek-r1-distill-qwen-7b", 
-        max_tokens: int = 4096,
-        temperature: float = 0.1
-    ) -> Optional[Dict[str, Any]]:
-        """
-        Send a chat request to the GPT4All API with robust error handling.
-        
-        Args:
-            prompt: The prompt to send
-            model_name: The model to use
-            max_tokens: Maximum tokens to generate
-            temperature: Temperature for generation
-            
-        Returns:
-            Response dictionary or None if failed
-        """
-        # First check if server is available
-        if not await self.check_availability():
-            logger.error("Cannot send request - GPT4All server is not available")
-            return None
-            
-        logger.info(f"Sending prompt to GPT4All API (length: {len(prompt)})")
-        
-        try:
-            # Use full timeout for actual request
-            request_timeout = aiohttp.ClientTimeout(total=self.timeout)
-            
-            async with aiohttp.ClientSession(timeout=request_timeout) as session:
-                payload = {
-                    "model": model_name,
-                    "messages": [{"role": "user", "content": prompt}],
-                    "max_tokens": max_tokens,
-                    "temperature": temperature
-                }
-                
-                try:
-                    async with session.post(
-                        f"{self.base_url}/chat/completions", 
-                        json=payload
-                    ) as response:
-                        if response.status == 200:
-                            data = await response.json()
-                            return data
-                        else:
-                            error_text = await response.text()
-                            logger.error(f"GPT4All API request failed with status {response.status}: {error_text}")
-                            return None
-                            
-                except asyncio.TimeoutError:
-                    logger.error(f"Request to GPT4All API timed out after {self.timeout}s")
-                    return None
-                except aiohttp.ClientError as e:
-                    logger.error(f"Connection error to GPT4All API: {str(e)}")
-                    return None
-                    
-        except Exception as e:
-            logger.exception(f"Unexpected error sending request to GPT4All API: {str(e)}")
-            return None
-
-
-def get_cached_status(max_age=30):
-    """Get server status with caching to avoid excessive checks"""
-    current_time = time.time()
-    if current_time - _server_status_cache["last_check"] < max_age:
-        return _server_status_cache["status"]
-    return None
-
-
 class GPT4AllAnalyzer:
     """
     Analyzes code using a local GPT4All API server.
     Supports requirements analysis for frontend and backend code.
     """
     
-    # Cache for requirements data
-    _requirements_data = None
-    # GPT4All client instance
-    _client = None
-    
     @staticmethod
     def adjust_path(p: Optional[Path]) -> Path:
         """
-        Correctly adjusts paths using centralized path utilities.
+        Correctly adjusts paths containing "z_interface_app" directory.
         
         Args:
             p: Path to adjust
@@ -453,10 +96,29 @@ class GPT4AllAnalyzer:
         if not p:
             return Path.cwd()
             
-        # Simple implementation since PathUtils may not be available
-        if hasattr(p, "resolve"):
-            return p.resolve()
-        return Path(p)
+        try:
+            abs_path = p.resolve()
+            parts = list(abs_path.parts)
+            
+            # Find the z_interface_app component if it exists
+            z_app_index = -1
+            for i, part in enumerate(parts):
+                if part.lower() == "z_interface_app":
+                    z_app_index = i
+                    break
+                    
+            # If found, reconstruct the path without it
+            if z_app_index >= 0:
+                new_parts = parts[:z_app_index] + parts[z_app_index+1:]
+                adjusted = Path(*new_parts)
+                logger.info(f"Adjusted path from {abs_path} to {adjusted}")
+                return adjusted
+            
+            return abs_path
+                
+        except Exception as e:
+            logger.error(f"Error adjusting path {p}: {e}")
+            return p if p else Path.cwd()
 
     def __init__(self, base_path: Union[Path, str]):
         """
@@ -472,10 +134,6 @@ class GPT4AllAnalyzer:
         self.base_path = self.adjust_path(base_path)
         self.config = AnalysisConfig()
         self.semaphore = asyncio.Semaphore(self.config.concurrent_requests)
-        
-        # Initialize the GPT4All client if needed
-        if GPT4AllAnalyzer._client is None:
-            GPT4AllAnalyzer._client = GPT4AllClient(base_url=self.config.api_url)
         
         # Check if the base path exists
         if not self.base_path.exists():
@@ -512,92 +170,6 @@ class GPT4AllAnalyzer:
             "requirements": self.requirements_prompt
         }
 
-    async def check_server_availability(self) -> bool:
-        """
-        Check if the GPT4All server is available and responsive.
-        
-        Returns:
-            True if server is available, False otherwise
-        """
-        # Check cache first
-        cached_status = get_cached_status(max_age=self.config.check_interval)
-        if cached_status is not None:
-            self.config.server_available = cached_status
-            return cached_status
-            
-        # Prevent multiple simultaneous checks
-        if _server_status_cache["checking"]:
-            logger.debug("Another check is in progress, waiting...")
-            for _ in range(10):  # Wait up to 1 second for the other check to complete
-                await asyncio.sleep(0.1)
-                cached_status = get_cached_status(max_age=self.config.check_interval)
-                if cached_status is not None:
-                    self.config.server_available = cached_status
-                    return cached_status
-                    
-        # Set checking flag
-        _server_status_cache["checking"] = True
-        
-        try:
-            # Use the client to check availability
-            status = await GPT4AllAnalyzer._client.check_availability()
-            
-            # Update cache
-            _server_status_cache["status"] = status
-            _server_status_cache["last_check"] = time.time()
-            self.config.server_available = status
-            
-            return status
-        except Exception as e:
-            logger.exception(f"Error checking GPT4All server: {e}")
-            _server_status_cache["status"] = False
-            _server_status_cache["last_check"] = time.time()
-            self.config.server_available = False
-            return False
-        finally:
-            # Clear checking flag
-            _server_status_cache["checking"] = False
-
-    def get_requirements_for_app(self, app_num: int) -> Tuple[List[str], str]:
-        """
-        Get requirements for a specific app based on app number.
-        
-        Args:
-            app_num: Application number
-            
-        Returns:
-            Tuple of (list of requirements, template name)
-        """
-        # Load requirements data if not already loaded
-        if not GPT4AllAnalyzer._requirements_data:
-            GPT4AllAnalyzer._requirements_data = load_requirements_json()
-        
-        requirements_data = GPT4AllAnalyzer._requirements_data
-        
-        # Get general requirements
-        general_requirements = requirements_data.get("generalRequirements", [])
-        
-        # Get template-specific requirements
-        template_requirements = []
-        template_name = "Unknown"
-        
-        # Extract template types
-        template_specs = requirements_data.get("templateSpecificRequirements", [])
-        
-        if template_specs:
-            # Determine template based on app number (zero-indexed within the templates)
-            template_index = (app_num - 1) % len(template_specs)
-            template_data = template_specs[template_index]
-            
-            template_name = template_data.get("template", "Unknown")
-            template_requirements = template_data.get("requirements", [])
-            
-            logger.info(f"Mapped app{app_num} to template: {template_name}")
-        
-        # Combine general and template-specific requirements
-        all_requirements = general_requirements + template_requirements
-        return all_requirements, template_name
-
     async def analyze_directory(
         self,
         directory: Optional[Path] = None,
@@ -619,24 +191,6 @@ class GPT4AllAnalyzer:
         Returns:
             Tuple of (list of issues, summary dictionary)
         """
-        # Check server availability first
-        server_available = await self.check_server_availability()
-        if not server_available:
-            logger.error("Cannot analyze directory: GPT4All server is not available")
-            return [], {
-                "total_issues": 0,
-                "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
-                "frontend_files": 0,
-                "backend_files": 0,
-                "files_affected": 0,
-                "issue_types": {},
-                "tool_counts": {"GPT4All": 0},
-                "met_conditions": {"total": 0, "frontend": 0, "backend": 0},
-                "unmet_conditions": {"total": 0, "frontend": 0, "backend": 0},
-                "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "error": "GPT4All server is not available"
-            }
-            
         # Use base_path if directory not specified
         directory = directory or self.base_path
         directory = self.adjust_path(directory)
@@ -692,8 +246,8 @@ class GPT4AllAnalyzer:
             return [], {
                 "total_issues": 0,
                 "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
-                "frontend_files": len(frontend_files) if 'frontend_files' in locals() else 0,
-                "backend_files": len(backend_files) if 'backend_files' in locals() else 0,
+                "frontend_files": len(frontend_files),
+                "backend_files": len(backend_files),
                 "files_affected": 0,
                 "issue_types": {},
                 "tool_counts": {"GPT4All": 0},
@@ -863,53 +417,60 @@ class GPT4AllAnalyzer:
         Returns:
             Response string or None if failed
         """
-        # Ensure server is available before trying
-        if not self.config.server_available:
-            await self.check_server_availability()
-            if not self.config.server_available:
-                return self._generate_fallback_response(prompt)
-        
-        # Use the client to send the request
-        response = await GPT4AllAnalyzer._client.send_chat_request(
-            prompt=prompt,
-            model_name=self.config.model_name,
-            max_tokens=self.config.max_tokens
-        )
-        
-        if response is None:
-            return self._generate_fallback_response(prompt)
-            
-        # Extract content from response
-        try:
-            content = response.get("choices", [{}])[0].get("message", {}).get("content", "")
-            if not content:
-                logger.error("Empty content in GPT4All response")
-                return self._generate_fallback_response(prompt)
-            return content
-        except (IndexError, KeyError) as e:
-            logger.error(f"Error extracting content from GPT4All response: {e}")
-            return self._generate_fallback_response(prompt)
-
-    def _generate_fallback_response(self, prompt: str) -> str:
-        """
-        Generate a fallback response when the API is not available.
-        
-        Args:
-            prompt: The original prompt
-            
-        Returns:
-            A fallback response
-        """
-        # Check if this is a requirements prompt
-        if "requirement" in prompt.lower() and "analyze" in prompt.lower():
-            requirement_match = re.search(r'requirement:\s*(.+?)\n', prompt, re.IGNORECASE)
-            requirement = requirement_match.group(1) if requirement_match else "unknown requirement"
-            
-            # Generate a basic response
-            return '{"met": false, "confidence": "LOW", "explanation": "Unable to analyze due to GPT4All server unavailability. Please ensure the server is running at ' + self.config.api_url + '"}'
-        
-        # For security or other prompts
-        return '{"issues": []}'
+        for attempt in range(self.config.max_retries):
+            try:
+                async with self.semaphore:  # Limit concurrent requests
+                    async with aiohttp.ClientSession() as session:
+                        payload = {
+                            "model": self.config.model_name,
+                            "messages": [{"role": "user", "content": prompt}],
+                            "max_tokens": self.config.max_tokens,
+                            "temperature": 0.1  # Lower temperature for more deterministic responses
+                        }
+                        logger.info(f"Sending request to GPT4All API at {self.config.api_url}")
+                        
+                        try:
+                            async with session.post(
+                                f"{self.config.api_url}/chat/completions", 
+                                json=payload,
+                                timeout=aiohttp.ClientTimeout(total=self.config.request_timeout)
+                            ) as resp:
+                                if resp.status != 200:
+                                    error_text = await resp.text()
+                                    logger.error(f"GPT4All API request failed with status {resp.status}: {error_text}")
+                                    # Retry on certain status codes (e.g., 429, 500, 502, 503, 504)
+                                    if resp.status in {429, 500, 502, 503, 504}:
+                                        wait_time = self.config.retry_delay * (attempt + 1)
+                                        logger.warning(f"Retrying in {wait_time}s (attempt {attempt+1}/{self.config.max_retries})")
+                                        await asyncio.sleep(wait_time)
+                                        continue
+                                    return None
+                                    
+                                data = await resp.json()
+                                if not data.get("choices"):
+                                    logger.error(f"Unexpected API response format: {data}")
+                                    return None
+                                    
+                                return data["choices"][0]["message"]["content"]
+                        except aiohttp.ClientError as e:
+                            logger.error(f"Connection error: {e}")
+                            wait_time = self.config.retry_delay * (2 ** attempt)
+                            await asyncio.sleep(wait_time)
+                            continue
+                            
+            except asyncio.TimeoutError:
+                logger.error(f"Request timed out (attempt {attempt+1}/{self.config.max_retries})")
+                # Retry with exponential backoff
+                wait_time = self.config.retry_delay * (2 ** attempt)
+                await asyncio.sleep(wait_time)
+            except Exception as e:
+                logger.exception(f"Exception during GPT4All API request (attempt {attempt+1}/{self.config.max_retries}): {e}")
+                # Retry with exponential backoff
+                wait_time = self.config.retry_delay * (2 ** attempt)
+                await asyncio.sleep(wait_time)
+                
+        logger.error(f"All {self.config.max_retries} attempts failed")
+        return None
 
     def _extract_json_from_markdown(self, text: str) -> str:
         """
@@ -1107,53 +668,6 @@ class GPT4AllAnalyzer:
         frontend_unmet = 0
         backend_met = 0
         backend_unmet = 0
-        
-        # Check server availability first
-        server_available = await self.check_server_availability()
-        if not server_available:
-            # Create a placeholder issue for each requirement
-            for req in requirements:
-                all_issues.append(AnalysisIssue(
-                    filename="requirements.txt",
-                    line_number=0,
-                    issue_text=f"Requirement: {req}",
-                    severity="HIGH",
-                    confidence="LOW",
-                    issue_type="UNMET",
-                    line_range=[0],
-                    code="",
-                    tool="GPT4All",
-                    explanation="GPT4All server is not available"
-                ))
-                frontend_unmet += 1
-                backend_unmet += 1
-                
-            # Return early with server unavailable message
-            return all_issues, {
-                "total_issues": len(all_issues),
-                "severity_counts": {"HIGH": len(all_issues), "MEDIUM": 0, "LOW": 0},
-                "frontend_files": len(frontend_files),
-                "backend_files": len(backend_files),
-                "files_affected": 1,
-                "issue_types": {"UNMET": len(all_issues)},
-                "tool_counts": {"GPT4All": len(all_issues)},
-                "requirements": requirements,
-                "total_requirements": len(requirements),
-                "met_conditions": {
-                    "total": 0,
-                    "frontend": 0,
-                    "backend": 0
-                },
-                "unmet_conditions": {
-                    "total": frontend_unmet + backend_unmet,
-                    "frontend": frontend_unmet,
-                    "backend": backend_unmet
-                },
-                "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "start_time": datetime.now().isoformat(),
-                "end_time": datetime.now().isoformat(),
-                "error": "GPT4All server is not available"
-            }
         
         # Format the requirements as a single string
         requirements_text = "\n".join(f"{i+1}. {req}" for i, req in enumerate(requirements))
@@ -1379,45 +893,7 @@ class GPT4AllAnalyzer:
         Returns:
             List of dictionaries with requirement and check results
         """
-        # Check server availability first
-        server_available = await self.check_server_availability()
-        if not server_available:
-            # Create placeholder results for each requirement
-            return [
-                {
-                    "requirement": req,
-                    "frontend": {"met": False, "confidence": "LOW", "explanation": "GPT4All server is not available"},
-                    "backend": {"met": False, "confidence": "LOW", "explanation": "GPT4All server is not available"},
-                    "overall": False
-                }
-                for req in requirements
-            ]
-            
-        if directory is None:
-            directory = self.base_path
-        
-        # Try to find the directory if it doesn't exist
-        if not directory.exists():
-            if isinstance(directory, Path) and len(directory.parts) >= 2:
-                # Extract model and app_num if possible
-                parts = directory.parts
-                for i, part in enumerate(parts):
-                    if part.lower() in ("llama", "mistral", "deepseek", "gpt4o", "claude", "gemini", "grok", "r1", "o3"):
-                        model = part
-                        # Look for app number in next part
-                        if i+1 < len(parts) and parts[i+1].startswith("app"):
-                            try:
-                                app_num = int(parts[i+1].replace("app", ""))
-                                # Try to find the correct directory
-                                alt_dir = self.find_app_directory(self.base_path, model, app_num)
-                                if alt_dir and alt_dir.exists():
-                                    directory = alt_dir
-                                    logger.info(f"Found alternate directory: {directory}")
-                            except ValueError:
-                                pass
-                        break
-        
-        # Apply path adjustment
+        directory = directory or self.base_path
         directory = self.adjust_path(directory)
         
         # Find frontend and backend files
@@ -1487,7 +963,7 @@ class GPT4AllAnalyzer:
             Dictionary with met status and confidence
         """
         if not code_files:
-            return {"met": False, "confidence": "HIGH", "explanation": "No files to analyze"}
+            return {"met": False, "confidence": "HIGH", "error": "No files to analyze"}
         
         # Combine code from files (with limits to prevent token overload)
         combined_code = ""
@@ -1503,7 +979,7 @@ class GPT4AllAnalyzer:
                 logger.error(f"Error reading file {file_path}: {e}")
                 
         if not combined_code:
-            return {"met": False, "confidence": "HIGH", "explanation": "Could not read any files"}
+            return {"met": False, "confidence": "HIGH", "error": "Could not read any files"}
             
         # Create prompt with the specific requirement
         prompt = self.requirements_prompt.format(requirement=requirement)
@@ -1517,7 +993,7 @@ class GPT4AllAnalyzer:
         # Request analysis from API
         response = await self._api_request(file_prompt)
         if not response:
-            return {"met": False, "confidence": "LOW", "explanation": "API request failed"}
+            return {"met": False, "confidence": "LOW", "error": "API request failed"}
             
         # Extract JSON response
         try:
@@ -1533,79 +1009,11 @@ class GPT4AllAnalyzer:
             # Fallback to text analysis
             is_met = "requirement is met" in response.lower() or "meets the requirement" in response.lower()
             return {"met": is_met, "confidence": "LOW", "explanation": response[:200]}
-        
-    # Add helper method to find app directory
-    def find_app_directory(self, base_dir: Path, model: str, app_num: int) -> Optional[Path]:
-        """
-        Find the directory for a specific model and app number.
-        
-        Args:
-            base_dir: Base directory to search from
-            model: Model name
-            app_num: App number
-            
-        Returns:
-            Path if found, None otherwise
-        """
-        # Common patterns for app directories
-        patterns = [
-            Path(base_dir) / f"{model}/app{app_num}",
-            Path(base_dir) / f"{model.lower()}/app{app_num}",
-            Path(base_dir) / f"{model.upper()}/app{app_num}",
-            Path(base_dir) / f"{model}/App{app_num}",
-            Path(base_dir) / f"models/{model}/app{app_num}",
-            Path(base_dir) / f"apps/{model}/app{app_num}",
-            Path(base_dir) / f"apps/{model.lower()}/app{app_num}",
-            Path(base_dir) / f"z_interface_app/{model}/app{app_num}",
-            Path(base_dir) / f"z_interface_app/{model.lower()}/app{app_num}"
-        ]
-        
-        # Try each pattern
-        for pattern in patterns:
-            if pattern.exists() and pattern.is_dir():
-                logger.info(f"Found app directory: {pattern}")
-                return pattern
-        
-        # Not found
-        logger.warning(f"App directory not found for {model}/app{app_num}")
-        return None
 
 
 def get_app_directory(app, model: str, app_num: int) -> Path:
-    """
-    Get the directory for a specific app with enhanced path handling.
-    
-    Args:
-        app: Flask app instance
-        model: Model name
-        app_num: App number
-        
-    Returns:
-        Path to the app directory
-    """
-    base_dir = app.config.get("BASE_DIR", Path.cwd())
-    
-    # Try various directory patterns
-    patterns = [
-        Path(base_dir) / f"{model}/app{app_num}",
-        Path(base_dir) / f"{model.lower()}/app{app_num}",
-        Path(base_dir) / f"{model.upper()}/app{app_num}",
-        Path(base_dir) / f"{model}/App{app_num}",
-        Path(base_dir) / f"models/{model}/app{app_num}",
-        Path(base_dir) / f"apps/{model}/app{app_num}",
-        Path(base_dir) / f"apps/{model.lower()}/app{app_num}",
-        Path(base_dir) / f"z_interface_app/{model}/app{app_num}",
-        Path(base_dir) / f"z_interface_app/{model.lower()}/app{app_num}"
-    ]
-    
-    # Try each pattern
-    for pattern in patterns:
-        if pattern.exists() and pattern.is_dir():
-            logger.info(f"Found app directory: {pattern}")
-            return pattern
-    
-    # Default to the most common pattern even if it doesn't exist
-    return Path(base_dir) / f"{model}/app{app_num}"
+    """Helper function to get app directory path."""
+    return app.config["BASE_DIR"] / f"{model}/app{app_num}"
 
 
 def get_analysis_summary(issues: List[AnalysisIssue]) -> Dict[str, Any]:
@@ -1696,47 +1104,17 @@ def get_analysis_summary(issues: List[AnalysisIssue]) -> Dict[str, Any]:
 def analyze_gpt4all(analysis_type: str):
     try:
         data = request.get_json()
-        directory = Path(data.get("directory", current_app.config.get("BASE_DIR", Path.cwd())))
+        directory = Path(data.get("directory", current_app.config["BASE_DIR"]))
         file_patterns = data.get("file_patterns", ["*.py", "*.js", "*.ts", "*.react"])
         analyzer = GPT4AllAnalyzer(directory)
         
-        # Use safer asyncio handling with timeout
-        server_available = handle_asyncio_timeout(
-            analyzer.check_server_availability(),
-            timeout=5.0
-        )
-        
-        if not server_available:
-            return jsonify({
-                "error": "GPT4All server is not available. Please ensure the server is running.",
-                "issues": [],
-                "summary": {
-                    "total_issues": 0,
-                    "error": "GPT4All server is not available"
-                }
-            }), 503
-            
-        # Run the analysis with proper timeout handling
-        result = handle_asyncio_timeout(
-            analyzer.analyze_directory(
-                directory=directory, 
-                file_patterns=file_patterns, 
-                analysis_type=analysis_type
-            ),
-            timeout=120.0  # Longer timeout for analysis
-        )
-        
-        if not result:
-            return jsonify({
-                "error": "Analysis timed out or failed.",
-                "issues": [],
-                "summary": {
-                    "total_issues": 0,
-                    "error": "Analysis timed out or failed"
-                }
-            }), 500
-            
-        issues, summary = result
+        # Handle asyncio in Flask properly
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        issues, summary = loop.run_until_complete(analyzer.analyze_directory(
+            directory=directory, file_patterns=file_patterns, analysis_type=analysis_type
+        ))
+        loop.close()
         
         if not isinstance(summary, dict):
             summary = get_analysis_summary(issues)
@@ -1744,46 +1122,6 @@ def analyze_gpt4all(analysis_type: str):
     except Exception as e:
         logger.error(f"GPT4All analysis failed: {e}")
         return jsonify({"error": str(e)}), 500
-
-
-# ----- API Route for Server Status Check -----
-@gpt4all_bp.route("/api/check-gpt4all-status", methods=["GET"])
-def check_gpt4all_status():
-    """
-    Check if the GPT4All server is available.
-    Returns a JSON response with availability status.
-    """
-    logger.info("Checking GPT4All server availability")
-    
-    # Check cache first
-    cached_status = get_cached_status(max_age=30)  # 30 seconds cache
-    if cached_status is not None:
-        logger.debug(f"Using cached GPT4All status: {cached_status}")
-        return jsonify({"available": cached_status})
-    
-    try:
-        # Create a temporary analyzer
-        analyzer = GPT4AllAnalyzer(Path.cwd())
-        
-        # Test server connection with safe handling
-        result = handle_asyncio_timeout(
-            analyzer.check_server_availability(),
-            timeout=3.0  # Short timeout for UI responsiveness
-        )
-        
-        # Update cache
-        status = bool(result)
-        _server_status_cache["status"] = status
-        _server_status_cache["last_check"] = time.time()
-        
-        logger.info(f"GPT4All server available: {status}")
-        return jsonify({"available": status})
-    except Exception as e:
-        logger.error(f"Error checking GPT4All server: {e}")
-        # Update cache with error state
-        _server_status_cache["status"] = False
-        _server_status_cache["last_check"] = time.time()
-        return jsonify({"available": False, "error": str(e)})
 
 
 # ----- Main Route for Requirements Checking -----
@@ -1794,13 +1132,10 @@ def gpt4all_analysis():
     try:
         # Extract parameters
         model = request.args.get("model") or request.form.get("model")
-        app_num_str = request.args.get("app_num") or request.form.get("app_num")
-        
-        logger.info(f"GPT4All analysis requested for {model}/app{app_num_str}")
+        app_num = request.args.get("app_num") or request.form.get("app_num")
         
         # Validate required parameters
-        if not model or not app_num_str:
-            logger.warning("Missing required parameters: model or app_num")
+        if not model or not app_num:
             return render_template(
                 "requirements_check.html",
                 model=None,
@@ -1810,76 +1145,36 @@ def gpt4all_analysis():
                 error="Model and app number are required"
             )
             
-        try:
-            app_num = int(app_num_str)
-        except ValueError:
-            logger.warning(f"Invalid app number format: {app_num_str}")
+        # Find the application directory
+        directory = get_app_directory(current_app, model, app_num)
+        if not directory.exists():
             return render_template(
                 "requirements_check.html",
                 model=model,
-                app_num=None,
+                app_num=app_num,
                 requirements=[],
                 results=None,
-                error=f"Invalid app number: {app_num_str}"
+                error=f"Directory not found: {directory}"
             )
-            
-        # Find the application directory
-        directory = get_app_directory(current_app, model, app_num)
         
-        # Setup analyzer
-        analyzer = GPT4AllAnalyzer(directory)
-        
-        # Get requirements from JSON based on app number
-        requirements, template_name = analyzer.get_requirements_for_app(app_num)
-        req_list = requirements
+        # Setup for requirements analysis
+        req_list = []
         results = None
         
-        # Handle requirements from POST (overrides JSON requirements)
+        # Handle requirements from POST
         if request.method == "POST" and "requirements" in request.form:
             requirements_text = request.form.get("requirements", "")
-            custom_reqs = [r.strip() for r in requirements_text.strip().splitlines() if r.strip()]
-            if custom_reqs:
-                req_list = custom_reqs
-                logger.info(f"Using {len(req_list)} custom requirements from form")
+            req_list = [r.strip() for r in requirements_text.strip().splitlines() if r.strip()]
             
-        # Check requirements if we have any
-        if req_list and request.method == "POST":
-            # Check server availability first with safe handling
-            server_available = handle_asyncio_timeout(
-                analyzer.check_server_availability(),
-                timeout=5.0
-            )
-            
-            if not server_available:
-                return render_template(
-                    "requirements_check.html",
-                    model=model,
-                    app_num=app_num,
-                    requirements=req_list,
-                    template_name=template_name,
-                    results=None,
-                    error="GPT4All server is not available. Please ensure the server is running."
-                )
+            if req_list:
+                # Initialize analyzer
+                analyzer = GPT4AllAnalyzer(directory)
                 
-            # Run check for each requirement
-            logger.info(f"Checking {len(req_list)} requirements for {model}/app{app_num}")
-            results = handle_asyncio_timeout(
-                analyzer.check_requirements(directory, req_list),
-                timeout=60.0  # Longer timeout for requirements checking
-            )
-            
-            if not results:
-                return render_template(
-                    "requirements_check.html",
-                    model=model,
-                    app_num=app_num,
-                    requirements=req_list,
-                    template_name=template_name,
-                    results=None,
-                    error="Requirements check timed out. Please try again with fewer requirements."
-                )
-                
-            logger.info(f"Successfully analyzed requirements for {model}/app{app_num}")
+                # Run check for each requirement using proper asyncio handling in Flask
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                results = loop.run_until_complete(analyzer.check_requirements(directory, req_list))
+                loop.close()
         
         # Render template with form or results
         return render_template(
@@ -1887,13 +1182,12 @@ def gpt4all_analysis():
             model=model,
             app_num=app_num,
             requirements=req_list,
-            template_name=template_name,
             results=results,
             error=None
         )
         
     except Exception as e:
-        logger.exception(f"Requirements check failed: {e}")
+        logger.error(f"Requirements check failed: {e}")
         return render_template(
             "requirements_check.html",
             model=model if "model" in locals() else None,
