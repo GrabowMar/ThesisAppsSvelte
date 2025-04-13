@@ -24,13 +24,13 @@
           <h1 class="text-lg font-bold text-gray-900 mb-2">500 - Internal Server Error</h1>
           <p class="text-xs text-gray-600 mb-4">Something went wrong on our end. Please try again later.</p>
           {% if error %}
-          <div class="text-xs bg-red-100 border border-red-300 p-2 mb-4 text-left font-mono" data-error-message>
+          <div class="text-xs bg-red-100 border border-red-300 p-2 mb-4 text-left font-mono">
             {{ error }}
           </div>
           {% endif %}
           <div class="flex justify-center space-x-2">
             <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs">Return to Dashboard</a>
-            <button id="retryButton" class="action-btn h-6 px-2 text-xs">Retry</button>
+            <button onclick="window.location.reload()" class="action-btn h-6 px-2 text-xs">Retry</button>
           </div>
         </div>
       </div>
@@ -48,7 +48,7 @@
         <div class="p-2 text-xs space-y-1">
           <div class="flex justify-between">
             <span class="text-gray-600">Status:</span>
-            <span class="font-bold" id="errorStatusCode">500 Server Error</span>
+            <span class="font-bold">500 Server Error</span>
           </div>
           <div class="flex justify-between">
             <span class="text-gray-600">Time:</span>
@@ -58,14 +58,10 @@
             <span class="text-gray-600">Path:</span>
             <span class="font-bold" id="currentPath"></span>
           </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Error ID:</span>
-            <span class="font-bold" id="errorId">{{ error_id|default('Unknown') }}</span>
-          </div>
         </div>
       </div>
 
-      <!-- System Status - Updated by SystemInfoService -->
+      <!-- System Status -->
       <div class="border border-gray-400 bg-white">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
           <h2 class="font-bold text-xs">System Status</h2>
@@ -73,24 +69,6 @@
         <div class="p-2 space-y-1">
           <div id="systemStatus" class="text-xs p-2 bg-yellow-50 border border-yellow-300">
             Checking system status...
-          </div>
-          <div class="grid grid-cols-2 gap-1 mt-2 text-2xs">
-            <div>
-              <span class="text-gray-600">CPU:</span>
-              <span id="systemCpuUsage" class="font-medium">-</span>
-            </div>
-            <div>
-              <span class="text-gray-600">Memory:</span>
-              <span id="systemMemoryUsage" class="font-medium">-</span>
-            </div>
-            <div>
-              <span class="text-gray-600">Disk:</span>
-              <span id="systemDiskUsage" class="font-medium">-</span>
-            </div>
-            <div>
-              <span class="text-gray-600">Uptime:</span>
-              <span id="systemUptime" class="font-medium">-</span>
-            </div>
           </div>
         </div>
       </div>
@@ -101,13 +79,13 @@
           <h2 class="font-bold text-xs">Quick Actions</h2>
         </div>
         <div class="p-2 space-y-1">
-          <button id="goBackButton" class="action-btn h-6 px-2 text-xs w-full">
+          <button onclick="window.history.back()" class="action-btn h-6 px-2 text-xs w-full">
             Go Back
           </button>
-          <button id="goHomeButton" class="action-btn h-6 px-2 text-xs w-full">
+          <button onclick="window.location.href='/'" class="action-btn h-6 px-2 text-xs w-full">
             Go to Homepage
           </button>
-          <button id="checkStatusButton" class="action-btn h-6 px-2 text-xs w-full">
+          <button onclick="checkSystemStatus()" class="action-btn h-6 px-2 text-xs w-full">
             Check Status
           </button>
         </div>
@@ -115,148 +93,40 @@
     </div>
   </aside>
 </div>
-{% endblock %}
 
-{% block extra_scripts %}
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Initialize time and path displays
-    document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
-    document.getElementById('currentPath').textContent = window.location.pathname;
+  $(document).ready(function() {
+    // Set current time
+    $('#currentTime').text(new Date().toLocaleTimeString());
+    
+    // Set current path
+    $('#currentPath').text(window.location.pathname);
 
-    // Set up event listeners using UIController pattern
-    document.getElementById('retryButton').addEventListener('click', function() {
-      window.location.reload();
-    });
-
-    document.getElementById('goBackButton').addEventListener('click', function() {
-      window.history.back();
-    });
-
-    document.getElementById('goHomeButton').addEventListener('click', function() {
-      window.location.href = '/';
-    });
-
-    document.getElementById('checkStatusButton').addEventListener('click', function() {
-      checkSystemStatus();
-    });
-
-    // Log error to analytics using UtilityService.logError pattern
-    if (window.dashboardApp && window.dashboardApp.utilityService) {
-      const errorMessage = document.querySelector('[data-error-message]')?.textContent || 'Internal Server Error';
-      window.dashboardApp.utilityService.logError({
-        message: '500 Internal Server Error',
-        context: { 
-          path: window.location.pathname,
-          referrer: document.referrer,
-          errorId: document.getElementById('errorId').textContent
-        },
-        error: new Error(errorMessage)
-      });
+    // Set up glitch text
+    const $glitchText = $('.glitch-text');
+    if ($glitchText.length) {
+        const text = $glitchText.text();
+        $glitchText.attr('data-text', text);
+        
+        // Random glitch effect
+        setInterval(function() {
+            if (Math.random() < 0.1) { // 10% chance of glitch
+                const chars = '█▓▒░█▓▒░';
+                let glitched = text.split('\n').map(function(line) {
+                    if (Math.random() < 0.3) { // 30% chance to glitch each line
+                        return line.split('').map(function(char) {
+                            return Math.random() < 0.3 ? chars[Math.floor(Math.random() * chars.length)] : char;
+                        }).join('');
+                    }
+                    return line;
+                }).join('\n');
+                $glitchText.text(glitched);
+                setTimeout(function() {
+                    $glitchText.text(text);
+                }, 100);
+            }
+        }, 2000);
     }
-
-    // Initial system status check
-    checkSystemStatus();
-
-    // Function to check system status
-    function checkSystemStatus() {
-      const systemStatusEl = document.getElementById('systemStatus');
-      systemStatusEl.textContent = 'Checking system status...';
-      systemStatusEl.className = 'text-xs p-2 bg-yellow-50 border border-yellow-300';
-
-      // Use ApiService pattern from dashboard.js
-      fetch('/api/system-info', {
-        method: 'GET',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'Cache-Control': 'no-cache'
-        }
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch system status');
-        }
-        return response.json();
-      })
-      .then(data => {
-        // Update system info - follows SystemInfoService.updateSystemInfoDisplay pattern
-        updateSystemInfoDisplay(data);
-        
-        systemStatusEl.textContent = 'System is operational';
-        systemStatusEl.className = 'text-xs p-2 bg-green-50 border border-green-300 text-green-800';
-      })
-      .catch(error => {
-        systemStatusEl.textContent = 'System may be experiencing issues';
-        systemStatusEl.className = 'text-xs p-2 bg-red-50 border border-red-300 text-red-800';
-        
-        console.error('Error fetching system status:', error);
-      });
-    }
-
-    // Update system info display - matches SystemInfoService in dashboard.js
-    function updateSystemInfoDisplay(data) {
-      if (!data) return;
-      
-      // CPU usage
-      const cpuEl = document.getElementById('systemCpuUsage');
-      if (cpuEl && data.cpu_percent !== undefined) {
-        cpuEl.textContent = `${data.cpu_percent.toFixed(1)}%`;
-        
-        cpuEl.className = data.cpu_percent > 80 
-          ? 'font-medium text-red-600' 
-          : data.cpu_percent > 50 
-            ? 'font-medium text-yellow-600' 
-            : 'font-medium text-green-600';
-      }
-      
-      // Memory usage
-      const memEl = document.getElementById('systemMemoryUsage');
-      if (memEl && data.memory_percent !== undefined) {
-        memEl.textContent = `${data.memory_percent.toFixed(1)}%`;
-        
-        memEl.className = data.memory_percent > 85 
-          ? 'font-medium text-red-600' 
-          : data.memory_percent > 70 
-            ? 'font-medium text-yellow-600' 
-            : 'font-medium text-green-600';
-      }
-      
-      // Disk usage
-      const diskEl = document.getElementById('systemDiskUsage');
-      if (diskEl && data.disk_percent !== undefined) {
-        diskEl.textContent = `${data.disk_percent.toFixed(1)}%`;
-        
-        diskEl.className = data.disk_percent > 90 
-          ? 'font-medium text-red-600' 
-          : data.disk_percent > 75 
-            ? 'font-medium text-yellow-600' 
-            : 'font-medium text-green-600';
-      }
-      
-      // System uptime
-      const uptimeEl = document.getElementById('systemUptime');
-      if (uptimeEl && data.uptime_seconds !== undefined) {
-        // Format uptime like UtilityService.formatUptime
-        const formatUptime = function(seconds) {
-          if (seconds === undefined || seconds === null) return 'Unknown';
-          
-          const days = Math.floor(seconds / 86400);
-          seconds %= 86400;
-          const hours = Math.floor(seconds / 3600);
-          seconds %= 3600;
-          const minutes = Math.floor(seconds / 60);
-          
-          let result = '';
-          if (days > 0) result += `${days}d `;
-          if (hours > 0 || days > 0) result += `${hours}h `;
-          result += `${minutes}m`;
-          
-          return result;
-        };
-        
-        uptimeEl.textContent = formatUptime(data.uptime_seconds);
-      }
-    }
-  });
+});
 </script>
 {% endblock %}

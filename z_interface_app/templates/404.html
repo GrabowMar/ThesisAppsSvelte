@@ -16,33 +16,22 @@
     <!-- Main Error Section -->
     <div class="p-2 flex-1 overflow-auto">
       <div class="border border-gray-400 bg-white p-4 text-center">
-        <div class="inline-block border border-gray-300 bg-gray-50 p-6 max-w-lg mx-auto rounded-md shadow-sm">
-          <!-- Error Icon -->
-          <div class="flex items-center justify-center mb-4">
-            <div class="rounded-full bg-blue-100 p-3">
-              <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
+        <div class="inline-block border border-gray-700 bg-gray-50 p-4 max-w-lg mx-auto">
+          <!-- ASCII Art Container -->
+          <div class="glitch-container mb-4">
+            <pre class="glitch-text text-xs leading-none font-mono" aria-hidden="true">
+██╗  ██╗ ██████╗ ██╗  ██╗
+██║  ██║██╔═████╗██║  ██║
+███████║██║██╔██║███████║
+╚════██║████╔╝██║╚════██║
+     ██║╚██████╔╝     ██║
+     ╚═╝ ╚═════╝      ╚═╝</pre>
           </div>
-          
-          <!-- Error Code -->
-          <div class="mb-3">
-            <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full" id="errorCode" data-error-code="404">
-              404
-            </span>
-          </div>
-          
           <h1 class="text-lg font-bold text-gray-900 mb-2">Page Not Found</h1>
-          <p class="text-sm text-gray-600 mb-6">We couldn't find the page you were looking for. It might have been moved or deleted.</p>
-          <div class="flex justify-center space-x-3">
-            <a href="{{ url_for('main.index') }}" class="action-btn bg-blue-600 hover:bg-blue-700 text-white h-7 px-3 text-xs">
-              Return to Dashboard
-            </a>
-            <button id="retryButton" class="action-btn h-7 px-3 text-xs">
-              Retry
-            </button>
+          <p class="text-xs text-gray-600 mb-4">The page you are looking for could not be found.</p>
+          <div class="flex justify-center space-x-2">
+            <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs">Return to Dashboard</a>
+            <button onclick="window.location.reload()" class="action-btn h-6 px-2 text-xs">Retry</button>
           </div>
         </div>
       </div>
@@ -53,56 +42,36 @@
   <aside class="w-64 bg-gray-200 border-l border-gray-400 flex flex-col">
     <div class="p-2 space-y-2 flex-1 overflow-auto">
       <!-- Info Card -->
-      <div class="border border-gray-300 bg-white rounded-md shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-300 px-2 py-1">
-          <h2 class="font-bold text-xs">Error Information</h2>
+      <div class="border border-gray-400 bg-white">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+          <h2 class="font-bold text-xs">Error Info</h2>
         </div>
-        <div class="p-3 text-xs space-y-2">
-          <div class="flex justify-between items-center pb-1 border-b border-gray-100">
-            <span class="text-gray-600">Status Code:</span>
-            <span class="font-medium" id="errorStatusCode">404 Not Found</span>
+        <div class="p-2 text-xs space-y-1">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Status:</span>
+            <span class="font-bold">404 Not Found</span>
           </div>
-          <div class="flex justify-between items-center pb-1 border-b border-gray-100">
+          <div class="flex justify-between">
             <span class="text-gray-600">Time:</span>
-            <span class="font-medium" id="currentTime"></span>
+            <span class="font-bold" id="currentTime"></span>
           </div>
-          <div class="flex justify-between items-center">
-            <span class="text-gray-600">Requested URL:</span>
-            <span class="font-medium text-gray-900 break-all" id="currentPath"></span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Error Details - For UtilityService.logError -->
-      <div id="errorDetails" class="border border-gray-300 bg-white rounded-md shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-300 px-2 py-1">
-          <h2 class="font-bold text-xs">Error Details</h2>
-        </div>
-        <div class="p-3 text-xs">
-          <div class="bg-gray-50 p-2 border border-gray-200 rounded-md">
-            <p class="text-gray-700">
-              The requested page could not be found on the server. Please check that the URL is correct or try navigating from the dashboard.
-            </p>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Path:</span>
+            <span class="font-bold" id="currentPath"></span>
           </div>
         </div>
       </div>
 
       <!-- Quick Actions -->
-      <div class="border border-gray-300 bg-white rounded-md shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-300 px-2 py-1">
+      <div class="border border-gray-400 bg-white">
+        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
           <h2 class="font-bold text-xs">Quick Actions</h2>
         </div>
-        <div class="p-3 space-y-2">
-          <button id="goBackButton" class="action-btn h-7 px-2 text-xs w-full flex items-center justify-center">
-            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
+        <div class="p-2 space-y-1">
+          <button onclick="window.history.back()" class="action-btn h-6 px-2 text-xs w-full">
             Go Back
           </button>
-          <button id="goHomeButton" class="action-btn h-7 px-2 text-xs w-full flex items-center justify-center">
-            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
+          <button onclick="window.location.href='/'" class="action-btn h-6 px-2 text-xs w-full">
             Go to Homepage
           </button>
         </div>
@@ -110,44 +79,94 @@
     </div>
   </aside>
 </div>
-{% endblock %}
 
-{% block extra_scripts %}
+<style>
+@keyframes glitch-anim-1 {
+  0% { clip-path: inset(40% 0 61% 0); transform: translate(-2px); }
+  20% { clip-path: inset(92% 0 1% 0); transform: translate(2px); }
+  40% { clip-path: inset(43% 0 1% 0); transform: translate(3px); }
+  60% { clip-path: inset(25% 0 58% 0); transform: translate(-1px); }
+  80% { clip-path: inset(54% 0 7% 0); transform: translate(-3px); }
+  100% { clip-path: inset(58% 0 43% 0); transform: translate(2px); }
+}
+
+@keyframes glitch-anim-2 {
+  0% { opacity: 1; transform: translate(0); }
+  20% { opacity: 0.8; transform: translate(-2px, 2px); }
+  40% { opacity: 0.9; transform: translate(2px, -2px); }
+  60% { opacity: 0.7; transform: translate(-1px); }
+  80% { opacity: 0.9; transform: translate(1px, 1px); }
+  100% { opacity: 1; transform: translate(0); }
+}
+
+.glitch-container {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch-text {
+  position: relative;
+  color: #1a1a1a;
+  text-shadow: 0.5px 0.5px #666;
+  animation: glitch-anim-2 3s infinite linear alternate-reverse;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch-text::before {
+  left: 1px;
+  text-shadow: -1px 0 #ff0000;
+  animation: glitch-anim-1 2s infinite linear alternate-reverse;
+}
+
+.glitch-text::after {
+  left: -1px;
+  text-shadow: 1px 0 #0000ff;
+  animation: glitch-anim-1 3s infinite linear alternate-reverse;
+}
+</style>
+
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Initialize time and path displays
-    document.getElementById('currentTime').textContent = new Date().toLocaleTimeString();
-    const path = window.location.pathname;
-    document.getElementById('currentPath').textContent = path;
-
-    // Set up event listeners using UIController pattern
-    document.getElementById('retryButton').addEventListener('click', function() {
-      window.location.reload();
-    });
-
-    document.getElementById('goBackButton').addEventListener('click', function() {
-      window.history.back();
-    });
-
-    document.getElementById('goHomeButton').addEventListener('click', function() {
-      window.location.href = '/';
-    });
+  $(document).ready(function() {
+    // Set current time
+    $('#currentTime').text(new Date().toLocaleTimeString());
     
-    // Log error to analytics using UtilityService.logError pattern
-    try {
-      if (window.dashboardApp && window.dashboardApp.utilityService) {
-        window.dashboardApp.utilityService.logError({
-          message: '404 Page Not Found',
-          context: { 
-            path: path,
-            referrer: document.referrer
-          },
-          error: new Error('Page not found')
-        });
-      }
-    } catch (e) {
-      console.error('Error logging to analytics:', e);
+    // Set current path
+    $('#currentPath').text(window.location.pathname);
+
+    // Set up glitch text
+    const $glitchText = $('.glitch-text');
+    if ($glitchText.length) {
+        const text = $glitchText.text();
+        $glitchText.attr('data-text', text);
+        
+        // Random glitch effect
+        setInterval(function() {
+            if (Math.random() < 0.1) { // 10% chance of glitch
+                const chars = '█▓▒░█▓▒░';
+                let glitched = text.split('\n').map(function(line) {
+                    if (Math.random() < 0.3) { // 30% chance to glitch each line
+                        return line.split('').map(function(char) {
+                            return Math.random() < 0.3 ? chars[Math.floor(Math.random() * chars.length)] : char;
+                        }).join('');
+                    }
+                    return line;
+                }).join('\n');
+                $glitchText.text(glitched);
+                setTimeout(function() {
+                    $glitchText.text(text);
+                }, 100);
+            }
+        }, 2000);
     }
-  });
+});
 </script>
 {% endblock %}

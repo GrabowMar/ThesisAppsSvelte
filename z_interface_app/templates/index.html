@@ -2,89 +2,70 @@
 
 {% block content %}
 <div class="space-y-3">
-  <!-- Control Toolbar - Integrates with UIController and filters -->
+  <!-- Control Toolbar - Aligned with UIController -->
   <div class="bg-gray-100 border border-gray-300 p-2 rounded-md shadow-sm">
     <div class="flex flex-wrap items-center gap-2">
-      <!-- Refresh Controls - Matches AutoRefreshService class -->
+      <!-- Core Controls - Managed by CoreController -->
       <button id="refreshAll" class="action-btn bg-blue-600 hover:bg-blue-700 text-white text-xs py-1 px-2">
         <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-        </svg>
-        Refresh All
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>Refresh All
       </button>
-
-      <button id="toggleAutorefresh" class="action-btn text-xs py-1 px-2 {{ 'bg-green-600 hover:bg-green-700 text-white' if autorefresh_enabled else '' }}">
+      <button id="toggleAutorefresh" class="action-btn text-xs py-1 px-2 {{ 'bg-green-600 hover:bg-green-700 text-white' if autorefresh_enabled else '' }}" data-enabled="{{ 'true' if autorefresh_enabled else 'false' }}">
         <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span id="autorefreshText">
-          Auto Refresh: {{ "On" if autorefresh_enabled else "Off" }}
-        </span>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg><span id="autorefreshText">Auto: {{ "On" if autorefresh_enabled else "Off" }}</span>
       </button>
-
       <div class="border-l border-gray-400 h-5 mx-1"></div>
 
-      <!-- Search and Filters - Used by UIController.filterApps -->
+      <!-- Search and Filters - UIController.filterApps -->
       <div class="relative">
         <input type="text" id="searchApps" class="h-6 pl-7 pr-2 text-xs rounded border border-gray-300 focus:ring-1 focus:ring-blue-500" style="width: 180px" placeholder="Search apps..." />
         <svg class="w-3.5 h-3.5 text-gray-500 absolute left-2 top-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
       </div>
-
       <select id="filterModel" class="h-6 px-2 text-xs rounded border border-gray-300 focus:ring-1 focus:ring-blue-500">
-        <option value="all">All Models</option>
-        {% for model in models %}
-        <option value="{{ model.name }}">{{ model.name }}</option>
-        {% endfor %}
+        <option value="">All Models</option>
+        {% for model in models %}<option value="{{ model.name }}">{{ model.name }}</option>{% endfor %}
       </select>
-
       <select id="filterStatus" class="h-6 px-2 text-xs rounded border border-gray-300 focus:ring-1 focus:ring-blue-500">
-        <option value="all">All Statuses</option>
+        <option value="">All Statuses</option>
         <option value="running">Running</option>
         <option value="partial">Partial</option>
         <option value="stopped">Stopped</option>
       </select>
-
       <div class="border-l border-gray-400 h-5 mx-1"></div>
 
-      <!-- Security Filters - Used by SecurityAnalysis -->
+      <!-- Security Features - SecurityAnalysis class -->
       <select id="securitySummaryFilter" class="h-6 px-2 text-xs rounded border border-gray-300 focus:ring-1 focus:ring-blue-500">
         <option value="all">All Security</option>
         <option value="high">High Risk Only</option>
         <option value="critical">Critical Issues</option>
       </select>
-
       <div class="border-l border-gray-400 h-5 mx-1"></div>
 
-      <!-- Batch Analysis Link -->
+      <!-- Batch Analysis - FeatureManager.requirementsAnalysis -->
       <a href="{{ url_for('batch_analysis.batch_dashboard') }}" class="action-btn py-1 px-2 text-xs bg-indigo-600 hover:bg-indigo-700 text-white">
         <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-        </svg>
-        Batch Analysis
+        </svg>Batch Analysis
       </a>
     </div>
   </div>
 
-  <!-- System Status Overview - Updated by SystemInfoService and SecurityAnalysis -->
+  <!-- System Status Overview - SystemInfoService metrics -->
   <div class="border border-gray-300 bg-white rounded-md shadow-sm">
     <div class="bg-gray-50 border-b border-gray-300 px-3 py-1.5">
       <h2 class="font-semibold text-xs text-gray-700">System Status</h2>
     </div>
     <div class="p-2">
       <div class="grid grid-cols-6 gap-2">
-        <!-- App Status Cards -->
+        <!-- App Status Cards - StateManager data -->
         <div class="col-span-4 grid grid-cols-4 gap-2">
-          {% set running_apps =
-          apps|selectattr('backend_status.running','true')|selectattr('frontend_status.running','true')|list %}
-          {% set partial_apps =
-          (apps|selectattr('backend_status.running','true')|rejectattr('frontend_status.running','true')|list) +
-          (apps|rejectattr('backend_status.running','true')|selectattr('frontend_status.running','true')|list) %}
-          {% set stopped_apps =
-          apps|rejectattr('backend_status.running','true')|rejectattr('frontend_status.running','true')|list %}
+          {% set running_apps = apps|selectattr('backend_status.running','true')|selectattr('frontend_status.running','true')|list %}
+          {% set partial_apps = (apps|selectattr('backend_status.running','true')|rejectattr('frontend_status.running','true')|list) + (apps|rejectattr('backend_status.running','true')|selectattr('frontend_status.running','true')|list) %}
+          {% set stopped_apps = apps|rejectattr('backend_status.running','true')|rejectattr('frontend_status.running','true')|list %}
 
           <div class="border border-gray-200 p-2 rounded bg-gray-50 shadow-sm">
             <div class="text-xs text-gray-500 mb-0.5">Total Apps</div>
@@ -104,7 +85,7 @@
           </div>
         </div>
 
-        <!-- Security Overview Cards - Updated by SecurityAnalysis.loadSecuritySummary -->
+        <!-- Security Overview - SecurityAnalysis feature -->
         <div class="col-span-2 grid grid-cols-2 gap-2">
           <div class="border border-gray-200 p-2 rounded bg-gray-50 shadow-sm">
             <div class="text-xs text-gray-500 mb-0.5">Security Status</div>
@@ -133,7 +114,7 @@
     </div>
   </div>
 
-  <!-- Model Sections - Each section matches CoreController structure -->
+  <!-- Model Sections - CoreController/FeatureManager managed -->
   {% for model in models %}
   <div class="border border-gray-300 bg-white rounded-md shadow-sm" data-model-section="{{ model.name }}">
     <!-- Model Header with Batch Operations -->
@@ -141,8 +122,8 @@
       <div class="flex justify-between items-center">
         <div class="flex items-center">
           <h2 class="font-semibold text-xs" style="color: {{ model.color }};">{{ model.name }}</h2>
-          <!-- Batch Operations Dropdown - Matches CoreController.performBatchOperation -->
-          <div class="ml-3 relative inline-block text-left">
+          <!-- Batch Operations - CoreController.performBatchOperation -->
+          <div class="ml-3 relative inline-block text-left" data-model="{{ model.name }}">
             <button type="button" class="batch-menu-button inline-flex justify-center items-center text-2xs bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded px-2 py-0.5 transition-colors duration-150">
               <span>Batch</span>
               <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,26 +133,16 @@
             <!-- Dropdown Menu -->
             <div class="batch-menu-items hidden absolute z-10 mt-1 w-40 bg-white border border-gray-300 rounded shadow-lg">
               <div class="py-0.5">
-                <button class="batch-action w-full text-left px-3 py-1 text-2xs hover:bg-gray-100 transition-colors duration-150" data-action="start" data-model="{{ model.name }}">
-                  Start All Apps
-                </button>
-                <button class="batch-action w-full text-left px-3 py-1 text-2xs hover:bg-gray-100 transition-colors duration-150" data-action="stop" data-model="{{ model.name }}">
-                  Stop All Apps
-                </button>
-                <button class="batch-action w-full text-left px-3 py-1 text-2xs hover:bg-gray-100 transition-colors duration-150" data-action="reload" data-model="{{ model.name }}">
-                  Reload All Apps
-                </button>
-                <button class="batch-action w-full text-left px-3 py-1 text-2xs hover:bg-gray-100 transition-colors duration-150" data-action="rebuild" data-model="{{ model.name }}">
-                  Rebuild All Apps
-                </button>
+                <button class="batch-action w-full text-left px-3 py-1 text-2xs hover:bg-gray-100 transition-colors duration-150" data-action="start" data-model="{{ model.name }}">Start All Apps</button>
+                <button class="batch-action w-full text-left px-3 py-1 text-2xs hover:bg-gray-100 transition-colors duration-150" data-action="stop" data-model="{{ model.name }}">Stop All Apps</button>
+                <button class="batch-action w-full text-left px-3 py-1 text-2xs hover:bg-gray-100 transition-colors duration-150" data-action="reload" data-model="{{ model.name }}">Reload All Apps</button>
+                <button class="batch-action w-full text-left px-3 py-1 text-2xs hover:bg-gray-100 transition-colors duration-150" data-action="rebuild" data-model="{{ model.name }}">Rebuild All Apps</button>
                 <hr class="my-0.5 border-gray-200">
-                <button class="batch-action w-full text-left px-3 py-1 text-2xs hover:bg-gray-100 transition-colors duration-150" data-action="health-check" data-model="{{ model.name }}">
-                  Health Check All
-                </button>
+                <button class="batch-action w-full text-left px-3 py-1 text-2xs hover:bg-gray-100 transition-colors duration-150" data-action="health-check" data-model="{{ model.name }}">Health Check All</button>
               </div>
             </div>
           </div>
-          <!-- Batch Operation Status Indicator - Updated by UIController.updateBatchProgress -->
+          <!-- Batch Status - UIController.updateBatchProgress -->
           <div class="batch-status ml-2 hidden">
             <span class="px-1.5 py-0.5 text-2xs bg-blue-100 text-blue-800 border border-blue-300 rounded">
               <span class="batch-status-text">Processing...</span>
@@ -190,14 +161,10 @@
       </div>
     </div>
 
-    <!-- App Cards Grid - Each card is updated by UIController.updateStatusDisplay -->
+    <!-- App Cards Grid - UIController.updateStatusDisplay targets -->
     <div class="p-2 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2">
       {% for app in apps if app.model == model.name %}
-      <div class="border border-gray-300 relative rounded shadow-sm hover:shadow-md transition-shadow" 
-           data-app-id="{{ app.app_num }}" 
-           data-model="{{ app.model }}" 
-           data-app-name="{{ app.name }}" 
-           data-status="{{ 'running' if app.backend_status.running and app.frontend_status.running else 'partial' if app.backend_status.running or app.frontend_status.running else 'stopped' }}">
+      <div class="border border-gray-300 relative rounded shadow-sm hover:shadow-md transition-shadow" data-app-id="{{ app.app_num }}" data-model="{{ app.model }}" data-app-name="{{ app.name }}" data-status="{{ app.backend_status.running and app.frontend_status.running and 'running' or app.backend_status.running or app.frontend_status.running and 'partial' or 'stopped' }}">
         <!-- App Header -->
         <div class="bg-gray-50 border-b border-gray-300 px-2 py-1 flex justify-between items-center rounded-t">
           <div class="flex items-center">
@@ -229,53 +196,27 @@
               <div class="text-gray-500">Backend:</div>
               <div class="flex items-center">
                 <span class="w-2 h-2 rounded-full {{ 'bg-green-500' if app.backend_status.running else 'bg-red-500' }} mr-1.5"></span>
-                <a href="{{ app.backend_url }}" target="_blank" class="font-medium text-blue-700 hover:underline">
-                  <span data-status="backend" class="{{ 'text-green-700' if app.backend_status.running else 'text-red-700' }} font-medium">
-                    {{ "Running" if app.backend_status.running else "Stopped" }}
-                  </span>
-                  <span class="ml-1">{{ app.backend_port }}</span>
-                </a>
+                <a href="{{ app.backend_url }}" target="_blank" class="font-medium text-blue-700 hover:underline">{{ app.backend_port }}</a>
               </div>
             </div>
             <div class="flex flex-col">
               <div class="text-gray-500">Frontend:</div>
               <div class="flex items-center">
                 <span class="w-2 h-2 rounded-full {{ 'bg-green-500' if app.frontend_status.running else 'bg-red-500' }} mr-1.5"></span>
-                <a href="{{ app.frontend_url }}" target="_blank" class="font-medium text-blue-700 hover:underline">
-                  <span data-status="frontend" class="{{ 'text-green-700' if app.frontend_status.running else 'text-red-700' }} font-medium">
-                    {{ "Running" if app.frontend_status.running else "Stopped" }}
-                  </span>
-                  <span class="ml-1">{{ app.frontend_port }}</span>
-                </a>
+                <a href="{{ app.frontend_url }}" target="_blank" class="font-medium text-blue-700 hover:underline">{{ app.frontend_port }}</a>
               </div>
             </div>
           </div>
 
-          <!-- Metrics Display - Updated by UIController.updateMetricsDisplay -->
-          <div class="grid grid-cols-3 gap-1 p-1 bg-gray-50 rounded border border-gray-300 text-2xs mb-2">
-            <div class="text-center">
-              <div class="text-gray-700 font-medium">CPU</div>
-              <div class="metric-cpu">0.0%</div>
-            </div>
-            <div class="text-center">
-              <div class="text-gray-700 font-medium">Memory</div>
-              <div class="metric-memory">0.0 MB</div>
-            </div>
-            <div class="text-center">
-              <div class="text-gray-700 font-medium">Requests</div>
-              <div class="metric-requests">0</div>
-            </div>
-          </div>
-
-          <!-- Action Buttons - Used by UIController.handleActionButton -->
+          <!-- Action Buttons -->
           <div class="grid grid-cols-4 gap-1">
-            <!-- Control Row -->
+            <!-- Control Row - CoreController.performAppAction targets -->
             <button class="action-btn bg-green-600 hover:bg-green-700 text-white text-2xs py-1" title="Start App" data-action="start" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">Start</button>
             <button class="action-btn bg-red-600 hover:bg-red-700 text-white text-2xs py-1" title="Stop App" data-action="stop" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">Stop</button>
             <button class="action-btn bg-yellow-600 hover:bg-yellow-700 text-white text-2xs py-1" title="Reload App" data-action="reload" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">Reload</button>
             <button class="action-btn bg-gray-200 hover:bg-gray-300 text-2xs py-1" title="Check Status" data-action="status" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">Status</button>
 
-            <!-- Monitoring Row -->
+            <!-- Feature Links - FeatureManager components -->
             <a href="{{ url_for('main.view_logs', model=app.model, app_num=app.app_num) }}" class="action-btn text-center text-2xs py-1 bg-blue-50 hover:bg-blue-100 text-blue-700">Logs</a>
             <a href="{{ url_for('performance.performance_test', model=app.model, port=app.frontend_port) }}" class="action-btn text-center text-2xs py-1 bg-purple-50 hover:bg-purple-100 text-purple-700">Perf</a>
             <a href="{{ url_for('analysis.security_analysis', model=app.model, app_num=app.app_num) }}" class="action-btn text-center text-2xs py-1 bg-rose-50 hover:bg-rose-100 text-rose-700">API</a>
@@ -288,12 +229,7 @@
           </div>
         </div>
 
-        <!-- App Footer with Last Updated Time - Updated by UIController -->
-        <div class="bg-gray-50 border-t border-gray-300 px-2 py-1 flex justify-between items-center rounded-b">
-          <span data-last-update class="text-2xs text-gray-500">Last updated: Never</span>
-        </div>
-
-        <!-- Security Status Indicator - Updated by SecurityAnalysis.updateSecurityBadges -->
+        <!-- Security Status - SecurityAnalysis feature indicator -->
         <div class="security-status absolute top-0 right-0 mt-0.5 mr-0.5 hidden">
           <div class="rounded-full w-2.5 h-2.5 shadow-sm"></div>
         </div>
@@ -303,19 +239,38 @@
   </div>
   {% endfor %}
 
-  <!-- No Results Message - Shown by UIController.toggleNoResultsMessage -->
+  <!-- No Results Message - UIController.toggleNoResultsMessage target -->
   <div id="noResultsMessage" class="hidden border border-gray-300 bg-white p-3 text-center text-xs text-gray-600 rounded-md shadow-sm">
     No apps match your search criteria
   </div>
 </div>
-{% endblock %}
 
 {% block extra_scripts %}
 <script>
-  // This initialization will be replaced by the Dashboard class initialization in base.html
-  document.addEventListener('DOMContentLoaded', function() {
-    // The Dashboard initialization is now handled in base.html
-    // Additional dashboard-specific functionality can be added here if needed
-  });
+// Initialize with Dashboard.js OOP structure
+$(document).ready(function() {
+  // Feature-specific initialization aligned with FeatureManager
+  const securityFilter = $('#securitySummaryFilter');
+  
+  if (securityFilter.length) {
+    securityFilter.on('change', function() {
+      const value = $(this).val();
+      const selector = value === 'high' ? '.high-risk' : 
+                      value === 'critical' ? '.critical' : '';
+      
+      if (selector) {
+        $('[data-app-id]').hide();
+        $(`.security-indicator${selector}`).closest('[data-app-id]').show();
+      } else {
+        $('[data-app-id]').show();
+      }
+      
+      // Show/hide no results message (uses UIController method)
+      const visibleApps = $('[data-app-id]:visible').length;
+      $('#noResultsMessage').toggle(visibleApps === 0);
+    });
+  }
+});
 </script>
+{% endblock %}
 {% endblock %}
