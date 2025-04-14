@@ -121,7 +121,7 @@
     <div class="bg-gray-50 border-b border-gray-300 px-3 py-1.5">
       <div class="flex justify-between items-center">
         <div class="flex items-center">
-          <h2 class="font-semibold text-xs" style="color: {{ model.color }};">{{ model.name }}</h2>
+          <h2 class="font-semibold text-xs model-color-{{ model.name|lower }}">{{ model.name }}</h2>
           <!-- Batch Operations - CoreController.performBatchOperation -->
           <div class="ml-3 relative inline-block text-left" data-model="{{ model.name }}">
             <button type="button" class="batch-menu-button inline-flex justify-center items-center text-2xs bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded px-2 py-0.5 transition-colors duration-150">

@@ -7698,3 +7698,5 @@ Stacktrace:
 [2025-04-15 00:26:57] INFO: Found matching template: app_30_research_collab.md
 [2025-04-15 00:26:57] INFO: Loaded and copied template: app_30_research_collab.md
 [2025-04-15 00:26:58] INFO: Loaded and copied template: app_30_research_collab.md
+[2025-04-15 00:57:34] INFO: Database connection closed
+[2025-04-15 00:57:34] INFO: Application shutting down

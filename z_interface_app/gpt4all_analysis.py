@@ -6,31 +6,43 @@ It uses the GPT4All API (compatible with OpenAI's API format) to determine if ap
 meet specified requirements.
 """
 
+# =============================================================================
+# Standard Library Imports
+# =============================================================================
 import json
 import os
 import time
+import re
 from dataclasses import dataclass, asdict, field
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple, Any, Union, Set
-import aiohttp
-import requests
-import logging
 
+# =============================================================================
+# Third-Party Imports
+# =============================================================================
+import requests
+
+# =============================================================================
+# Configure Logging
+# =============================================================================
 # Try to import from logging_service, but use basic logging if it fails
 try:
     from logging_service import create_logger_for_component
     logger = create_logger_for_component('gpt4all')
 except (ImportError, Exception) as e:
     # Set up basic logging as fallback
+    import logging
     logger = logging.getLogger('gpt4all')
     handler = logging.StreamHandler()
-    # Use a simple formatter that doesn't require request_id
     formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
     logger.warning(f"Using fallback logging due to error: {e}")
 
+# =============================================================================
+# Domain Models
+# =============================================================================
 @dataclass
 class RequirementResult:
     """Result of a requirement check."""
@@ -40,6 +52,7 @@ class RequirementResult:
     error: Optional[str] = None
     frontend_analysis: Optional[Dict] = None
     backend_analysis: Optional[Dict] = None
+
 
 @dataclass
 class RequirementCheck:
@@ -54,6 +67,9 @@ class RequirementCheck:
             "result": asdict(self.result)
         }
 
+# =============================================================================
+# GPT4All Client
+# =============================================================================
 class GPT4AllClient:
     """Client for connecting to a local GPT4All API server."""
     
@@ -94,13 +110,15 @@ class GPT4AllClient:
             if response.status_code == 200:
                 models_data = response.json()
                 
-                # GPT4All API might have a different response structure
-                # You might need to adjust this based on the actual API response
-                self.available_models = [
-                    model.get('model', model) if isinstance(model, dict) 
-                    else model 
-                    for model in models_data.get('data', models_data)
-                ]
+                # Process the models data - handle different response formats
+                self.available_models = []
+                for model in models_data.get('data', []):
+                    # If it's a dict with an 'id' field, extract that
+                    if isinstance(model, dict) and 'id' in model:
+                        self.available_models.append(model['id'])
+                    # If it's a string, use directly
+                    elif isinstance(model, str):
+                        self.available_models.append(model)
                 
                 logger.info(f"Available GPT4All models: {self.available_models}")
                 self.is_available = True
@@ -115,6 +133,28 @@ class GPT4AllClient:
             self.is_available = False
             return False
     
+    def _extract_model_id(self, model_obj) -> str:
+        """
+        Extract the model ID string from a model object.
+        
+        Args:
+            model_obj: Model specification (can be string, dict, or None)
+            
+        Returns:
+            String ID of the model
+        """
+        # If it's already a string, return it
+        if isinstance(model_obj, str):
+            return model_obj
+            
+        # If it's a dict with an 'id' field, extract that
+        if isinstance(model_obj, dict) and 'id' in model_obj:
+            return model_obj['id']
+            
+        # If None or unrecognized format, return empty string
+        logger.warning(f"Unknown model format: {model_obj}, using empty string")
+        return ""
+    
     def get_best_model(self) -> str:
         """
         Get the best available model based on preferences or defaults.
@@ -128,8 +168,9 @@ class GPT4AllClient:
                 return self.preferred_model or "Llama 3 8B Instruct"  # Fallback default
         
         # If preferred model is available, use it
-        if self.preferred_model and self.preferred_model in self.available_models:
-            return self.preferred_model
+        preferred = self._extract_model_id(self.preferred_model)
+        if preferred and preferred in self.available_models:
+            return preferred
             
         # Known good models in order of preference
         preferred_models = [
@@ -172,8 +213,8 @@ class GPT4AllClient:
                 "explanation": "GPT4All server is not available"
             }
             
-        # Select model
-        model_to_use = model or self.get_best_model()
+        # Select model - ensure we have a string, not an object
+        model_to_use = self._extract_model_id(model) if model else self.get_best_model()
         
         # Create system prompt
         system_prompt = """
@@ -208,7 +249,11 @@ Respond with JSON containing:
 """
         
         try:
-            # Prepare the request payload
+            # Prepare the request payload - ensure model is a string
+            if not model_to_use or not isinstance(model_to_use, str):
+                logger.warning(f"Invalid model: {model_to_use}, using fallback")
+                model_to_use = "Llama 3 8B Instruct"  # Fallback to a default model
+                
             payload = {
                 "model": model_to_use,
                 "messages": [
@@ -267,7 +312,6 @@ Respond with JSON containing:
             Dict with extracted data or default values
         """
         # Try to find JSON in code blocks
-        import re
         json_match = re.search(r'```(?:json)?\s*({.*?})\s*```', text, re.DOTALL)
         
         if json_match:
@@ -294,7 +338,9 @@ Respond with JSON containing:
         
         return result
 
-
+# =============================================================================
+# Main Analyzer Class
+# =============================================================================
 class GPT4AllAnalyzer:
     """
     Analyzer that checks application code against requirements using GPT4All API.
@@ -396,14 +442,14 @@ class GPT4AllAnalyzer:
                         continue
                         
                     # Categorize by file extension
-                    if file_name.endswith(('.js', '.jsx', '.ts', '.tsx', '.html', '.css', '.vue')):
+                    if file_name.endswith(('.js', '.jsx', '.ts', '.tsx', '.html', '.css', '.vue', '.svelte')):
                         frontend_files.append(file_path)
                         
                     elif file_name.endswith(('.py', '.flask')):
                         backend_files.append(file_path)
                 
                 # Prioritize key files
-                key_frontend_files = [f for f in frontend_files if f.name in ('App.jsx', 'App.js', 'index.js', 'main.js')]
+                key_frontend_files = [f for f in frontend_files if f.name in ('App.jsx', 'App.js', 'index.js', 'main.js', 'App.svelte')]
                 key_backend_files = [f for f in backend_files if f.name in ('app.py', 'server.py', 'main.py')]
                 
                 # If we have key files, put them first
@@ -416,6 +462,7 @@ class GPT4AllAnalyzer:
                 frontend_files = frontend_files[:5]
                 backend_files = backend_files[:5]
                 
+                # If we found files, we can break the loop early
                 if frontend_files or backend_files:
                     break
         except Exception as e:
@@ -743,14 +790,14 @@ class GPT4AllAnalyzer:
                 }
                 
             # Combine results - requirement is met if either frontend or backend meets it
-            frontend_met = result.frontend_analysis.get("met", False)
-            backend_met = result.backend_analysis.get("met", False)
+            frontend_met = frontend_analysis.get("met", False) if frontend_code else False
+            backend_met = backend_analysis.get("met", False) if backend_code else False
             
             result.met = frontend_met or backend_met
             
             # Determine confidence level
-            frontend_confidence = result.frontend_analysis.get("confidence", "LOW")
-            backend_confidence = result.backend_analysis.get("confidence", "LOW")
+            frontend_confidence = frontend_analysis.get("confidence", "LOW") if frontend_code else "LOW"
+            backend_confidence = backend_analysis.get("confidence", "LOW") if backend_code else "LOW"
             
             confidence_levels = {"HIGH": 3, "MEDIUM": 2, "LOW": 1}
             frontend_score = confidence_levels.get(frontend_confidence, 1)
@@ -762,8 +809,8 @@ class GPT4AllAnalyzer:
                               "LOW"
                               
             # Combine explanations
-            frontend_explanation = result.frontend_analysis.get("explanation", "")
-            backend_explanation = result.backend_analysis.get("explanation", "")
+            frontend_explanation = frontend_analysis.get("explanation", "") if frontend_code else "No frontend code found"
+            backend_explanation = backend_analysis.get("explanation", "") if backend_code else "No backend code found"
             
             combined_explanation = ""
             if frontend_explanation:
@@ -807,3 +854,71 @@ class GPT4AllAnalyzer:
             )
             for req in requirements
         ]
+
+
+# =============================================================================
+# Fix for Logging Issues
+# =============================================================================
+def apply_logging_fixes():
+    """
+    Apply fixes to existing loggers to avoid request_id KeyError.
+    Call this function early in your application startup.
+    """
+    import logging
+    
+    class FixedContextFilter(logging.Filter):
+        """Add contextual information to log records."""
+        
+        def __init__(self, app_name: str = "app"):
+            super().__init__()
+            self.app_name = app_name
+        
+        def filter(self, record):
+            # Always add request_id field to avoid KeyError
+            if not hasattr(record, 'request_id'):
+                # Try to get from Flask g if in a request context
+                try:
+                    from flask import g, has_request_context, has_app_context
+                    if has_app_context() and has_request_context():
+                        # Only access g when we're in a Flask request context
+                        record.request_id = getattr(g, 'request_id', '-')
+                    else:
+                        record.request_id = '-'
+                except (RuntimeError, ImportError):
+                    # Not in Flask context or Flask not available
+                    record.request_id = '-'
+                    
+            # Add component information if not present
+            if not hasattr(record, 'component'):
+                # Extract component from logger name
+                if record.name and record.name.find('.') > 0:
+                    record.component = record.name.split('.')[0]
+                else:
+                    record.component = self.app_name
+                    
+            return True
+    
+    # Get the root logger
+    root_logger = logging.getLogger()
+    
+    # Add our fixed ContextFilter to the root logger
+    context_filter = FixedContextFilter()
+    root_logger.addFilter(context_filter)
+    
+    # Also fix specific loggers that might be configured separately
+    for logger_name in ['werkzeug', 'requests', 'errors', 'gpt4all']:
+        logger = logging.getLogger(logger_name)
+        logger.addFilter(context_filter)
+    
+    # Fix handlers as well (to ensure the filter is applied to all output)
+    for handler in root_logger.handlers:
+        handler.addFilter(context_filter)
+    
+    logger.info("Applied logging fixes to avoid request_id KeyError")
+
+
+# Apply logging fixes when the module is imported
+try:
+    apply_logging_fixes()
+except Exception as e:
+    logger.warning(f"Could not apply logging fixes: {e}")

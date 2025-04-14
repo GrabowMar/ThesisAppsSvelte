@@ -1777,13 +1777,23 @@ def delete_performance_report(model: str, port: int, report_id: str):
         )
     
 
-# GPT4All routes section from routes.py
+"""
+Complete fixed routes for GPT4All integration
+"""
 
-@gpt4all_bp.route("/gpt4all-analysis", methods=["GET", "POST"])
+# Import necessary modules
+from flask import Blueprint, render_template, request, jsonify, current_app, redirect, url_for
+from logging_service import create_logger_for_component
+import json
+import traceback
+
+# Create the blueprint (assuming it's already created elsewhere)
+# gpt4all_bp = Blueprint("gpt4all", __name__, url_prefix="/gpt4all")
+
+@gpt4all_bp.route("/analysis", methods=["GET", "POST"])
 def gpt4all_analysis():
     """
     Flask route for checking requirements against code.
-    Fully automated with improved error handling.
     
     Returns:
         Rendered template with requirement check results
@@ -1795,7 +1805,7 @@ def gpt4all_analysis():
         model = request.args.get("model") or request.form.get("model")
         app_num_str = request.args.get("app_num") or request.form.get("app_num")
         
-        logger.info(f"GPT4All analysis page accessed for {model}/app{app_num_str}")
+        logger.info(f"GPT4All analysis requested for {model}/app{app_num_str}")
         
         # Validate required parameters
         if not model or not app_num_str:
@@ -1825,30 +1835,30 @@ def gpt4all_analysis():
         # Get analyzer instance
         analyzer = current_app.gpt4all_analyzer
         
-        # Add more detailed server availability check
+        # Check if GPT4All server is available
         try:
             server_available = analyzer.client.check_server()
             logger.info(f"GPT4All server availability: {server_available}")
             
             if not server_available:
-                logger.error("GPT4All server is not responding")
+                logger.error("GPT4All server is not available")
                 return render_template(
                     "requirements_check.html",
                     model=model,
                     app_num=app_num,
                     requirements=[],
                     results=None,
-                    error="GPT4All server is not available. Please check the server status."
+                    error="GPT4All server is not available. Please ensure the server is running."
                 )
-        except Exception as server_check_error:
-            logger.exception(f"Error checking GPT4All server: {server_check_error}")
+        except Exception as server_error:
+            logger.exception(f"Error checking server: {server_error}")
             return render_template(
                 "requirements_check.html",
                 model=model,
                 app_num=app_num,
                 requirements=[],
                 results=None,
-                error=f"Server check failed: {str(server_check_error)}"
+                error=f"Error checking GPT4All server: {str(server_error)}"
             )
         
         # Get requirements for the app
@@ -1864,37 +1874,46 @@ def gpt4all_analysis():
                 results=None,
                 error=f"Could not load requirements: {str(req_error)}"
             )
-        
+            
         results = None
         
-        # Only run check when specifically requested via POST
-        if request.method == "POST" and "check_requirements" in request.form:
-            # Additional detailed error handling for requirements check
-            try:
-                # Get selected model if provided
+        # Handle requirements from POST (overrides default requirements)
+        if request.method == "POST":
+            # Extract custom requirements if submitted
+            if "requirements" in request.form:
+                requirements_text = request.form.get("requirements", "")
+                custom_reqs = [r.strip() for r in requirements_text.strip().splitlines() if r.strip()]
+                if custom_reqs:
+                    requirements = custom_reqs
+                    logger.info(f"Using {len(requirements)} custom requirements from form")
+            
+            # Process check_requirements request
+            if "check_requirements" in request.form or request.form.get("action") == "check":
+                # Check selected model
                 selected_model = request.form.get("gpt4all_model")
                 if selected_model:
                     analyzer.client.preferred_model = selected_model
                     logger.info(f"Using selected model: {selected_model}")
                 
-                # Check requirements
+                # Check requirements against code
                 if requirements:
-                    logger.info(f"Checking {len(requirements)} requirements for {model}/app{app_num}")
-                    results = analyzer.check_requirements(model, app_num, requirements)
-                    logger.info(f"Successfully analyzed {len(results)} requirements for {model}/app{app_num}")
-            except Exception as check_error:
-                logger.exception(f"Error checking requirements: {check_error}")
-                return render_template(
-                    "requirements_check.html",
-                    model=model,
-                    app_num=app_num,
-                    requirements=requirements,
-                    template_name=template_name,
-                    results=None,
-                    error=f"Requirements check failed: {str(check_error)}"
-                )
+                    try:
+                        logger.info(f"Checking {len(requirements)} requirements for {model}/app{app_num}")
+                        results = analyzer.check_requirements(model, app_num, requirements)
+                        logger.info(f"Successfully analyzed {len(results)} requirements for {model}/app{app_num}")
+                    except Exception as check_error:
+                        logger.exception(f"Error checking requirements: {check_error}")
+                        return render_template(
+                            "requirements_check.html",
+                            model=model,
+                            app_num=app_num,
+                            requirements=requirements,
+                            template_name=template_name,
+                            results=None,
+                            error=f"Requirements check failed: {str(check_error)}"
+                        )
         
-        # Render template with requirements and results
+        # Render template with form or results
         return render_template(
             "requirements_check.html",
             model=model,
@@ -1905,7 +1924,9 @@ def gpt4all_analysis():
             error=None
         )
     except Exception as e:
-        logger.exception(f"Unexpected error in GPT4All analysis: {str(e)}")
+        logger.exception(f"Requirements check failed: {str(e)}")
+        error_details = traceback.format_exc()
+        logger.error(f"Full traceback: {error_details}")
         return render_template(
             "requirements_check.html",
             model=model if "model" in locals() else None,
@@ -1914,7 +1935,7 @@ def gpt4all_analysis():
             results=None,
             error=f"Unexpected error: {str(e)}"
         )
-    
+
 @gpt4all_bp.route("/api/requirements-check", methods=["POST"])
 def api_requirements_check():
     """
@@ -1926,44 +1947,115 @@ def api_requirements_check():
     logger = create_logger_for_component('gpt4all')
     
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "No data provided"}), 400
+        # More robust JSON parsing with detailed error handling
+        try:
+            data = request.get_json(force=True, silent=True)
+            if not data:
+                # Try form data as fallback
+                model = request.form.get("model")
+                app_num = request.form.get("app_num")
+                requirements_text = request.form.get("requirements", "")
+                
+                # If we have form data, convert to expected format
+                if model and app_num:
+                    data = {
+                        "model": model,
+                        "app_num": int(app_num) if app_num.isdigit() else app_num,
+                        "requirements": [r.strip() for r in requirements_text.strip().splitlines() if r.strip()]
+                    }
+                    logger.info(f"Converted form data: {data}")
+                else:
+                    # Log raw request information for debugging
+                    logger.warning(f"Missing data: Content-Type={request.headers.get('Content-Type')}, form={request.form}")
+                    logger.warning(f"Raw body: {request.get_data(as_text=True)[:200]}...")
+                    return jsonify({
+                        "error": "No data provided or could not parse request body",
+                        "status": "error",
+                        "results": []
+                    }), 400
+        except Exception as json_error:
+            logger.exception(f"JSON parsing error: {json_error}")
+            return jsonify({
+                "error": f"JSON parsing error: {str(json_error)}",
+                "status": "error",
+                "results": []
+            }), 400
             
         model = data.get("model")
         app_num = data.get("app_num")
         requirements = data.get("requirements", [])
         
+        # Validate required parameters
         if not model or not app_num:
-            return jsonify({"error": "Model and app_num are required"}), 400
+            logger.warning(f"Missing required parameters: model={model}, app_num={app_num}")
+            return jsonify({
+                "error": "Model and app_num are required",
+                "status": "error",
+                "results": []
+            }), 400
             
-        logger.info(f"API requirements check for {model}/app{app_num} with {len(requirements)} requirements")
+        logger.info(f"API requirements check for {model}/app{app_num} with {len(requirements) if requirements else 0} requirements")
         
         # Get analyzer instance
         analyzer = current_app.gpt4all_analyzer
         
         # Check if GPT4All server is available
-        if not analyzer.client.check_server():
-            logger.error("GPT4All server is not available")
+        try:
+            server_available = analyzer.client.check_server()
+            if not server_available:
+                logger.error("GPT4All server is not available")
+                return jsonify({
+                    "error": "GPT4All server is not available",
+                    "status": "error",
+                    "results": []
+                }), 503
+        except Exception as server_error:
+            logger.exception(f"Error checking server: {server_error}")
             return jsonify({
-                "error": "GPT4All server is not available",
+                "error": f"Error checking server: {str(server_error)}",
                 "status": "error",
                 "results": []
-            }), 503
+            }), 500
         
         # If no requirements provided, get defaults
         if not requirements:
-            requirements, _ = analyzer.get_requirements_for_app(app_num)
+            try:
+                requirements, _ = analyzer.get_requirements_for_app(app_num)
+                logger.info(f"Using {len(requirements)} default requirements")
+            except Exception as req_error:
+                logger.exception(f"Error getting default requirements: {req_error}")
+                return jsonify({
+                    "error": f"Error getting default requirements: {str(req_error)}",
+                    "status": "error",
+                    "results": []
+                }), 500
         
         # Check requirements
-        results = analyzer.check_requirements(model, app_num, requirements)
-        logger.info(f"Successfully completed API requirements check for {model}/app{app_num}")
-        
-        # Convert results to dict for JSON response
-        return jsonify({
-            "status": "success",
-            "results": [check.to_dict() for check in results]
-        })
+        try:
+            results = analyzer.check_requirements(model, app_num, requirements)
+            logger.info(f"Successfully completed API requirements check for {model}/app{app_num}")
+            
+            # Convert results to dict for JSON response
+            from dataclasses import asdict
+            result_dicts = []
+            for check in results:
+                result_dict = {
+                    "requirement": check.requirement,
+                    "result": asdict(check.result) if hasattr(check.result, "__dataclass_fields__") else check.result
+                }
+                result_dicts.append(result_dict)
+            
+            return jsonify({
+                "status": "success",
+                "results": result_dicts
+            })
+        except Exception as check_error:
+            logger.exception(f"Error checking requirements: {check_error}")
+            return jsonify({
+                "error": f"Error checking requirements: {str(check_error)}",
+                "status": "error",
+                "results": []
+            }), 500
     except Exception as e:
         logger.exception(f"API requirements check failed: {e}")
         return jsonify({
@@ -2006,3 +2098,48 @@ def get_available_models():
             "error": str(e),
             "models": []
         }), 500
+
+@gpt4all_bp.route("/server-status", methods=["GET"])
+def check_server_status():
+    """
+    Check if the GPT4All server is available.
+    
+    Returns:
+        JSON with server status
+    """
+    logger = create_logger_for_component('gpt4all')
+    
+    try:
+        analyzer = current_app.gpt4all_analyzer
+        is_available = analyzer.client.check_server()
+        
+        logger.info(f"GPT4All server status check: {'available' if is_available else 'unavailable'}")
+        
+        return jsonify({
+            "status": "success",
+            "available": is_available,
+            "server_url": analyzer.client.api_url
+        })
+    except Exception as e:
+        logger.exception(f"Error checking server status: {e}")
+        return jsonify({
+            "status": "error",
+            "error": str(e),
+            "available": False
+        }), 500
+
+# Legacy route redirect
+@gpt4all_bp.route("/gpt4all-analysis", methods=["GET", "POST"])
+def legacy_analysis_redirect():
+    """
+    Legacy route for backwards compatibility.
+    Redirects to the new /analysis endpoint.
+    """
+    logger = create_logger_for_component('gpt4all')
+    logger.info("Redirecting from legacy /gpt4all-analysis to /analysis")
+    
+    # Get all parameters
+    args = request.args.copy()
+    
+    # Build URL for redirect
+    return redirect(url_for('gpt4all.gpt4all_analysis', **args))
