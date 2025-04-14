@@ -1783,6 +1783,7 @@ def delete_performance_report(model: str, port: int, report_id: str):
 def gpt4all_analysis():
     """
     Flask route for checking requirements against code.
+    Fully automated with improved error handling.
     
     Returns:
         Rendered template with requirement check results
@@ -1794,7 +1795,7 @@ def gpt4all_analysis():
         model = request.args.get("model") or request.form.get("model")
         app_num_str = request.args.get("app_num") or request.form.get("app_num")
         
-        logger.info(f"GPT4All analysis requested for {model}/app{app_num_str}")
+        logger.info(f"GPT4All analysis page accessed for {model}/app{app_num_str}")
         
         # Validate required parameters
         if not model or not app_num_str:
@@ -1824,37 +1825,76 @@ def gpt4all_analysis():
         # Get analyzer instance
         analyzer = current_app.gpt4all_analyzer
         
-        # Check if GPT4All server is available
-        if not analyzer.client.check_server():
-            logger.error("GPT4All server is not available")
+        # Add more detailed server availability check
+        try:
+            server_available = analyzer.client.check_server()
+            logger.info(f"GPT4All server availability: {server_available}")
+            
+            if not server_available:
+                logger.error("GPT4All server is not responding")
+                return render_template(
+                    "requirements_check.html",
+                    model=model,
+                    app_num=app_num,
+                    requirements=[],
+                    results=None,
+                    error="GPT4All server is not available. Please check the server status."
+                )
+        except Exception as server_check_error:
+            logger.exception(f"Error checking GPT4All server: {server_check_error}")
             return render_template(
                 "requirements_check.html",
                 model=model,
                 app_num=app_num,
                 requirements=[],
                 results=None,
-                error="GPT4All server is not available. Please ensure the server is running."
+                error=f"Server check failed: {str(server_check_error)}"
             )
         
         # Get requirements for the app
-        requirements, template_name = analyzer.get_requirements_for_app(app_num)
+        try:
+            requirements, template_name = analyzer.get_requirements_for_app(app_num)
+        except Exception as req_error:
+            logger.exception(f"Error getting requirements: {req_error}")
+            return render_template(
+                "requirements_check.html",
+                model=model,
+                app_num=app_num,
+                requirements=[],
+                results=None,
+                error=f"Could not load requirements: {str(req_error)}"
+            )
+        
         results = None
         
-        # Handle requirements from POST (overrides default requirements)
-        if request.method == "POST" and "requirements" in request.form:
-            requirements_text = request.form.get("requirements", "")
-            custom_reqs = [r.strip() for r in requirements_text.strip().splitlines() if r.strip()]
-            if custom_reqs:
-                requirements = custom_reqs
-                logger.info(f"Using {len(requirements)} custom requirements from form")
+        # Only run check when specifically requested via POST
+        if request.method == "POST" and "check_requirements" in request.form:
+            # Additional detailed error handling for requirements check
+            try:
+                # Get selected model if provided
+                selected_model = request.form.get("gpt4all_model")
+                if selected_model:
+                    analyzer.client.preferred_model = selected_model
+                    logger.info(f"Using selected model: {selected_model}")
+                
+                # Check requirements
+                if requirements:
+                    logger.info(f"Checking {len(requirements)} requirements for {model}/app{app_num}")
+                    results = analyzer.check_requirements(model, app_num, requirements)
+                    logger.info(f"Successfully analyzed {len(results)} requirements for {model}/app{app_num}")
+            except Exception as check_error:
+                logger.exception(f"Error checking requirements: {check_error}")
+                return render_template(
+                    "requirements_check.html",
+                    model=model,
+                    app_num=app_num,
+                    requirements=requirements,
+                    template_name=template_name,
+                    results=None,
+                    error=f"Requirements check failed: {str(check_error)}"
+                )
         
-        # Check requirements if we have any
-        if requirements:
-            logger.info(f"Checking {len(requirements)} requirements for {model}/app{app_num}")
-            results = analyzer.check_requirements(model, app_num, requirements)
-            logger.info(f"Successfully analyzed {len(results)} requirements for {model}/app{app_num}")
-        
-        # Render template with form or results
+        # Render template with requirements and results
         return render_template(
             "requirements_check.html",
             model=model,
@@ -1865,16 +1905,16 @@ def gpt4all_analysis():
             error=None
         )
     except Exception as e:
-        logger.exception(f"Requirements check failed: {str(e)}")
+        logger.exception(f"Unexpected error in GPT4All analysis: {str(e)}")
         return render_template(
             "requirements_check.html",
             model=model if "model" in locals() else None,
             app_num=app_num if "app_num" in locals() else None,
             requirements=[],
             results=None,
-            error=str(e)
+            error=f"Unexpected error: {str(e)}"
         )
-
+    
 @gpt4all_bp.route("/api/requirements-check", methods=["POST"])
 def api_requirements_check():
     """

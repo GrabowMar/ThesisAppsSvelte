@@ -1,7 +1,7 @@
 {
     "applications": [
       {
-        "id": "app_1_login",
+        "id": "app_1",
         "name": "Login/Register Application",
         "description": "A streamlined user authentication system built with Flask and React, featuring user registration and login capabilities with core security features.",
         "general_features": [
@@ -17,7 +17,7 @@
         ]
       },
       {
-        "id": "app_2_chat",
+        "id": "app_2",
         "name": "Chat Application",
         "description": "A messaging application built with Flask and React, featuring real-time communication capabilities and user interaction.",
         "general_features": [
@@ -33,7 +33,7 @@
         ]
       },
       {
-        "id": "app_3_feedback",
+        "id": "app_3",
         "name": "Feedback Form Application",
         "description": "A feedback collection application built with Flask and React, featuring form submission and response management capabilities.",
         "general_features": [
@@ -49,7 +49,7 @@
         ]
       },
       {
-        "id": "app_4_blog",
+        "id": "app_4",
         "name": "Blog Application",
         "description": "A blog application built with Flask and React, featuring content creation, user authentication, and responsive design.",
         "general_features": [
@@ -66,7 +66,7 @@
         ]
       },
       {
-        "id": "app_5_cart",
+        "id": "app_5",
         "name": "E-Commerce Cart Application",
         "description": "A shopping cart application built with Flask and React, featuring product management and cart functionality.",
         "general_features": [
@@ -82,7 +82,7 @@
         ]
       },
       {
-        "id": "app_6_notes",
+        "id": "app_6",
         "name": "Notes Application",
         "description": "A note-taking application built with Flask and React, featuring content management capabilities.",
         "general_features": [
@@ -98,7 +98,7 @@
         ]
       },
       {
-        "id": "app_7_fileUpload",
+        "id": "app_7",
         "name": "File Uploader Application",
         "description": "A file handling application built with Flask and React, featuring upload and download capabilities.",
         "general_features": [
@@ -114,7 +114,7 @@
         ]
       },
       {
-        "id": "app_8_forum",
+        "id": "app_8",
         "name": "Forum Application",
         "description": "A discussion platform built with Flask and React, featuring thread and comment management.",
         "general_features": [
@@ -130,7 +130,7 @@
         ]
       },
       {
-        "id": "app_9_crud",
+        "id": "app_9",
         "name": "CRUD Inventory Application",
         "description": "An inventory management system built with Flask and React, featuring CRUD operations.",
         "general_features": [
@@ -146,7 +146,7 @@
         ]
       },
       {
-        "id": "app_10_microblog",
+        "id": "app_10",
         "name": "CRUD Microblog Application",
         "description": "A microblog system built with Flask and React.",
         "general_features": [
@@ -162,7 +162,7 @@
         ]
       },
       {
-        "id": "app_11_polling",
+        "id": "app_11",
         "name": "Polling Application",
         "description": "A voting application built with Flask and React, featuring poll creation and voting functionality.",
         "general_features": [
@@ -178,7 +178,7 @@
         ]
       },
       {
-        "id": "app_12_reservation",
+        "id": "app_12",
         "name": "Reservation Application",
         "description": "A booking application built with Flask and React, featuring time slot management and reservation handling.",
         "general_features": [
@@ -194,7 +194,7 @@
         ]
       },
       {
-        "id": "app_13_gallery",
+        "id": "app_13",
         "name": "Gallery Application",
         "description": "A straightforward gallery application built with Flask and React, featuring image management and gallery organization.",
         "general_features": [
@@ -210,7 +210,7 @@
         ]
       },
       {
-        "id": "app_14_storage",
+        "id": "app_14",
         "name": "File Storage Application",
         "description": "A cloud storage solution built with Flask and React, featuring secure file management and sharing capabilities.",
         "general_features": [
@@ -226,7 +226,7 @@
         ]
       },
       {
-        "id": "app_15_kanban",
+        "id": "app_15",
         "name": "Kanban Application",
         "description": "A task management application built with Flask and React, featuring kanban board functionality.",
         "general_features": [
@@ -242,7 +242,7 @@
         ]
       },
       {
-        "id": "app_16_iot",
+        "id": "app_16",
         "name": "IoT Controller Application",
         "description": "An IoT device management application built with Flask and React, featuring device control and monitoring.",
         "general_features": [
@@ -258,7 +258,7 @@
         ]
       },
       {
-        "id": "app_17_fitness",
+        "id": "app_17",
         "name": "Fitness Logger Application",
         "description": "A workout tracking application built with Flask and React, featuring exercise and progress logging.",
         "general_features": [
@@ -274,7 +274,7 @@
         ]
       },
       {
-        "id": "app_18_wiki",
+        "id": "app_18",
         "name": "Wiki Application",
         "description": "A wiki platform built with Flask and React, featuring page management and content organization.",
         "general_features": [
@@ -290,7 +290,7 @@
         ]
       },
       {
-        "id": "app_19_wallet",
+        "id": "app_19",
         "name": "Crypto Wallet Application",
         "description": "A cryptocurrency wallet built with Flask and React, featuring essential transaction capabilities.",
         "general_features": [
@@ -306,7 +306,7 @@
         ]
       },
       {
-        "id": "app_20_map",
+        "id": "app_20",
         "name": "Map Sharing Application",
         "description": "A location sharing application built with Flask and React, featuring map visualization.",
         "general_features": [

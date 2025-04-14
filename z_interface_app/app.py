@@ -276,7 +276,7 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     app.register_blueprint(api_bp, url_prefix="/api")
     app.register_blueprint(analysis_bp)
     app.register_blueprint(performance_bp, url_prefix="/performance")
-    app.register_blueprint(gpt4all_bp, url_prefix="/gpt4all")  # Add URL prefix for gpt4all blueprint
+    app.register_blueprint(gpt4all_bp, url_prefix="/gpt4all") 
     app.register_blueprint(zap_bp, url_prefix="/zap")
 
     # Initialize batch analysis module

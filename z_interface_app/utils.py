@@ -406,11 +406,11 @@ def handle_docker_action(action: str, model: str, app_num: int) -> Tuple[bool, s
     """
     docker_logger = create_logger_for_component('docker')
     commands = {
-        "start": [("up", "-d", 120)],
-        "stop": [("down", None, 30)],
-        "reload": [("restart", None, 90)],
-        "rebuild": [("down", None, 30), ("build", None, 600), ("up", "-d", 120)],  # Increased build timeout
-        "build": [("build", None, 600)],  # Increased build timeout
+        "start": [("up", "-d", 9000)],
+        "stop": [("down", None, 300)],
+        "reload": [("restart", None, 900)],
+        "rebuild": [("down", None, 300), ("build", None, 6000), ("up", "-d", 1200)],  # Increased build timeout
+        "build": [("build", None, 6000)],  # Increased build timeout
     }
     
     if action not in commands:

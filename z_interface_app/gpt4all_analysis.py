@@ -84,7 +84,7 @@ class GPT4AllClient:
         current_time = time.time()
         if current_time - self.last_check_time < 15 and self.is_available:
             return self.is_available
-            
+                
         self.last_check_time = current_time
         
         try:
@@ -93,16 +93,25 @@ class GPT4AllClient:
             
             if response.status_code == 200:
                 models_data = response.json()
-                self.available_models = [model.get('id') for model in models_data.get('data', [])]
+                
+                # GPT4All API might have a different response structure
+                # You might need to adjust this based on the actual API response
+                self.available_models = [
+                    model.get('model', model) if isinstance(model, dict) 
+                    else model 
+                    for model in models_data.get('data', models_data)
+                ]
+                
                 logger.info(f"Available GPT4All models: {self.available_models}")
                 self.is_available = True
                 return True
             else:
                 logger.error(f"GPT4All server returned status code: {response.status_code}")
+                logger.error(f"Response content: {response.text}")
                 self.is_available = False
                 return False
         except Exception as e:
-            logger.error(f"Error checking GPT4All server: {str(e)}")
+            logger.exception(f"Error checking GPT4All server: {e}")
             self.is_available = False
             return False
     
@@ -462,6 +471,7 @@ class GPT4AllAnalyzer:
     def get_requirements_for_app(self, app_num: int) -> Tuple[List[str], str]:
         """
         Get requirements for a specific app from requirements.json file.
+        Handles various JSON formats flexibly.
         
         Args:
             app_num: App number
@@ -475,7 +485,7 @@ class GPT4AllAnalyzer:
         
         # First, try to find requirements.json in the app directory
         app_directory = self.find_app_directory("Llama", app_num)  # Model doesn't matter for just finding JSON
-        requirements_file = app_directory.parent / "requirements.json"
+        requirements_file = app_directory.parent.parent / "requirements.json"
         
         logger.info(f"Looking for requirements.json at: {requirements_file}")
         
@@ -485,40 +495,98 @@ class GPT4AllAnalyzer:
                     app_data = json.load(f)
                 logger.info(f"Successfully loaded requirements from {requirements_file}")
                 
+                # Track what we found for better logging
+                found_requirements = []
+                template_name = f"App {app_num}"
+                
                 # Look for the app with the matching app number
                 app_key = f"app_{app_num}"
-                app_info = None
                 
-                # Check in applications array
+                # Try multiple approaches to find requirements
+                
+                # 1. Check in applications array - standard format
                 if "applications" in app_data:
                     for app in app_data.get("applications", []):
-                        if app.get("id") == app_key:
-                            app_info = app
+                        # Try both "id" and direct number matching
+                        if app.get("id") == app_key or str(app.get("id")) == str(app_num):
+                            # Extract requirements
+                            
+                            # Try specific_features first
+                            if "specific_features" in app:
+                                found_requirements.extend(app["specific_features"])
+                                logger.info(f"Found {len(app['specific_features'])} specific features")
+                            
+                            # Try general_features
+                            if "general_features" in app:
+                                found_requirements.extend(app["general_features"])
+                                logger.info(f"Found {len(app['general_features'])} general features")
+                                
+                            # Try direct requirements array
+                            if "requirements" in app:
+                                found_requirements.extend(app["requirements"])
+                                logger.info(f"Found {len(app['requirements'])} requirements")
+                            
+                            # Get template name
+                            if "name" in app:
+                                template_name = app["name"]
+                            
+                            # Break since we found the matching app
                             break
-                # Check if app might be directly at root level with app_num key
+                
+                # 2. Try direct keys in the JSON object
                 elif app_key in app_data:
                     app_info = app_data[app_key]
-                
-                if app_info:
-                    # Extract requirements
-                    requirements = []
                     
-                    # Add general features if available
-                    if "general_features" in app_info:
-                        requirements.extend(app_info["general_features"])
-                    
-                    # Add specific features if available
+                    # Try specific_features
                     if "specific_features" in app_info:
-                        requirements.extend(app_info["specific_features"])
+                        found_requirements.extend(app_info["specific_features"])
                     
-                    # Get template name or default
-                    template_name = app_info.get("name", f"App {app_num}")
+                    # Try general_features
+                    if "general_features" in app_info:
+                        found_requirements.extend(app_info["general_features"])
+                        
+                    # Try direct requirements array
+                    if "requirements" in app_info:
+                        found_requirements.extend(app_info["requirements"])
                     
-                    logger.info(f"Found {len(requirements)} requirements for {template_name}")
+                    # Get template name
+                    if "name" in app_info:
+                        template_name = app_info["name"]
+                
+                # 3. Try app number as direct key
+                elif str(app_num) in app_data:
+                    app_info = app_data[str(app_num)]
+                    
+                    # Try specific_features
+                    if "specific_features" in app_info:
+                        found_requirements.extend(app_info["specific_features"])
+                    
+                    # Try general_features
+                    if "general_features" in app_info:
+                        found_requirements.extend(app_info["general_features"])
+                        
+                    # Try direct requirements array
+                    if "requirements" in app_info:
+                        found_requirements.extend(app_info["requirements"])
+                    
+                    # Get template name
+                    if "name" in app_info:
+                        template_name = app_info["name"]
+                
+                # 4. If the JSON is just a flat array of requirements
+                elif isinstance(app_data, list):
+                    found_requirements = app_data
+                    logger.info(f"Found {len(found_requirements)} requirements in flat array")
+                
+                # If we found any requirements, return them
+                if found_requirements:
+                    logger.info(f"Found {len(found_requirements)} total requirements for {template_name}")
                     
                     # Cache the result
-                    self.requirements_cache[app_num] = (requirements, template_name)
-                    return requirements, template_name
+                    self.requirements_cache[app_num] = (found_requirements, template_name)
+                    return found_requirements, template_name
+                else:
+                    logger.warning("No requirements found in JSON file, using fallbacks")
             except Exception as e:
                 logger.error(f"Error parsing requirements.json: {e}")
         
