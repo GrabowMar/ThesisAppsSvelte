@@ -1,31 +1,25 @@
 """
-Robust Frontend Security Analysis Module
+Frontend Security Analysis Module
 
-Provides security scanning for frontend code with enhanced JSX/React support:
-- pattern-based security scan: detects common security issues via regex patterns
-- jsx-parser: specialized JSX syntax validation and security checks
-- react-patterns: dedicated React security vulnerability detection
-- dependency-analyzer: improved package.json vulnerability detection
-- eslint-bridge: lightweight ESLint wrapper that works without Node.js installation
-- semgrep: lightweight static analysis that works without Node.js dependencies
-- jshint: JavaScript linting via direct embedded rules (no Node dependency)
+Provides security scanning for frontend code using multiple tools:
+- npm audit for dependency vulnerabilities
+- ESLint for code quality and potential React or Svelte linting
+- retire.js for known vulnerable JavaScript libraries
+- snyk for additional security checks
 
-Features cross-platform support, minimal dependencies, and fallback mechanisms.
+Features improved path detection, better logging, and more robust error handling.
 """
 
 import os
-import re
 import json
-import shutil
-import logging
 import subprocess
+import logging
 import concurrent.futures
-import hashlib
-import tempfile
-from dataclasses import dataclass, field
+import platform
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional, Tuple, Dict, Any, Union, Set
+from typing import List, Optional, Tuple, Dict, Any, Union
 
 # -----------------------------------------------------------------------------
 # Logging Configuration
@@ -35,419 +29,46 @@ logger = logging.getLogger(__name__)
 # -----------------------------------------------------------------------------
 # Constants
 # -----------------------------------------------------------------------------
-TOOL_TIMEOUT = 30  # seconds for tool execution timeout
-
-# Frontend security pattern definitions
-SECURITY_PATTERNS = [
-    {
-        "id": "eval-usage",
-        "pattern": r"eval\s*\(",
-        "description": "Usage of eval() function can lead to code injection",
-        "severity": "high",
-        "confidence": "medium",
-        "fix": "Replace eval() with safer alternatives"
-    },
-    {
-        "id": "innerHTML-assignment",
-        "pattern": r"\.(innerHTML|outerHTML)\s*=",
-        "description": "Direct innerHTML manipulation can lead to XSS vulnerabilities",
-        "severity": "high",
-        "confidence": "medium",
-        "fix": "Use textContent for text or createElement/appendChild for HTML content"
-    },
-    {
-        "id": "document-write",
-        "pattern": r"document\.write\s*\(",
-        "description": "Usage of document.write can lead to XSS vulnerabilities",
-        "severity": "high",
-        "confidence": "high",
-        "fix": "Manipulate the DOM using safer DOM APIs"
-    },
-    {
-        "id": "href-javascript",
-        "pattern": r"href\s*=\s*['\"]javascript:",
-        "description": "JavaScript in href attributes can lead to XSS vulnerabilities",
-        "severity": "medium",
-        "confidence": "high",
-        "fix": "Use event handlers instead of javascript: URLs"
-    },
-    {
-        "id": "unvalidated-redirect",
-        "pattern": r"(location|window\.location)\s*=\s*",
-        "description": "Unvalidated redirects can lead to phishing attacks",
-        "severity": "medium",
-        "confidence": "medium",
-        "fix": "Validate all redirect URLs against a whitelist"
-    },
-    {
-        "id": "jwt-localstorage",
-        "pattern": r"localStorage\.setItem\s*\(\s*['\"]token['\"]|localStorage\.setItem\s*\(\s*['\"]jwt['\"]",
-        "description": "Storing JWT tokens in localStorage exposes them to XSS attacks",
-        "severity": "medium",
-        "confidence": "medium",
-        "fix": "Use httpOnly cookies for token storage"
-    },
-    {
-        "id": "hardcoded-secret",
-        "pattern": r"(apiKey|secret|password|token|auth|key)\s*[:=]\s*['\"][^'\"]+['\"]",
-        "description": "Potential hardcoded secret or credential",
-        "severity": "high",
-        "confidence": "medium",
-        "fix": "Move secrets to environment variables or secure storage"
-    },
-    {
-        "id": "nosql-injection",
-        "pattern": r"{\s*\$where\s*:\s*[^}]+}\b",
-        "description": "Potential NoSQL injection vulnerability",
-        "severity": "high",
-        "confidence": "medium",
-        "fix": "Use parameterized queries and validate user input"
-    },
-    {
-        "id": "axios-csrf",
-        "pattern": r"axios\.defaults\.withCredentials\s*=\s*true",
-        "description": "Axios with credentials without CSRF protection",
-        "severity": "medium",
-        "confidence": "medium",
-        "fix": "Implement CSRF protection when using credentials"
-    },
-    {
-        "id": "dom-clobbering",
-        "pattern": r"getElementById\s*\(\s*['\"][^'\"]+['\"].*\)\.innerHTML",
-        "description": "DOM clobbering vulnerability",
-        "severity": "medium",
-        "confidence": "medium",
-        "fix": "Validate element existence and use textContent when possible"
-    },
-    {
-        "id": "outdated-package-react",
-        "pattern": r"\"react\"\s*:\s*\"(\^|~|)16\.",
-        "description": "Outdated React version with potential security issues",
-        "severity": "medium",
-        "confidence": "high",
-        "fix": "Update React to the latest stable version"
-    },
-    {
-        "id": "outdated-package-jquery",
-        "pattern": r"\"jquery\"\s*:\s*\"(\^|~|)(1\.|2\.)",
-        "description": "Outdated jQuery version with known vulnerabilities",
-        "severity": "high",
-        "confidence": "high",
-        "fix": "Update jQuery to version 3.x or newer"
-    },
-    {
-        "id": "dangerouslySetInnerHTML",
-        "pattern": r"dangerouslySetInnerHTML",
-        "description": "React's dangerouslySetInnerHTML may lead to XSS vulnerabilities",
-        "severity": "medium",
-        "confidence": "medium",
-        "fix": "Sanitize HTML content before using dangerouslySetInnerHTML"
-    },
-    {
-        "id": "unsafe-import",
-        "pattern": r"import\s+.*\s+from\s+['\"](eval|unsafe-|evil-)",
-        "description": "Importing from potentially unsafe package",
-        "severity": "medium",
-        "confidence": "medium",
-        "fix": "Review and replace unsafe package dependencies"
-    }
-]
-
-# React-specific security patterns
-REACT_PATTERNS = [
-    {
-        "id": "unsafe-component-will-mount",
-        "pattern": r"componentWillMount\s*\(",
-        "description": "componentWillMount is deprecated and may lead to unsafe practices",
-        "severity": "medium",
-        "confidence": "high",
-        "fix": "Use componentDidMount instead of componentWillMount"
-    },
-    {
-        "id": "ref-string-usage",
-        "pattern": r"ref\s*=\s*['\"][^'\"]+['\"]",
-        "description": "String refs are deprecated and may cause issues",
-        "severity": "medium",
-        "confidence": "high",
-        "fix": "Use createRef() or useRef() hook instead of string refs"
-    },
-    {
-        "id": "useeffect-missing-deps",
-        "pattern": r"useEffect\s*\(\s*\(\s*\)\s*=>\s*{[^}]*}\s*,\s*\[\s*\]\s*\)",
-        "description": "useEffect with empty dependency array but accessing external variables",
-        "severity": "medium",
-        "confidence": "medium",
-        "fix": "Add all dependencies to the dependency array"
-    },
-    {
-        "id": "jsx-injection",
-        "pattern": r"<[^>]*\{.*\.\.\.[^{}]*\}[^>]*>",
-        "description": "Potential object spreading in JSX that may lead to prototype pollution",
-        "severity": "high",
-        "confidence": "medium",
-        "fix": "Explicitly specify only needed props rather than spreading objects"
-    },
-    {
-        "id": "unescaped-props",
-        "pattern": r"<[^>]*\{.*__html.*\}[^>]*>",
-        "description": "Potential unescaped HTML in JSX props",
-        "severity": "high",
-        "confidence": "medium",
-        "fix": "Use proper HTML escape mechanisms before rendering user content"
-    },
-    {
-        "id": "setState-callback-memory-leak",
-        "pattern": r"this\.setState\s*\([^,)]*\)",
-        "description": "setState without callback may cause memory leaks in unmounted components",
-        "severity": "low",
-        "confidence": "medium",
-        "fix": "Check if component is mounted before setState or use useEffect"
-    },
-    {
-        "id": "unsanitized-jsx-prop",
-        "pattern": r"<[^>]*\{(?!.*encodeURI|.*escape|.*sanitize)[^}]*user[^}]*\}[^>]*>",
-        "description": "Potentially unsanitized user data in JSX props",
-        "severity": "medium",
-        "confidence": "medium",
-        "fix": "Sanitize user input before using in JSX"
-    },
-    {
-        "id": "raw-user-content",
-        "pattern": r"<div[^>]*>\s*\{(?![^}]*map)[^}]*user[^}]*\}\s*</div>",
-        "description": "Potentially rendering raw user content without escaping",
-        "severity": "medium",
-        "confidence": "medium",
-        "fix": "Ensure user content is properly escaped before rendering"
-    },
-    {
-        "id": "insecure-use-memo",
-        "pattern": r"useMemo\s*\(\s*\(\s*\)\s*=>\s*{[^}]*fetch\([^}]*}\s*,\s*\[\s*\]\s*\)",
-        "description": "useMemo with empty dependencies but making fetch calls",
-        "severity": "medium", 
-        "confidence": "medium",
-        "fix": "Add proper dependencies or move fetch call outside of useMemo"
-    },
-    {
-        "id": "uncontrolled-form-element",
-        "pattern": r"<(input|select|textarea)[^>]*(?!value|onChange)[^>]*>",
-        "description": "Potentially uncontrolled form element",
-        "severity": "low",
-        "confidence": "low",
-        "fix": "Add value and onChange handler for controlled components"
-    }
-]
-
-# Code quality patterns
-QUALITY_PATTERNS = [
-    {
-        "id": "console-log",
-        "pattern": r"console\.(log|debug|info|warn|error)\s*\(",
-        "description": "Console statements should be removed from production code",
-        "severity": "low",
-        "confidence": "high",
-        "fix": "Remove console statements or use a logging library"
-    },
-    {
-        "id": "todo-comment",
-        "pattern": r"//\s*TODO|/\*\s*TODO",
-        "description": "TODO comment indicates incomplete code",
-        "severity": "low",
-        "confidence": "high",
-        "fix": "Address TODO items before production deployment"
-    },
-    {
-        "id": "fixme-comment",
-        "pattern": r"//\s*FIXME|/\*\s*FIXME",
-        "description": "FIXME comment indicates broken code",
-        "severity": "medium",
-        "confidence": "high",
-        "fix": "Fix the identified issue before production deployment"
-    },
-    {
-        "id": "no-type-check",
-        "pattern": r"// @ts-ignore|// @ts-nocheck",
-        "description": "TypeScript type checking is being suppressed",
-        "severity": "medium",
-        "confidence": "high",
-        "fix": "Address the type issues instead of suppressing checks"
-    },
-    {
-        "id": "debugger-statement",
-        "pattern": r"\bdebugger\b",
-        "description": "Debugger statement will pause execution in development",
-        "severity": "medium",
-        "confidence": "high",
-        "fix": "Remove debugger statements from production code"
-    }
-]
+TOOL_TIMEOUT = 45  # seconds for tool execution timeout
+IS_WINDOWS = platform.system() == "Windows"
+SEVERITY_MAP = {
+    "critical": "HIGH",
+    "high": "HIGH",
+    "moderate": "MEDIUM",
+    "medium": "MEDIUM",
+    "low": "LOW",
+    "info": "LOW"
+}
 
 # -----------------------------------------------------------------------------
 # Helper Functions
 # -----------------------------------------------------------------------------
-def cmd_exists(cmd: str) -> bool:
-    """Check if a command exists in the system PATH."""
-    return shutil.which(cmd) is not None
-
-def run_cmd(cmd: List[str], cwd: str = None, timeout: int = TOOL_TIMEOUT) -> Tuple[bool, str, str]:
+def cmd_name(name: str) -> str:
     """
-    Run a command and return success status, stdout, and stderr.
-    
-    Args:
-        cmd: Command and arguments as list
-        cwd: Working directory
-        timeout: Command timeout in seconds
-        
-    Returns:
-        Tuple of (success, stdout, stderr)
+    Return the proper command name for Windows if needed.
+    For example, "npm" -> "npm.cmd" on Windows.
     """
-    try:
-        proc = subprocess.run(
-            cmd,
-            cwd=cwd,
-            capture_output=True,
-            text=True,
-            timeout=timeout
-        )
-        return proc.returncode == 0, proc.stdout, proc.stderr
-    except subprocess.TimeoutExpired:
-        return False, "", f"Command timed out after {timeout} seconds: {' '.join(cmd)}"
-    except Exception as e:
-        return False, "", f"Error running command: {e}"
+    return f"{name}.cmd" if IS_WINDOWS else name
 
-def safe_json_loads(data: str) -> Optional[Dict]:
+def safe_json_loads(data: str) -> Optional[dict]:
     """
     Safely parse JSON data, returning None on failure.
+    Logs an error if parsing fails.
     """
     try:
         return json.loads(data)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as exc:
+        logger.error(f"Failed to parse JSON: {exc}")
+        logger.debug(f"Raw output snippet: {data[:300]}...")
         return None
 
 def normalize_path(path: Union[str, Path]) -> Path:
-    """Normalize path to a resolved Path object."""
+    """
+    Normalize a path string or Path object to ensure it's a resolved Path.
+    """
     if isinstance(path, str):
         path = Path(path)
     return path.resolve()
-
-def find_package_json(directory: Path) -> Optional[Path]:
-    """Find package.json file in a directory or parent directories."""
-    current = directory
-    max_depth = 5  # Prevent excessive traversal
-    
-    for _ in range(max_depth):
-        pkg_json = current / "package.json"
-        if pkg_json.exists():
-            return pkg_json
-        
-        # Move to parent directory
-        parent = current.parent
-        if parent == current:  # Reached root
-            break
-        current = parent
-    
-    return None
-
-def validate_jsx_syntax(content: str) -> List[Dict[str, Any]]:
-    """
-    Validate JSX syntax using a simple parser.
-    Returns a list of errors found.
-    """
-    errors = []
-    
-    # Simple regex patterns to check for common JSX syntax errors
-    jsx_patterns = [
-        (r"<[^>]*\s+\w+(?!=)[^>]*>", "JSX attribute without value", "high"),
-        (r"<[^>]*\s+\w+=[^'\"{}][^>]*>", "Unquoted attribute value", "medium"),
-        (r"<(?!area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)[^>]*>[^<]*</[^>]*?(?!\\1)>", 
-         "Mismatched JSX tags", "high"),
-        (r"{[^}]*{[^}]*}[^}]*}", "Nested curly braces in JSX", "medium")
-    ]
-    
-    lines = content.split('\n')
-    for i, line in enumerate(lines, 1):
-        for pattern, msg, severity in jsx_patterns:
-            if re.search(pattern, line):
-                errors.append({
-                    "line": i,
-                    "text": msg,
-                    "severity": severity,
-                    "code": line
-                })
-    
-    # Look for unclosed tags
-    opened_tags = []
-    tag_pattern = re.compile(r'<(/?)(\w+)[^>]*>')
-    
-    for i, line in enumerate(lines, 1):
-        for match in tag_pattern.finditer(line):
-            is_closing, tag_name = match.groups()
-            
-            if is_closing:  # Closing tag
-                if opened_tags and opened_tags[-1] == tag_name:
-                    opened_tags.pop()
-                else:
-                    errors.append({
-                        "line": i,
-                        "text": f"Mismatched closing tag: {tag_name}",
-                        "severity": "high",
-                        "code": line
-                    })
-            elif not line.strip().endswith('/>'):  # Opening tag (not self-closing)
-                opened_tags.append(tag_name)
-    
-    # Any unclosed tags at the end
-    for tag in reversed(opened_tags):
-        errors.append({
-            "line": len(lines),
-            "text": f"Unclosed tag: {tag}",
-            "severity": "high",
-            "code": lines[-1] if lines else ""
-        })
-    
-    return errors
-
-def create_lightweight_eslint(temp_dir: Path) -> Optional[Path]:
-    """
-    Create a lightweight ESLint configuration that can work without full Node.js installation.
-    Returns the path to the config file.
-    """
-    # Minimal ESLint config that focuses on security
-    eslint_config = {
-        "env": {
-            "browser": True,
-            "es6": True
-        },
-        "extends": ["eslint:recommended"],
-        "parserOptions": {
-            "ecmaFeatures": {
-                "jsx": True
-            },
-            "ecmaVersion": 2020,
-            "sourceType": "module"
-        },
-        "rules": {
-            "no-eval": "error",
-            "no-implied-eval": "error",
-            "react/no-danger": "error",
-            "react/no-danger-with-children": "error",
-            "react/no-find-dom-node": "error",
-            "react/no-is-mounted": "error",
-            "react/no-string-refs": "error",
-            "react/no-unescaped-entities": "error",
-            "no-alert": "error",
-            "no-script-url": "error"
-        },
-        "plugins": ["react", "security"]
-    }
-    
-    try:
-        config_path = temp_dir / ".eslintrc.json"
-        with open(config_path, "w") as f:
-            json.dump(eslint_config, f, indent=2)
-        return config_path
-    except Exception as e:
-        logger.error(f"Failed to create ESLint config: {e}")
-        return None
 
 # -----------------------------------------------------------------------------
 # Data Classes
@@ -481,243 +102,92 @@ class SecurityIssue:
             "fix_suggestion": self.fix_suggestion
         }
 
-@dataclass
-class AnalysisResult:
-    """Complete results of a security analysis."""
-    issues: List[SecurityIssue] = field(default_factory=list)
-    tool_outputs: Dict[str, str] = field(default_factory=dict)
-    tool_status: Dict[str, str] = field(default_factory=dict)
-    scan_time: datetime = field(default_factory=datetime.now)
-    files_analyzed: int = 0
-    
-    def add_tool_result(self, tool: str, status: str, output: str) -> None:
-        """Add a tool's result."""
-        self.tool_status[tool] = status
-        self.tool_outputs[tool] = output
-    
-    def add_issues(self, issues: List[SecurityIssue]) -> None:
-        """Add issues from a tool."""
-        self.issues.extend(issues)
-    
-    def get_summary(self) -> Dict[str, Any]:
-        """Generate a summary of analysis results."""
-        # Calculate issue statistics
-        severity_counts = {"high": 0, "medium": 0, "low": 0}
-        confidence_counts = {"high": 0, "medium": 0, "low": 0}
-        tool_counts = {}
-        issue_types = {}
-        files_affected = set()
-        
-        for issue in self.issues:
-            # Count by severity
-            if issue.severity.lower() in severity_counts:
-                severity_counts[issue.severity.lower()] += 1
-            
-            # Count by confidence
-            if issue.confidence.lower() in confidence_counts:
-                confidence_counts[issue.confidence.lower()] += 1
-            
-            # Count by tool
-            tool = issue.tool
-            tool_counts[tool] = tool_counts.get(tool, 0) + 1
-            
-            # Count by issue type
-            issue_types[issue.issue_type] = issue_types.get(issue.issue_type, 0) + 1
-            
-            # Add to affected files
-            files_affected.add(issue.filename)
-        
-        # For backward compatibility with the existing UI
-        backward_compat_severity = {
-            "HIGH": severity_counts["high"],
-            "MEDIUM": severity_counts["medium"],
-            "LOW": severity_counts["low"]
-        }
-        
-        # Create tool stats with severities
-        tool_stats = {}
-        for tool in set([issue.tool for issue in self.issues]):
-            tool_issues = [i for i in self.issues if i.tool == tool]
-            
-            # Count severities for this tool
-            sev_counts = {}
-            for issue in tool_issues:
-                sev_counts[issue.severity] = sev_counts.get(issue.severity, 0) + 1
-            
-            tool_stats[tool] = {
-                "count": len(tool_issues),
-                "severities": sev_counts
-            }
-        
-        return {
-            "total_issues": len(self.issues),
-            "severity_counts": backward_compat_severity,
-            "tool_counts": tool_counts,
-            "files_affected": len(files_affected),
-            "issue_types": issue_types,
-            "scan_time": self.scan_time.strftime("%Y-%m-%d %H:%M:%S"),
-            "tool_stats": tool_stats,
-            "files_analyzed": self.files_analyzed
-        }
-
-# -----------------------------------------------------------------------------
-# JSX-specific Analysis Tools
-# -----------------------------------------------------------------------------
-class JSXAnalyzer:
-    """Simple JSX analyzer without external dependencies."""
-    
-    def __init__(self):
-        # Compile regex patterns for efficiency
-        self._compiled_react_patterns = [
-            (p["id"], re.compile(p["pattern"]), p)
-            for p in REACT_PATTERNS
-        ]
-    
-    def analyze_file(self, file_path: Path, content: str) -> List[SecurityIssue]:
-        """
-        Analyze a JSX/React file for security issues.
-        
-        Args:
-            file_path: Path to the file
-            content: File content
-            
-        Returns:
-            List of security issues
-        """
-        issues = []
-        
-        # Validate basic JSX syntax
-        syntax_errors = validate_jsx_syntax(content)
-        for error in syntax_errors:
-            issues.append(SecurityIssue(
-                filename=str(file_path),
-                line_number=error["line"],
-                issue_text=error["text"],
-                severity=error["severity"],
-                confidence="high",
-                issue_type="jsx-syntax-error",
-                line_range=[error["line"]],
-                code=error["code"],
-                tool="jsx-analyzer",
-                fix_suggestion="Fix JSX syntax error"
-            ))
-        
-        # Check React-specific patterns
-        lines = content.split('\n')
-        for pattern_id, regex, pattern_data in self._compiled_react_patterns:
-            for i, line in enumerate(lines, 1):
-                match = regex.search(line)
-                if match:
-                    issues.append(SecurityIssue(
-                        filename=str(file_path),
-                        line_number=i,
-                        issue_text=pattern_data["description"],
-                        severity=pattern_data["severity"],
-                        confidence=pattern_data["confidence"],
-                        issue_type=pattern_id,
-                        line_range=[i],
-                        code=line.strip(),
-                        tool="jsx-analyzer",
-                        fix_suggestion=pattern_data["fix"]
-                    ))
-        
-        return issues
-
 # -----------------------------------------------------------------------------
 # Main Analyzer Class
 # -----------------------------------------------------------------------------
 class FrontendSecurityAnalyzer:
     """
-    Robust frontend security analyzer that uses multiple approaches:
-    1. Pattern-based security scanning using regex
-    2. React/JSX-specific analysis
-    3. Dependency vulnerability checking
-    4. Semgrep (if available)
-    5. JSHint (if available)
-    6. Lightweight ESLint adapter (if Node.js/npm is available)
+    Analyzes frontend code for security issues using multiple tools:
+    - npm-audit
+    - ESLint
+    - retire.js
+    - snyk
     """
-    
+
     def __init__(self, base_path: Path):
         """
-        Initialize the security analyzer.
+        Initialize the analyzer with the base path.
         
         Args:
-            base_path: Base directory for analysis
+            base_path: The root directory where all code resides
         """
         self.base_path = normalize_path(base_path)
         logger.info(f"Initialized FrontendSecurityAnalyzer with base path: {self.base_path}")
         
-        # Create a temp directory for config files
-        self.temp_dir = Path(tempfile.mkdtemp(prefix="frontend_security_"))
-        
-        # Initialize JSX analyzer
-        self.jsx_analyzer = JSXAnalyzer()
-        
-        # Cache for file content to avoid reading files multiple times
-        self._file_cache = {}
-        
-        # Compiled regex patterns for efficiency
-        self._compiled_security_patterns = [
-            (p["id"], re.compile(p["pattern"]), p)
-            for p in SECURITY_PATTERNS
-        ]
-        
-        self._compiled_quality_patterns = [
-            (p["id"], re.compile(p["pattern"]), p)
-            for p in QUALITY_PATTERNS
-        ]
+        # Default quick-scan tools vs. full-scan
+        self.default_tools = ["eslint"]
+        self.all_tools = ["npm-audit", "eslint", "retire-js", "snyk"]
         
         # Check which tools are available
         self.available_tools = {
-            "pattern_scan": True,  # Always available
-            "jsx_analyzer": True,  # Always available
-            "dependency_check": True,  # Always available
-            "semgrep": cmd_exists("semgrep"),
-            "jshint": cmd_exists("jshint"),
-            "eslint": cmd_exists("npx") and cmd_exists("npm")
+            "npm-audit": self._check_tool("npm"),
+            "eslint": self._check_tool("npx"),
+            "retire-js": self._check_tool("npx"),
+            "snyk": self._check_tool("snyk")
         }
         
         logger.info(f"Available tools: {', '.join(k for k, v in self.available_tools.items() if v)}")
-        
-        # Define tool sets for quick vs full scan
-        self.default_tools = ["pattern_scan", "jsx_analyzer", "dependency_check"]
-        
-        # Include available external tools for full scan
-        self.all_tools = self.default_tools.copy()
-        if self.available_tools["semgrep"]:
-            self.all_tools.append("semgrep")
-        if self.available_tools["jshint"]:
-            self.all_tools.append("jshint")
-        if self.available_tools["eslint"]:
-            self.all_tools.append("eslint")
-    
-    def _find_application_path(self, model: str, app_num: int) -> Path:
+
+    def _check_tool(self, cmd: str) -> bool:
         """
-        Find the frontend application path through common patterns.
+        Check if a command exists in the system PATH.
         
         Args:
-            model: Model identifier
-            app_num: Application number
+            cmd: Command to check
             
         Returns:
-            Path to the frontend directory
+            True if command exists, False otherwise
         """
-        # Try common patterns for frontend directories
+        tool_cmd = cmd_name(cmd)
+        try:
+            proc = subprocess.run(
+                [tool_cmd, "--version"], 
+                capture_output=True, 
+                timeout=5
+            )
+            return proc.returncode == 0
+        except (subprocess.SubprocessError, FileNotFoundError):
+            return False
+
+    def _find_application_path(self, model: str, app_num: int) -> Path:
+        """
+        Attempt to locate the frontend application path. Checks several
+        common paths in order of preference, then falls back to base_path.
+        
+        Args:
+            model: Model identifier (e.g., 'Llama', 'GPT4o')
+            app_num: Application number (e.g., 1, 2, 3)
+            
+        Returns:
+            Path to the frontend application directory
+        """
+        logger.debug(f"Finding application path for {model}/app{app_num}")
+        
+        # Try common directory structures
         candidates = [
             self.base_path / model / f"app{app_num}" / "frontend",
             self.base_path / model / f"app{app_num}" / "client",
-            self.base_path / model / f"app{app_num}" / "src",
             self.base_path / model / f"app{app_num}" / "web",
             self.base_path / model / f"app{app_num}"
         ]
         
         # Check each candidate path
-        for path in candidates:
-            if path.exists() and path.is_dir():
-                logger.info(f"Found frontend directory: {path}")
-                return path
+        for candidate in candidates:
+            if candidate.exists() and candidate.is_dir():
+                logger.info(f"Found frontend directory: {candidate}")
+                return candidate
         
-        # Fallback to the most common pattern
+        # Fallback to base_path/model/app{num}
         fallback = self.base_path / model / f"app{app_num}"
         if not fallback.exists():
             logger.warning(f"Creating directory {fallback} as it doesn't exist")
@@ -725,519 +195,628 @@ class FrontendSecurityAnalyzer:
                 fallback.mkdir(parents=True, exist_ok=True)
             except Exception as e:
                 logger.error(f"Failed to create directory {fallback}: {e}")
-        
+                
+        logger.warning(f"No specific frontend path found; using fallback: {fallback}")
         return fallback
-    
-    def _find_source_files(self, directory: Path) -> List[Path]:
+
+    def _check_source_files(self, directory: Path) -> Tuple[bool, List[str]]:
         """
-        Find frontend source files in a directory.
+        Check if the directory contains any typical frontend source files.
         
         Args:
-            directory: Directory to scan
+            directory: Path to the directory to scan
             
         Returns:
-            List of source file paths
+            Tuple containing:
+            - Boolean indicating if any source files were found
+            - List of found source file paths
         """
-        extensions = (".js", ".jsx", ".ts", ".tsx", ".vue", ".svelte", ".html", ".css")
-        exclude_dirs = {"node_modules", ".git", "dist", "build"}
+        if not directory.exists() or not directory.is_dir():
+            logger.warning(f"Directory does not exist or is not a directory: {directory}")
+            return False, []
+
+        # Common frontend file extensions
+        exts = (".js", ".jsx", ".ts", ".tsx", ".vue", ".svelte", ".html", ".css")
+        found_files = []
         
-        source_files = []
         try:
+            # Find all matching files but exclude node_modules and other common dirs to avoid
+            # scanning unnecessary files
+            excluded_dirs = ("node_modules", ".git", "dist", "build", "coverage")
+            
             for root, dirs, files in os.walk(directory):
                 # Skip excluded directories
-                dirs[:] = [d for d in dirs if d not in exclude_dirs]
+                dirs[:] = [d for d in dirs if d not in excluded_dirs]
                 
-                # Find matching files
                 for file in files:
-                    if file.endswith(extensions):
-                        source_files.append(Path(root) / file)
+                    if file.endswith(exts):
+                        file_path = os.path.join(root, file)
+                        found_files.append(file_path)
+            
+            logger.info(f"Found {len(found_files)} frontend source files in {directory}")
+            return bool(found_files), found_files
         except Exception as e:
-            logger.error(f"Error finding source files: {e}")
-        
-        return source_files
-    
-    def _read_file(self, file_path: Path) -> Optional[str]:
+            logger.error(f"Error checking source files in {directory}: {e}")
+            return False, []
+
+    def _run_npm_audit(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
         """
-        Read a file with caching.
+        Run `npm audit --json` to check for dependency vulnerabilities.
         
         Args:
-            file_path: Path to file
+            app_path: Path to the frontend application
             
         Returns:
-            File content or None if error
+            Tuple containing:
+            - List of security issues found
+            - Dictionary of tool status messages
+            - Raw output from the tool
         """
-        # Check cache first
-        cache_key = str(file_path)
-        if cache_key in self._file_cache:
-            return self._file_cache[cache_key]
+        tool_name = "npm-audit"
+        issues: List[SecurityIssue] = []
+        status = {"npm-audit": "⚠️ Not run (no package.json)"}
         
-        # Read file
+        if not (app_path / "package.json").exists():
+            msg = f"No package.json found in {app_path}. Skipping npm audit."
+            logger.warning(msg)
+            return issues, status, msg
+
+        # Attempt to ensure package-lock.json exists
+        if not (app_path / "package-lock.json").exists():
+            try:
+                logger.info("No package-lock.json found; generating one via `npm i --package-lock-only`.")
+                init_cmd = [cmd_name("npm"), "i", "--package-lock-only"]
+                subprocess.run(init_cmd, cwd=str(app_path), capture_output=True, text=True, timeout=TOOL_TIMEOUT)
+            except Exception as exc:
+                msg = f"Failed to generate package-lock.json: {exc}"
+                logger.warning(msg)
+                status[tool_name] = "❌ Failed to generate package-lock.json"
+                return issues, status, msg
+
+        # Now run npm audit
+        command = [cmd_name("npm"), "audit", "--json"]
+        logger.info(f"Running npm audit in {app_path}...")
         try:
-            with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
-                content = f.read()
-                self._file_cache[cache_key] = content
-                return content
-        except Exception as e:
-            logger.error(f"Error reading file {file_path}: {e}")
-            return None
-    
-    def _pattern_scan(self, files: List[Path]) -> Tuple[List[SecurityIssue], str]:
-        """
-        Scan files using regex pattern matching.
-        
-        Args:
-            files: List of files to scan
-            
-        Returns:
-            Tuple of (issues, output_text)
-        """
-        issues = []
-        patterns_checked = len(self._compiled_security_patterns) + len(self._compiled_quality_patterns)
-        files_with_issues = set()
-        output_log = []
-        
-        output_log.append(f"[Pattern Scan] Checking {len(files)} files against {patterns_checked} patterns")
-        
-        for file_path in files:
-            content = self._read_file(file_path)
-            if not content:
-                continue
-            
-            lines = content.split('\n')
-            file_issues = []
-            
-            # Check security patterns
-            for pattern_id, regex, pattern_data in self._compiled_security_patterns:
-                for i, line in enumerate(lines, 1):
-                    match = regex.search(line)
-                    if match:
-                        file_issues.append(SecurityIssue(
-                            filename=str(file_path.relative_to(self.base_path)),
-                            line_number=i,
-                            issue_text=pattern_data["description"],
-                            severity=pattern_data["severity"],
-                            confidence=pattern_data["confidence"],
-                            issue_type=pattern_id,
-                            line_range=[i],
-                            code=line.strip(),
-                            tool="pattern_scan",
-                            fix_suggestion=pattern_data["fix"]
-                        ))
-            
-            # Check quality patterns
-            for pattern_id, regex, pattern_data in self._compiled_quality_patterns:
-                for i, line in enumerate(lines, 1):
-                    match = regex.search(line)
-                    if match:
-                        file_issues.append(SecurityIssue(
-                            filename=str(file_path.relative_to(self.base_path)),
-                            line_number=i,
-                            issue_text=pattern_data["description"],
-                            severity=pattern_data["severity"],
-                            confidence=pattern_data["confidence"],
-                            issue_type=pattern_id,
-                            line_range=[i],
-                            code=line.strip(),
-                            tool="pattern_scan",
-                            fix_suggestion=pattern_data["fix"]
-                        ))
-            
-            if file_issues:
-                files_with_issues.add(file_path)
-                issues.extend(file_issues)
-        
-        output_log.append(f"[Pattern Scan] Found {len(issues)} issues in {len(files_with_issues)} files")
-        return issues, "\n".join(output_log)
-    
-    def _jsx_analysis(self, files: List[Path]) -> Tuple[List[SecurityIssue], str]:
-        """
-        Analyze JSX/React files for security issues.
-        
-        Args:
-            files: List of files to scan
-            
-        Returns:
-            Tuple of (issues, output_text)
-        """
-        issues = []
-        output_log = []
-        
-        # Filter for JSX files
-        jsx_files = [f for f in files if f.suffix in (".jsx", ".tsx")]
-        js_files = [f for f in files if f.suffix == ".js"]
-        
-        # Also check .js files that might contain React/JSX
-        potential_jsx = []
-        for js_file in js_files:
-            content = self._read_file(js_file)
-            if content and re.search(r'React|render\s*\(|<[A-Z][^>]*>|createElement\s*\(', content):
-                potential_jsx.append(js_file)
-        
-        all_jsx_files = jsx_files + potential_jsx
-        
-        if not all_jsx_files:
-            output_log.append("[JSX Analyzer] No JSX files found")
-            return [], "\n".join(output_log)
-        
-        output_log.append(f"[JSX Analyzer] Checking {len(all_jsx_files)} files for React/JSX issues")
-        
-        for file_path in all_jsx_files:
-            content = self._read_file(file_path)
-            if not content:
-                continue
-            
-            # Analyze with JSX analyzer
-            file_issues = self.jsx_analyzer.analyze_file(
-                file_path.relative_to(self.base_path),
-                content
+            proc = subprocess.run(
+                command,
+                cwd=str(app_path),
+                capture_output=True,
+                text=True,
+                timeout=TOOL_TIMEOUT
             )
+        except subprocess.TimeoutExpired:
+            status[tool_name] = "❌ Timed out"
+            return issues, status, "npm audit timed out"
+        except Exception as exc:
+            status[tool_name] = f"❌ Failed: {exc}"
+            return issues, status, f"npm audit failed: {exc}"
+
+        # Special handling for npm audit errors that aren't real errors
+        if proc.returncode != 0 and proc.stderr and "ERR!" in proc.stderr:
+            # Check if this is actually a "found vulnerabilities" case
+            if "found vulnerabilities" in proc.stderr:
+                # This is normal - npm audit returns non-zero when finding issues
+                logger.info("npm audit found vulnerabilities")
+            else:
+                msg = f"npm audit error: {proc.stderr}"
+                logger.error(msg)
+                status[tool_name] = "❌ Error"
+                return issues, status, msg
+
+        raw_output = proc.stdout.strip()
+        if not raw_output:
+            # If stdout empty, check stderr
+            msg = proc.stderr.strip() or "npm audit produced no output"
+            status[tool_name] = "✅ No issues found" if "found 0 vulnerabilities" in msg else "❌ No output"
+            return issues, status, msg
+
+        audit_data = safe_json_loads(raw_output)
+        if not audit_data:
+            status[tool_name] = "❌ Invalid JSON output"
+            return issues, status, raw_output
             
-            if file_issues:
-                issues.extend(file_issues)
-                output_log.append(f"[JSX Analyzer] Found {len(file_issues)} issues in {file_path}")
-        
-        output_log.append(f"[JSX Analyzer] Found {len(issues)} issues total")
-        return issues, "\n".join(output_log)
-    
-    def _dependency_check(self, directory: Path) -> Tuple[List[SecurityIssue], str]:
-        """
-        Check package.json for dependency issues.
-        
-        Args:
-            directory: Directory containing package.json
-            
-        Returns:
-            Tuple of (issues, output_text)
-        """
-        issues = []
-        output_log = []
-        
-        # Find package.json
-        package_json = find_package_json(directory)
-        if not package_json:
-            output_log.append("[Dependency Check] No package.json found")
-            return [], "\n".join(output_log)
-        
-        output_log.append(f"[Dependency Check] Analyzing {package_json}")
-        
-        try:
-            # Read package.json
-            with open(package_json, 'r', encoding='utf-8') as f:
-                package_data = json.load(f)
-            
-            # Check dependencies
-            dependencies = {
-                **package_data.get("dependencies", {}),
-                **package_data.get("devDependencies", {})
-            }
-            
-            # Define known vulnerable versions
-            vulnerable_deps = {
-                "jquery": [
-                    (r"^1\.", "Update jQuery from version 1.x to 3.x or later (XSS vulnerabilities)"),
-                    (r"^2\.", "Update jQuery from version 2.x to 3.x or later (XSS vulnerabilities)")
-                ],
-                "react": [
-                    (r"^0\.", "Update React from version 0.x (very outdated)"),
-                    (r"^15\.", "Update React from version 15.x (outdated)")
-                ],
-                "angular": [
-                    (r"^1\.", "AngularJS 1.x has reached end-of-life and has security vulnerabilities")
-                ],
-                "bootstrap": [
-                    (r"^2\.", "Bootstrap 2.x is outdated and may contain security issues"),
-                    (r"^3\.", "Consider updating Bootstrap 3.x to latest version")
-                ],
-                "lodash": [
-                    (r"^3\.", "Lodash 3.x contains prototype pollution vulnerabilities"),
-                    (r"^4\.([0-9]|1[0-6])\.", "Lodash before 4.17.0 contains prototype pollution vulnerabilities")
-                ],
-                "axios": [
-                    (r"^0\.1[0-8]\.", "Axios versions before 0.19.0 have SSRF vulnerabilities")
-                ],
-                "marked": [
-                    (r"^0\.3\.", "Marked 0.3.x has XSS vulnerabilities")
-                ],
-                "moment": [
-                    (r"^2\.([0-9]|1[0-7])\.", "Moment.js has known prototype pollution issues before 2.18.0")
-                ],
-                "serialize-javascript": [
-                    (r"^[0-2]\.", "serialize-javascript has XSS vulnerabilities in versions before 3.0.0")
-                ],
-                "handlebars": [
-                    (r"^4\.[0-6]\.", "Handlebars has prototype pollution in versions before 4.7.0")
-                ],
-                "node-fetch": [
-                    (r"^1\.", "node-fetch v1.x has redirect vulnerabilities")
-                ],
-                "js-yaml": [
-                    (r"^3\.[0-5]\.", "js-yaml has code execution vulnerabilities in versions before 3.6.0")
-                ]
-            }
-            
-            for package, version in dependencies.items():
-                # Remove version prefixes for comparison
-                clean_version = version.lstrip("^~=<>")
+        # Check if vulnerabilities exist in the expected format
+        if "vulnerabilities" not in audit_data:
+            # Check for newer npm audit format
+            if "auditReportVersion" in audit_data:
+                # This is the new npm 7+ format
+                vulnerabilities = audit_data.get("vulnerabilities", {})
+                metadata = audit_data.get("metadata", {})
                 
-                # Check against known vulnerabilities
-                if package in vulnerable_deps:
-                    for pattern, message in vulnerable_deps[package]:
-                        if re.match(pattern, clean_version):
-                            issues.append(SecurityIssue(
-                                filename=str(package_json.relative_to(self.base_path)),
-                                line_number=0,
-                                issue_text=f"Vulnerable dependency: {package}@{version}",
-                                severity="high",
-                                confidence="high",
-                                issue_type="vulnerable-dependency",
-                                line_range=[0],
-                                code=f'"{package}": "{version}"',
-                                tool="dependency_check",
-                                fix_suggestion=message
-                            ))
-            
-            # Check for usage of deprecated or security-risky React packages
-            risky_packages = [
-                ("react-addons-", "React addons are deprecated and may contain security issues"),
-                ("create-react-class", "create-react-class is deprecated"),
-                ("unsafe-", "Package name contains 'unsafe'"),
-                ("uncontrolled-", "Uncontrolled components may lead to security issues"),
-                ("eval-", "Package name suggests unsafe eval usage"),
-                ("dangerously-", "Package name suggests dangerous operations")
-            ]
-            
-            for package in dependencies.keys():
-                for pattern, message in risky_packages:
-                    if pattern in package:
-                        issues.append(SecurityIssue(
-                            filename=str(package_json.relative_to(self.base_path)),
+                if not vulnerabilities:
+                    status[tool_name] = "✅ No issues found"
+                    return issues, status, raw_output
+                    
+                for vuln_name, vuln_info in vulnerabilities.items():
+                    # Get the severity from the vulnerability info
+                    severity = SEVERITY_MAP.get(vuln_info.get("severity", "low"), "LOW")
+                    
+                    # Extract more detailed information about the vulnerability
+                    via_info = ""
+                    if "via" in vuln_info:
+                        if isinstance(vuln_info["via"], list):
+                            for via_item in vuln_info["via"]:
+                                if isinstance(via_item, dict) and "title" in via_item:
+                                    via_info = via_item.get("title", "")
+                                    break
+                    
+                    # Get fix information
+                    fix_version = None
+                    fix_available = vuln_info.get("fixAvailable", {})
+                    if fix_available:
+                        if isinstance(fix_available, dict):
+                            fix_version = fix_available.get("version")
+                    
+                    fix_text = f"Update to version {fix_version}" if fix_version else "Update to the latest version"
+                    
+                    # Create a descriptive issue text
+                    issue_text = via_info if via_info else f"Vulnerability in {vuln_name}"
+                    
+                    # Get affected nodes (file paths)
+                    nodes = vuln_info.get("nodes", [])
+                    affected_path = nodes[0] if nodes else "package.json"
+                    
+                    issues.append(
+                        SecurityIssue(
+                            filename=affected_path,
                             line_number=0,
-                            issue_text=f"Potentially risky package: {package}",
-                            severity="medium",
-                            confidence="medium",
-                            issue_type="risky-package",
+                            issue_text=issue_text,
+                            severity=severity,
+                            confidence="HIGH",
+                            issue_type="dependency_vulnerability",
                             line_range=[0],
-                            code=f'"{package}"',
-                            tool="dependency_check",
-                            fix_suggestion=message
-                        ))
-            
-            # Generic check for older packages with non-pinned versions
-            for package, version in dependencies.items():
-                # Check for non-pinned versions (using ^ or ~)
-                if version.startswith(("^", "~")):
-                    issues.append(SecurityIssue(
-                        filename=str(package_json.relative_to(self.base_path)),
+                            code=f"{vuln_name}@{vuln_info.get('version', 'unknown')}",
+                            tool="npm-audit",
+                            fix_suggestion=fix_text
+                        )
+                    )
+            else:
+                status[tool_name] = "✅ No vulnerabilities found"
+                return issues, status, raw_output
+
+        # Process vulnerabilities in the standard format
+        else:
+            for vuln_name, vuln_info in audit_data["vulnerabilities"].items():
+                severity = SEVERITY_MAP.get(vuln_info.get("severity", "low"), "LOW")
+                issues.append(
+                    SecurityIssue(
+                        filename="package.json",
                         line_number=0,
-                        issue_text=f"Non-pinned dependency version: {package}@{version}",
-                        severity="low",
-                        confidence="medium",
-                        issue_type="non-pinned-dependency",
+                        issue_text=vuln_info.get("title", "Unknown vulnerability"),
+                        severity=severity,
+                        confidence="HIGH",
+                        issue_type="dependency_vulnerability",
                         line_range=[0],
-                        code=f'"{package}": "{version}"',
-                        tool="dependency_check",
-                        fix_suggestion="Pin dependency versions for better security and reproducible builds"
-                    ))
+                        code=f"{vuln_info.get('name')}@{vuln_info.get('version')}",
+                        tool="npm-audit",
+                        fix_suggestion=vuln_info.get("recommendation", "Update to the latest version")
+                    )
+                )
+
+        # Update status based on results
+        if issues:
+            status[tool_name] = f"⚠️ Found {len(issues)} issues"
+        else:
+            status[tool_name] = "✅ No issues found"
             
-            output_log.append(f"[Dependency Check] Found {len(issues)} issues")
-            
-        except Exception as e:
-            output_log.append(f"[Dependency Check] Error: {e}")
-        
-        return issues, "\n".join(output_log)
-    
-    def _run_semgrep(self, directory: Path) -> Tuple[List[SecurityIssue], str]:
+        return issues, status, raw_output
+
+    def _run_eslint(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
         """
-        Run semgrep for security analysis.
+        Run ESLint to check code quality and potential security issues.
         
         Args:
-            directory: Directory to scan
+            app_path: Path to the frontend application
             
         Returns:
-            Tuple of (issues, output_text)
+            Tuple containing:
+            - List of security issues found
+            - Dictionary of tool status messages
+            - Raw output from the tool
         """
-        if not self.available_tools["semgrep"]:
-            return [], "Semgrep not available"
+        tool_name = "eslint"
+        issues: List[SecurityIssue] = []
+        status = {tool_name: "⚠️ Not run"}
         
-        output_log = []
-        output_log.append("[Semgrep] Running security analysis")
-        
-        # Run semgrep with security ruleset
-        cmd = [
-            "semgrep",
-            "--config=auto",
-            "--json",
-            "--quiet",
-            str(directory)
+        # Check if we have frontend files to analyze
+        has_files, _ = self._check_source_files(app_path)
+        if not has_files:
+            msg = f"No frontend files found in {app_path}"
+            status[tool_name] = "❌ No files to analyze"
+            return issues, status, msg
+
+        # Determine what to scan - prefer src/ folder if it exists
+        scan_dir = "src" if (app_path / "src").exists() else "."
+
+        # Create temporary ESLint configuration for React/Modern JS
+        eslint_config_path = None
+        try:
+            temp_dir = Path(tempfile.mkdtemp(prefix="eslint_config_"))
+            eslint_config_path = temp_dir / ".eslintrc.json"
+            
+            # Create a basic configuration that handles React/JSX properly
+            eslint_config = {
+                "env": {
+                    "browser": True,
+                    "es2021": True,
+                    "node": True
+                },
+                "extends": [
+                    "eslint:recommended"
+                ],
+                "parserOptions": {
+                    "ecmaVersion": "latest",
+                    "sourceType": "module",
+                    "ecmaFeatures": {
+                        "jsx": True
+                    }
+                },
+                "rules": {
+                    "no-eval": "error",
+                    "no-implied-eval": "error",
+                    "no-alert": "warn"
+                }
+            }
+            
+            with open(eslint_config_path, "w") as f:
+                json.dump(eslint_config, f, indent=2)
+                
+            logger.info(f"Created temporary ESLint config at {eslint_config_path}")
+        except Exception as e:
+            logger.warning(f"Failed to create temporary ESLint config: {e}")
+            # We'll continue without a custom config if this fails
+
+        # Build eslint command with appropriate options
+        command = [
+            cmd_name("npx"), "eslint",
+            "--ext", ".js,.jsx,.ts,.tsx,.svelte,.vue",
+            "--format", "json",
         ]
         
-        success, stdout, stderr = run_cmd(cmd, timeout=60)  # Longer timeout for semgrep
-        
-        if not success:
-            output_log.append(f"[Semgrep] Error: {stderr}")
-            return [], "\n".join(output_log)
-        
-        # Parse results
-        results = safe_json_loads(stdout)
-        if not results:
-            output_log.append("[Semgrep] No results or invalid output")
-            return [], "\n".join(output_log)
-        
-        issues = []
-        
-        # Process findings
-        for result in results.get("results", []):
+        # Check for custom configurations
+        if (app_path / ".eslintrc.js").exists() or (app_path / ".eslintrc.json").exists():
+            logger.info(f"Found custom ESLint configuration in {app_path}")
+        elif eslint_config_path:
+            # Use our temporary configuration
+            command.extend(["--config", str(eslint_config_path)])
+        else:
+            # Use a basic configuration for common security rules
+            command.extend(["--no-eslintrc", "--no-ignore"])
+            
+        # Add the scan directory
+        command.append(scan_dir)
+
+        logger.info(f"Running ESLint in {app_path} (scanning {scan_dir})...")
+        try:
+            proc = subprocess.run(
+                command,
+                cwd=str(app_path),
+                capture_output=True,
+                text=True,
+                timeout=TOOL_TIMEOUT
+            )
+        except subprocess.TimeoutExpired:
+            status[tool_name] = "❌ Timed out"
+            return issues, status, "ESLint timed out"
+        except Exception as exc:
+            status[tool_name] = f"❌ Failed: {exc}"
+            return issues, status, f"ESLint failed: {exc}"
+        finally:
+            # Clean up temporary directory
+            if eslint_config_path and temp_dir.exists():
+                try:
+                    shutil.rmtree(temp_dir)
+                except Exception as e:
+                    logger.warning(f"Failed to remove temporary ESLint config directory: {e}")
+
+        raw_output = proc.stdout.strip()
+        if not raw_output:
+            # If no output, possibly an error or no matching files
+            err_msg = proc.stderr.strip() if proc.stderr else ""
+            if err_msg:
+                # Check for common setup issues
+                if "no such file or directory" in err_msg.lower():
+                    status[tool_name] = "❌ ESLint not installed"
+                elif "eslint is not recognized" in err_msg.lower():
+                    status[tool_name] = "❌ ESLint not in PATH"
+                else:
+                    status[tool_name] = "❌ ESLint error"
+                return issues, status, err_msg
+            return issues, status, "ESLint produced no output."
+
+        # Try to parse the JSON output
+        parsed = safe_json_loads(raw_output)
+        if not parsed:
+            status[tool_name] = "❌ Invalid JSON output"
+            return issues, status, raw_output
+            
+        if not isinstance(parsed, list):
+            status[tool_name] = "❌ Unexpected output format"
+            return issues, status, raw_output
+
+        # Process ESLint results
+        for file_result in parsed:
+            # Each file_result is a dict with "filePath" and "messages"
+            file_path = file_result.get("filePath", "unknown")
+            messages = file_result.get("messages", [])
+
+            # Convert to relative path for better display
             try:
-                # Map severity
-                severity_map = {
-                    "ERROR": "high",
-                    "WARNING": "medium",
-                    "INFO": "low"
-                }
+                rel_path = os.path.relpath(file_path, str(app_path))
+            except ValueError:
+                rel_path = file_path
+
+            for msg in messages:
+                # Check if this is a fatal parsing error
+                is_fatal = msg.get("fatal", False)
                 
-                severity = severity_map.get(result.get("severity", "INFO"), "medium")
+                # Get line number and severity
+                line_num = msg.get("line", 0)
+                severity_value = msg.get("severity", 1)
+                severity = "HIGH" if severity_value >= 2 or is_fatal else "MEDIUM"
+                
+                # Handle the case where ruleId is None (often happens with parsing errors)
+                rule_id = "parsing_error" if is_fatal and msg.get("ruleId") is None else (msg.get("ruleId") or "unknown_rule")
+                
+                # Get the error message
+                message = msg.get("message", "Unknown ESLint issue")
+                
+                # For parsing errors, include specific information
+                if is_fatal:
+                    issue_type = "parsing_error"
+                    code_snippet = file_result.get("source", "No code snippet available")
+                else:
+                    # Normal linting errors
+                    issue_type = rule_id
+                    code_snippet = msg.get("source", "No code snippet available")
+                
+                # Check if this is a security-related issue
+                security_patterns = ["security", "inject", "prototype", "csrf", "xss", "sanitize", 
+                                    "escap", "auth", "unsafe", "exploit", "vuln"]
+                
+                # Convert to strings and check to avoid None.lower() error
+                rule_id_str = str(rule_id).lower() if rule_id else ""
+                message_str = str(message).lower() if message else ""
+                
+                for pattern in security_patterns:
+                    if pattern in rule_id_str or pattern in message_str:
+                        severity = "HIGH"  # Upgrade severity for security issues
+                        break
+                
+                # Create and add the issue
+                issues.append(
+                    SecurityIssue(
+                        filename=rel_path,
+                        line_number=line_num,
+                        issue_text=message,
+                        severity=severity,
+                        confidence="HIGH" if is_fatal else "MEDIUM",
+                        issue_type=issue_type,
+                        line_range=[line_num],
+                        code=code_snippet or "No code available",
+                        tool="eslint",
+                        fix_suggestion=str(msg.get("fix", {}).get("text", "")) if "fix" in msg else None
+                    )
+                )
+
+        # Update status based on results
+        if issues:
+            status[tool_name] = f"⚠️ Found {len(issues)} issues"
+        else:
+            status[tool_name] = "✅ No issues found"
+            
+        return issues, status, raw_output
+
+    def _run_retire_js(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
+        """
+        Run retire.js to detect known vulnerable libraries.
+        
+        Args:
+            app_path: Path to the frontend application
+            
+        Returns:
+            Tuple containing:
+            - List of security issues found
+            - Dictionary of tool status messages
+            - Raw output from the tool
+        """
+        tool_name = "retire-js"
+        issues: List[SecurityIssue] = []
+        status = {tool_name: "⚠️ Not run"}
+        
+        if not (app_path / "node_modules").exists():
+            msg = f"No node_modules found in {app_path}. Skipping retire.js."
+            logger.warning(msg)
+            status[tool_name] = "❌ No node_modules directory"
+            return issues, status, msg
+
+        command = [
+            cmd_name("npx"), "retire",
+            "--path", ".",
+            "--outputformat", "json"
+        ]
+
+        logger.info(f"Running retire.js in {app_path}...")
+        try:
+            proc = subprocess.run(
+                command,
+                cwd=str(app_path),
+                capture_output=True,
+                text=True,
+                timeout=TOOL_TIMEOUT
+            )
+        except subprocess.TimeoutExpired:
+            status[tool_name] = "❌ Timed out"
+            return issues, status, "retire.js timed out"
+        except Exception as exc:
+            status[tool_name] = f"❌ Failed: {exc}"
+            return issues, status, f"retire.js failed: {exc}"
+
+        raw_output = proc.stdout.strip()
+        if not raw_output:
+            err_msg = proc.stderr.strip() if proc.stderr else ""
+            status[tool_name] = "❌ No output" if not err_msg else "❌ Error"
+            return issues, status, err_msg or "retire.js produced no output"
+
+        retire_data = safe_json_loads(raw_output)
+        if not retire_data:
+            status[tool_name] = "❌ Invalid JSON output"
+            return issues, status, raw_output
+            
+        if "results" not in retire_data:
+            status[tool_name] = "✅ No vulnerabilities found"
+            return issues, status, raw_output
+
+        # Process vulnerabilities
+        for result_item in retire_data.get("results", []):
+            vulnerabilities = result_item.get("vulnerabilities", [])
+            if not vulnerabilities:
+                continue
+
+            file_name = result_item.get("file", "unknown_file")
+            component = result_item.get("component", "unknown_component")
+            version = result_item.get("version", "unknown_version")
+
+            # Make file path relative
+            try:
+                rel_file = os.path.relpath(file_name, str(app_path))
+            except ValueError:
+                rel_file = file_name
+
+            for vuln in vulnerabilities:
+                # Get vulnerability info
+                info_list = vuln.get("info", [])
+                info_text = info_list[0] if isinstance(info_list, list) and info_list else "No vulnerability info"
                 
                 # Create issue
-                issues.append(SecurityIssue(
-                    filename=str(Path(result.get("path", "unknown")).relative_to(directory)),
-                    line_number=result.get("start", {}).get("line", 0),
-                    issue_text=result.get("extra", {}).get("message", "Semgrep finding"),
+                issues.append(
+                    SecurityIssue(
+                        filename=rel_file,
+                        line_number=0,
+                        issue_text=info_text,
+                        severity="HIGH",  # Retire.js vulnerabilities are typically high
+                        confidence="HIGH",
+                        issue_type="known_vulnerability",
+                        line_range=[0],
+                        code=f"{component}@{version}",
+                        tool="retire-js",
+                        fix_suggestion=f"Update to version {vuln.get('below', 'latest')} or newer"
+                    )
+                )
+
+        # Update status based on results
+        if issues:
+            status[tool_name] = f"⚠️ Found {len(issues)} issues"
+        else:
+            status[tool_name] = "✅ No issues found"
+            
+        return issues, status, raw_output
+
+    def _run_snyk(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
+        """
+        Run Snyk to detect vulnerabilities in dependencies.
+        
+        Args:
+            app_path: Path to the frontend application
+            
+        Returns:
+            Tuple containing:
+            - List of security issues found
+            - Dictionary of tool status messages
+            - Raw output from the tool
+        """
+        tool_name = "snyk"
+        issues: List[SecurityIssue] = []
+        status = {tool_name: "⚠️ Not run"}
+        
+        if not (app_path / "package.json").exists():
+            msg = f"No package.json found in {app_path}. Skipping Snyk."
+            logger.warning(msg)
+            status[tool_name] = "❌ No package.json"
+            return issues, status, msg
+
+        command = [cmd_name("snyk"), "test", "--json"]
+        logger.info(f"Running Snyk in {app_path}...")
+        try:
+            proc = subprocess.run(
+                command,
+                cwd=str(app_path),
+                capture_output=True,
+                text=True,
+                timeout=TOOL_TIMEOUT
+            )
+        except subprocess.TimeoutExpired:
+            status[tool_name] = "❌ Timed out"
+            return issues, status, "Snyk timed out"
+        except Exception as exc:
+            status[tool_name] = f"❌ Failed: {exc}"
+            return issues, status, f"Snyk failed: {exc}"
+
+        raw_output = proc.stdout.strip()
+        
+        # Check for authentication errors
+        if raw_output and ("Authentication error" in raw_output or "Auth token" in raw_output):
+            msg = "Snyk authentication required. Run 'snyk auth' first."
+            logger.error(msg)
+            status[tool_name] = "❌ Authentication required"
+            return issues, status, msg
+
+        if not raw_output:
+            err_msg = proc.stderr.strip() if proc.stderr else ""
+            status[tool_name] = "❌ No output" if not err_msg else "❌ Error"
+            return issues, status, err_msg or "Snyk produced no output."
+
+        # Try to parse the JSON output
+        snyk_data = safe_json_loads(raw_output)
+        if not snyk_data:
+            # Check for test success message
+            if "Tested" in raw_output and "No vulnerable paths found." in raw_output:
+                status[tool_name] = "✅ No issues found"
+                return issues, status, raw_output
+            status[tool_name] = "❌ Invalid JSON output"
+            return issues, status, raw_output
+            
+        # Check for vulnerabilities
+        vulnerabilities = snyk_data.get("vulnerabilities", [])
+        if not vulnerabilities:
+            status[tool_name] = "✅ No vulnerabilities found"
+            return issues, status, raw_output
+
+        # Process vulnerabilities
+        for vuln in vulnerabilities:
+            severity = SEVERITY_MAP.get(vuln.get("severity", "low"), "LOW")
+            # Try to get useful information about the vulnerability
+            from_chain = vuln.get("from", ["unknown"])
+            filename = from_chain[0] if from_chain else "unknown_dependency"
+
+            # Get fix suggestion if available
+            upgrade_paths = vuln.get("upgradePath", [])
+            fix_suggestion = upgrade_paths[0] if upgrade_paths else "No direct upgrade"
+
+            # Create the issue
+            issues.append(
+                SecurityIssue(
+                    filename=filename,
+                    line_number=0,
+                    issue_text=vuln.get("title", "Unknown vulnerability"),
                     severity=severity,
-                    confidence="high",
-                    issue_type=result.get("check_id", "semgrep-finding"),
-                    line_range=[result.get("start", {}).get("line", 0)],
-                    code=result.get("extra", {}).get("lines", ""),
-                    tool="semgrep",
-                    fix_suggestion=result.get("extra", {}).get("fix", "")
-                ))
-            except Exception as e:
-                output_log.append(f"[Semgrep] Error processing result: {e}")
-        
-        output_log.append(f"[Semgrep] Found {len(issues)} issues")
-        return issues, "\n".join(output_log)
-    
-    def _run_jshint(self, files: List[Path]) -> Tuple[List[SecurityIssue], str]:
-        """
-        Run JSHint on JavaScript files.
-        
-        Args:
-            files: List of files to analyze
+                    confidence="HIGH",
+                    issue_type="snyk_vulnerability",
+                    line_range=[0],
+                    code=f"{vuln.get('package')}@{vuln.get('version')}",
+                    tool="snyk",
+                    fix_suggestion=str(fix_suggestion)
+                )
+            )
+
+        # Update status based on results
+        if issues:
+            status[tool_name] = f"⚠️ Found {len(issues)} issues"
+        else:
+            status[tool_name] = "✅ No issues found"
             
-        Returns:
-            Tuple of (issues, output_text)
-        """
-        if not self.available_tools["jshint"]:
-            return [], "JSHint not available"
-        
-        # Filter JS files
-        js_files = [f for f in files if f.suffix in (".js", ".jsx")]
-        if not js_files:
-            return [], "No JavaScript files found"
-        
-        output_log = []
-        output_log.append(f"[JSHint] Analyzing {len(js_files)} JavaScript files")
-        
-        issues = []
-        
-        for file_path in js_files:
-            cmd = ["jshint", "--reporter=json", str(file_path)]
-            success, stdout, stderr = run_cmd(cmd)
-            
-            if not success and stdout:
-                try:
-                    results = json.loads(stdout)
-                    for result in results:
-                        # Map JSHint errors to security issues
-                        severity = "medium" if result.get("code", "").startswith("W") else "low"
-                        
-                        # Check for security-related issues
-                        error_text = result.get("reason", "")
-                        if any(term in error_text.lower() for term in ["security", "injection", "xss", "csrf", "unsafe"]):
-                            severity = "high"
-                        
-                        issues.append(SecurityIssue(
-                            filename=str(file_path.relative_to(self.base_path)),
-                            line_number=result.get("line", 0),
-                            issue_text=error_text,
-                            severity=severity,
-                            confidence="medium",
-                            issue_type=f"jshint-{result.get('code', 'error')}",
-                            line_range=[result.get("line", 0)],
-                            code=result.get("evidence", ""),
-                            tool="jshint",
-                            fix_suggestion=None  # JSHint doesn't provide fix suggestions
-                        ))
-                except json.JSONDecodeError:
-                    output_log.append(f"[JSHint] Error parsing output for {file_path}")
-        
-        output_log.append(f"[JSHint] Found {len(issues)} issues")
-        return issues, "\n".join(output_log)
-    
-    def _run_eslint_bridge(self, files: List[Path]) -> Tuple[List[SecurityIssue], str]:
-        """
-        Run a lightweight ESLint wrapper that works without full Node.js environment.
-        
-        Args:
-            files: List of files to analyze
-            
-        Returns:
-            Tuple of (issues, output_text)
-        """
-        if not self.available_tools["eslint"]:
-            return [], "ESLint not available (requires Node.js or npx)"
-        
-        # Filter JS/JSX files
-        js_files = [f for f in files if f.suffix in (".js", ".jsx", ".tsx")]
-        if not js_files:
-            return [], "No JavaScript/JSX files found"
-        
-        output_log = []
-        output_log.append(f"[ESLint] Analyzing {len(js_files)} JavaScript files")
-        
-        # Create lightweight ESLint config
-        config_path = create_lightweight_eslint(self.temp_dir)
-        if not config_path:
-            output_log.append("[ESLint] Failed to create configuration")
-            return [], "\n".join(output_log)
-        
-        issues = []
-        
-        for file_path in js_files:
-            cmd = ["npx", "eslint", "--no-eslintrc", "-c", str(config_path), "--format", "json", str(file_path)]
-            success, stdout, stderr = run_cmd(cmd)
-            
-            if stdout:
-                try:
-                    results = json.loads(stdout)
-                    for result in results:
-                        for message in result.get("messages", []):
-                            # Get severity
-                            severity_level = message.get("severity", 1)  # 1=warning, 2=error
-                            severity = "high" if severity_level == 2 else "medium"
-                            
-                            # Security-related rules should be high severity
-                            rule_id = message.get("ruleId", "")
-                            if any(term in rule_id.lower() for term in ["security", "no-eval", "no-danger"]):
-                                severity = "high"
-                            
-                            issues.append(SecurityIssue(
-                                filename=str(file_path.relative_to(self.base_path)),
-                                line_number=message.get("line", 0),
-                                issue_text=message.get("message", "ESLint issue"),
-                                severity=severity,
-                                confidence="high" if severity_level == 2 else "medium",
-                                issue_type=f"eslint-{rule_id}",
-                                line_range=[message.get("line", 0)],
-                                code=message.get("source", ""),
-                                tool="eslint",
-                                fix_suggestion=message.get("fix", {}).get("text", "Fix ESLint issue")
-                            ))
-                except json.JSONDecodeError:
-                    output_log.append(f"[ESLint] Error parsing output for {file_path}")
-        
-        output_log.append(f"[ESLint] Found {len(issues)} issues")
-        return issues, "\n".join(output_log)
-    
+        return issues, status, raw_output
+
     def run_security_analysis(
         self,
         model: str,
@@ -1245,173 +824,161 @@ class FrontendSecurityAnalyzer:
         use_all_tools: bool = False
     ) -> Tuple[List[SecurityIssue], Dict[str, str], Dict[str, str]]:
         """
-        Run security analysis on frontend code.
+        Run the frontend security analysis.
         
         Args:
-            model: Model identifier
-            app_num: Application number
-            use_all_tools: Whether to use all available tools
+            model: Model identifier (e.g., 'Llama', 'GPT4o')
+            app_num: Application number (e.g., 1, 2, 3)
+            use_all_tools: Whether to run all available tools
             
         Returns:
-            Tuple of (issues, tool_status, tool_outputs)
+            Tuple containing:
+            - List of security issues found
+            - Dictionary of tool status messages
+            - Dictionary of raw tool outputs
         """
-        logger.info(f"Running security analysis for {model}/app{app_num}")
+        logger.info(f"Running frontend security analysis for {model}/app{app_num} (full scan: {use_all_tools})")
         
-        # Find the frontend directory
+        # Find the application path
         app_path = self._find_application_path(model, app_num)
         if not app_path.exists():
-            error_msg = f"Application directory not found: {app_path}"
-            logger.error(error_msg)
-            return [], {"error": error_msg}, {"error": error_msg}
-        
-        # Find source files
-        source_files = self._find_source_files(app_path)
-        if not source_files:
-            error_msg = f"No source files found in {app_path}"
-            logger.warning(error_msg)
-            return [], {"error": error_msg}, {"error": error_msg}
-        
-        # Initialize result
-        result = AnalysisResult()
-        result.files_analyzed = len(source_files)
-        
+            msg = f"Application directory not found: {app_path}"
+            logger.error(msg)
+            return [], {t: f"❌ {msg}" for t in self.all_tools}, {t: msg for t in self.all_tools}
+
+        # Check if the directory has frontend files
+        has_files, _ = self._check_source_files(app_path)
+        if not has_files:
+            msg = f"No frontend files found in {app_path}"
+            logger.warning(msg)
+            return [], {t: f"❌ {msg}" for t in self.all_tools}, {t: msg for t in self.all_tools}
+
         # Determine which tools to run
         tools_to_run = self.all_tools if use_all_tools else self.default_tools
+        
+        # Filter out unavailable tools
+        tools_to_run = [t for t in tools_to_run if self.available_tools.get(t, False)]
         logger.info(f"Running tools: {', '.join(tools_to_run)}")
         
-        # Run tools in parallel
+        # Map tool names to their runner functions
+        tool_map = {
+            "npm-audit": self._run_npm_audit,
+            "eslint": self._run_eslint,
+            "retire-js": self._run_retire_js,
+            "snyk": self._run_snyk
+        }
+
+        all_issues: List[SecurityIssue] = []
+        tool_status: Dict[str, str] = {}
+        tool_outputs: Dict[str, str] = {}
+
+        # Run each selected tool in parallel for efficiency
         with concurrent.futures.ThreadPoolExecutor(max_workers=min(len(tools_to_run), 4)) as executor:
-            futures = {}
-            
-            # Submit tool tasks
-            if "pattern_scan" in tools_to_run:
-                futures[executor.submit(self._pattern_scan, source_files)] = "pattern_scan"
-            
-            if "jsx_analyzer" in tools_to_run:
-                futures[executor.submit(self._jsx_analysis, source_files)] = "jsx_analyzer"
-            
-            if "dependency_check" in tools_to_run:
-                futures[executor.submit(self._dependency_check, app_path)] = "dependency_check"
-            
-            if "semgrep" in tools_to_run and self.available_tools["semgrep"]:
-                futures[executor.submit(self._run_semgrep, app_path)] = "semgrep"
-            
-            if "jshint" in tools_to_run and self.available_tools["jshint"]:
-                futures[executor.submit(self._run_jshint, source_files)] = "jshint"
-                
-            if "eslint" in tools_to_run and self.available_tools["eslint"]:
-                futures[executor.submit(self._run_eslint_bridge, source_files)] = "eslint"
-            
+            # Start all tool executions
+            future_to_tool = {
+                executor.submit(tool_map[tool], app_path): tool
+                for tool in tools_to_run if tool in tool_map
+            }
+
             # Process results as they complete
-            for future in concurrent.futures.as_completed(futures):
-                tool = futures[future]
+            for future in concurrent.futures.as_completed(future_to_tool):
+                tool_name = future_to_tool[future]
                 try:
-                    issues, output = future.result()
+                    issues, status_dict, output = future.result()
+                    # Add issues to the master list
+                    all_issues.extend(issues)
+                    # Store the output for reference
+                    tool_outputs[tool_name] = output
+                    # Update the status
+                    tool_status.update(status_dict)
                     
-                    # Add to results
-                    result.add_issues(issues)
-                    result.add_tool_result(
-                        tool=tool,
-                        status=f"✅ Found {len(issues)} issues" if issues else "✅ No issues found",
-                        output=output
-                    )
-                    
-                    logger.info(f"Tool {tool} completed with {len(issues)} issues")
-                except Exception as e:
-                    error_msg = f"Error running {tool}: {e}"
+                    logger.info(f"Tool {tool_name} completed with {len(issues)} issues")
+                except Exception as exc:
+                    error_msg = f"❌ Error running {tool_name}: {exc}"
                     logger.error(error_msg)
-                    result.add_tool_result(
-                        tool=tool,
-                        status=f"❌ Error: {e}",
-                        output=error_msg
-                    )
-        
+                    tool_status[tool_name] = error_msg
+                    tool_outputs[tool_name] = str(exc)
+
         # Mark tools that were not run
-        for tool in self.all_tools:
-            if tool not in result.tool_status:
-                if tool in self.available_tools and not self.available_tools[tool]:
-                    result.add_tool_result(
-                        tool=tool,
-                        status="❌ Not available on this system",
-                        output=f"{tool} is not installed or not found in PATH"
-                    )
+        for tool_name in self.all_tools:
+            if tool_name not in tool_status:
+                if not self.available_tools.get(tool_name, False):
+                    tool_status[tool_name] = "❌ Not available on this system"
+                    tool_outputs[tool_name] = f"{tool_name} not available"
                 else:
-                    result.add_tool_result(
-                        tool=tool,
-                        status="⏸️ Not run in quick scan mode",
-                        output="Tool not run"
-                    )
-        
-        # Sort issues by severity, tool, filename, line
+                    tool_status[tool_name] = "⏸️ Not run in quick scan mode"
+                    tool_outputs[tool_name] = "Tool not run"
+
+        # Sort issues by severity (HIGH->MEDIUM->LOW), confidence, then filename/line
+        severity_order = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
+        confidence_order = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
+
         sorted_issues = sorted(
-            result.issues,
+            all_issues,
             key=lambda i: (
-                {"high": 0, "medium": 1, "low": 2}.get(i.severity.lower(), 3),
-                i.tool,
+                severity_order.get(i.severity, 99),
+                confidence_order.get(i.confidence, 99),
                 i.filename,
                 i.line_number
             )
         )
-        
-        return sorted_issues, result.tool_status, result.tool_outputs
-    
-    # For compatibility with existing code
+
+        logger.info(f"Frontend security analysis completed with {len(sorted_issues)} total issues")
+        return sorted_issues, tool_status, tool_outputs
+
+    # For compatibility with existing code that might call this method
     def analyze_security(self, model: str, app_num: int, use_all_tools: bool = False):
-        """Alias for run_security_analysis"""
+        """Alias for run_security_analysis for backward compatibility"""
         return self.run_security_analysis(model, app_num, use_all_tools)
-    
+
     def get_analysis_summary(self, issues: List[SecurityIssue]) -> Dict[str, Any]:
         """
-        Generate summary statistics for analysis results.
+        Generate summary statistics for the analysis results.
         
         Args:
-            issues: List of security issues
+            issues: List of security issues found
             
         Returns:
-            Summary dictionary
+            Dictionary containing summary statistics including:
+            - Total number of issues
+            - Counts by severity
+            - Counts by confidence
+            - Number of affected files
+            - Counts by issue type
+            - Counts by tool
+            - Scan timestamp
         """
-        # Create a temporary result to generate the summary
-        result = AnalysisResult()
-        result.add_issues(issues)
-        return result.get_summary()
-    
-    def __del__(self):
-        """Clean up temporary directory on destruction."""
-        if hasattr(self, 'temp_dir') and self.temp_dir.exists():
-            try:
-                shutil.rmtree(self.temp_dir)
-            except Exception as e:
-                logger.error(f"Failed to clean up temp directory: {e}")
+        if not issues:
+            return {
+                "total_issues": 0,
+                "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
+                "confidence_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
+                "files_affected": 0,
+                "issue_types": {},
+                "tool_counts": {},
+                "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
 
-if __name__ == "__main__":
-    # Optional command-line interface for testing
-    import argparse
-    
-    parser = argparse.ArgumentParser(description="Frontend Security Analyzer")
-    parser.add_argument("directory", help="Directory to analyze")
-    parser.add_argument("--full", action="store_true", help="Use all available tools")
-    
-    args = parser.parse_args()
-    
-    # Setup basic logging
-    logging.basicConfig(level=logging.INFO)
-    
-    # Run analysis
-    analyzer = FrontendSecurityAnalyzer(Path.cwd())
-    source_files = analyzer._find_source_files(Path(args.directory))
-    
-    print(f"Found {len(source_files)} source files")
-    
-    issues, tool_status, _ = analyzer.run_security_analysis(
-        model="test",
-        app_num=1,
-        use_all_tools=args.full
-    )
-    
-    print("\nTool Status:")
-    for tool, status in tool_status.items():
-        print(f"  {tool}: {status}")
-    
-    print(f"\nFound {len(issues)} issues:")
-    for issue in issues:
-        print(f"  [{issue.severity.upper()}] {issue.filename}:{issue.line_number} - {issue.issue_text}")
+        # Initialize the summary structure
+        summary = {
+            "total_issues": len(issues),
+            "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
+            "confidence_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
+            "files_affected": len({issue.filename for issue in issues}),
+            "issue_types": {},
+            "tool_counts": {},
+            "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+
+        # Count by various metrics
+        for issue in issues:
+            # Count by severity
+            summary["severity_counts"][issue.severity] += 1
+            # Count by confidence
+            summary["confidence_counts"][issue.confidence] += 1
+            # Count by issue type
+            summary["issue_types"][issue.issue_type] = summary["issue_types"].get(issue.issue_type, 0) + 1
+            # Count by tool
+            summary["tool_counts"][issue.tool] = summary["tool_counts"].get(issue.tool, 0) + 1
+
+        return summary
