@@ -3,157 +3,177 @@
 {% block title %}Requirements Analysis{% endblock %}
 
 {% block content %}
-<div class="flex min-h-screen bg-gray-100">
-  <div class="flex-1 flex flex-col overflow-hidden">
-    <!-- Navigation Bar - Consistent with UIController structure -->
-    <div class="bg-gray-200 border-b border-gray-400 p-1">
-      <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-          <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs rounded-sm" data-action="navigate" data-target="home">Back</a>
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white border border-gray-300 rounded-md shadow-sm mb-4">
+        <div class="bg-gray-50 border-b border-gray-300 px-4 py-2">
+            <h1 class="text-lg font-semibold">Requirements Analysis</h1>
         </div>
-      </div>
-    </div>
-
-    <!-- Main Content Area - Managed by RequirementsAnalysis -->
-    <div class="p-2 flex-1 overflow-auto space-y-2" data-feature="requirements-analysis">
-      <!-- Requirements Input Form - Used by RequirementsAnalysis.setupForm -->
-      <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-          <h2 class="font-bold text-sm">Requirements Check {% if model and app_num %}for {{ model }} App {{ app_num }}{% endif %}</h2>
-        </div>
-        
-        <div class="p-2">
-          {% if error %}
-          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" data-error-message>
-            <strong>Error:</strong> {{ error }}
-          </div>
-          {% endif %}
-          
-          <form method="POST" action="{{ url_for('gpt4all.gpt4all_analysis') }}?model={{ model }}&app_num={{ app_num }}" data-form="requirements">
+        <div class="p-4">
+            {% if error %}
+            <div class="bg-red-50 border border-red-300 text-red-800 px-4 py-3 rounded mb-4">
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+            
+            {% if model and app_num %}
             <div class="mb-4">
-              <label class="block text-gray-700 text-xs font-bold mb-2" for="requirements">Requirements (one per line)</label>
-              <textarea id="requirements" name="requirements" rows="6" class="shadow appearance-none border border-gray-300 rounded w-full py-2 px-3 text-xs text-gray-700 leading-tight focus:outline-none focus:border-blue-500">{% if requirements %}{{ '\n'.join(requirements) }}{% else %}The application must handle errors gracefully
-The application must sanitize user inputs
-The application must implement proper authentication
-The application must have adequate test coverage
-The application must follow secure coding practices{% endif %}</textarea>
+                <h2 class="text-md font-semibold mb-2">App Information</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <span class="text-gray-500">Model:</span>
+                        <span class="font-medium">{{ model }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">App Number:</span>
+                        <span class="font-medium">{{ app_num }}</span>
+                    </div>
+                    {% if template_name %}
+                    <div class="col-span-2">
+                        <span class="text-gray-500">Template:</span>
+                        <span class="font-medium">{{ template_name }}</span>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
             
-            <div class="flex items-center justify-between">
-              <button type="submit" id="submitBtn" class="action-btn h-6 px-2 text-xs rounded-sm" data-action="analyze-requirements">
-                Check Requirements
-              </button>
-              <a href="{{ url_for('main.index') }}" class="text-xs text-blue-700 hover:underline">Back to App List</a>
+            <form method="post" class="mb-4">
+                <h2 class="text-md font-semibold mb-2">Requirements</h2>
+                <p class="text-gray-600 text-sm mb-2">Edit the requirements below or use the default ones for this app type.</p>
+                <textarea name="requirements" rows="6" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">{% for req in requirements %}{{ req }}
+{% endfor %}</textarea>
+                <div class="mt-2 text-right">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white rounded px-4 py-2 text-sm">Analyze Requirements</button>
+                </div>
+            </form>
+            
+            {% if results %}
+            <div class="mt-6">
+                <h2 class="text-md font-semibold mb-3">Analysis Results</h2>
+                <div class="space-y-4">
+                    {% for check in results %}
+                    <div class="border rounded overflow-hidden">
+                        <div class="flex items-center px-4 py-2 bg-gray-50 border-b">
+                            <div class="flex-grow font-medium">{{ check.requirement }}</div>
+                            <div class="flex items-center">
+                                <span class="px-2 py-1 text-xs rounded mr-2 
+                                    {% if check.overall %}
+                                        bg-green-100 text-green-800
+                                    {% else %}
+                                        bg-red-100 text-red-800
+                                    {% endif %}
+                                ">
+                                    {{ 'Met' if check.overall else 'Not Met' }}
+                                </span>
+                                <button type="button" class="text-blue-600 hover:text-blue-800 text-sm" 
+                                        onclick="toggleDetails('req{{ loop.index }}')">
+                                    Details
+                                </button>
+                            </div>
+                        </div>
+                        <div id="req{{ loop.index }}" class="hidden">
+                            <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="border rounded-md">
+                                    <div class="px-3 py-2 bg-gray-50 border-b font-medium">
+                                        Frontend
+                                    </div>
+                                    <div class="p-3">
+                                        <div class="flex justify-between mb-2">
+                                            <span class="text-gray-600">Status:</span>
+                                            <span class="font-medium 
+                                                {% if check.frontend.met %}
+                                                    text-green-600
+                                                {% else %}
+                                                    text-red-600
+                                                {% endif %}
+                                            ">
+                                                {{ 'Met' if check.frontend.met else 'Not Met' }}
+                                            </span>
+                                        </div>
+                                        <div class="flex justify-between mb-2">
+                                            <span class="text-gray-600">Confidence:</span>
+                                            <span class="font-medium">{{ check.frontend.confidence }}</span>
+                                        </div>
+                                        <div class="mt-2">
+                                            <span class="text-gray-600">Explanation:</span>
+                                            <p class="text-sm mt-1">{{ check.frontend.explanation }}</p>
+                                        </div>
+                                        {% if check.frontend.error %}
+                                        <div class="mt-2 text-red-600 text-sm">
+                                            <span class="font-medium">Error:</span>
+                                            {{ check.frontend.error }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="border rounded-md">
+                                    <div class="px-3 py-2 bg-gray-50 border-b font-medium">
+                                        Backend
+                                    </div>
+                                    <div class="p-3">
+                                        <div class="flex justify-between mb-2">
+                                            <span class="text-gray-600">Status:</span>
+                                            <span class="font-medium 
+                                                {% if check.backend.met %}
+                                                    text-green-600
+                                                {% else %}
+                                                    text-red-600
+                                                {% endif %}
+                                            ">
+                                                {{ 'Met' if check.backend.met else 'Not Met' }}
+                                            </span>
+                                        </div>
+                                        <div class="flex justify-between mb-2">
+                                            <span class="text-gray-600">Confidence:</span>
+                                            <span class="font-medium">{{ check.backend.confidence }}</span>
+                                        </div>
+                                        <div class="mt-2">
+                                            <span class="text-gray-600">Explanation:</span>
+                                            <p class="text-sm mt-1">{{ check.backend.explanation }}</p>
+                                        </div>
+                                        {% if check.backend.error %}
+                                        <div class="mt-2 text-red-600 text-sm">
+                                            <span class="font-medium">Error:</span>
+                                            {{ check.backend.error }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-          </form>
-        </div>
-      </div>
-      
-      <!-- Results Section - Updated by RequirementsAnalysis.setupEventListeners -->
-      {% if results %}
-      <div class="border border-gray-400 bg-white rounded-sm shadow-sm" data-results-container>
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-          <h2 class="font-bold text-sm">Requirements Analysis Results</h2>
-        </div>
-        
-        <div class="p-2 overflow-x-auto">
-          <table class="min-w-full">
-            <thead>
-              <tr>
-                <th class="py-2 px-4 border border-gray-300 bg-gray-100 text-left text-xs font-semibold text-gray-600">Requirement</th>
-                <th class="py-2 px-4 border border-gray-300 bg-gray-100 text-center text-xs font-semibold text-gray-600">Frontend</th>
-                <th class="py-2 px-4 border border-gray-300 bg-gray-100 text-center text-xs font-semibold text-gray-600">Backend</th>
-                <th class="py-2 px-4 border border-gray-300 bg-gray-100 text-center text-xs font-semibold text-gray-600">Overall</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for result in results %}
-              <tr class="hover:bg-gray-50 cursor-pointer" data-row-id="{{ loop.index }}" data-detail-id="detail-{{ loop.index }}" onclick="toggleDetails('detail-{{ loop.index }}')">
-                <td class="py-2 px-4 border border-gray-300 text-xs">{{ result.requirement }}</td>
-                <td class="py-2 px-4 border border-gray-300 text-center">
-                  <span class="inline-flex items-center px-2 py-0.5 text-xs rounded-sm {{ 'bg-green-100 text-green-800 border border-green-300' if result.frontend.met else 'bg-red-100 text-red-800 border border-red-300' }}">
-                    {{ 'Yes' if result.frontend.met else 'No' }} ({{ result.frontend.confidence }})
-                  </span>
-                </td>
-                <td class="py-2 px-4 border border-gray-300 text-center">
-                  <span class="inline-flex items-center px-2 py-0.5 text-xs rounded-sm {{ 'bg-green-100 text-green-800 border border-green-300' if result.backend.met else 'bg-red-100 text-red-800 border border-red-300' }}">
-                    {{ 'Yes' if result.backend.met else 'No' }} ({{ result.backend.confidence }})
-                  </span>
-                </td>
-                <td class="py-2 px-4 border border-gray-300 text-center">
-                  <span class="inline-flex items-center px-2 py-0.5 text-xs rounded-sm {{ 'bg-green-100 text-green-800 border border-green-300' if result.overall else 'bg-red-100 text-red-800 border border-red-300' }}">
-                    {{ 'Yes' if result.overall else 'No' }}
-                  </span>
-                </td>
-              </tr>
-              <tr id="detail-{{ loop.index }}" class="hidden bg-gray-50" data-detail>
-                <td colspan="4" class="py-2 px-4 border border-gray-300">
-                  <div class="grid grid-cols-2 gap-4">
-                    <div>
-                      <h3 class="font-semibold text-xs mb-1">Frontend Analysis</h3>
-                      <div class="bg-white p-2 border border-gray-300 rounded-sm text-xs">
-                        {% if result.frontend.explanation %}{{ result.frontend.explanation }}
-                        {% elif result.frontend.error %}<span class="text-red-500">{{ result.frontend.error }}</span>
-                        {% else %}No detailed explanation provided.{% endif %}
-                      </div>
+            {% endif %}
+            {% else %}
+            <div class="text-center py-8">
+                <h2 class="text-lg font-medium mb-2">Enter App Details</h2>
+                <p class="text-gray-600 mb-4">Provide model and app number to analyze requirements</p>
+                <form method="get" class="max-w-sm mx-auto">
+                    <div class="mb-3">
+                        <label for="model" class="block text-sm font-medium text-gray-700 mb-1">Model</label>
+                        <input type="text" id="model" name="model" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
-                    <div>
-                      <h3 class="font-semibold text-xs mb-1">Backend Analysis</h3>
-                      <div class="bg-white p-2 border border-gray-300 rounded-sm text-xs">
-                        {% if result.backend.explanation %}{{ result.backend.explanation }}
-                        {% elif result.backend.error %}<span class="text-red-500">{{ result.backend.error }}</span>
-                        {% else %}No detailed explanation provided.{% endif %}
-                      </div>
+                    <div class="mb-4">
+                        <label for="app_num" class="block text-sm font-medium text-gray-700 mb-1">App Number</label>
+                        <input type="number" id="app_num" name="app_num" min="1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
-                  </div>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                        Analyze
+                    </button>
+                </form>
+            </div>
+            {% endif %}
         </div>
-      </div>
-      {% endif %}
     </div>
-  </div>
 </div>
 
 <script>
-// This function is called by the RequirementsAnalysis.setupEventListeners
-function toggleDetails(id) {
-  const detailElement = document.getElementById(id);
-  if (detailElement) {
-    detailElement.classList.toggle('hidden');
-  }
-}
-
-// Initialize when DOM is ready - matches Dashboard.init() pattern
-$(document).ready(function() {
-  // Check if the dashboard app exists and initialize feature
-  if (window.dashboardApp && window.dashboardApp.featureManager) {
-    // Let the FeatureManager initialize this feature automatically
-  } else {
-    // Fallback initialization if dashboard.js isn't fully loaded
-    const $form = $('[data-form="requirements"]');
-    const $submitBtn = $('#submitBtn');
-    
-    if ($form.length && $submitBtn.length) {
-      $form.on('submit', function() {
-        $submitBtn.html(`
-          <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>Checking...`);
-        $submitBtn.prop('disabled', true);
-      });
+    function toggleDetails(id) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.classList.toggle('hidden');
+        }
     }
-    
-    // Set up row click handlers - Matches RequirementsAnalysis.setupEventListeners
-    $('[data-row-id]').on('click', function() {
-      const detailId = $(this).data('detail-id');
-      $(`#${detailId}`).toggle();
-    });
-  }
-});
 </script>
 {% endblock %}

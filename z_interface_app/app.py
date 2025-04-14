@@ -29,7 +29,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from batch_analysis import init_batch_analysis, batch_analysis_bp
 from backend_security_analysis import BackendSecurityAnalyzer
 from frontend_security_analysis import FrontendSecurityAnalyzer
-from gpt4all_analysis import GPT4AllAnalyzer
+from gpt4all_analysis import GPT4AllAnalyzer  # Make sure this import matches your implementation
 from logging_service import initialize_logging, create_logger_for_component
 from performance_analysis import LocustPerformanceTester
 from zap_scanner import create_scanner
@@ -253,7 +253,7 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
     
     app_logger.info("Initializing GPT4All analyzer")
-    app.gpt4all_analyzer = GPT4AllAnalyzer(base_path)
+    app.gpt4all_analyzer = GPT4AllAnalyzer(app_config.BASE_DIR)  # Use GPT4AllAnalyzer, not RequirementsAnalyzer
     
     app_logger.info("Initializing performance tester")
     app.performance_tester = LocustPerformanceTester(base_path)
@@ -276,7 +276,7 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     app.register_blueprint(api_bp, url_prefix="/api")
     app.register_blueprint(analysis_bp)
     app.register_blueprint(performance_bp, url_prefix="/performance")
-    app.register_blueprint(gpt4all_bp)
+    app.register_blueprint(gpt4all_bp, url_prefix="/gpt4all")  # Add URL prefix for gpt4all blueprint
     app.register_blueprint(zap_bp, url_prefix="/zap")
 
     # Initialize batch analysis module

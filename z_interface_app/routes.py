@@ -1778,78 +1778,22 @@ def delete_performance_report(model: str, port: int, report_id: str):
     
 
 # ----- GPT4All Routes -----
-@gpt4all_bp.route("/analyze-gpt4all/<string:analysis_type>", methods=["POST"])
-def analyze_gpt4all(analysis_type: str):
-    """
-    Run GPT4All analysis on code.
-    
-    Args:
-        analysis_type: Type of analysis to run
-        
-    Returns:
-        JSON with analysis results
-    """
-    logger = create_logger_for_component('gpt4all')
-    logger.info(f"Running GPT4All analysis: {analysis_type}")
-    
-    try:
-        data = request.get_json()
-        directory = Path(data.get("directory", current_app.config["BASE_DIR"]))
-        file_patterns = data.get("file_patterns", ["*.py", "*.js", "*.ts", "*.react"])
-        
-        logger.info(f"Analyzing directory: {directory} with patterns: {file_patterns}")
-        analyzer = current_app.gpt4all_analyzer
-        
-        # First check server availability
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        server_available = loop.run_until_complete(analyzer.check_server_availability())
-        
-        if not server_available:
-            loop.close()
-            logger.error("GPT4All server is not available")
-            return jsonify({
-                "error": "GPT4All server is not available. Please ensure the server is running.",
-                "issues": [],
-                "summary": {
-                    "total_issues": 0,
-                    "error": "GPT4All server is not available"
-                }
-            }), 503
-        
-        logger.debug(f"Starting asyncio loop for {analysis_type} analysis")
-        issues, summary = loop.run_until_complete(analyzer.analyze_directory(
-            directory=directory, file_patterns=file_patterns, analysis_type=analysis_type
-        ))
-        loop.close()
-        
-        if not isinstance(summary, dict):
-            logger.debug("Converting analysis summary to dictionary")
-            summary = get_analysis_summary(issues)
-        
-        logger.info(f"Analysis complete. Found {len(issues)} issues")
-        from dataclasses import asdict
-        return jsonify({
-            "issues": [asdict(issue) for issue in issues], 
-            "summary": summary
-        })
-    except Exception as e:
-        logger.exception(f"GPT4All analysis failed: {e}")
-        return jsonify({
-            "error": str(e),
-            "issues": [],
-            "summary": {
-                "total_issues": 0,
-                "error": str(e)
-            }
-        }), 500
+# Replace the existing gpt4all_bp routes with these
 
-@gpt4all_bp.route("/gpt4all-analysis", methods=["GET", "POST"])
-def gpt4all_analysis():
+@gpt4all_bp.route("/requirements", methods=["GET", "POST"])
+def requirements_check():
     """Flask route for checking requirements against code."""
     logger = create_logger_for_component('gpt4all')
     
     try:
+        # Check if gpt4all_analyzer is available
+        if not hasattr(current_app, 'gpt4all_analyzer'):
+            logger.error("GPT4All analyzer not initialized in the Flask app")
+            return render_template(
+                "requirements_check.html",
+                error="GPT4All analyzer not available. Please check server configuration."
+            )
+            
         # Extract parameters
         model = request.args.get("model") or request.form.get("model")
         app_num_str = request.args.get("app_num") or request.form.get("app_num")
@@ -1881,44 +1825,8 @@ def gpt4all_analysis():
                 error=f"Invalid app number: {app_num_str}"
             )
             
-        # Find the application directory
-        base_dir = current_app.config.get("BASE_DIR", Path.cwd())
-        directory = get_app_directory(current_app, model, app_num)
-        
-        if not directory.exists():
-            # Show more informative error with attempted paths
-            error_msg = f"Directory not found for {model}/app{app_num}"
-            logger.warning(error_msg)
-            return render_template(
-                "requirements_check.html",
-                model=model,
-                app_num=app_num,
-                requirements=[],
-                results=None,
-                error=error_msg
-            )
-        
-        # Initialize analyzer with the correct directory
+        # Get requirements first
         analyzer = current_app.gpt4all_analyzer
-        
-        # First check server availability
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        server_available = loop.run_until_complete(analyzer.check_server_availability())
-        
-        if not server_available:
-            loop.close()
-            logger.error("GPT4All server is not available")
-            return render_template(
-                "requirements_check.html",
-                model=model,
-                app_num=app_num,
-                requirements=[],
-                results=None,
-                error="GPT4All server is not available. Please ensure the server is running."
-            )
-        
-        # Get requirements from JSON based on app number
         requirements, template_name = analyzer.get_requirements_for_app(app_num)
         req_list = requirements
         results = None
@@ -1930,16 +1838,49 @@ def gpt4all_analysis():
             if custom_reqs:
                 req_list = custom_reqs
                 logger.info(f"Using {len(req_list)} custom requirements from form")
+        
+        # Check for server availability
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+        try:
+            # Check server availability
+            server_available = loop.run_until_complete(analyzer.check_server_availability())
             
-        # Check requirements if we have any
-        if req_list:
-            # Run check for each requirement
-            logger.info(f"Checking {len(req_list)} requirements for {model}/app{app_num}")
-            results = loop.run_until_complete(analyzer.check_requirements(directory, req_list))
-            loop.close()
-            logger.info(f"Successfully analyzed requirements for {model}/app{app_num}")
-        else:
-            loop.close()
+            if not server_available:
+                loop.close()
+                logger.error("GPT4All server is not available")
+                return render_template(
+                    "requirements_check.html",
+                    model=model,
+                    app_num=app_num,
+                    requirements=req_list,
+                    template_name=template_name,
+                    results=None,
+                    error="GPT4All server is not available. Please ensure the server is running."
+                )
+            
+            # Check requirements if we have any
+            if req_list:
+                logger.info(f"Checking {len(req_list)} requirements for {model}/app{app_num}")
+                results = loop.run_until_complete(analyzer.check_requirements(model, app_num, req_list))
+                logger.info(f"Successfully analyzed requirements for {model}/app{app_num}")
+        except Exception as e:
+            logger.exception(f"Error during requirements analysis: {e}")
+            return render_template(
+                "requirements_check.html",
+                model=model,
+                app_num=app_num,
+                requirements=req_list,
+                template_name=template_name,
+                results=None,
+                error=f"Analysis error: {str(e)}"
+            )
+        finally:
+            try:
+                loop.close()
+            except:
+                pass
         
         # Render template with form or results
         return render_template(
@@ -1956,9 +1897,105 @@ def gpt4all_analysis():
         logger.exception(f"Requirements check failed: {e}")
         return render_template(
             "requirements_check.html",
-            model=model if "model" in locals() else None,
-            app_num=app_num if "app_num" in locals() else None,
+            model="Unknown" if "model" not in locals() else model,
+            app_num="Unknown" if "app_num" not in locals() else app_num,
             requirements=[],
             results=None,
             error=str(e)
         )
+
+
+@gpt4all_bp.route("/analyze", methods=["POST"])
+def analyze_code():
+    """API endpoint for code analysis."""
+    logger = create_logger_for_component('gpt4all')
+    
+    try:
+        # Check if gpt4all_analyzer is available
+        if not hasattr(current_app, 'gpt4all_analyzer'):
+            logger.error("GPT4All analyzer not initialized in the Flask app")
+            return jsonify({
+                "error": "GPT4All analyzer not available",
+                "issues": [],
+                "summary": {"total_issues": 0}
+            }), 500
+            
+        # Get analysis parameters
+        data = request.get_json()
+        if not data:
+            return jsonify({
+                "error": "No data provided",
+                "issues": [],
+                "summary": {"total_issues": 0}
+            }), 400
+            
+        analysis_type = data.get("analysis_type", "security")
+        directory = Path(data.get("directory", str(current_app.config["BASE_DIR"])))
+        file_patterns = data.get("file_patterns", ["*.py", "*.js", "*.ts", "*.jsx"])
+        
+        logger.info(f"Analyzing directory: {directory} with patterns: {file_patterns}")
+        
+        # Initialize analyzer
+        analyzer = current_app.gpt4all_analyzer
+        
+        # Check server availability
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+        try:
+            # Check server availability
+            server_available = loop.run_until_complete(analyzer.check_server_availability())
+            
+            if not server_available:
+                loop.close()
+                logger.error("GPT4All server is not available")
+                return jsonify({
+                    "error": "GPT4All server is not available",
+                    "issues": [],
+                    "summary": {"total_issues": 0}
+                }), 503
+            
+            # Run analysis
+            logger.info(f"Starting analysis: {analysis_type}")
+            issues, summary = loop.run_until_complete(analyzer.analyze_directory(
+                directory=directory,
+                file_patterns=file_patterns,
+                analysis_type=analysis_type
+            ))
+            
+        except Exception as e:
+            logger.exception(f"Error during analysis: {e}")
+            return jsonify({
+                "error": str(e),
+                "issues": [],
+                "summary": {"total_issues": 0}
+            }), 500
+        finally:
+            try:
+                loop.close()
+            except:
+                pass
+        
+        # Return results
+        logger.info(f"Analysis complete. Found {len(issues)} issues")
+        from dataclasses import asdict
+        
+        # Convert issues to dictionaries if they are objects
+        if issues and hasattr(issues[0], "__dict__"):
+            issue_dicts = [asdict(issue) if hasattr(issue, "__dict__") else issue for issue in issues]
+        else:
+            issue_dicts = issues
+            
+        return jsonify({
+            "success": True,
+            "issues": issue_dicts,
+            "summary": summary
+        })
+        
+    except Exception as e:
+        logger.exception(f"Analysis failed: {e}")
+        return jsonify({
+            "error": str(e),
+            "issues": [],
+            "summary": {"total_issues": 0}
+        }), 500

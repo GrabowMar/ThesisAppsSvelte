@@ -30,7 +30,6 @@ import requests
 # =============================================================================
 from backend_security_analysis import BackendSecurityAnalyzer
 from frontend_security_analysis import FrontendSecurityAnalyzer
-from gpt4all_analysis import GPT4AllAnalyzer
 from zap_scanner import create_scanner
 from logging_service import create_logger_for_component
 from performance_analysis import LocustPerformanceTester
