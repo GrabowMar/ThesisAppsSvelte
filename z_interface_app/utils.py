@@ -222,6 +222,7 @@ def get_model_index(model_name: str) -> int:
     return next((i for i, m in enumerate(AI_MODELS) if m.name == model_name), 0)
 
 
+
 def get_container_names(model: str, app_num: int) -> Tuple[str, str]:
     """
     Get the container names for a given model and app number.
@@ -575,9 +576,11 @@ def get_app_container_statuses(model: str, app_num: int, docker_manager: DockerM
     }
 
 
+# Add these functions to utils.py
+
 def get_app_directory(app, model: str, app_num: int) -> Path:
     """
-    Get the directory for a specific app.
+    Get the directory for a specific app, using the absolute direct path.
     
     Args:
         app: Flask app instance
@@ -587,7 +590,19 @@ def get_app_directory(app, model: str, app_num: int) -> Path:
     Returns:
         Path to the app directory
     """
-    return app.config["BASE_DIR"] / f"{model}/app{app_num}"
+    # Hardcode the absolute path without z_interface_app
+    direct_path = Path(r"c:\Users\grabowmar\Desktop\ThesisAppsSvelte") / f"{model}/app{app_num}"
+    
+    logger.debug(f"Using hardcoded direct path: {direct_path}")
+    
+    # Check if directory exists (only for logging purposes)
+    if direct_path.exists() and direct_path.is_dir():
+        logger.debug(f"Direct path exists: {direct_path}")
+    else:
+        logger.warning(f"Direct path does not exist: {direct_path}")
+    
+    # Always return direct path even if it doesn't exist
+    return direct_path
 
 
 def stop_zap_scanners(scans: Dict[str, Any]) -> None:

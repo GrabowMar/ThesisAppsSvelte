@@ -1,0 +1,325 @@
+{
+    "applications": [
+      {
+        "id": "app_1_login",
+        "name": "Login/Register Application",
+        "description": "A streamlined user authentication system built with Flask and React, featuring user registration and login capabilities with core security features.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "User registration",
+          "Login functionality",
+          "Password security",
+          "Session management",
+          "Error handling"
+        ]
+      },
+      {
+        "id": "app_2_chat",
+        "name": "Chat Application",
+        "description": "A messaging application built with Flask and React, featuring real-time communication capabilities and user interaction.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "Real-time message exchange",
+          "User identification",
+          "Message history",
+          "Online status",
+          "Chat rooms"
+        ]
+      },
+      {
+        "id": "app_3_feedback",
+        "name": "Feedback Form Application",
+        "description": "A feedback collection application built with Flask and React, featuring form submission and response management capabilities.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "Multi-field feedback form",
+          "Form validation",
+          "Submission handling",
+          "Response storage",
+          "Success notifications"
+        ]
+      },
+      {
+        "id": "app_4_blog",
+        "name": "Blog Application",
+        "description": "A blog application built with Flask and React, featuring content creation, user authentication, and responsive design.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "User authentication (login/register)",
+          "Blog post creation and editing",
+          "Comment system",
+          "Post categorization",
+          "Responsive design",
+          "Markdown support for blog content"
+        ]
+      },
+      {
+        "id": "app_5_cart",
+        "name": "E-Commerce Cart Application",
+        "description": "A shopping cart application built with Flask and React, featuring product management and cart functionality.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "Product listing",
+          "Cart management",
+          "Checkout",
+          "Order summary",
+          "Inventory tracking"
+        ]
+      },
+      {
+        "id": "app_6_notes",
+        "name": "Notes Application",
+        "description": "A note-taking application built with Flask and React, featuring content management capabilities.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "Note creation/editing",
+          "Note listing/viewing",
+          "Categorization",
+          "Search",
+          "Note archiving"
+        ]
+      },
+      {
+        "id": "app_7_fileUpload",
+        "name": "File Uploader Application",
+        "description": "A file handling application built with Flask and React, featuring upload and download capabilities.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "File upload",
+          "File listing",
+          "Download functionality",
+          "File preview",
+          "Organization"
+        ]
+      },
+      {
+        "id": "app_8_forum",
+        "name": "Forum Application",
+        "description": "A discussion platform built with Flask and React, featuring thread and comment management.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "Thread creation/viewing",
+          "Comment system",
+          "Categories",
+          "Sorting",
+          "Thread search"
+        ]
+      },
+      {
+        "id": "app_9_crud",
+        "name": "CRUD Inventory Application",
+        "description": "An inventory management system built with Flask and React, featuring CRUD operations.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "Item management (CRUD)",
+          "Inventory tracking",
+          "Categorization",
+          "Stock level alerts",
+          "Search/filter items"
+        ]
+      },
+      {
+        "id": "app_10_microblog",
+        "name": "CRUD Microblog Application",
+        "description": "A microblog system built with Flask and React.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "Post creation and management (CRUD)",
+          "User profile management",
+          "Post timeline/feed",
+          "Post interactions (likes/comments)",
+          "Post search"
+        ]
+      },
+      {
+        "id": "app_11_polling",
+        "name": "Polling Application",
+        "description": "A voting application built with Flask and React, featuring poll creation and voting functionality.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "Poll creation",
+          "Vote casting",
+          "Results display",
+          "Analytics",
+          "Time-limited polls"
+        ]
+      },
+      {
+        "id": "app_12_reservation",
+        "name": "Reservation Application",
+        "description": "A booking application built with Flask and React, featuring time slot management and reservation handling.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "Time slot booking",
+          "Availability check",
+          "Reservation management",
+          "Calendar view",
+          "Booking confirmation"
+        ]
+      },
+      {
+        "id": "app_13_gallery",
+        "name": "Gallery Application",
+        "description": "A straightforward gallery application built with Flask and React, featuring image management and gallery organization.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "Image upload",
+          "Gallery organization",
+          "Image viewing",
+          "Grid/List views",
+          "Image details/metadata"
+        ]
+      },
+      {
+        "id": "app_14_storage",
+        "name": "File Storage Application",
+        "description": "A cloud storage solution built with Flask and React, featuring secure file management and sharing capabilities.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "File upload/download",
+          "Folder organization",
+          "File sharing",
+          "Storage quota management",
+          "File type filtering"
+        ]
+      },
+      {
+        "id": "app_15_kanban",
+        "name": "Kanban Application",
+        "description": "A task management application built with Flask and React, featuring kanban board functionality.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "Board management",
+          "Task creation/editing",
+          "Column organization",
+          "Drag-and-drop functionality",
+          "Filtering options"
+        ]
+      },
+      {
+        "id": "app_16_iot",
+        "name": "IoT Controller Application",
+        "description": "An IoT device management application built with Flask and React, featuring device control and monitoring.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "Device management",
+          "Status monitoring",
+          "Command handling",
+          "Data processing",
+          "Simple automation"
+        ]
+      },
+      {
+        "id": "app_17_fitness",
+        "name": "Fitness Logger Application",
+        "description": "A workout tracking application built with Flask and React, featuring exercise and progress logging.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "Workout logging",
+          "Progress tracking",
+          "Statistics calculation",
+          "Exercise library",
+          "Charts"
+        ]
+      },
+      {
+        "id": "app_18_wiki",
+        "name": "Wiki Application",
+        "description": "A wiki platform built with Flask and React, featuring page management and content organization.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "Page creation/editing",
+          "Content organization",
+          "Search functionality",
+          "Version history",
+          "Simple formatting"
+        ]
+      },
+      {
+        "id": "app_19_wallet",
+        "name": "Crypto Wallet Application",
+        "description": "A cryptocurrency wallet built with Flask and React, featuring essential transaction capabilities.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "Balance checking",
+          "Send/Receive functionality",
+          "Transaction history",
+          "Address management",
+          "Basic security"
+        ]
+      },
+      {
+        "id": "app_20_map",
+        "name": "Map Sharing Application",
+        "description": "A location sharing application built with Flask and React, featuring map visualization.",
+        "general_features": [
+          "Multipage routing",
+          "Simple and modern UI"
+        ],
+        "specific_features": [
+          "Map display",
+          "Location sharing",
+          "Markers",
+          "Routes",
+          "Location search"
+        ]
+      }
+    ]
+  }
