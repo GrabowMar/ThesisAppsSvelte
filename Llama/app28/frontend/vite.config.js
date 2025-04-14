@@ -1,15 +1,20 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
-    port: 5555,  // Changed to match your frontend port
+    port: 5555,
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:port: 5055',
+        target: 'http://localhost:5055',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/uploads': {
+        target: 'http://localhost:5055',
         changeOrigin: true,
         secure: false,
       }

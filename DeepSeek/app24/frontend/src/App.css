@@ -1,0 +1,428 @@
+/* Base Styles */
+:root {
+  --primary-color: #5d5fef;
+  --secondary-color: #6c63ff;
+  --accent-color: #ff6584;
+  --text-color: #2d3748;
+  --light-text: #718096;
+  --bg-color: #f7fafc;
+  --card-bg: #ffffff;
+  --error-color: #e53e3e;
+  --success-color: #48bb78;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  line-height: 1.6;
+}
+
+.app-container {
+  min-height: 100vh;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Auth Pages */
+.auth-container {
+  background: var(--card-bg);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.auth-container h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: var(--primary-color);
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+button:hover {
+  background-color: #4f46e5;
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.error-message {
+  color: var(--error-color);
+  background-color: #fff5f5;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Dashboard Styles */
+.dashboard {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: var(--card-bg);
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: var(--primary-color);
+  color: white;
+}
+
+.logout-btn {
+  background: var(--accent-color);
+  width: auto;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.logout-btn:hover {
+  background: #e53e3e;
+}
+
+.app-nav {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.app-nav button {
+  flex: 1;
+  padding: 1rem;
+  background: none;
+  color: var(--text-color);
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.app-nav button:hover {
+  background: #edf2f7;
+  color: var(--primary-color);
+}
+
+.app-nav button.active {
+  background: var(--card-bg);
+  color: var(--primary-color);
+  font-weight: 600;
+  border-bottom: 3px solid var(--primary-color);
+}
+
+.dashboard-content {
+  padding: 1.5rem 2rem;
+}
+
+/* Stats Section */
+.stats-section {
+  margin-bottom: 2rem;
+}
+
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card h4 {
+  font-size: 1rem;
+  color: var(--light-text);
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+/* Entries List */
+.entries-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.entry-card {
+  background: white;
+  padding: 1.25rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.entry-date {
+  font-weight: 500;
+}
+
+.mood-label {
+  padding: 0.25rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.mood-happy {
+  background: #f0fff4;
+  color: #38a169;
+}
+
+.mood-sad {
+  background: #fff5f5;
+  color: #e53e3e;
+}
+
+.mood-anxious {
+  background: #fffaf0;
+  color: #dd6b20;
+}
+
+.mood-calm {
+  background: #ebf8ff;
+  color: #3182ce;
+}
+
+.mood-energetic {
+  background: #faf5ff;
+  color: #805ad5;
+}
+
+.mood-tired {
+  background: #f7fafc;
+  color: #4a5568;
+}
+
+.mood-angry {
+  background: #fff5f5;
+  color: #c53030;
+}
+
+.mood-neutral {
+  background: #f7fafc;
+  color: #718096;
+}
+
+.stress-level {
+  color: var(--light-text);
+}
+
+.journal-preview {
+  color: var(--light-text);
+}
+
+/* Add Entry Form */
+.add-entry-form {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.stress-level-display {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  color: var(--primary-color);
+}
+
+.activities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.activity-btn {
+  padding: 0.5rem;
+  background: #edf2f7;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.activity-btn.selected {
+background: var(--primary-color);
+color: white;
+}
+
+.cancel-btn {
+background: #e2e8f0;
+color: var(--text-color);
+margin-left: 0.5rem;
+}
+
+.cancel-btn:hover {
+background: #cbd5e0;
+}
+
+/* Resources Section */
+.resources-section {
+padding: 1rem;
+}
+
+.resource-grid {
+display: grid;
+gap: 1.5rem;
+grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+margin-top: 1.5rem;
+}
+
+.resource-card {
+background: white;
+padding: 1.5rem;
+border-radius: 8px;
+box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.resource-card h4 {
+color: var(--primary-color);
+margin-bottom: 0.5rem;
+}
+
+.resource-contacts {
+margin-top: 1rem;
+font-size: 0.9rem;
+}
+
+.resource-contacts div {
+margin-bottom: 0.5rem;
+}
+
+/* Reminders Section */
+.reminders-section {
+margin-top: 2rem;
+padding-top: 2rem;
+border-top: 1px solid #e2e8f0;
+}
+
+.reminder-card {
+background: white;
+padding: 1rem;
+border-radius: 8px;
+box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+margin-bottom: 1rem;
+}
+
+.reminder-card small {
+color: var(--light-text);
+font-size: 0.8rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+.app-container {
+padding: 0.5rem;
+}
+
+.dashboard {
+border-radius: 0;
+}
+
+header {
+flex-direction: column;
+align-items: flex-start;
+padding: 1rem;
+}
+
+.logout-btn {
+margin-top: 1rem;
+width: 100%;
+}
+
+.app-nav {
+flex-direction: column;
+}
+
+.app-nav button {
+padding: 0.75rem;
+text-align: left;
+border-bottom: 1px solid #e2e8f0;
+}
+
+.stat-cards {
+grid-template-columns: 1fr;
+}
+}
