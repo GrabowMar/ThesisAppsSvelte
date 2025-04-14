@@ -33,7 +33,6 @@ from gpt4all_analysis import GPT4AllAnalyzer
 from logging_service import initialize_logging, create_logger_for_component
 from performance_analysis import LocustPerformanceTester
 from zap_scanner import create_scanner
-from sonar_analyzer import get_sonar_analyzer
 
 from services import DockerManager, SystemHealthMonitor
 from utils import AppConfig, CustomJSONEncoder, stop_zap_scanners

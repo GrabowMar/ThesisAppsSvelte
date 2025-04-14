@@ -42981,3 +42981,1730 @@ docker.errors.DockerException: Error while fetching server API version: (2, 'Cre
 2025-04-14 11:47:58 [INFO] [Thread-26 (process_request_thread)] frontend_security_analysis: Tool eslint completed with 1 issues
 2025-04-14 11:47:58 [INFO] [Thread-26 (process_request_thread)] frontend_security_analysis: Tool snyk completed with 0 issues
 2025-04-14 11:48:33 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\sonar_analyzer.py', reloading
+2025-04-14 11:55:31 [INFO] [Thread-2 (process_request_thread)] frontend_security_analysis: Tool sonarjs completed with 0 issues
+2025-04-14 11:55:31 [INFO] [Thread-26 (process_request_thread)] frontend_security_analysis: Tool sonarjs completed with 0 issues
+2025-04-14 11:55:31 [INFO] [Thread-2 (process_request_thread)] frontend_security_analysis: Frontend security analysis completed with 4 total issues
+2025-04-14 11:55:31 [INFO] [Thread-2 (process_request_thread)] security: Security analysis complete for Llama/app2: Found 4 issues
+2025-04-14 11:55:31 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 11:55:31] "GET /frontend-security/Llama/2?full=true HTTP/1.1" 200 -
+2025-04-14 11:55:31 [INFO] [Thread-26 (process_request_thread)] frontend_security_analysis: Frontend security analysis completed with 4 total issues
+2025-04-14 11:55:31 [INFO] [Thread-26 (process_request_thread)] security: Security analysis complete for Llama/app2: Found 4 issues
+2025-04-14 11:55:31 [INFO] [Thread-26 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 11:55:31] "GET /frontend-security/Llama/2?full=true HTTP/1.1" 200 -
+2025-04-14 12:01:43 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:01:43 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:01:43 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:01:43 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:01:43 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:01:43 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:01:46 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:01:46 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:01:46 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:01:46 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:01:46 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:01:46 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:01:46 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:01:46 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:01:46 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:01:46 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:01:46 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:01:46 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:01:46 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner (pysonar) not found. Please install it with 'pip install pysonar'
+2025-04-14 12:01:46 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:01:46 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:01:46 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:01:46 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:01:46 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:01:46 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:01:46 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:01:46 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:01:46 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:01:46 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:01:46 [INFO] [MainThread] werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-14 12:01:46 [INFO] [MainThread] werkzeug: [33mPress CTRL+C to quit[0m
+2025-04-14 12:01:46 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 12:01:48 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:01:48 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:01:48 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:01:48 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:01:48 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:01:48 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:01:50 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:01:50 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:01:50 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:01:50 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:01:50 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:01:50 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:01:50 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:01:50 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:01:50 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:01:50 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:01:50 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:01:50 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:01:50 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner (pysonar) not found. Please install it with 'pip install pysonar'
+2025-04-14 12:01:50 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:01:50 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:01:50 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:01:50 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:01:50 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:01:50 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:01:50 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:01:50 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:01:50 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:01:51 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:01:51 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 12:01:51 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 12:01:55 [INFO] [Thread-2 (process_request_thread)] routes: Rendering main dashboard
+2025-04-14 12:01:57 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:01:57] "GET / HTTP/1.1" 200 -
+2025-04-14 12:01:57 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:01:57] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:01:57 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:01:57] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:01:58 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:01:58] "GET /api/system-info?_=1744624917443 HTTP/1.1" 200 -
+2025-04-14 12:02:01 [INFO] [Thread-6 (process_request_thread)] sonarqube: SonarQube analysis page requested for Llama/app2
+2025-04-14 12:02:01 [ERROR] [Thread-6 (process_request_thread)] ajax: Error in sonarqube_analysis_page: name 'os' is not defined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 174, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1853, in sonarqube_analysis_page
+    config['has_sonar_token'] = 'SONAR_TOKEN' in os.environ
+                                                 ^^
+NameError: name 'os' is not defined. Did you forget to import 'os'
+2025-04-14 12:02:01 [INFO] [Thread-6 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:02:01] "[35m[1mGET /sonarqube/Llama/2 HTTP/1.1[0m" 500 -
+2025-04-14 12:02:01 [INFO] [Thread-7 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:02:01] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:02:01 [INFO] [Thread-8 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:02:01] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:02:02 [INFO] [Thread-9 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:02:02] "GET /api/system-info?_=1744624921394 HTTP/1.1" 200 -
+2025-04-14 12:02:04 [INFO] [Thread-10 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:02:04] "GET /api/system-info?_=1744624923473 HTTP/1.1" 200 -
+2025-04-14 12:02:54 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\routes.py', reloading
+2025-04-14 12:02:54 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 12:02:56 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:02:56 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:02:56 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:02:56 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:02:56 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:02:56 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:02:58 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:02:58 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:02:58 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:02:58 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:02:58 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:02:58 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:02:58 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:02:58 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:02:58 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:02:58 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:02:58 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:02:58 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:02:58 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner (pysonar) not found. Please install it with 'pip install pysonar'
+2025-04-14 12:02:58 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:02:58 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:02:58 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:02:58 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:02:58 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:02:58 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:02:58 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:02:58 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:02:58 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:02:58 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:02:58 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 12:02:58 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 12:02:59 [INFO] [Thread-2 (process_request_thread)] routes: Rendering main dashboard
+2025-04-14 12:03:00 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:00] "GET / HTTP/1.1" 200 -
+2025-04-14 12:03:00 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:00] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:03:00 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:00] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:03:01 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:01] "GET /api/system-info?_=1744624980979 HTTP/1.1" 200 -
+2025-04-14 12:03:02 [INFO] [Thread-6 (process_request_thread)] sonarqube: SonarQube analysis page requested for Llama/app2
+2025-04-14 12:03:02 [INFO] [Thread-6 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:02] "GET /sonarqube/Llama/2 HTTP/1.1" 200 -
+2025-04-14 12:03:02 [INFO] [Thread-7 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:02] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:03:02 [INFO] [Thread-8 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:02] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:03:02 [INFO] [Thread-9 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:02] "GET /api/system-info?_=1744624982090 HTTP/1.1" 200 -
+2025-04-14 12:03:30 [INFO] [Thread-10 (process_request_thread)] sonarqube: SonarQube analysis page requested for Llama/app2
+2025-04-14 12:03:30 [INFO] [Thread-10 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:30] "GET /sonarqube/Llama/2 HTTP/1.1" 200 -
+2025-04-14 12:03:30 [INFO] [Thread-11 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:30] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:03:30 [INFO] [Thread-12 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:30] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:03:31 [INFO] [Thread-13 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:31] "GET /api/system-info?_=1744625010374 HTTP/1.1" 200 -
+2025-04-14 12:03:31 [INFO] [Thread-14 (process_request_thread)] sonarqube: SonarQube analysis page requested for Llama/app2
+2025-04-14 12:03:31 [INFO] [Thread-14 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:31] "GET /sonarqube/Llama/2 HTTP/1.1" 200 -
+2025-04-14 12:03:31 [INFO] [Thread-15 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:31] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:03:31 [INFO] [Thread-16 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:31] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:03:32 [INFO] [Thread-18 (process_request_thread)] sonarqube: SonarQube analysis page requested for Llama/app2
+2025-04-14 12:03:32 [INFO] [Thread-18 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:32] "GET /sonarqube/Llama/2 HTTP/1.1" 200 -
+2025-04-14 12:03:32 [INFO] [Thread-19 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:32] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:03:32 [INFO] [Thread-20 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:32] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:03:32 [INFO] [Thread-17 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:32] "GET /api/system-info?_=1744625011799 HTTP/1.1" 200 -
+2025-04-14 12:03:32 [INFO] [Thread-22 (process_request_thread)] sonarqube: SonarQube analysis page requested for Llama/app2
+2025-04-14 12:03:32 [INFO] [Thread-22 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:32] "GET /sonarqube/Llama/2 HTTP/1.1" 200 -
+2025-04-14 12:03:32 [INFO] [Thread-23 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:32] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:03:32 [INFO] [Thread-24 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:32] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:03:32 [INFO] [Thread-21 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:32] "GET /api/system-info?_=1744625012287 HTTP/1.1" 200 -
+2025-04-14 12:03:33 [INFO] [Thread-25 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:03:33] "GET /api/system-info?_=1744625012463 HTTP/1.1" 200 -
+2025-04-14 12:04:21 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:04:21 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:04:21 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:04:21 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:04:21 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:04:21 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:04:24 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:04:24 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:04:24 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:04:24 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:04:24 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:04:24 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:04:24 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:04:24 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:04:24 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:04:24 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:04:24 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:04:24 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:04:25 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 12:04:25 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:04:25 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:04:25 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:04:25 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:04:25 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:04:25 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:04:25 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:04:25 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:04:25 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:04:25 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:04:25 [INFO] [MainThread] werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-14 12:04:25 [INFO] [MainThread] werkzeug: [33mPress CTRL+C to quit[0m
+2025-04-14 12:04:25 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 12:04:27 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:04:27 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:04:27 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:04:27 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:04:27 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:04:27 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:04:30 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:04:30 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:04:30 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:04:30 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:04:30 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:04:30 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:04:30 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:04:30 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:04:30 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:04:30 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:04:30 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:04:30 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:04:30 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 12:04:30 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:04:30 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:04:30 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:04:30 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:04:30 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:04:30 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:04:30 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:04:30 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:04:30 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:04:30 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:04:30 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 12:04:30 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 12:04:31 [INFO] [Thread-2 (process_request_thread)] sonarqube: SonarQube analysis page requested for Llama/app2
+2025-04-14 12:04:31 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:04:31] "GET /sonarqube/Llama/2 HTTP/1.1" 200 -
+2025-04-14 12:04:31 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:04:31] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:04:31 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:04:31] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:04:31 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:04:31] "GET /api/system-info?_=1744625071188 HTTP/1.1" 200 -
+2025-04-14 12:05:32 [INFO] [Thread-6 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:05:32] "GET /api/system-info?_=1744625071189 HTTP/1.1" 200 -
+2025-04-14 12:06:32 [INFO] [Thread-7 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:06:32] "GET /api/system-info?_=1744625071190 HTTP/1.1" 200 -
+2025-04-14 12:07:32 [INFO] [Thread-8 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:07:32] "GET /api/system-info?_=1744625071191 HTTP/1.1" 200 -
+2025-04-14 12:08:32 [INFO] [Thread-9 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:08:32] "GET /api/system-info?_=1744625071192 HTTP/1.1" 200 -
+2025-04-14 12:09:33 [INFO] [Thread-10 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:09:33] "GET /api/system-info?_=1744625071193 HTTP/1.1" 200 -
+2025-04-14 12:10:34 [INFO] [Thread-11 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:10:34] "GET /api/system-info?_=1744625071194 HTTP/1.1" 200 -
+2025-04-14 12:11:35 [INFO] [Thread-12 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:11:35] "GET /api/system-info?_=1744625071195 HTTP/1.1" 200 -
+2025-04-14 12:12:36 [INFO] [Thread-13 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:12:36] "GET /api/system-info?_=1744625071196 HTTP/1.1" 200 -
+2025-04-14 12:13:37 [INFO] [Thread-14 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:13:37] "GET /api/system-info?_=1744625071197 HTTP/1.1" 200 -
+2025-04-14 12:14:38 [INFO] [Thread-15 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:14:38] "GET /api/system-info?_=1744625071198 HTTP/1.1" 200 -
+2025-04-14 12:15:39 [INFO] [Thread-16 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:15:39] "GET /api/system-info?_=1744625071199 HTTP/1.1" 200 -
+2025-04-14 12:16:40 [INFO] [Thread-17 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:16:40] "GET /api/system-info?_=1744625071200 HTTP/1.1" 200 -
+2025-04-14 12:17:41 [INFO] [Thread-18 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:17:41] "GET /api/system-info?_=1744625071201 HTTP/1.1" 200 -
+2025-04-14 12:18:42 [INFO] [Thread-19 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:18:42] "GET /api/system-info?_=1744625071202 HTTP/1.1" 200 -
+2025-04-14 12:19:43 [INFO] [Thread-20 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:19:43] "GET /api/system-info?_=1744625071203 HTTP/1.1" 200 -
+2025-04-14 12:20:44 [INFO] [Thread-21 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:20:44] "GET /api/system-info?_=1744625071204 HTTP/1.1" 200 -
+2025-04-14 12:21:45 [INFO] [Thread-22 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:21:45] "GET /api/system-info?_=1744625071205 HTTP/1.1" 200 -
+2025-04-14 12:22:46 [INFO] [Thread-23 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:22:46] "GET /api/system-info?_=1744625071206 HTTP/1.1" 200 -
+2025-04-14 12:23:47 [INFO] [Thread-24 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:23:47] "GET /api/system-info?_=1744625071207 HTTP/1.1" 200 -
+2025-04-14 12:24:48 [INFO] [Thread-25 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:24:48] "GET /api/system-info?_=1744625071208 HTTP/1.1" 200 -
+2025-04-14 12:25:49 [INFO] [Thread-26 (process_request_thread)] docker: Cleaning up stopped containers older than 24 hours
+2025-04-14 12:25:49 [INFO] [Thread-26 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:25:49] "GET /api/system-info?_=1744625071209 HTTP/1.1" 200 -
+2025-04-14 12:26:50 [INFO] [Thread-27 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:26:50] "GET /api/system-info?_=1744625071210 HTTP/1.1" 200 -
+2025-04-14 12:27:51 [INFO] [Thread-28 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:27:51] "GET /api/system-info?_=1744625071211 HTTP/1.1" 200 -
+2025-04-14 12:28:52 [INFO] [Thread-29 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:28:52] "GET /api/system-info?_=1744625071212 HTTP/1.1" 200 -
+2025-04-14 12:29:53 [INFO] [Thread-30 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:29:53] "GET /api/system-info?_=1744625071213 HTTP/1.1" 200 -
+2025-04-14 12:30:54 [INFO] [Thread-31 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:30:54] "GET /api/system-info?_=1744625071214 HTTP/1.1" 200 -
+2025-04-14 12:30:55 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\app.py', reloading
+2025-04-14 12:30:55 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 12:30:57 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:30:57 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:30:57 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:30:57 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:30:57 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:30:57 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:31:00 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:31:00 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:31:00 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:31:00 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:31:00 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:31:00 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:31:00 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:31:00 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:31:00 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:31:00 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:31:00 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:31:00 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:31:00 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 12:31:00 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:31:00 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:31:00 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:31:00 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:31:00 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:31:00 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:31:00 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:31:00 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:31:00 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:31:00 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:31:00 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 12:31:00 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 12:31:55 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:31:55] "GET /api/system-info?_=1744625071215 HTTP/1.1" 200 -
+2025-04-14 12:31:57 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\sonar_analyzer.py', reloading
+2025-04-14 12:31:57 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 12:31:59 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:31:59 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:31:59 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:31:59 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:31:59 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:31:59 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:32:02 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:32:02 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:32:02 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:32:02 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:32:02 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:32:02 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:32:02 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:32:02 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:32:02 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:32:02 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:32:02 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:32:02 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:32:02 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 12:32:02 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:32:02 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:32:02 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:32:02 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:32:02 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:32:02 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:32:02 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:32:02 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:32:02 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:32:03 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:32:03 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 12:32:03 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 12:32:05 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\sonar_analyzer.py', reloading
+2025-04-14 12:32:05 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 12:32:07 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:32:07 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:32:07 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:32:07 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:32:07 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:32:07 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:32:09 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:32:09 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:32:09 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:32:09 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:32:09 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:32:09 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:32:09 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:32:09 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:32:09 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:32:09 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:32:09 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:32:09 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:32:10 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 12:32:10 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:32:10 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:32:10 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:32:10 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:32:10 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:32:10 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:32:10 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:32:10 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:32:10 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:32:10 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:32:10 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 12:32:10 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 12:32:10 [INFO] [Thread-2 (process_request_thread)] sonarqube: SonarQube analysis page requested for Llama/app2
+2025-04-14 12:32:10 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:32:10] "GET /sonarqube/Llama/2 HTTP/1.1" 200 -
+2025-04-14 12:32:10 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:32:10] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:32:10 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:32:10] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:32:11 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:32:11] "GET /api/system-info?_=1744626730557 HTTP/1.1" 200 -
+2025-04-14 12:32:13 [INFO] [Thread-6 (process_request_thread)] sonarqube: Running SonarQube analysis for Llama/app2
+2025-04-14 12:32:13 [INFO] [Thread-6 (process_request_thread)] sonarqube: Starting SonarQube analysis with project key: llama-app2
+2025-04-14 12:32:13 [INFO] [Thread-6 (process_request_thread)] sonar_analyzer: Running SonarQube scanner with command: pysonar -Dsonar.projectKey=llama-app2 -Dsonar.host.url=http://localhost:9000 -Dsonar.projectName=Llama App 2 -Dsonar.sources=. -Dsonar.python.version=3.9 -Dsonar.exclusions=**/*test*/**,**/test*/**,**/*.test.js,**/*.spec.js -Dsonar.projectBaseDir=c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2
+2025-04-14 12:32:13 [INFO] [Thread-7 (process_request_thread)] sonarqube: Running SonarQube analysis for Llama/app2
+2025-04-14 12:32:13 [INFO] [Thread-7 (process_request_thread)] sonarqube: Starting SonarQube analysis with project key: llama-app2
+2025-04-14 12:32:13 [INFO] [Thread-7 (process_request_thread)] sonar_analyzer: Running SonarQube scanner with command: pysonar -Dsonar.projectKey=llama-app2 -Dsonar.host.url=http://localhost:9000 -Dsonar.projectName=Llama App 2 -Dsonar.sources=. -Dsonar.python.version=3.9 -Dsonar.exclusions=**/*test*/**,**/test*/**,**/*.test.js,**/*.spec.js -Dsonar.projectBaseDir=c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2
+2025-04-14 12:32:13 [WARNING] [Thread-6 (process_request_thread)] sonar_analyzer: SonarQube scanner stderr: INFO: Starting Pysonar, the Sonar scanner CLI for Python
+ERROR: Missing required properties: sonar.token (--token)
+
+You can provide these properties using one of the following methods:
+- Command line arguments (e.g., --sonar.projectKey=myproject)
+- Environment variables (e.g., SONAR_PROJECTKEY=myproject)
+- Properties file (sonar-project.properties)
+- Project configuration files (e.g., build.gradle, pom.xml)
+INFO: For more details, please enable debug logging by passing the --verbose option.
+
+2025-04-14 12:32:13 [ERROR] [Thread-6 (process_request_thread)] sonar_analyzer: SonarQube analysis failed with code 1
+2025-04-14 12:32:13 [ERROR] [Thread-6 (process_request_thread)] sonarqube: SonarQube analysis failed: SonarQube analysis failed
+2025-04-14 12:32:13 [INFO] [Thread-6 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:32:13] "[35m[1mPOST /sonarqube/analyze/Llama/2 HTTP/1.1[0m" 500 -
+2025-04-14 12:32:13 [WARNING] [Thread-7 (process_request_thread)] sonar_analyzer: SonarQube scanner stderr: INFO: Starting Pysonar, the Sonar scanner CLI for Python
+ERROR: Missing required properties: sonar.token (--token)
+
+You can provide these properties using one of the following methods:
+- Command line arguments (e.g., --sonar.projectKey=myproject)
+- Environment variables (e.g., SONAR_PROJECTKEY=myproject)
+- Properties file (sonar-project.properties)
+- Project configuration files (e.g., build.gradle, pom.xml)
+INFO: For more details, please enable debug logging by passing the --verbose option.
+
+2025-04-14 12:32:13 [ERROR] [Thread-7 (process_request_thread)] sonar_analyzer: SonarQube analysis failed with code 1
+2025-04-14 12:32:13 [ERROR] [Thread-7 (process_request_thread)] sonarqube: SonarQube analysis failed: SonarQube analysis failed
+2025-04-14 12:32:13 [INFO] [Thread-7 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:32:13] "[35m[1mPOST /sonarqube/analyze/Llama/2 HTTP/1.1[0m" 500 -
+2025-04-14 12:33:11 [INFO] [Thread-8 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:33:11] "GET /api/system-info?_=1744626730558 HTTP/1.1" 200 -
+2025-04-14 12:33:46 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\sonar_analyzer.py', reloading
+2025-04-14 12:33:47 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 12:33:49 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:33:49 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:33:49 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:33:49 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:33:49 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:33:49 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:33:51 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:33:51 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:33:51 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:33:51 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:33:51 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:33:51 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:33:51 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:33:51 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:33:51 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:33:51 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:33:51 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:33:51 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:33:52 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 12:33:52 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:33:52 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:33:52 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:33:52 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:33:52 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:33:52 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:33:52 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:33:52 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:33:52 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:33:52 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:33:52 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 12:33:52 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 12:33:59 [INFO] [Thread-2 (process_request_thread)] sonarqube: SonarQube analysis page requested for Llama/app2
+2025-04-14 12:33:59 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:33:59] "GET /sonarqube/Llama/2 HTTP/1.1" 200 -
+2025-04-14 12:33:59 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:33:59] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:33:59 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:33:59] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:34:00 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:34:00] "GET /api/system-info?_=1744626839621 HTTP/1.1" 200 -
+2025-04-14 12:34:19 [INFO] [Thread-6 (process_request_thread)] sonarqube: SonarQube analysis page requested for Llama/app2
+2025-04-14 12:34:19 [INFO] [Thread-6 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:34:19] "GET /sonarqube/Llama/2 HTTP/1.1" 200 -
+2025-04-14 12:34:19 [INFO] [Thread-7 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:34:19] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:34:19 [INFO] [Thread-8 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:34:19] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:34:20 [INFO] [Thread-9 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:34:20] "GET /api/system-info?_=1744626859545 HTTP/1.1" 200 -
+2025-04-14 12:34:26 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:34:26 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:34:26 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:34:26 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:34:26 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:34:26 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:34:30 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:34:30 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:34:30 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:34:30 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:34:30 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:34:30 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:34:30 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:34:30 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:34:30 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:34:30 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:34:30 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:34:30 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:34:30 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 12:34:30 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:34:30 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:34:30 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:34:30 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:34:30 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:34:30 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:34:30 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:34:30 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:34:30 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:34:30 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:34:30 [INFO] [MainThread] werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-14 12:34:30 [INFO] [MainThread] werkzeug: [33mPress CTRL+C to quit[0m
+2025-04-14 12:34:30 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 12:34:32 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:34:32 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:34:32 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:34:32 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:34:32 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:34:32 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:34:35 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:34:35 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:34:35 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:34:35 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:34:35 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:34:35 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:34:35 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:34:35 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:34:35 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:34:35 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:34:35 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:34:35 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:34:35 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 12:34:35 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:34:35 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:34:35 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:34:35 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:34:35 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:34:35 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:34:35 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:34:35 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:34:35 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:34:35 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:34:35 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 12:34:35 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 12:34:35 [INFO] [Thread-2 (process_request_thread)] sonarqube: SonarQube analysis page requested for Llama/app2
+2025-04-14 12:34:35 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:34:35] "GET /sonarqube/Llama/2 HTTP/1.1" 200 -
+2025-04-14 12:34:35 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:34:35] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:34:35 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:34:35] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:34:36 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:34:36] "GET /api/system-info?_=1744626875928 HTTP/1.1" 200 -
+2025-04-14 12:34:38 [INFO] [Thread-6 (process_request_thread)] sonarqube: SonarQube analysis page requested for Llama/app2
+2025-04-14 12:34:38 [INFO] [Thread-6 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:34:38] "GET /sonarqube/Llama/2 HTTP/1.1" 200 -
+2025-04-14 12:34:38 [INFO] [Thread-7 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:34:38] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:34:38 [INFO] [Thread-8 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:34:38] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:34:39 [INFO] [Thread-9 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:34:39] "GET /api/system-info?_=1744626878731 HTTP/1.1" 200 -
+2025-04-14 12:35:39 [INFO] [Thread-10 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:35:39] "GET /api/system-info?_=1744626878732 HTTP/1.1" 200 -
+2025-04-14 12:35:41 [INFO] [Thread-11 (process_request_thread)] routes: Rendering main dashboard
+2025-04-14 12:35:43 [INFO] [Thread-11 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:35:43] "GET / HTTP/1.1" 200 -
+2025-04-14 12:35:43 [INFO] [Thread-12 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:35:43] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:35:43 [INFO] [Thread-13 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:35:43] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:35:43 [INFO] [Thread-14 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:35:43] "GET /api/system-info?_=1744626943085 HTTP/1.1" 200 -
+2025-04-14 12:35:46 [INFO] [Thread-15 (process_request_thread)] security: Frontend security analysis requested for Llama/app2
+2025-04-14 12:35:46 [INFO] [Thread-15 (process_request_thread)] security: Running security_analysis analysis for Llama/app2 (full_scan=False)
+2025-04-14 12:35:46 [INFO] [Thread-15 (process_request_thread)] frontend_security_analysis: Running frontend security analysis for Llama/app2 (full scan: False)
+2025-04-14 12:35:46 [INFO] [Thread-15 (process_request_thread)] frontend_security_analysis: Found frontend directory: C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend
+2025-04-14 12:35:46 [INFO] [Thread-15 (process_request_thread)] frontend_security_analysis: Found 4 frontend source files in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend
+2025-04-14 12:35:46 [INFO] [Thread-15 (process_request_thread)] frontend_security_analysis: Running tools: eslint
+2025-04-14 12:35:46 [INFO] [ThreadPoolExecutor-0_0] frontend_security_analysis: Found 4 frontend source files in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend
+2025-04-14 12:35:46 [WARNING] [ThreadPoolExecutor-0_0] frontend_security_analysis: Failed to create temporary ESLint config: name 'tempfile' is not defined
+2025-04-14 12:35:46 [INFO] [ThreadPoolExecutor-0_0] frontend_security_analysis: Running ESLint in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend (scanning src)...
+2025-04-14 12:35:46 [INFO] [Thread-15 (process_request_thread)] frontend_security_analysis: Tool eslint completed with 1 issues
+2025-04-14 12:35:46 [INFO] [Thread-15 (process_request_thread)] frontend_security_analysis: Frontend security analysis completed with 1 total issues
+2025-04-14 12:35:46 [INFO] [Thread-15 (process_request_thread)] security: Security analysis complete for Llama/app2: Found 1 issues
+2025-04-14 12:35:46 [INFO] [Thread-15 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:35:46] "GET /frontend-security/Llama/2 HTTP/1.1" 200 -
+2025-04-14 12:35:47 [INFO] [Thread-16 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:35:47] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:35:47 [INFO] [Thread-17 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:35:47] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:35:47 [INFO] [Thread-18 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:35:47] "GET /api/system-info?_=1744626947036 HTTP/1.1" 200 -
+2025-04-14 12:35:50 [INFO] [Thread-19 (process_request_thread)] security: Frontend security analysis requested for Llama/app2
+2025-04-14 12:35:50 [INFO] [Thread-19 (process_request_thread)] security: Running security_analysis analysis for Llama/app2 (full_scan=True)
+2025-04-14 12:35:50 [INFO] [Thread-19 (process_request_thread)] frontend_security_analysis: Running frontend security analysis for Llama/app2 (full scan: True)
+2025-04-14 12:35:50 [INFO] [Thread-19 (process_request_thread)] frontend_security_analysis: Found frontend directory: C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend
+2025-04-14 12:35:50 [INFO] [Thread-19 (process_request_thread)] frontend_security_analysis: Found 4 frontend source files in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend
+2025-04-14 12:35:50 [INFO] [Thread-19 (process_request_thread)] frontend_security_analysis: Running tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:35:50 [INFO] [ThreadPoolExecutor-1_0] frontend_security_analysis: Running npm audit in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend...
+2025-04-14 12:35:50 [INFO] [ThreadPoolExecutor-1_1] frontend_security_analysis: Found 4 frontend source files in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend
+2025-04-14 12:35:50 [WARNING] [ThreadPoolExecutor-1_1] frontend_security_analysis: Failed to create temporary ESLint config: name 'tempfile' is not defined
+2025-04-14 12:35:50 [INFO] [ThreadPoolExecutor-1_1] frontend_security_analysis: Running ESLint in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend (scanning src)...
+2025-04-14 12:35:50 [WARNING] [ThreadPoolExecutor-1_2] frontend_security_analysis: No node_modules found in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend. Skipping retire.js.
+2025-04-14 12:35:50 [INFO] [Thread-19 (process_request_thread)] frontend_security_analysis: Tool retire-js completed with 0 issues
+2025-04-14 12:35:50 [INFO] [ThreadPoolExecutor-1_2] frontend_security_analysis: Running Snyk in C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2\frontend...
+2025-04-14 12:35:51 [INFO] [Thread-19 (process_request_thread)] frontend_security_analysis: Tool eslint completed with 1 issues
+2025-04-14 12:35:51 [INFO] [Thread-19 (process_request_thread)] frontend_security_analysis: Tool npm-audit completed with 3 issues
+2025-04-14 12:35:56 [INFO] [Thread-19 (process_request_thread)] frontend_security_analysis: Tool snyk completed with 0 issues
+2025-04-14 12:35:56 [INFO] [Thread-19 (process_request_thread)] frontend_security_analysis: Frontend security analysis completed with 4 total issues
+2025-04-14 12:35:56 [INFO] [Thread-19 (process_request_thread)] security: Security analysis complete for Llama/app2: Found 4 issues
+2025-04-14 12:35:56 [INFO] [Thread-19 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:35:56] "GET /frontend-security/Llama/2?full=true HTTP/1.1" 200 -
+2025-04-14 12:35:56 [INFO] [Thread-20 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:35:56] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:35:56 [INFO] [Thread-21 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:35:56] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:35:57 [INFO] [Thread-22 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:35:57] "GET /api/system-info?_=1744626956350 HTTP/1.1" 200 -
+2025-04-14 12:41:52 [INFO] [Thread-23 (process_request_thread)] routes: Rendering main dashboard
+2025-04-14 12:41:54 [INFO] [Thread-23 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:41:54] "GET / HTTP/1.1" 200 -
+2025-04-14 12:41:54 [INFO] [Thread-24 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:41:54] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:41:54 [INFO] [Thread-25 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:41:54] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:41:55 [INFO] [Thread-26 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:41:55] "GET /api/system-info?_=1744627314764 HTTP/1.1" 200 -
+2025-04-14 12:41:57 [INFO] [Thread-27 (process_request_thread)] sonarqube: SonarQube analysis page requested for Llama/app2
+2025-04-14 12:41:57 [INFO] [Thread-27 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:41:57] "GET /sonarqube/Llama/2 HTTP/1.1" 200 -
+2025-04-14 12:41:57 [INFO] [Thread-28 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:41:57] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:41:57 [INFO] [Thread-29 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:41:57] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:41:57 [INFO] [Thread-30 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:41:57] "GET /api/system-info?_=1744627317211 HTTP/1.1" 200 -
+2025-04-14 12:42:14 [INFO] [Thread-31 (process_request_thread)] sonarqube: Running SonarQube analysis for Llama/app2
+2025-04-14 12:42:14 [INFO] [Thread-31 (process_request_thread)] sonarqube: Starting SonarQube analysis with project key: llama-app2
+2025-04-14 12:42:14 [INFO] [Thread-31 (process_request_thread)] sonar_analyzer: Running SonarQube scanner with command: pysonar -Dsonar.projectKey=llama-app2 -Dsonar.host.url=http://localhost:9000 -Dsonar.projectName=Llama App 2 -Dsonar.sources=. -Dsonar.python.version=3.9 -Dsonar.exclusions=**/*test*/**,**/test*/**,**/*.test.js,**/*.spec.js -Dsonar.projectBaseDir=c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2
+2025-04-14 12:42:14 [INFO] [Thread-32 (process_request_thread)] sonarqube: Running SonarQube analysis for Llama/app2
+2025-04-14 12:42:14 [INFO] [Thread-32 (process_request_thread)] sonarqube: Starting SonarQube analysis with project key: llama-app2
+2025-04-14 12:42:14 [INFO] [Thread-32 (process_request_thread)] sonar_analyzer: Running SonarQube scanner with command: pysonar -Dsonar.projectKey=llama-app2 -Dsonar.host.url=http://localhost:9000 -Dsonar.projectName=Llama App 2 -Dsonar.sources=. -Dsonar.python.version=3.9 -Dsonar.exclusions=**/*test*/**,**/test*/**,**/*.test.js,**/*.spec.js -Dsonar.projectBaseDir=c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2
+2025-04-14 12:42:14 [WARNING] [Thread-32 (process_request_thread)] sonar_analyzer: SonarQube scanner stderr: INFO: Starting Pysonar, the Sonar scanner CLI for Python
+ERROR: Missing required properties: sonar.token (--token)
+
+You can provide these properties using one of the following methods:
+- Command line arguments (e.g., --sonar.projectKey=myproject)
+- Environment variables (e.g., SONAR_PROJECTKEY=myproject)
+- Properties file (sonar-project.properties)
+- Project configuration files (e.g., build.gradle, pom.xml)
+INFO: For more details, please enable debug logging by passing the --verbose option.
+
+2025-04-14 12:42:14 [ERROR] [Thread-32 (process_request_thread)] sonar_analyzer: SonarQube analysis failed with code 1
+2025-04-14 12:42:14 [ERROR] [Thread-32 (process_request_thread)] sonarqube: SonarQube analysis failed: SonarQube analysis failed
+2025-04-14 12:42:14 [INFO] [Thread-32 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:42:14] "[35m[1mPOST /sonarqube/analyze/Llama/2 HTTP/1.1[0m" 500 -
+2025-04-14 12:42:14 [WARNING] [Thread-31 (process_request_thread)] sonar_analyzer: SonarQube scanner stderr: INFO: Starting Pysonar, the Sonar scanner CLI for Python
+ERROR: Missing required properties: sonar.token (--token)
+
+You can provide these properties using one of the following methods:
+- Command line arguments (e.g., --sonar.projectKey=myproject)
+- Environment variables (e.g., SONAR_PROJECTKEY=myproject)
+- Properties file (sonar-project.properties)
+- Project configuration files (e.g., build.gradle, pom.xml)
+INFO: For more details, please enable debug logging by passing the --verbose option.
+
+2025-04-14 12:42:14 [ERROR] [Thread-31 (process_request_thread)] sonar_analyzer: SonarQube analysis failed with code 1
+2025-04-14 12:42:14 [ERROR] [Thread-31 (process_request_thread)] sonarqube: SonarQube analysis failed: SonarQube analysis failed
+2025-04-14 12:42:14 [INFO] [Thread-31 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:42:14] "[35m[1mPOST /sonarqube/analyze/Llama/2 HTTP/1.1[0m" 500 -
+2025-04-14 12:42:58 [INFO] [Thread-33 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:42:58] "GET /api/system-info?_=1744627317212 HTTP/1.1" 200 -
+2025-04-14 12:43:58 [INFO] [Thread-34 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:43:58] "GET /api/system-info?_=1744627317213 HTTP/1.1" 200 -
+2025-04-14 12:44:58 [INFO] [Thread-35 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:44:58] "GET /api/system-info?_=1744627317214 HTTP/1.1" 200 -
+2025-04-14 12:45:58 [INFO] [Thread-36 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:45:58] "GET /api/system-info?_=1744627317215 HTTP/1.1" 200 -
+2025-04-14 12:46:59 [INFO] [Thread-37 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:46:59] "GET /api/system-info?_=1744627317216 HTTP/1.1" 200 -
+2025-04-14 12:48:00 [INFO] [Thread-38 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:48:00] "GET /api/system-info?_=1744627317217 HTTP/1.1" 200 -
+2025-04-14 12:49:01 [INFO] [Thread-39 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:49:01] "GET /api/system-info?_=1744627317218 HTTP/1.1" 200 -
+2025-04-14 12:50:02 [INFO] [Thread-40 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:50:02] "GET /api/system-info?_=1744627317219 HTTP/1.1" 200 -
+2025-04-14 12:51:03 [INFO] [Thread-41 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:51:03] "GET /api/system-info?_=1744627317220 HTTP/1.1" 200 -
+2025-04-14 12:51:23 [INFO] [Thread-42 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:51:23] "GET /api/system-info?_=1744627882269 HTTP/1.1" 200 -
+2025-04-14 12:51:23 [INFO] [Thread-43 (process_request_thread)] gpt4all: GPT4All analysis requested for Llama/app2
+2025-04-14 12:51:23 [INFO] [Thread-43 (process_request_thread)] gpt4all_analysis: Checking GPT4All server at http://localhost:4891/v1
+2025-04-14 12:51:26 [ERROR] [Thread-43 (process_request_thread)] gpt4all_analysis: GPT4All server check timed out
+2025-04-14 12:51:27 [ERROR] [Thread-43 (process_request_thread)] gpt4all: GPT4All server is not available
+2025-04-14 12:51:27 [INFO] [Thread-43 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:51:27] "GET /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-14 12:51:27 [INFO] [Thread-44 (process_request_thread)] gpt4all: GPT4All analysis requested for Llama/app2
+2025-04-14 12:51:27 [ERROR] [Thread-44 (process_request_thread)] gpt4all: GPT4All server is not available
+2025-04-14 12:51:27 [INFO] [Thread-44 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:51:27] "GET /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-14 12:51:27 [INFO] [Thread-45 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:51:27] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:51:27 [INFO] [Thread-46 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:51:27] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:51:27 [INFO] [Thread-47 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:51:27] "GET /api/system-info?_=1744627887289 HTTP/1.1" 200 -
+2025-04-14 12:51:28 [INFO] [Thread-48 (process_request_thread)] gpt4all: GPT4All analysis requested for Llama/app2
+2025-04-14 12:51:28 [ERROR] [Thread-48 (process_request_thread)] gpt4all: GPT4All server is not available
+2025-04-14 12:51:28 [INFO] [Thread-48 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:51:28] "POST /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-14 12:51:28 [INFO] [Thread-49 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:51:28] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:51:28 [INFO] [Thread-50 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:51:28] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:51:29 [INFO] [Thread-51 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:51:29] "GET /api/system-info?_=1744627888819 HTTP/1.1" 200 -
+2025-04-14 12:51:43 [INFO] [Thread-52 (process_request_thread)] gpt4all: GPT4All analysis requested for Llama/app2
+2025-04-14 12:51:43 [ERROR] [Thread-52 (process_request_thread)] gpt4all: GPT4All server is not available
+2025-04-14 12:51:43 [INFO] [Thread-52 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:51:43] "POST /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-14 12:51:43 [INFO] [Thread-53 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:51:43] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:51:43 [INFO] [Thread-54 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:51:43] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:51:44 [INFO] [Thread-55 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:51:44] "GET /api/system-info?_=1744627903555 HTTP/1.1" 200 -
+2025-04-14 12:52:44 [INFO] [Thread-56 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:52:44] "GET /api/system-info?_=1744627903556 HTTP/1.1" 200 -
+2025-04-14 12:53:05 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\gpt4all_analysis.py', reloading
+2025-04-14 12:53:05 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 12:53:07 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:53:07 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:53:07 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:53:07 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:53:07 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:53:07 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:53:10 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:53:10 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:53:10 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:53:10 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:53:10 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:53:10 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:53:10 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:53:10 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:53:10 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:53:10 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:53:10 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:53:10 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:53:11 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 12:53:11 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:53:11 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:53:11 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:53:11 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:53:11 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:53:11 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:53:11 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:53:11 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:53:11 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:53:11 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:53:11 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 12:53:11 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 12:53:17 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\gpt4all_analysis.py', reloading
+2025-04-14 12:53:17 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 12:53:19 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:53:19 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:53:19 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:53:19 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:53:19 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:53:19 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:53:22 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:53:22 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:53:22 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:53:22 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:53:22 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:53:22 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:53:22 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:53:22 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:53:22 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:53:22 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:53:22 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:53:22 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:53:22 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 12:53:22 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:53:22 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:53:22 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:53:22 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:53:22 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:53:22 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:53:22 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:53:22 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:53:23 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:53:23 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:53:23 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 12:53:23 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 12:53:44 [INFO] [Thread-2 (process_request_thread)] docker: Cleaning up stopped containers older than 24 hours
+2025-04-14 12:53:44 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:53:44] "GET /api/system-info?_=1744627903557 HTTP/1.1" 200 -
+2025-04-14 12:54:04 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\gpt4all_analysis.py', reloading
+2025-04-14 12:54:04 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 12:54:06 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:54:06 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:54:06 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:54:06 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:54:06 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:54:06 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:54:08 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:54:08 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:54:08 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:54:08 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:54:08 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:54:08 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:54:08 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:54:08 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:54:08 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:54:08 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:54:08 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:54:08 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:54:09 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 12:54:09 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:54:09 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:54:09 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:54:09 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:54:09 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:54:09 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:54:09 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:54:09 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:54:09 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:54:09 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:54:09 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 12:54:09 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 12:54:30 [INFO] [Thread-2 (process_request_thread)] gpt4all: GPT4All analysis requested for Llama/app2
+2025-04-14 12:54:30 [ERROR] [Thread-2 (process_request_thread)] gpt4all: Requirements check failed: 'GPT4AllAnalyzer' object has no attribute 'check_server_availability'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 2416, in gpt4all_analysis
+    server_available = loop.run_until_complete(analyzer.check_server_availability())
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'GPT4AllAnalyzer' object has no attribute 'check_server_availability'
+2025-04-14 12:54:30 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:54:30] "POST /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-14 12:54:30 [INFO] [Thread-3 (process_request_thread)] docker: Cleaning up stopped containers older than 24 hours
+2025-04-14 12:54:30 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:54:30] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:54:30 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:54:30] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:54:31 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:54:31] "GET /api/system-info?_=1744628070305 HTTP/1.1" 200 -
+2025-04-14 12:54:33 [INFO] [Thread-7 (process_request_thread)] gpt4all: GPT4All analysis requested for Llama/app2
+2025-04-14 12:54:33 [ERROR] [Thread-7 (process_request_thread)] gpt4all: Requirements check failed: 'GPT4AllAnalyzer' object has no attribute 'check_server_availability'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 2416, in gpt4all_analysis
+    server_available = loop.run_until_complete(analyzer.check_server_availability())
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'GPT4AllAnalyzer' object has no attribute 'check_server_availability'
+2025-04-14 12:54:33 [INFO] [Thread-7 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:54:33] "GET /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-14 12:54:34 [INFO] [Thread-6 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:54:34] "GET /api/system-info?_=1744628073385 HTTP/1.1" 200 -
+2025-04-14 12:54:34 [INFO] [Thread-8 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:54:34] "GET /api/system-info?_=1744628073909 HTTP/1.1" 200 -
+2025-04-14 12:54:35 [INFO] [Thread-9 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:54:35] "GET /api/system-info?_=1744628074388 HTTP/1.1" 200 -
+2025-04-14 12:54:36 [INFO] [Thread-10 (process_request_thread)] gpt4all: GPT4All analysis requested for Llama/app2
+2025-04-14 12:54:36 [ERROR] [Thread-10 (process_request_thread)] gpt4all: Requirements check failed: 'GPT4AllAnalyzer' object has no attribute 'check_server_availability'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 2416, in gpt4all_analysis
+    server_available = loop.run_until_complete(analyzer.check_server_availability())
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'GPT4AllAnalyzer' object has no attribute 'check_server_availability'
+2025-04-14 12:54:36 [INFO] [Thread-10 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:54:36] "GET /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-14 12:54:36 [INFO] [Thread-11 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:54:36] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:54:36 [INFO] [Thread-12 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:54:36] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:54:37 [INFO] [Thread-13 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:54:37] "GET /api/system-info?_=1744628076329 HTTP/1.1" 200 -
+2025-04-14 12:55:37 [INFO] [Thread-14 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:55:37] "GET /api/system-info?_=1744628076330 HTTP/1.1" 200 -
+2025-04-14 12:56:37 [INFO] [Thread-15 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:56:37] "GET /api/system-info?_=1744628076331 HTTP/1.1" 200 -
+2025-04-14 12:57:28 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\routes.py', reloading
+2025-04-14 12:57:28 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 12:57:30 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:57:30 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:57:30 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:57:30 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:57:30 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:57:30 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:57:33 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:57:33 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:57:33 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:57:33 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:57:33 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:57:33 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:57:33 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:57:33 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:57:33 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:57:33 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:57:33 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:57:33 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:57:33 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 12:57:33 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:57:33 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:57:33 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:57:33 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:57:33 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:57:33 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:57:33 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:57:33 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:57:33 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:57:33 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:57:33 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 12:57:33 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 12:57:37 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:57:37] "GET /api/system-info?_=1744628076332 HTTP/1.1" 200 -
+2025-04-14 12:57:42 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\routes.py', reloading
+2025-04-14 12:57:42 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 12:57:44 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:57:44 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:57:44 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:57:44 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:57:44 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:57:44 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:57:47 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:57:47 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:57:47 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:57:47 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:57:47 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:57:47 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:57:47 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:57:47 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:57:47 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:57:47 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:57:47 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:57:47 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:57:47 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 12:57:47 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:57:47 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:57:47 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:57:47 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:57:47 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:57:47 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:57:47 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:57:47 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:57:47 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:57:47 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:57:47 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 12:57:47 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 12:58:10 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\routes.py', reloading
+2025-04-14 12:58:10 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 12:58:12 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 12:58:12 [INFO] [MainThread] app: Starting application setup
+2025-04-14 12:58:12 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:58:12 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:58:12 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 12:58:12 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 12:58:15 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 12:58:15 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 12:58:15 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 12:58:15 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 12:58:15 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 12:58:15 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 12:58:15 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 12:58:15 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:58:15 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 12:58:15 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 12:58:15 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 12:58:15 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 12:58:15 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 12:58:15 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 12:58:15 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:58:15 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 12:58:15 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 12:58:15 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 12:58:15 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 12:58:15 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 12:58:15 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 12:58:15 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 12:58:15 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 12:58:15 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 12:58:15 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 12:58:27 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:58:27] "GET /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-14 12:58:27 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:58:27] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:58:27 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:58:27] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:58:28 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:58:28] "GET /api/system-info?_=1744628307270 HTTP/1.1" 200 -
+2025-04-14 12:58:28 [INFO] [Thread-6 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:58:28] "POST /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-14 12:58:28 [INFO] [Thread-7 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:58:28] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:58:28 [INFO] [Thread-8 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:58:28] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:58:29 [INFO] [Thread-9 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:58:29] "GET /api/system-info?_=1744628308481 HTTP/1.1" 200 -
+2025-04-14 12:58:29 [INFO] [Thread-10 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:58:29] "POST /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-14 12:58:29 [INFO] [Thread-11 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:58:29] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 12:58:29 [INFO] [Thread-12 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:58:29] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 12:58:30 [INFO] [Thread-13 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:58:30] "GET /api/system-info?_=1744628309723 HTTP/1.1" 200 -
+2025-04-14 12:59:30 [INFO] [Thread-14 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 12:59:30] "GET /api/system-info?_=1744628309724 HTTP/1.1" 200 -
+2025-04-14 13:00:30 [INFO] [Thread-15 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:00:30] "GET /api/system-info?_=1744628309725 HTTP/1.1" 200 -
+2025-04-14 13:01:23 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\routes.py', reloading
+2025-04-14 13:01:23 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 13:01:25 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 13:01:25 [INFO] [MainThread] app: Starting application setup
+2025-04-14 13:01:25 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:01:25 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:01:25 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 13:01:25 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:01:29 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 13:01:29 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 13:01:29 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 13:01:29 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 13:01:29 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 13:01:29 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 13:01:29 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 13:01:29 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:01:29 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 13:01:29 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:01:29 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 13:01:29 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 13:01:30 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 13:01:30 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 13:01:30 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:01:30 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 13:01:30 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 13:01:30 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 13:01:30 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 13:01:30 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 13:01:30 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 13:01:30 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:01:30 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 13:01:30 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 13:01:30 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 13:01:31 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:01:31] "GET /api/system-info?_=1744628309726 HTTP/1.1" 200 -
+2025-04-14 13:02:05 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\routes.py', reloading
+2025-04-14 13:02:05 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 13:02:07 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 13:02:07 [INFO] [MainThread] app: Starting application setup
+2025-04-14 13:02:07 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:02:07 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:02:07 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 13:02:07 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:02:10 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 13:02:10 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 13:02:10 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 13:02:10 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 13:02:10 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 13:02:10 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 13:02:10 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 13:02:10 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:02:10 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 13:02:10 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:02:10 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 13:02:10 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 13:02:10 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 13:02:10 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 13:02:10 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:02:10 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 13:02:10 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 13:02:10 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 13:02:10 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 13:02:10 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 13:02:10 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 13:02:10 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:02:10 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 13:02:10 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 13:02:10 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 13:02:23 [INFO] [Thread-2 (process_request_thread)] gpt4all: Analyzing 5 requirements
+2025-04-14 13:02:23 [ERROR] [Thread-2 (process_request_thread)] gpt4all: Unexpected error in gpt4all_analysis: name 'GPT4AllAnalyzer' is not defined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 2451, in gpt4all_analysis
+    analyzer = GPT4AllAnalyzer(directory)
+               ^^^^^^^^^^^^^^^
+NameError: name 'GPT4AllAnalyzer' is not defined
+2025-04-14 13:02:23 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:02:23] "POST /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-14 13:02:23 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:02:23] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 13:02:23 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:02:23] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 13:02:24 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:02:24] "GET /api/system-info?_=1744628543391 HTTP/1.1" 200 -
+2025-04-14 13:02:54 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\routes.py', reloading
+2025-04-14 13:02:54 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 13:02:56 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 13:02:56 [INFO] [MainThread] app: Starting application setup
+2025-04-14 13:02:56 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:02:56 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:02:56 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 13:02:56 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:02:59 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 13:02:59 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 13:02:59 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 13:02:59 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 13:02:59 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 13:02:59 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 13:02:59 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 13:02:59 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:02:59 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 13:02:59 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:02:59 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 13:02:59 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 13:02:59 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 13:02:59 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 13:02:59 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:02:59 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 13:02:59 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 13:02:59 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 13:02:59 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 13:02:59 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 13:02:59 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 13:02:59 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:02:59 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 13:02:59 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 13:02:59 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 13:03:03 [INFO] [Thread-2 (process_request_thread)] gpt4all: Analyzing 5 requirements
+2025-04-14 13:03:03 [INFO] [Thread-2 (process_request_thread)] gpt4all_analysis: Adjusted path from C:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2 to C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2
+2025-04-14 13:03:03 [INFO] [Thread-2 (process_request_thread)] gpt4all_analysis: Adjusted path from C:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2 to C:\Users\grabowmar\Desktop\ThesisAppsSvelte\Llama\app2
+2025-04-14 13:03:03 [INFO] [Thread-2 (process_request_thread)] gpt4all_analysis: Found 4 frontend files and 1 backend files
+2025-04-14 13:03:03 [INFO] [Thread-2 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-14 13:04:04 [ERROR] [Thread-2 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 1/3)
+2025-04-14 13:04:06 [INFO] [Thread-2 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-14 13:05:07 [ERROR] [Thread-2 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 2/3)
+2025-04-14 13:05:11 [INFO] [Thread-2 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-14 13:06:12 [ERROR] [Thread-2 (process_request_thread)] gpt4all_analysis: Request timed out (attempt 3/3)
+2025-04-14 13:06:20 [ERROR] [Thread-2 (process_request_thread)] gpt4all_analysis: All 3 attempts failed
+2025-04-14 13:06:20 [INFO] [Thread-2 (process_request_thread)] gpt4all_analysis: Sending request to GPT4All API at http://localhost:4891/v1
+2025-04-14 13:07:35 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 13:07:35 [INFO] [MainThread] app: Starting application setup
+2025-04-14 13:07:35 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:07:35 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:07:35 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 13:07:35 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:07:38 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 13:07:38 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 13:07:38 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 13:07:38 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 13:07:38 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 13:07:38 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 13:07:38 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 13:07:38 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:07:38 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 13:07:38 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:07:38 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 13:07:38 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 13:07:38 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 13:07:38 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 13:07:38 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:07:38 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 13:07:38 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 13:07:38 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 13:07:38 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 13:07:38 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 13:07:38 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 13:07:38 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:07:38 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 13:07:38 [INFO] [MainThread] werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-14 13:07:38 [INFO] [MainThread] werkzeug: [33mPress CTRL+C to quit[0m
+2025-04-14 13:07:38 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 13:07:40 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 13:07:40 [INFO] [MainThread] app: Starting application setup
+2025-04-14 13:07:40 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:07:40 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:07:40 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 13:07:40 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:07:44 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 13:07:44 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 13:07:44 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 13:07:44 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 13:07:44 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 13:07:44 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 13:07:44 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 13:07:44 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:07:44 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 13:07:44 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:07:44 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 13:07:44 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 13:07:45 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 13:07:45 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 13:07:45 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:07:45 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 13:07:45 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 13:07:45 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 13:07:45 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 13:07:45 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 13:07:45 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 13:07:45 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:07:45 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 13:07:45 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 13:07:45 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 13:07:45 [INFO] [Thread-2 (process_request_thread)] routes: Rendering main dashboard
+2025-04-14 13:07:47 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:07:47] "GET / HTTP/1.1" 200 -
+2025-04-14 13:07:47 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:07:47] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 13:07:47 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:07:47] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 13:07:48 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:07:48] "GET /api/system-info?_=1744628867485 HTTP/1.1" 200 -
+2025-04-14 13:07:49 [INFO] [Thread-6 (process_request_thread)] gpt4all: GPT4All analysis requested for Llama/app2
+2025-04-14 13:07:49 [ERROR] [Thread-6 (process_request_thread)] gpt4all: Requirements check failed: 'GPT4AllAnalyzer' object has no attribute 'check_server_availability'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 2416, in gpt4all_analysis
+    server_available = loop.run_until_complete(analyzer.check_server_availability())
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'GPT4AllAnalyzer' object has no attribute 'check_server_availability'
+2025-04-14 13:07:49 [INFO] [Thread-6 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:07:49] "GET /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-14 13:07:49 [INFO] [Thread-7 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:07:49] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 13:07:49 [INFO] [Thread-8 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:07:49] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 13:07:50 [INFO] [Thread-9 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:07:50] "GET /api/system-info?_=1744628869803 HTTP/1.1" 200 -
+2025-04-14 13:07:50 [INFO] [Thread-10 (process_request_thread)] gpt4all: GPT4All analysis requested for Llama/app2
+2025-04-14 13:07:50 [ERROR] [Thread-10 (process_request_thread)] gpt4all: Requirements check failed: 'GPT4AllAnalyzer' object has no attribute 'check_server_availability'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 2416, in gpt4all_analysis
+    server_available = loop.run_until_complete(analyzer.check_server_availability())
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'GPT4AllAnalyzer' object has no attribute 'check_server_availability'
+2025-04-14 13:07:50 [INFO] [Thread-10 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:07:50] "POST /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-14 13:07:50 [INFO] [Thread-11 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:07:50] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 13:07:50 [INFO] [Thread-12 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:07:50] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 13:07:51 [INFO] [Thread-13 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:07:51] "GET /api/system-info?_=1744628870992 HTTP/1.1" 200 -
+2025-04-14 13:08:51 [INFO] [Thread-14 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:08:51] "GET /api/system-info?_=1744628870993 HTTP/1.1" 200 -
+2025-04-14 13:09:51 [INFO] [Thread-15 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:09:51] "GET /api/system-info?_=1744628870994 HTTP/1.1" 200 -
+2025-04-14 13:10:51 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\gpt4all_analysis.py', reloading
+2025-04-14 13:10:51 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 13:10:53 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 13:10:53 [INFO] [MainThread] app: Starting application setup
+2025-04-14 13:10:53 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:10:53 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:10:53 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 13:10:53 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:10:55 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 13:10:55 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 13:10:55 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 13:10:55 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 13:10:55 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 13:10:55 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 13:10:55 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 13:10:55 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:10:55 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 13:10:55 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:10:55 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 13:10:55 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 13:10:56 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 13:10:56 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 13:10:56 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:10:56 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 13:10:56 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 13:10:56 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 13:10:56 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 13:10:56 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 13:10:56 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 13:10:56 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:10:56 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 13:10:56 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 13:10:56 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 13:10:56 [INFO] [Thread-2 (process_request_thread)] gpt4all: GPT4All analysis requested for Llama/app2
+2025-04-14 13:10:56 [ERROR] [Thread-2 (process_request_thread)] gpt4all: Requirements check failed: 'GPT4AllAnalyzer' object has no attribute 'check_server_availability'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 2416, in gpt4all_analysis
+    server_available = loop.run_until_complete(analyzer.check_server_availability())
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'GPT4AllAnalyzer' object has no attribute 'check_server_availability'
+2025-04-14 13:10:56 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:10:56] "POST /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-14 13:10:56 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:10:56] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 13:10:56 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:10:56] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 13:10:57 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:10:57] "GET /api/system-info?_=1744629056797 HTTP/1.1" 200 -
+2025-04-14 13:11:00 [INFO] [Thread-6 (process_request_thread)] gpt4all: GPT4All analysis requested for Llama/app2
+2025-04-14 13:11:00 [ERROR] [Thread-6 (process_request_thread)] gpt4all: Requirements check failed: 'GPT4AllAnalyzer' object has no attribute 'check_server_availability'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 2416, in gpt4all_analysis
+    server_available = loop.run_until_complete(analyzer.check_server_availability())
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'GPT4AllAnalyzer' object has no attribute 'check_server_availability'
+2025-04-14 13:11:00 [INFO] [Thread-6 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:11:00] "POST /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1" 200 -
+2025-04-14 13:11:00 [INFO] [Thread-7 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:11:00] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 13:11:00 [INFO] [Thread-8 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:11:00] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 13:11:00 [INFO] [Thread-9 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:11:00] "GET /api/system-info?_=1744629060269 HTTP/1.1" 200 -
+2025-04-14 13:12:01 [INFO] [Thread-10 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:12:01] "GET /api/system-info?_=1744629060270 HTTP/1.1" 200 -
+2025-04-14 13:13:01 [INFO] [Thread-11 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:13:01] "GET /api/system-info?_=1744629060271 HTTP/1.1" 200 -
+2025-04-14 13:14:01 [INFO] [Thread-12 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:14:01] "GET /api/system-info?_=1744629060272 HTTP/1.1" 200 -
+2025-04-14 13:15:01 [INFO] [Thread-13 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:15:01] "GET /api/system-info?_=1744629060273 HTTP/1.1" 200 -
+2025-04-14 13:16:02 [INFO] [Thread-14 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:16:02] "GET /api/system-info?_=1744629060274 HTTP/1.1" 200 -
+2025-04-14 13:17:03 [INFO] [Thread-15 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:17:03] "GET /api/system-info?_=1744629060275 HTTP/1.1" 200 -
+2025-04-14 13:18:04 [INFO] [Thread-16 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:18:04] "GET /api/system-info?_=1744629060276 HTTP/1.1" 200 -
+2025-04-14 13:19:05 [INFO] [Thread-17 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:19:05] "GET /api/system-info?_=1744629060277 HTTP/1.1" 200 -
+2025-04-14 13:20:06 [INFO] [Thread-18 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:20:06] "GET /api/system-info?_=1744629060278 HTTP/1.1" 200 -
+2025-04-14 13:21:07 [INFO] [Thread-19 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:21:07] "GET /api/system-info?_=1744629060279 HTTP/1.1" 200 -
+2025-04-14 13:22:08 [INFO] [Thread-20 (process_request_thread)] docker: Cleaning up stopped containers older than 24 hours
+2025-04-14 13:22:08 [INFO] [Thread-20 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:22:08] "GET /api/system-info?_=1744629060280 HTTP/1.1" 200 -
+2025-04-14 13:23:09 [INFO] [Thread-21 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:23:09] "GET /api/system-info?_=1744629060281 HTTP/1.1" 200 -
+2025-04-14 13:24:10 [INFO] [Thread-22 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:24:10] "GET /api/system-info?_=1744629060282 HTTP/1.1" 200 -
+2025-04-14 13:25:11 [INFO] [Thread-23 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:25:11] "GET /api/system-info?_=1744629060283 HTTP/1.1" 200 -
+2025-04-14 13:26:11 [INFO] [Thread-24 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:26:11] "GET /api/system-info?_=1744629060284 HTTP/1.1" 200 -
+2025-04-14 13:27:11 [INFO] [Thread-25 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:27:11] "GET /api/system-info?_=1744629060285 HTTP/1.1" 200 -
+2025-04-14 13:28:11 [INFO] [Thread-26 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:28:11] "GET /api/system-info?_=1744629060286 HTTP/1.1" 200 -
+2025-04-14 13:29:11 [INFO] [Thread-27 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:29:11] "GET /api/system-info?_=1744629060287 HTTP/1.1" 200 -
+2025-04-14 13:30:11 [INFO] [Thread-28 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:30:11] "GET /api/system-info?_=1744629060288 HTTP/1.1" 200 -
+2025-04-14 13:31:11 [INFO] [Thread-29 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:31:11] "GET /api/system-info?_=1744629060289 HTTP/1.1" 200 -
+2025-04-14 13:32:11 [INFO] [Thread-30 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:32:11] "GET /api/system-info?_=1744629060290 HTTP/1.1" 200 -
+2025-04-14 13:33:11 [INFO] [Thread-31 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:33:11] "GET /api/system-info?_=1744629060291 HTTP/1.1" 200 -
+2025-04-14 13:34:11 [INFO] [Thread-32 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:34:11] "GET /api/system-info?_=1744629060292 HTTP/1.1" 200 -
+2025-04-14 13:35:11 [INFO] [Thread-33 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:35:11] "GET /api/system-info?_=1744629060293 HTTP/1.1" 200 -
+2025-04-14 13:35:16 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\gpt4all_analysis.py', reloading
+2025-04-14 13:35:16 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 13:35:18 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 13:35:18 [INFO] [MainThread] app: Starting application setup
+2025-04-14 13:35:18 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:35:18 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:35:18 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 13:35:18 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:35:20 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 13:35:20 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 13:35:20 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 13:35:20 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 13:35:20 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 13:35:20 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 13:35:20 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 13:35:20 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:35:20 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 13:35:20 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:35:20 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 13:35:20 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 13:35:21 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 13:35:21 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 13:35:21 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:35:21 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 13:35:21 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 13:35:21 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 13:35:21 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 13:35:21 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 13:35:21 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 13:35:21 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:35:21 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 13:35:21 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 13:35:21 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 13:35:31 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\gpt4all_analysis.py', reloading
+2025-04-14 13:35:31 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 13:35:33 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 13:35:33 [INFO] [MainThread] app: Starting application setup
+2025-04-14 13:35:33 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:35:33 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:35:33 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 13:35:33 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:35:36 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 13:35:36 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 13:35:36 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 13:35:36 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 13:35:36 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 13:35:36 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 13:35:36 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 13:35:36 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:35:36 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 13:35:36 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:35:36 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 13:35:36 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 13:35:36 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 13:35:36 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 13:35:36 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:35:36 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 13:35:36 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 13:35:36 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 13:35:36 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 13:35:36 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 13:35:36 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 13:35:36 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:35:36 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 13:35:36 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 13:35:36 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 13:35:39 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\gpt4all_analysis.py', reloading
+2025-04-14 13:35:39 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 13:35:40 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 13:35:40 [INFO] [MainThread] app: Starting application setup
+2025-04-14 13:35:40 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:35:40 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:35:40 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 13:35:40 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:35:46 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 13:35:46 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 13:35:46 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 13:35:46 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 13:35:46 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 13:35:46 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 13:35:46 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 13:35:46 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:35:46 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 13:35:46 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:35:46 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 13:35:46 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 13:35:46 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 13:35:46 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 13:35:46 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:35:46 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 13:35:46 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 13:35:46 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 13:35:46 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 13:35:46 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 13:35:46 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 13:35:46 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:35:46 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 13:35:46 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 13:35:46 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 13:36:00 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\gpt4all_analysis.py', reloading
+2025-04-14 13:36:00 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 13:38:01 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 13:38:01 [INFO] [MainThread] app: Starting application setup
+2025-04-14 13:38:01 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:38:01 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:38:01 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 13:38:01 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:38:03 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 13:38:03 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 13:38:03 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 13:38:03 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 13:38:03 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 13:38:04 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 13:38:04 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 13:38:04 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:38:04 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 13:38:04 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:38:04 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 13:38:04 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 13:38:04 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 13:38:04 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 13:38:04 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:38:04 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 13:38:04 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 13:38:04 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 13:38:04 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 13:38:04 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 13:38:04 [CRITICAL] [MainThread] main: Failed to start application: The name 'gpt4all' is already registered for a different blueprint. Use 'name=' to provide a unique name.
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 325, in <module>
+    app = create_app(config)
+          ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 296, in create_app
+    init_routes(app)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\gpt4all_analysis.py", line 842, in init_routes
+    app.register_blueprint(gpt4all_bp, url_prefix="/api/gpt4all")
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\sansio\scaffold.py", line 47, in wrapper_func
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\sansio\app.py", line 595, in register_blueprint
+    blueprint.register(self, options)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\sansio\blueprints.py", line 310, in register
+    raise ValueError(
+ValueError: The name 'gpt4all' is already registered for a different blueprint. Use 'name=' to provide a unique name.
+2025-04-14 13:41:13 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 13:41:13 [INFO] [MainThread] app: Starting application setup
+2025-04-14 13:41:13 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:41:13 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:41:13 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 13:41:13 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:41:16 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 13:41:16 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 13:41:16 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 13:41:16 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 13:41:16 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 13:41:16 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 13:41:16 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 13:41:16 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:41:16 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 13:41:16 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:41:16 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 13:41:16 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 13:41:17 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 13:41:17 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 13:41:17 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:41:17 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 13:41:17 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 13:41:17 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 13:41:17 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 13:41:17 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 13:41:17 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 13:41:17 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:41:17 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 13:41:17 [INFO] [MainThread] werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-14 13:41:17 [INFO] [MainThread] werkzeug: [33mPress CTRL+C to quit[0m
+2025-04-14 13:41:17 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 13:41:19 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 13:41:19 [INFO] [MainThread] app: Starting application setup
+2025-04-14 13:41:19 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:41:19 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:41:19 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 13:41:19 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:41:22 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 13:41:22 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 13:41:22 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 13:41:22 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 13:41:22 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 13:41:22 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 13:41:22 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 13:41:22 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:41:22 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 13:41:22 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:41:22 [INFO] [MainThread] app: Initializing SonarQube analyzer
+2025-04-14 13:41:22 [WARNING] [MainThread] sonar_analyzer: No authentication provided for SonarQube API. Some features may be limited.
+2025-04-14 13:41:22 [WARNING] [MainThread] sonar_analyzer: SonarQube scanner command failed
+2025-04-14 13:41:22 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 13:41:22 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:41:22 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 13:41:22 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 13:41:22 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 13:41:22 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 13:41:22 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 13:41:22 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 13:41:22 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:41:22 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 13:41:22 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 13:41:22 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 13:41:25 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:41:25] "[33mPOST /gpt4all-analysis?model=Llama&app_num=2 HTTP/1.1[0m" 404 -
+2025-04-14 13:41:25 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:41:25] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 13:41:25 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:41:25] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 13:41:26 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:41:26] "GET /api/system-info?_=1744630885418 HTTP/1.1" 200 -
+2025-04-14 13:41:27 [INFO] [Thread-6 (process_request_thread)] routes: Rendering main dashboard
+2025-04-14 13:41:29 [ERROR] [Thread-6 (process_request_thread)] ajax: Error in index: Could not build url for endpoint 'gpt4all.gpt4all_analysis' with values ['app_num', 'model']. Did you mean 'gpt4all_routes.gpt4all_analysis' instead?
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 174, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 81, in index
+    return render_template("index.html",
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 230, in block 'content'
+    <a href="{{ url_for('gpt4all.gpt4all_analysis', model=app.model, app_num=app.app_num) }}" class="action-btn text-center text-2xs py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700">Reqs</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'gpt4all.gpt4all_analysis' with values ['app_num', 'model']. Did you mean 'gpt4all_routes.gpt4all_analysis' instead?
+2025-04-14 13:41:29 [INFO] [Thread-6 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:41:29] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-04-14 13:41:29 [INFO] [Thread-7 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:41:29] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 13:41:29 [INFO] [Thread-8 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:41:29] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 13:41:30 [INFO] [Thread-9 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:41:30] "GET /api/system-info?_=1744630889890 HTTP/1.1" 200 -
+2025-04-14 13:41:53 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\gpt4all_analysis.py', reloading
+2025-04-14 13:41:53 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 13:43:38 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 13:43:38 [INFO] [MainThread] app: Starting application setup
+2025-04-14 13:43:38 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:43:38 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:43:38 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 13:43:38 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:43:40 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 13:43:40 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 13:43:40 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 13:43:40 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 13:43:40 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 13:43:40 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 13:43:40 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 13:43:40 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:43:40 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 13:43:40 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:43:40 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 13:43:40 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:43:40 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 13:43:40 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 13:43:40 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 13:43:40 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 13:43:40 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 13:43:40 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 13:43:40 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:43:40 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 13:43:40 [INFO] [MainThread] werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-14 13:43:40 [INFO] [MainThread] werkzeug: [33mPress CTRL+C to quit[0m
+2025-04-14 13:43:40 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 13:43:42 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 13:43:42 [INFO] [MainThread] app: Starting application setup
+2025-04-14 13:43:42 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:43:42 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:43:42 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 13:43:42 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:43:45 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 13:43:45 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 13:43:45 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 13:43:45 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 13:43:45 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 13:43:45 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 13:43:45 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 13:43:45 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:43:45 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 13:43:45 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:43:45 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 13:43:45 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:43:45 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 13:43:45 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 13:43:45 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 13:43:45 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 13:43:45 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 13:43:45 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 13:43:45 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:43:45 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 13:43:45 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 13:43:45 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 13:43:45 [INFO] [Thread-2 (process_request_thread)] routes: Rendering main dashboard
+2025-04-14 13:43:47 [ERROR] [Thread-2 (process_request_thread)] ajax: Error in index: Could not build url for endpoint 'sonarqube.sonarqube_analysis_page' with values ['app_num', 'model']. Did you mean 'analysis.security_analysis' instead?
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 174, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 80, in index
+    return render_template("index.html",
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 227, in block 'content'
+    <a href="{{ url_for('sonarqube.sonarqube_analysis_page', model=app.model, app_num=app.app_num) }}" class="action-btn text-center text-2xs py-1 bg-teal-50 hover:bg-teal-100 text-teal-700">SonarQube</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'sonarqube.sonarqube_analysis_page' with values ['app_num', 'model']. Did you mean 'analysis.security_analysis' instead?
+2025-04-14 13:43:47 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:43:47] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-04-14 13:43:47 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:43:47] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 13:43:47 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:43:47] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 13:43:48 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:43:48] "GET /api/system-info?_=1744631027993 HTTP/1.1" 200 -
+2025-04-14 13:44:07 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\sonar_analyzer.py', reloading
+2025-04-14 13:44:07 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 13:44:09 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 13:44:09 [INFO] [MainThread] app: Starting application setup
+2025-04-14 13:44:09 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:44:09 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:44:09 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 13:44:09 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:44:14 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 13:44:14 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 13:44:14 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 13:44:14 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 13:44:14 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 13:44:14 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 13:44:14 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 13:44:14 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:44:14 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 13:44:14 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:44:14 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 13:44:14 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:44:14 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 13:44:14 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 13:44:14 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 13:44:14 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 13:44:14 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 13:44:14 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 13:44:14 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:44:14 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 13:44:14 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 13:44:14 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 13:44:14 [INFO] [Thread-2 (process_request_thread)] routes: Rendering main dashboard
+2025-04-14 13:44:16 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:44:16] "GET / HTTP/1.1" 200 -
+2025-04-14 13:44:16 [INFO] [Thread-3 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:44:16] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 13:44:16 [INFO] [Thread-4 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:44:16] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 13:44:17 [INFO] [Thread-5 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:44:17] "GET /api/system-info?_=1744631057016 HTTP/1.1" 200 -
+2025-04-14 13:44:30 [INFO] [Thread-6 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:44:30] "GET /api/system-info?_=1744630889893 HTTP/1.1" 200 -
+2025-04-14 13:44:40 [INFO] [Thread-7 (process_request_thread)] routes: Rendering main dashboard
+2025-04-14 13:44:42 [ERROR] [Thread-7 (process_request_thread)] ajax: Error in index: Could not build url for endpoint 'sonarqube.sonarqube_analysis_page' with values ['app_num', 'model']. Did you mean 'analysis.security_analysis' instead?
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 174, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 80, in index
+    return render_template("index.html",
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 227, in block 'content'
+    <a href="{{ url_for('sonarqube.sonarqube_analysis_page', model=app.model, app_num=app.app_num) }}" class="action-btn text-center text-2xs py-1 bg-teal-50 hover:bg-teal-100 text-teal-700">SonarQube</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'sonarqube.sonarqube_analysis_page' with values ['app_num', 'model']. Did you mean 'analysis.security_analysis' instead?
+2025-04-14 13:44:42 [INFO] [Thread-7 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:44:42] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-04-14 13:44:42 [INFO] [Thread-8 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:44:42] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 13:44:42 [INFO] [Thread-9 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:44:42] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 13:44:43 [INFO] [Thread-10 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:44:43] "GET /api/system-info?_=1744631082630 HTTP/1.1" 200 -
+2025-04-14 13:44:52 [INFO] [Thread-11 (process_request_thread)] routes: Rendering main dashboard
+2025-04-14 13:44:54 [ERROR] [Thread-11 (process_request_thread)] ajax: Error in index: Could not build url for endpoint 'sonarqube.sonarqube_analysis_page' with values ['app_num', 'model']. Did you mean 'analysis.security_analysis' instead?
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 174, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 80, in index
+    return render_template("index.html",
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 227, in block 'content'
+    <a href="{{ url_for('sonarqube.sonarqube_analysis_page', model=app.model, app_num=app.app_num) }}" class="action-btn text-center text-2xs py-1 bg-teal-50 hover:bg-teal-100 text-teal-700">SonarQube</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'sonarqube.sonarqube_analysis_page' with values ['app_num', 'model']. Did you mean 'analysis.security_analysis' instead?
+2025-04-14 13:44:54 [INFO] [Thread-11 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:44:54] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-04-14 13:44:54 [INFO] [Thread-12 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:44:54] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 13:44:54 [INFO] [Thread-13 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:44:54] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 13:44:55 [INFO] [Thread-14 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:44:55] "GET /api/system-info?_=1744631094948 HTTP/1.1" 200 -
+2025-04-14 13:44:59 [INFO] [Thread-15 (process_request_thread)] routes: Rendering main dashboard
+2025-04-14 13:45:01 [INFO] [Thread-15 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:45:01] "GET / HTTP/1.1" 200 -
+2025-04-14 13:45:01 [INFO] [Thread-16 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:45:01] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 13:45:01 [INFO] [Thread-17 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:45:01] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 13:45:02 [INFO] [Thread-18 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:45:02] "GET /api/system-info?_=1744631101227 HTTP/1.1" 200 -
+2025-04-14 13:45:27 [INFO] [Thread-19 (process_request_thread)] routes: Rendering main dashboard
+2025-04-14 13:45:28 [INFO] [Thread-19 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:45:28] "GET / HTTP/1.1" 200 -
+2025-04-14 13:45:28 [INFO] [Thread-20 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:45:28] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 13:45:28 [INFO] [Thread-21 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:45:28] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 13:45:30 [INFO] [Thread-22 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:45:30] "GET /api/system-info?_=1744631128998 HTTP/1.1" 200 -
+2025-04-14 13:45:30 [INFO] [Thread-23 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:45:30] "GET /api/system-info?_=1744630889894 HTTP/1.1" 200 -
+2025-04-14 13:46:02 [INFO] [Thread-24 (process_request_thread)] routes: Rendering main dashboard
+2025-04-14 13:46:04 [ERROR] [Thread-24 (process_request_thread)] ajax: Error in index: Could not build url for endpoint 'sonarqube.sonarqube_analysis' with values ['app_num', 'model']. Did you mean 'analysis.security_analysis' instead?
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 174, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 80, in index
+    return render_template("index.html",
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 229, in block 'content'
+    <a href="{{ url_for('sonarqube.sonarqube_analysis', model=app.model, app_num=app.app_num) }}" class="action-btn text-center text-2xs py-1 bg-teal-50 hover:bg-teal-100 text-teal-700">Sonar</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'sonarqube.sonarqube_analysis' with values ['app_num', 'model']. Did you mean 'analysis.security_analysis' instead?
+2025-04-14 13:46:04 [INFO] [Thread-24 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:46:04] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-04-14 13:46:04 [INFO] [Thread-25 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:46:04] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-04-14 13:46:04 [INFO] [Thread-26 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:46:04] "[36mGET /static/js/dashboard.js HTTP/1.1[0m" 304 -
+2025-04-14 13:46:04 [INFO] [Thread-27 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:46:04] "GET /api/system-info?_=1744631164162 HTTP/1.1" 200 -
+2025-04-14 13:46:31 [INFO] [Thread-28 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:46:31] "GET /api/system-info?_=1744630889895 HTTP/1.1" 200 -
+2025-04-14 13:47:04 [INFO] [Thread-29 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:47:04] "GET /api/system-info?_=1744631164163 HTTP/1.1" 200 -
+2025-04-14 13:47:32 [INFO] [Thread-30 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:47:32] "GET /api/system-info?_=1744630889896 HTTP/1.1" 200 -
+2025-04-14 13:48:04 [INFO] [Thread-31 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:48:04] "GET /api/system-info?_=1744631164164 HTTP/1.1" 200 -
+2025-04-14 13:48:25 [INFO] [MainThread] werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\app.py', reloading
+2025-04-14 13:48:25 [INFO] [MainThread] werkzeug:  * Restarting with stat
+2025-04-14 13:48:27 [INFO] [MainThread] app: Logging initialized at level INFO to logs
+2025-04-14 13:48:27 [INFO] [MainThread] app: Starting application setup
+2025-04-14 13:48:27 [INFO] [MainThread] app: Application base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:48:27 [INFO] [MainThread] app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:48:27 [INFO] [MainThread] app: Initializing security analyzers
+2025-04-14 13:48:27 [INFO] [MainThread] frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-04-14 13:48:30 [INFO] [MainThread] frontend_security_analysis: Available tools: npm-audit, eslint, retire-js, snyk
+2025-04-14 13:48:30 [INFO] [MainThread] app: Initializing GPT4All analyzer
+2025-04-14 13:48:30 [INFO] [MainThread] app: Initializing performance tester
+2025-04-14 13:48:30 [INFO] [MainThread] app: Initializing ZAP scanner
+2025-04-14 13:48:30 [INFO] [MainThread] zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-04-14 13:48:30 [INFO] [MainThread] zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-14 13:48:30 [INFO] [MainThread] zap_scanner: Found free port: 8090
+2025-04-14 13:48:30 [INFO] [MainThread] zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:48:30 [INFO] [MainThread] zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-04-14 13:48:30 [INFO] [MainThread] zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-14 13:48:30 [INFO] [MainThread] app: Creating Docker manager
+2025-04-14 13:48:30 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:48:30 [INFO] [MainThread] app: Configuring proxy fix middleware
+2025-04-14 13:48:30 [INFO] [MainThread] app: Registering application blueprints
+2025-04-14 13:48:30 [INFO] [MainThread] app: Initializing batch analysis module
+2025-04-14 13:48:30 [INFO] [MainThread] batch_analysis: Batch analysis module initialized
+2025-04-14 13:48:30 [INFO] [MainThread] app: Registering error handlers and request hooks
+2025-04-14 13:48:30 [INFO] [MainThread] app: Application initialization complete
+2025-04-14 13:48:30 [INFO] [MainThread] docker: Docker manager initialized
+2025-04-14 13:48:30 [INFO] [MainThread] main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-04-14 13:48:30 [WARNING] [MainThread] werkzeug:  * Debugger is active!
+2025-04-14 13:48:30 [INFO] [MainThread] werkzeug:  * Debugger PIN: 641-866-520
+2025-04-14 13:48:33 [INFO] [Thread-2 (process_request_thread)] werkzeug: 127.0.0.1 - - [14/Apr/2025 13:48:33] "GET /api/system-info?_=1744630889897 HTTP/1.1" 200 -
