@@ -193,7 +193,7 @@
         <option value="running">Running</option>
         <option value="completed">Completed</option>
         <option value="failed">Failed</option>
-        <option value="cancelled">Cancelled</option>
+        <option value="canceled">Canceled</option>
         <option value="pending">Pending</option>
       </select>
       <button id="clearFilters" class="h-6 px-2 text-xs border border-gray-300 rounded hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 transition">
@@ -223,7 +223,6 @@
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Models</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Created</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Progress</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Issues</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Actions</th>
               </tr>
             </thead>
@@ -232,7 +231,7 @@
                 <tr class="hover:bg-gray-50 job-row" data-job-id="{{ job.id }}" data-status="{{ job.status }}" data-scan-type="{{ job.scan_type }}" data-models="{{ job.models|join(',') }}" data-name="{{ job.name }}">
                   <td class="border border-gray-300 px-2 py-1 text-xs">{{ job.id }}</td>
                   <td class="border border-gray-300 px-2 py-1 text-xs font-medium">
-                    <a href="#" class="view-job-btn text-blue-700 hover:underline" data-job-id="{{ job.id }}">
+                    <a href="{{ url_for('batch_analysis.view_job', job_id=job.id) }}" class="text-blue-700 hover:underline">
                       {{ job.name }}
                     </a>
                   </td>
@@ -244,6 +243,8 @@
                         bg-blue-600
                       {% elif job.status == 'pending' %}
                         bg-gray-600
+                      {% elif job.status == 'canceled' %}
+                        bg-yellow-600
                       {% else %}
                         bg-red-600
                       {% endif %}">
@@ -275,21 +276,10 @@
                     <span class="text-xs text-gray-600">{{ job.completed_tasks }}/{{ job.total_tasks }}</span>
                   </td>
                   <td class="border border-gray-300 px-2 py-1 text-xs">
-                    {% if job.status == 'completed' %}
-                      <div class="flex space-x-1">
-                        <span class="px-1 bg-red-100 text-red-800 border border-red-700 rounded" title="High severity issues">{{ job.high_issues or 0 }}</span>
-                        <span class="px-1 bg-yellow-100 text-yellow-800 border border-yellow-700 rounded" title="Medium severity issues">{{ job.medium_issues or 0 }}</span>
-                        <span class="px-1 bg-blue-100 text-blue-800 border border-blue-700 rounded" title="Low severity issues">{{ job.low_issues or 0 }}</span>
-                      </div>
-                    {% else %}
-                      -
-                    {% endif %}
-                  </td>
-                  <td class="border border-gray-300 px-2 py-1 text-xs">
                     <div class="flex space-x-1">
-                      <button class="view-job-btn action-btn h-6 px-2 text-xs focus:ring-2 focus:ring-blue-500 transition" data-job-id="{{ job.id }}" aria-label="View details for job {{ job.id }}">
+                      <a href="{{ url_for('batch_analysis.view_job', job_id=job.id) }}" class="action-btn h-6 px-2 text-xs focus:ring-2 focus:ring-blue-500 transition">
                         View
-                      </button>
+                      </a>
                       {% if job.status == 'running' %}
                         <button class="cancel-job-btn action-btn h-6 px-2 text-xs bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 transition" data-job-id="{{ job.id }}" aria-label="Cancel job {{ job.id }}">
                           Cancel
@@ -300,7 +290,7 @@
                 </tr>
               {% endfor %}
               <tr id="noResultsRow" class="hidden">
-                <td colspan="9" class="border border-gray-300 px-2 py-4 text-xs text-center text-gray-500">
+                <td colspan="8" class="border border-gray-300 px-2 py-4 text-xs text-center text-gray-500">
                   No jobs match your current filters
                 </td>
               </tr>
@@ -318,637 +308,12 @@
     </div>
   </div>
 
-  <!-- Job Details Section (hidden by default) -->
-  <div id="jobDetailsSection" class="border border-gray-400 bg-white rounded-md shadow-md hidden" role="dialog" aria-modal="true" aria-labelledby="jobDetailsTitle" aria-hidden="true">
-    <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
-      <h2 class="font-bold text-sm" id="jobDetailsTitle">Job Details</h2>
-      <button id="closeJobDetails" class="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 rounded-md" aria-label="Close job details">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-    <div class="p-2" id="jobDetailsContent">
-      <!-- Job details will be loaded here -->
-      <div class="flex justify-center p-4">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Result Details Section (hidden by default) -->
-  <div id="resultDetailsSection" class="border border-gray-400 bg-white rounded-md shadow-md hidden" role="dialog" aria-modal="true" aria-labelledby="resultDetailsTitle" aria-hidden="true">
-    <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
-      <h2 class="font-bold text-sm" id="resultDetailsTitle">Result Details</h2>
-      <button id="closeResultDetails" class="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 rounded-md" aria-label="Close result details">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-    <div class="p-2" id="resultDetailsContent">
-      <!-- Result details will be loaded here -->
-      <div class="flex justify-center p-4">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    </div>
-  </div>
-  
   <!-- Toast notification container -->
   <div id="toastContainer" class="fixed bottom-4 right-4 z-50"></div>
 </div>
 
-<!-- Templates for dynamic content -->
-<template id="jobDetailsTpl">
-  <div class="space-y-2">
-    <!-- Job Status -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-      <!-- Left column -->
-      <div class="border border-gray-400 bg-white rounded-md shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-          <h2 class="font-bold text-sm">Job Information</h2>
-        </div>
-        <div class="p-2">
-          <table class="w-full text-xs">
-            <tr>
-              <td class="font-medium text-gray-600 py-1">ID:</td>
-              <td id="job-id"></td>
-            </tr>
-            <tr>
-              <td class="font-medium text-gray-600 py-1">Name:</td>
-              <td id="job-name"></td>
-            </tr>
-            <tr>
-              <td class="font-medium text-gray-600 py-1">Status:</td>
-              <td id="job-status-cell">
-                <span class="px-2 py-0.5 rounded-md text-white" id="job-status"></span>
-              </td>
-            </tr>
-            <tr>
-              <td class="font-medium text-gray-600 py-1">Scan Type:</td>
-              <td id="job-scan-type-cell">
-                <span class="px-2 py-0.5 rounded-md" id="job-scan-type"></span>
-              </td>
-            </tr>
-            <tr>
-              <td class="font-medium text-gray-600 py-1">Created:</td>
-              <td id="job-created"></td>
-            </tr>
-            <tr>
-              <td class="font-medium text-gray-600 py-1">Started:</td>
-              <td id="job-started"></td>
-            </tr>
-            <tr>
-              <td class="font-medium text-gray-600 py-1">Completed:</td>
-              <td id="job-completed"></td>
-            </tr>
-            <tr>
-              <td class="font-medium text-gray-600 py-1">Models:</td>
-              <td id="job-models"></td>
-            </tr>
-            <tr>
-              <td class="font-medium text-gray-600 py-1">Full Scan:</td>
-              <td id="job-full-scan"></td>
-            </tr>
-          </table>
-        </div>
-      </div>
-
-      <!-- Middle column -->
-      <div class="border border-gray-400 bg-white rounded-md shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-          <h2 class="font-bold text-sm">Progress</h2>
-        </div>
-        <div class="p-2">
-          <div class="mb-2">
-            <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-              <div class="bg-blue-600 rounded-full h-4 flex items-center justify-center text-xs text-white transition-all duration-300"
-                  id="progress-bar">
-                0%
-              </div>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-2 text-xs">
-            <div class="border border-gray-300 p-2 rounded-md">
-              <div class="text-gray-600">Completed</div>
-              <div class="font-bold" id="completed-tasks">0/0 tasks</div>
-            </div>
-            <div class="border border-gray-300 p-2 rounded-md">
-              <div class="text-gray-600">Runtime</div>
-              <div class="font-bold" id="runtime">Calculating...</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right column -->
-      <div class="border border-gray-400 bg-white rounded-md shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-          <h2 class="font-bold text-sm">Issues Found</h2>
-        </div>
-        <div class="p-2">
-          <div class="grid grid-cols-3 gap-2 text-xs">
-            <div class="border border-gray-300 p-2 rounded-md">
-              <div class="text-red-600">High</div>
-              <div class="font-bold text-red-700" id="high-issues">0</div>
-            </div>
-            <div class="border border-gray-300 p-2 rounded-md">
-              <div class="text-yellow-600">Medium</div>
-              <div class="font-bold text-yellow-700" id="medium-issues">0</div>
-            </div>
-            <div class="border border-gray-300 p-2 rounded-md">
-              <div class="text-blue-600">Low</div>
-              <div class="font-bold text-blue-700" id="low-issues">0</div>
-            </div>
-          </div>
-          <div class="mt-2 border border-gray-300 p-2 rounded-md text-xs">
-            <div class="text-gray-600">Total Issues</div>
-            <div class="font-bold" id="total-issues">0</div>
-          </div>
-          
-          <!-- Scan Type-specific stats (shown only for 'both' scan type) -->
-          <div id="scan-type-stats" class="mt-2 hidden">
-            <div class="border-t border-gray-300 pt-2">
-              <div class="text-xs font-medium text-purple-700 mb-1">Frontend Issues</div>
-              <div class="flex space-x-2">
-                <span class="px-1 bg-red-100 text-red-800 border border-red-700 rounded" id="frontend-high-issues">0</span>
-                <span class="px-1 bg-yellow-100 text-yellow-800 border border-yellow-700 rounded" id="frontend-medium-issues">0</span>
-                <span class="px-1 bg-blue-100 text-blue-800 border border-blue-700 rounded" id="frontend-low-issues">0</span>
-                <span class="px-1 bg-gray-100 text-gray-800 border border-gray-700 rounded" id="frontend-total-issues">0 total</span>
-              </div>
-            </div>
-            <div class="border-t border-gray-300 mt-2 pt-2">
-              <div class="text-xs font-medium text-indigo-700 mb-1">Backend Issues</div>
-              <div class="flex space-x-2">
-                <span class="px-1 bg-red-100 text-red-800 border border-red-700 rounded" id="backend-high-issues">0</span>
-                <span class="px-1 bg-yellow-100 text-yellow-800 border border-yellow-700 rounded" id="backend-medium-issues">0</span>
-                <span class="px-1 bg-blue-100 text-blue-800 border border-blue-700 rounded" id="backend-low-issues">0</span>
-                <span class="px-1 bg-gray-100 text-gray-800 border border-gray-700 rounded" id="backend-total-issues">0 total</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Results Table -->
-    <div class="border border-gray-400 bg-white rounded-md shadow-sm">
-      <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
-        <h2 class="font-bold text-sm">Results</h2>
-        <div class="flex flex-wrap items-center gap-2">
-          <div class="relative">
-            <input type="text" id="searchResults" placeholder="Search results..." 
-                  class="h-6 pl-6 pr-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
-            <svg class="w-3 h-3 absolute left-2 top-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
-          </div>
-          <select id="resultStatusFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
-            <option value="all">All Statuses</option>
-            <option value="completed">Completed</option>
-            <option value="failed">Failed</option>
-          </select>
-          <select id="resultModelFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
-            <option value="all">All Models</option>
-          </select>
-          <select id="resultScanTypeFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
-            <option value="all">All Scan Types</option>
-            <option value="frontend">Frontend</option>
-            <option value="backend">Backend</option>
-          </select>
-          <button id="exportResultsBtn" class="h-6 px-2 text-xs border border-gray-300 rounded hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 transition flex items-center">
-            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-            </svg>
-            Export
-          </button>
-        </div>
-      </div>
-      <div class="p-2">
-        <div class="overflow-x-auto">
-          <table class="min-w-full border border-gray-300">
-            <thead>
-              <tr class="bg-gray-100">
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Model</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">App</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Scan Type</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Status</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">High</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Medium</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Low</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Total</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Scan Time</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="results-table-body">
-              <!-- Results will be loaded here -->
-            </tbody>
-          </table>
-        </div>
-        <div id="resultsCounter" class="mt-2 text-xs text-gray-600 text-right">
-          Showing <span id="visibleResultsCount">0</span> of <span id="totalResultsCount">0</span> results
-        </div>
-      </div>
-    </div>
-
-    <!-- Error Section (shown only if errors exist) -->
-    <div id="errors-section" class="border border-gray-400 bg-white rounded-md shadow-sm hidden">
-      <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-        <h2 class="font-bold text-sm">Errors</h2>
-      </div>
-      <div class="p-2">
-        <ul class="list-disc pl-4 text-xs text-red-700 space-y-1" id="errors-list">
-        </ul>
-      </div>
-    </div>
-  </div>
-</template>
-
-<template id="resultItemTpl">
-  <tr class="hover:bg-gray-50 result-row">
-    <td class="border border-gray-300 px-2 py-1 text-xs result-model"></td>
-    <td class="border border-gray-300 px-2 py-1 text-xs">App <span class="result-app-num"></span></td>
-    <td class="border border-gray-300 px-2 py-1 text-xs">
-      <span class="result-scan-type px-2 py-0.5 rounded-md"></span>
-    </td>
-    <td class="border border-gray-300 px-2 py-1 text-xs">
-      <span class="result-status px-2 py-0.5 rounded-md"></span>
-    </td>
-    <td class="border border-gray-300 px-2 py-1 text-xs text-red-700 result-high">0</td>
-    <td class="border border-gray-300 px-2 py-1 text-xs text-yellow-700 result-medium">0</td>
-    <td class="border border-gray-300 px-2 py-1 text-xs text-blue-700 result-low">0</td>
-    <td class="border border-gray-300 px-2 py-1 text-xs font-bold result-total">0</td>
-    <td class="border border-gray-300 px-2 py-1 text-xs result-time">N/A</td>
-    <td class="border border-gray-300 px-2 py-1 text-xs">
-      <button class="view-result-btn action-btn h-6 px-2 text-xs focus:ring-2 focus:ring-blue-500 transition">
-        Details
-      </button>
-    </td>
-  </tr>
-</template>
-
-<template id="resultDetailsTpl">
-  <div class="space-y-2">
-    <!-- Result Summary -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-      <!-- Left column -->
-      <div class="border border-gray-400 bg-white rounded-md shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-          <h2 class="font-bold text-sm">Result Information</h2>
-        </div>
-        <div class="p-2">
-          <table class="w-full text-xs">
-            <tr>
-              <td class="font-medium text-gray-600 py-1">Result ID:</td>
-              <td id="result-id"></td>
-            </tr>
-            <tr>
-              <td class="font-medium text-gray-600 py-1">Model:</td>
-              <td id="result-model"></td>
-            </tr>
-            <tr>
-              <td class="font-medium text-gray-600 py-1">App Number:</td>
-              <td id="result-app-num"></td>
-            </tr>
-            <tr>
-              <td class="font-medium text-gray-600 py-1">Scan Type:</td>
-              <td id="result-scan-type-cell">
-                <span class="px-2 py-0.5 rounded-md" id="result-scan-type"></span>
-              </td>
-            </tr>
-            <tr>
-              <td class="font-medium text-gray-600 py-1">Status:</td>
-              <td id="result-status-cell">
-                <span class="px-2 py-0.5 rounded-md" id="result-status"></span>
-              </td>
-            </tr>
-            <tr>
-              <td class="font-medium text-gray-600 py-1">Scan Time:</td>
-              <td id="result-scan-time"></td>
-            </tr>
-            <tr>
-              <td class="font-medium text-gray-600 py-1">Total Issues:</td>
-              <td id="result-issues-count"></td>
-            </tr>
-          </table>
-        </div>
-      </div>
-
-      <!-- Right column -->
-      <div class="border border-gray-400 bg-white rounded-md shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-          <h2 class="font-bold text-sm">Issue Counts</h2>
-        </div>
-        <div class="p-2">
-          <div class="grid grid-cols-3 gap-2 text-xs">
-            <div class="border border-gray-300 p-2 rounded-md">
-              <div class="text-red-600">High Severity</div>
-              <div class="font-bold text-red-700" id="result-high-severity"></div>
-            </div>
-            <div class="border border-gray-300 p-2 rounded-md">
-              <div class="text-yellow-600">Medium Severity</div>
-              <div class="font-bold text-yellow-700" id="result-medium-severity"></div>
-            </div>
-            <div class="border border-gray-300 p-2 rounded-md">
-              <div class="text-blue-600">Low Severity</div>
-              <div class="font-bold text-blue-700" id="result-low-severity"></div>
-            </div>
-          </div>
-          
-          <!-- Tool Status Section -->
-          <div class="mt-2 border border-gray-300 p-2 rounded-md">
-            <div class="text-xs font-medium text-gray-600 mb-1">Tool Status</div>
-            <div class="space-y-1" id="tool-status-container">
-              <!-- Tool status items will be added here -->
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Issues List -->
-    <div id="issues-container" class="border border-gray-400 bg-white rounded-md shadow-sm">
-      <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
-        <h2 class="font-bold text-sm">Issues Found</h2>
-        <div class="flex flex-wrap items-center gap-2">
-          <div class="relative">
-            <input type="text" id="searchIssues" placeholder="Search issues..." 
-                  class="h-6 pl-6 pr-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
-            <svg class="w-3 h-3 absolute left-2 top-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
-          </div>
-          <select id="severityFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
-            <option value="all">All Severities</option>
-            <option value="HIGH">High</option>
-            <option value="MEDIUM">Medium</option>
-            <option value="LOW">Low</option>
-          </select>
-          <select id="fileFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
-            <option value="all">All Files</option>
-          </select>
-          <select id="toolFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
-            <option value="all">All Tools</option>
-          </select>
-          <button id="expandAllIssues" class="h-6 px-2 text-xs border border-gray-300 rounded hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 transition">
-            Expand All
-          </button>
-        </div>
-      </div>
-      <div class="p-2">
-        <div id="issueList" class="space-y-2">
-          <!-- Issues will be loaded here -->
-        </div>
-        <div id="issuesCounter" class="mt-2 text-xs text-gray-600 text-right">
-          Showing <span id="visibleIssuesCount">0</span> of <span id="totalIssuesCount">0</span> issues
-        </div>
-      </div>
-    </div>
-
-    <!-- Error container (shown when analysis failed) -->
-    <div id="analysis-error-container" class="border border-gray-400 bg-white rounded-md shadow-sm hidden">
-      <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-        <h2 class="font-bold text-sm">Analysis Error</h2>
-      </div>
-      <div class="p-4">
-        <div class="bg-red-50 border border-red-300 p-3 rounded-md">
-          <h3 class="text-sm font-bold text-red-700 mb-1">Analysis Failed</h3>
-          <p class="text-xs text-red-600" id="analysis-error-message"></p>
-        </div>
-      </div>
-    </div>
-
-    <!-- No issues message (shown when analysis succeeded but found no issues) -->
-    <div id="no-issues-container" class="border border-gray-400 bg-white rounded-md shadow-sm hidden">
-      <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-        <h2 class="font-bold text-sm">Issues</h2>
-      </div>
-      <div class="p-4 text-center">
-        <div class="inline-block border border-green-700 bg-green-50 p-2 rounded-md">
-          <p class="text-xs font-bold text-green-700">No security issues found in this application.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
-<template id="issueItemTpl">
-  <div class="border border-gray-300 bg-white rounded-md shadow-sm issue-item">
-    <!-- Issue Header -->
-    <div class="p-2">
-      <div class="flex items-center space-x-2 mb-1">
-        <!-- Severity Badge -->
-        <span class="text-xs px-2 py-0.5 border rounded-md issue-severity"></span>
-        
-        <!-- Tool and Confidence Badges -->
-        <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400 rounded-md issue-tool"></span>
-        <span class="text-xs px-2 py-0.5 bg-gray-100 border border-gray-400 rounded-md issue-confidence"></span>
-        
-        <!-- Expand Button -->
-        <button class="ml-auto action-btn h-6 px-2 text-xs toggle-issue rounded-md focus:ring-2 focus:ring-blue-500 transition" aria-expanded="false">Expand</button>
-      </div>
-      
-      <!-- Issue Content -->
-      <div class="space-y-2">
-        <div>
-          <div class="text-xs font-bold issue-type"></div>
-          <div class="text-xs text-gray-600 issue-text"></div>
-        </div>
-        
-        <!-- Collapsible Details -->
-        <div class="issue-details hidden space-y-2">
-          <div class="fix-suggestion-container text-xs bg-white border border-gray-300 p-2 rounded-md hidden">
-            <span class="font-bold">Fix:</span> <span class="fix-suggestion"></span>
-          </div>
-          
-          <!-- File and Code Information -->
-          <div>
-            <div class="text-xs font-mono text-gray-600 issue-filename"></div>
-            <div class="mt-1">
-              <pre class="text-xs font-mono bg-gray-800 text-white p-1 overflow-x-auto rounded-md"><code class="issue-code"></code></pre>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
-<template id="toastTpl">
-  <div class="toast-notification mb-2 p-3 rounded-md shadow-lg transition-all duration-300 transform translate-x-full opacity-0 flex items-center">
-    <div class="toast-icon mr-2">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
-    </div>
-    <div class="toast-content flex-grow">
-      <div class="toast-title font-bold text-sm"></div>
-      <div class="toast-message text-xs"></div>
-    </div>
-    <button class="toast-close ml-2 text-gray-500 hover:text-gray-700 focus:outline-none">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-      </svg>
-    </button>
-  </div>
-</template>
-
 <script>
-// Add this function to your JavaScript
-function setupJobViewButtons() {
-  // Use event delegation for dynamically loaded content
-  $(document).on('click', '.view-job-btn', function() {
-    const jobId = $(this).data('job-id');
-    
-    // You can either navigate to a dedicated page:
-    window.location.href = `/batch-analysis/job/${jobId}`;
-    
-    // Or if you prefer to show in a modal:
-    /*
-    // Show loading state
-    $('#jobDetailsContent').html(`
-      <div class="flex justify-center p-4">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    `);
-    
-    // Show the modal
-    $('#jobDetailsTitle').text('Job Details');
-    $('#jobDetailsSection').removeClass('hidden');
-    
-    // Load job details via AJAX
-    $.ajax({
-      url: `/batch-analysis/job/${jobId}/details`,
-      method: 'GET',
-      success: function(data) {
-        $('#jobDetailsContent').html(data);
-      },
-      error: function() {
-        $('#jobDetailsContent').html(`
-          <div class="p-4 text-center">
-            <div class="text-red-600 font-medium mb-2">Failed to load job details</div>
-            <button id="retryLoadJob" class="action-btn h-6 px-2 text-xs" data-job-id="${jobId}">Retry</button>
-          </div>
-        `);
-      }
-    });
-    */
-  });
-  
-  // Also set up the result view buttons
-  $(document).on('click', '.view-result-btn', function() {
-    const resultId = $(this).data('result-id');
-    
-    // Similar to job viewing, you can navigate to a page:
-    window.location.href = `/batch-analysis/result/${resultId}`;
-    
-    // Or use a modal approach as shown above with the jobDetailsSection
-  });
-  
-  // Close modal handlers if using modals
-  $('#closeJobDetails').on('click', function() {
-    $('#jobDetailsSection').addClass('hidden');
-  });
-  
-  $('#closeResultDetails').on('click', function() {
-    $('#resultDetailsSection').addClass('hidden');
-  });
-  
-  // Add escape key handling for modals
-  $(document).on('keydown', function(e) {
-    if (e.key === 'Escape' || e.keyCode === 27) {
-      $('#jobDetailsSection, #resultDetailsSection').addClass('hidden');
-    }
-  });
-}
-
-// Update your setupJobHandling function to include the view button functionality
-function setupJobHandling() {
-  // View job functionality (direct approach)
-  $('.view-job-btn').on('click', function() {
-    const jobId = $(this).data('job-id');
-    window.location.href = `/batch-analysis/job/${jobId}`;
-  });
-  
-  // Cancel job functionality (your existing code)
-  $('.cancel-job-btn').on('click', function() {
-    if (!confirm('Are you sure you want to cancel this job?')) {
-      return;
-    }
-    
-    const jobId = $(this).data('job-id');
-    const $btn = $(this);
-    
-    $btn.prop('disabled', true);
-    $btn.html(`
-      <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>Canceling...`);
-    
-    $.ajax({
-      url: `/batch-analysis/job/${jobId}/cancel`,
-      method: 'POST',
-      success: function(response) {
-        showToast('success', 'Job cancelled successfully');
-        // Reload the page or update the UI as needed
-        setTimeout(() => window.location.reload(), 1000);
-      },
-      error: function(xhr) {
-        $btn.prop('disabled', false);
-        $btn.html('Cancel');
-        showToast('error', xhr.responseJSON?.message || 'Failed to cancel job');
-      }
-    });
-  });
-}
-
-// Make sure to call these setup functions when the document is ready
-$(document).ready(function() {
-  setupJobViewButtons();
-  setupJobHandling();
-  setupFilters();
-  // Other initialization functions...
-  
-  // Helper function for showing toast notifications
-  window.showToast = function(type, message) {
-    const toastId = 'toast-' + Date.now();
-    const toastHtml = `
-      <div id="${toastId}" class="flex items-center p-3 mb-2 rounded-md shadow-md ${type === 'success' ? 'bg-green-100 border border-green-500' : 'bg-red-100 border border-red-500'}" role="alert">
-        <div class="${type === 'success' ? 'text-green-700' : 'text-red-700'}">
-          <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            ${type === 'success' 
-              ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>'
-              : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>'}
-          </svg>
-          <span class="text-xs font-medium">${message}</span>
-        </div>
-        <button type="button" class="ml-auto text-gray-400 hover:text-gray-600" data-dismiss-toast>
-          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-    `;
-    
-    $('#toastContainer').append(toastHtml);
-    
-    // Dismiss toast after 5 seconds
-    setTimeout(() => {
-      $(`#${toastId}`).fadeOut('slow', function() {
-        $(this).remove();
-      });
-    }, 5000);
-    
-    // Close button functionality
-    $(`#${toastId} [data-dismiss-toast]`).on('click', function() {
-      $(`#${toastId}`).fadeOut('fast', function() {
-        $(this).remove();
-      });
-    });
-  }
-});
-
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function() {
   // Initialize form validation and controls
   setupBatchForm();
   
@@ -959,125 +324,131 @@ $(document).ready(function() {
   setupJobHandling();
   
   function setupBatchForm() {
-    const $form = $('#batchJobForm');
-    const $toggleBtn = $('#toggleCreateForm');
-    const $createForm = $('#createJobForm');
-    const $cancelBtn = $('#cancelCreateForm');
-    const $noJobsCreateBtn = $('#noJobsCreateBtn');
+    const form = document.getElementById('batchJobForm');
+    const toggleBtn = document.getElementById('toggleCreateForm');
+    const createForm = document.getElementById('createJobForm');
+    const cancelBtn = document.getElementById('cancelCreateForm');
+    const noJobsCreateBtn = document.getElementById('noJobsCreateBtn');
     
     // Toggle form visibility
-    if ($toggleBtn.length && $createForm.length) {
-      $toggleBtn.on('click', function() {
-        const isHidden = $createForm.hasClass('hidden');
-        
-        $createForm.toggleClass('hidden');
-        $toggleBtn.html(isHidden ? 
-          '<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Cancel'
-          : 
-          '<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>New Batch Job'
-        );
-        
-        $toggleBtn.attr('aria-expanded', isHidden);
-        $createForm.attr('aria-hidden', !isHidden);
+    if (toggleBtn && createForm) {
+      toggleBtn.addEventListener('click', function() {
+        const isHidden = createForm.classList.contains('hidden');
         
         if (isHidden) {
+          createForm.classList.remove('hidden');
+          toggleBtn.innerHTML = '<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Cancel';
+          toggleBtn.setAttribute('aria-expanded', 'true');
+          createForm.setAttribute('aria-hidden', 'false');
+          
           setTimeout(function() {
-            $createForm.find('input, select, textarea').first().focus();
+            createForm.querySelector('input, select, textarea').focus();
           }, 100);
+        } else {
+          createForm.classList.add('hidden');
+          toggleBtn.innerHTML = '<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>New Batch Job';
+          toggleBtn.setAttribute('aria-expanded', 'false');
+          createForm.setAttribute('aria-hidden', 'true');
         }
       });
     }
     
     // Cancel button in form
-    if ($cancelBtn.length) {
-      $cancelBtn.on('click', function() {
-        $createForm.addClass('hidden');
-        $toggleBtn.html('<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>New Batch Job');
-        $toggleBtn.attr('aria-expanded', 'false');
-        $createForm.attr('aria-hidden', 'true');
-        $toggleBtn.focus();
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', function() {
+        createForm.classList.add('hidden');
+        toggleBtn.innerHTML = '<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>New Batch Job';
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        createForm.setAttribute('aria-hidden', 'true');
+        toggleBtn.focus();
       });
     }
     
     // No jobs create button
-    if ($noJobsCreateBtn.length) {
-      $noJobsCreateBtn.on('click', function() {
-        $createForm.removeClass('hidden');
-        $toggleBtn.html('<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Cancel');
-        $toggleBtn.attr('aria-expanded', 'true');
-        $createForm.attr('aria-hidden', 'false');
+    if (noJobsCreateBtn) {
+      noJobsCreateBtn.addEventListener('click', function() {
+        createForm.classList.remove('hidden');
+        toggleBtn.innerHTML = '<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Cancel';
+        toggleBtn.setAttribute('aria-expanded', 'true');
+        createForm.setAttribute('aria-hidden', 'false');
         
         setTimeout(function() {
-          $createForm.find('input, select, textarea').first().focus();
+          createForm.querySelector('input, select, textarea').focus();
         }, 100);
       });
     }
     
     // Monitor model checkboxes to show/hide app range fields
-    const $modelCheckboxes = $('.model-checkbox');
-    const $appRangeFields = $('.app-range-field');
+    const modelCheckboxes = document.querySelectorAll('.model-checkbox');
+    const appRangeFields = document.querySelectorAll('.app-range-field');
     
     function updateAppRangeFields() {
-      const selectedModels = $.map($modelCheckboxes.filter(':checked'), function(cb) {
-        return $(cb).val();
-      });
+      const selectedModels = Array.from(modelCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
       
-      $appRangeFields.each(function() {
-        const $field = $(this);
-        const model = $field.data('model');
-        $field.toggleClass('hidden', !selectedModels.includes(model));
+      appRangeFields.forEach(function(field) {
+        const model = field.dataset.model;
+        if (selectedModels.includes(model)) {
+          field.classList.remove('hidden');
+        } else {
+          field.classList.add('hidden');
+        }
       });
       
       // Validate models
       validateModels();
     }
     
-    $modelCheckboxes.on('change', updateAppRangeFields);
-    
-    // Form validation
-    $form.on('submit', function(e) {
-      // Validate models
-      if (!validateModels()) {
-        e.preventDefault();
-        $('.models-error-msg')[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-      }
-      
-      // Validate app ranges
-      if (!validateAppRanges()) {
-        e.preventDefault();
-        $('.app-range-error:not(.hidden)').first()[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-      }
-      
-      // Set loading state
-      const $submitBtn = $('#submitJobBtn');
-      $submitBtn.prop('disabled', true);
-      $submitBtn.html(`
-        <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>Creating...`);
+    modelCheckboxes.forEach(function(checkbox) {
+      checkbox.addEventListener('change', updateAppRangeFields);
     });
     
+    // Form validation
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        // Validate models
+        if (!validateModels()) {
+          e.preventDefault();
+          document.querySelector('.models-error-msg').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+        
+        // Validate app ranges
+        if (!validateAppRanges()) {
+          e.preventDefault();
+          document.querySelector('.app-range-error:not(.hidden)').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+        
+        // Set loading state
+        const submitBtn = document.getElementById('submitJobBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+          <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>Creating...`;
+      });
+    }
+    
     function validateModels() {
-      const selectedModels = $modelCheckboxes.filter(':checked').length > 0;
-      $('.models-error-msg').toggleClass('hidden', selectedModels);
-      return selectedModels;
+      const hasSelectedModels = Array.from(modelCheckboxes).some(cb => cb.checked);
+      document.querySelector('.models-error-msg').classList.toggle('hidden', hasSelectedModels);
+      return hasSelectedModels;
     }
     
     function validateAppRanges() {
-      const $visibleAppRanges = $('.app-range-field:not(.hidden) input');
+      const visibleAppRanges = document.querySelectorAll('.app-range-field:not(.hidden) input');
       let isValid = true;
       
-      $visibleAppRanges.each(function() {
-        const $input = $(this);
-        const value = $input.val().trim();
-        const $errorMsg = $input.parent().next();
+      visibleAppRanges.forEach(function(input) {
+        const value = input.value.trim();
+        const errorMsg = input.parentElement.nextElementSibling;
         
         // Regex for validating ranges like 1-3,5,7-9
         const validFormat = !value || /^(\d+(-\d+)?)(,\d+(-\d+)?)*$/.test(value);
-        $errorMsg.toggleClass('hidden', validFormat);
+        errorMsg.classList.toggle('hidden', validFormat);
         
         isValid = isValid && validFormat;
       });
@@ -1086,18 +457,17 @@ $(document).ready(function() {
     }
     
     // Validate app ranges when inputs change
-    $appRangeFields.each(function() {
-      const $field = $(this);
-      const $input = $field.find('input');
+    appRangeFields.forEach(function(field) {
+      const input = field.querySelector('input');
       
-      if ($input.length) {
-        $input.on('input', function() {
-          const value = $input.val().trim();
-          const $errorMsg = $input.parent().next();
+      if (input) {
+        input.addEventListener('input', function() {
+          const value = input.value.trim();
+          const errorMsg = input.parentElement.nextElementSibling;
           
           // Regex for validating ranges like 1-3,5,7-9
           const validFormat = !value || /^(\d+(-\d+)?)(,\d+(-\d+)?)*$/.test(value);
-          $errorMsg.toggleClass('hidden', validFormat);
+          errorMsg.classList.toggle('hidden', validFormat);
         });
       }
     });
@@ -1107,149 +477,169 @@ $(document).ready(function() {
   }
   
   function setupFilters() {
+    const searchInput = document.getElementById('searchJobs');
+    const modelFilter = document.getElementById('modelFilter');
+    const scanTypeFilter = document.getElementById('scanTypeFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const clearFiltersBtn = document.getElementById('clearFilters');
+    const jobRows = document.querySelectorAll('.job-row');
+    const noResultsRow = document.getElementById('noResultsRow');
+    const visibleJobsCount = document.getElementById('visibleJobsCount');
+    
     const applyFilters = function() {
-      const searchText = $('#searchJobs').val()?.toLowerCase() || '';
-      const selectedModel = $('#modelFilter').val() || 'all';
-      const selectedScanType = $('#scanTypeFilter').val() || 'all';
-      const selectedStatus = $('#statusFilter').val() || 'all';
+      const searchText = searchInput?.value?.toLowerCase() || '';
+      const selectedModel = modelFilter?.value || 'all';
+      const selectedScanType = scanTypeFilter?.value || 'all';
+      const selectedStatus = statusFilter?.value || 'all';
       
       let visibleCount = 0;
       
-      $('.job-row').each(function() {
-        const $row = $(this);
-        const models = $row.data('models')?.toLowerCase() || '';
-        const scanType = $row.data('scan-type')?.toLowerCase() || '';
-        const status = $row.data('status')?.toLowerCase() || '';
-        const name = $row.data('name')?.toLowerCase() || '';
+      jobRows.forEach(function(row) {
+        const models = row.dataset.models?.toLowerCase() || '';
+        const scanType = row.dataset.scanType?.toLowerCase() || '';
+        const status = row.dataset.status?.toLowerCase() || '';
+        const name = row.dataset.name?.toLowerCase() || '';
         
         const matchesSearch = !searchText || 
                               name.includes(searchText) || 
-                              $row.text().toLowerCase().includes(searchText);
+                              row.textContent.toLowerCase().includes(searchText);
         const matchesModel = selectedModel === 'all' || models.includes(selectedModel.toLowerCase());
         const matchesScanType = selectedScanType === 'all' || scanType === selectedScanType;
         const matchesStatus = selectedStatus === 'all' || status === selectedStatus;
         
         const isVisible = matchesSearch && matchesModel && matchesScanType && matchesStatus;
-        $row.toggle(isVisible);
+        row.style.display = isVisible ? '' : 'none';
         
         if (isVisible) visibleCount++;
       });
       
       // Update counter
-      $('#visibleJobsCount').text(visibleCount);
+      if (visibleJobsCount) {
+        visibleJobsCount.textContent = visibleCount;
+      }
       
       // Show/hide no results row
-      $('#noResultsRow').toggle(visibleCount === 0);
+      if (noResultsRow) {
+        noResultsRow.style.display = visibleCount === 0 ? 'table-row' : 'none';
+      }
     };
     
     // Add event listeners with debounce for search
     let searchTimeout;
-    $('#searchJobs').on('input', function() {
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(applyFilters, 300);
-    });
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(applyFilters, 300);
+      });
+    }
     
-    $('#modelFilter, #scanTypeFilter, #statusFilter').on('change', applyFilters);
+    // Add event listeners for filters
+    [modelFilter, scanTypeFilter, statusFilter].forEach(function(filter) {
+      if (filter) {
+        filter.addEventListener('change', applyFilters);
+      }
+    });
     
     // Clear filters button
-    $('#clearFilters').on('click', function() {
-      $('#searchJobs').val('');
-      $('#modelFilter, #scanTypeFilter, #statusFilter').val('all');
-      applyFilters();
-      $('#searchJobs').focus();
-    });
+    if (clearFiltersBtn) {
+      clearFiltersBtn.addEventListener('click', function() {
+        if (searchInput) searchInput.value = '';
+        if (modelFilter) modelFilter.value = 'all';
+        if (scanTypeFilter) scanTypeFilter.value = 'all';
+        if (statusFilter) statusFilter.value = 'all';
+        applyFilters();
+        if (searchInput) searchInput.focus();
+      });
+    }
+    
+    // Apply filters on initial load
+    applyFilters();
   }
   
   function setupJobHandling() {
     // Cancel job functionality
-    $('.cancel-job-btn').on('click', function() {
-      if (!confirm('Are you sure you want to cancel this job?')) {
-        return;
-      }
-      
-      const jobId = $(this).data('job-id');
-      const $btn = $(this);
-      
-      $btn.prop('disabled', true);
-      $btn.html(`
-        <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>Canceling...`);
-      
-      $.ajax({
-        url: `/batch-analysis/job/${jobId}/cancel`,
-        method: 'POST',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'Content-Type': 'application/json'
+    const cancelBtns = document.querySelectorAll('.cancel-job-btn');
+    
+    cancelBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        if (!confirm('Are you sure you want to cancel this job?')) {
+          return;
         }
-      })
-      .done(function(data) {
-        if (data.status === 'canceled' || data.status === 'cancelled') {
-          window.location.reload();
-        } else {
-          alert(data.error || 'Failed to cancel job');
-          $btn.prop('disabled', false);
-          $btn.html(`
-            <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-            Cancel`);
-        }
-      })
-      .fail(function(jqXHR) {
-        console.error('Error canceling job:', jqXHR.statusText);
-        alert(`Error: ${jqXHR.responseJSON?.error || jqXHR.statusText}`);
-        $btn.prop('disabled', false);
-        $btn.html(`
-          <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-          Cancel`);
+        
+        const jobId = this.dataset.jobId;
+        const button = this;
+        
+        button.disabled = true;
+        button.innerHTML = `
+          <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>Canceling...`;
+        
+        // Send cancel request
+        fetch(`/batch-analysis/job/${jobId}/cancel`, {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'canceled') {
+            showToast('Job cancelled successfully', 'success');
+            setTimeout(() => window.location.reload(), 1000);
+          } else {
+            showToast(data.error || 'Failed to cancel job', 'error');
+            button.disabled = false;
+            button.innerHTML = 'Cancel';
+          }
+        })
+        .catch(error => {
+          console.error('Error canceling job:', error);
+          showToast('Error: ' + error.message, 'error');
+          button.disabled = false;
+          button.innerHTML = 'Cancel';
+        });
       });
     });
-    
-    // Setup job details modal (delegated event set up in main document)
   }
   
-  // Add toast notifications helper
+  // Toast notification helper
   window.showToast = function(message, type = 'success') {
     if (!message) return;
     
-    // Create toast container if it doesn't exist
-    let $toastContainer = $('#toastContainer');
-    if ($toastContainer.length === 0) {
-      $toastContainer = $('<div>', {
-        id: 'toastContainer',
-        class: 'fixed bottom-4 right-4 z-50 flex flex-col gap-2'
-      }).appendTo('body');
+    // Create container if it doesn't exist
+    let toastContainer = document.getElementById('toastContainer');
+    if (!toastContainer) {
+      toastContainer = document.createElement('div');
+      toastContainer.id = 'toastContainer';
+      toastContainer.className = 'fixed bottom-4 right-4 z-50 flex flex-col gap-2';
+      document.body.appendChild(toastContainer);
     }
     
     // Create toast element
-    const $toast = $('<div>', {
-      class: `px-4 py-2 rounded-sm shadow-md text-sm ${
-        type === 'success' ? 'bg-green-100 border border-green-300 text-green-800' :
-        type === 'error' ? 'bg-red-100 border border-red-300 text-red-800' :
-        'bg-blue-100 border border-blue-300 text-blue-800'
-      } transition-opacity duration-300`,
-      text: message
-    });
+    const toast = document.createElement('div');
+    toast.className = `px-4 py-2 rounded-md shadow-md text-sm ${
+      type === 'success' ? 'bg-green-100 border border-green-300 text-green-800' :
+      type === 'error' ? 'bg-red-100 border border-red-300 text-red-800' :
+      'bg-blue-100 border border-blue-300 text-blue-800'
+    } transition-opacity duration-300`;
+    toast.textContent = message;
     
     // Add to container
-    $toastContainer.append($toast);
+    toastContainer.appendChild(toast);
     
     // Remove after delay
     setTimeout(function() {
-      $toast.css('opacity', 0);
+      toast.style.opacity = 0;
       setTimeout(function() {
-        $toast.remove();
+        toast.remove();
       }, 300);
     }, 3000);
     
-    return $toast;
+    return toast;
   };
 });
 </script>
-
-  {% endblock %}
+{% endblock %}

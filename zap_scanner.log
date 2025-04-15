@@ -7137,3 +7137,195 @@ Log excerpt:
 2025-04-15 09:13:54,597 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
 2025-04-15 09:13:54,597 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
 2025-04-15 09:13:54,597 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 10:39:02,540 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 10:39:02,659 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 10:39:02,660 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 10:39:02,661 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 10:39:02,661 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 10:39:02,661 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 10:45:27,349 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 10:45:27,435 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 10:45:27,435 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 10:45:27,436 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 10:45:27,436 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 10:45:27,436 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 10:45:32,220 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 10:45:32,342 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 10:45:32,344 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 10:45:32,345 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 10:45:32,345 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 10:45:32,347 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 10:48:41,430 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 10:48:41,539 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 10:48:41,540 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 10:48:41,540 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 10:48:41,540 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 10:48:41,541 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 10:48:46,181 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 10:48:46,276 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 10:48:46,277 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 10:48:46,277 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 10:48:46,278 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 10:48:46,278 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:22:27,003 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 13:22:27,091 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 13:22:27,092 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 13:22:27,092 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:22:27,092 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 13:22:27,092 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:22:31,355 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 13:22:31,474 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 13:22:31,475 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 13:22:31,475 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:22:31,476 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 13:22:31,476 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:24:09,952 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 13:24:10,131 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 13:24:10,133 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 13:24:10,133 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:24:10,133 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 13:24:10,134 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:24:15,027 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 13:24:15,118 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 13:24:15,119 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 13:24:15,119 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:24:15,119 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 13:24:15,119 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:27:37,306 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 13:27:37,396 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 13:27:37,397 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 13:27:37,397 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:27:37,398 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 13:27:37,398 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:42:18,779 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 13:42:18,898 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 13:42:18,899 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 13:42:18,899 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:42:18,899 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 13:42:18,899 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:53:28,690 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 13:53:28,760 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 13:53:28,761 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 13:53:28,761 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:53:28,761 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 13:53:28,761 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:53:33,137 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 13:53:33,230 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 13:53:33,231 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 13:53:33,231 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:53:33,231 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 13:53:33,231 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:54:00,646 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 13:54:00,720 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 13:54:00,721 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 13:54:00,722 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 13:54:00,723 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 13:54:00,723 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:12:31,499 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:12:31,592 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:12:31,594 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:12:31,594 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:12:31,595 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:12:31,595 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:12:47,920 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:12:48,113 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:12:48,115 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:12:48,116 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:12:48,117 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:12:48,117 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:13:01,731 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:13:01,801 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:13:01,803 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:13:01,803 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:13:01,804 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:13:01,804 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:13:39,304 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:13:39,432 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:13:39,433 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:13:39,434 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:13:39,434 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:13:39,435 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:21:21,458 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:21:21,586 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:21:21,588 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:21:21,589 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:21:21,591 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:21:21,591 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:21:25,639 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:21:25,727 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:21:25,727 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:21:25,728 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:21:25,728 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:21:25,728 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:23:18,543 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:23:18,656 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:23:18,657 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:23:18,657 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:23:18,658 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:23:18,658 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:23:22,899 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:23:22,960 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:23:22,960 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:23:22,961 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:23:22,961 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:23:22,961 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:27:48,105 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:27:48,195 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:27:48,196 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:27:48,197 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:27:48,197 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:27:48,197 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:27:54,315 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:27:54,411 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:27:54,413 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:27:54,413 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:27:54,414 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:27:54,414 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:34:15,041 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:34:15,163 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:34:15,164 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:34:15,164 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:34:15,164 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:34:15,164 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:34:19,456 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:34:19,531 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:34:19,533 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:34:19,533 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:34:19,533 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:34:19,533 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:48:25,638 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:48:25,725 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:48:25,726 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:48:25,727 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:48:25,727 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:48:25,727 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:48:29,994 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:48:30,118 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:48:30,119 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:48:30,119 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:48:30,119 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:48:30,120 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:49:38,887 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:49:38,955 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:49:38,955 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:49:38,956 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:49:38,956 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:49:38,956 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:49:43,357 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:49:43,467 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:49:43,468 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:49:43,468 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:49:43,468 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:49:43,469 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:54:47,571 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:54:47,660 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:54:47,660 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:54:47,661 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:54:47,661 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:54:47,661 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:55:14,774 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 14:55:14,888 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 14:55:14,889 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 14:55:14,890 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 14:55:14,890 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 14:55:14,891 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app

@@ -12,6 +12,7 @@ Features improved path detection, better logging, and more robust error handling
 
 import os
 import json
+import shutil
 import subprocess
 import logging
 import concurrent.futures
@@ -19,6 +20,7 @@ import platform
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+import tempfile
 from typing import List, Optional, Tuple, Dict, Any, Union
 
 # -----------------------------------------------------------------------------
@@ -126,13 +128,13 @@ class FrontendSecurityAnalyzer:
         
         # Default quick-scan tools vs. full-scan
         self.default_tools = ["eslint"]
-        self.all_tools = ["npm-audit", "eslint", "retire-js", "snyk"]
+        self.all_tools = ["npm-audit", "eslint", "jshint", "snyk"]
         
         # Check which tools are available
         self.available_tools = {
             "npm-audit": self._check_tool("npm"),
             "eslint": self._check_tool("npx"),
-            "retire-js": self._check_tool("npx"),
+            "jshint": self._check_tool("npx"),
             "snyk": self._check_tool("snyk")
         }
         
@@ -606,10 +608,14 @@ class FrontendSecurityAnalyzer:
             status[tool_name] = "✅ No issues found"
             
         return issues, status, raw_output
+    
 
-    def _run_retire_js(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
+
+
+
+    def _run_jshint(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
         """
-        Run retire.js to detect known vulnerable libraries.
+        Run JSHint to detect code quality issues that may lead to security vulnerabilities.
         
         Args:
             app_path: Path to the frontend application
@@ -620,97 +626,605 @@ class FrontendSecurityAnalyzer:
             - Dictionary of tool status messages
             - Raw output from the tool
         """
-        tool_name = "retire-js"
+        import tempfile
+        import shutil
+        import xml.etree.ElementTree as ET
+        
+        tool_name = "jshint"
         issues: List[SecurityIssue] = []
         status = {tool_name: "⚠️ Not run"}
         
-        if not (app_path / "node_modules").exists():
-            msg = f"No node_modules found in {app_path}. Skipping retire.js."
-            logger.warning(msg)
-            status[tool_name] = "❌ No node_modules directory"
+        # Check if we have frontend files to analyze
+        has_files, source_files = self._check_source_files(app_path)
+        if not has_files:
+            msg = f"No frontend files found in {app_path}"
+            status[tool_name] = "❌ No files to analyze"
+            return issues, status, msg
+        
+        # Filter to just JavaScript/JSX files
+        js_files = [f for f in source_files if f.endswith(('.js', '.jsx'))]
+        if not js_files:
+            msg = f"No JavaScript files found in {app_path}"
+            status[tool_name] = "❌ No JS files to analyze"
             return issues, status, msg
 
-        command = [
-            cmd_name("npx"), "retire",
-            "--path", ".",
-            "--outputformat", "json"
-        ]
-
-        logger.info(f"Running retire.js in {app_path}...")
+        # Create temporary JSHint configuration in a separate directory
+        temp_dir = None
+        
         try:
-            proc = subprocess.run(
-                command,
-                cwd=str(app_path),
-                capture_output=True,
-                text=True,
-                timeout=TOOL_TIMEOUT
-            )
-        except subprocess.TimeoutExpired:
-            status[tool_name] = "❌ Timed out"
-            return issues, status, "retire.js timed out"
-        except Exception as exc:
-            status[tool_name] = f"❌ Failed: {exc}"
-            return issues, status, f"retire.js failed: {exc}"
-
-        raw_output = proc.stdout.strip()
-        if not raw_output:
-            err_msg = proc.stderr.strip() if proc.stderr else ""
-            status[tool_name] = "❌ No output" if not err_msg else "❌ Error"
-            return issues, status, err_msg or "retire.js produced no output"
-
-        retire_data = safe_json_loads(raw_output)
-        if not retire_data:
-            status[tool_name] = "❌ Invalid JSON output"
-            return issues, status, raw_output
+            # Create temporary directory for JSHint config
+            temp_dir = Path(tempfile.mkdtemp(prefix="jshint_config_"))
+            jshintrc_path = temp_dir / ".jshintrc"
             
-        if "results" not in retire_data:
-            status[tool_name] = "✅ No vulnerabilities found"
-            return issues, status, raw_output
-
-        # Process vulnerabilities
-        for result_item in retire_data.get("results", []):
-            vulnerabilities = result_item.get("vulnerabilities", [])
-            if not vulnerabilities:
-                continue
-
-            file_name = result_item.get("file", "unknown_file")
-            component = result_item.get("component", "unknown_component")
-            version = result_item.get("version", "unknown_version")
-
-            # Make file path relative
-            try:
-                rel_file = os.path.relpath(file_name, str(app_path))
-            except ValueError:
-                rel_file = file_name
-
-            for vuln in vulnerabilities:
-                # Get vulnerability info
-                info_list = vuln.get("info", [])
-                info_text = info_list[0] if isinstance(info_list, list) and info_list else "No vulnerability info"
+            # Create a security-focused JSHint config
+            jshint_config = {
+                "esversion": 9,      # Support modern JS
+                "browser": True,     # Browser environment
+                "node": True,        # Node.js environment
+                "strict": "implied", # Don't require strict mode declaration
+                "maxerr": 50,        # Limit errors to avoid hanging
+            }
+            
+            # Write the config file
+            with open(jshintrc_path, "w") as f:
+                json.dump(jshint_config, f, indent=2)
                 
-                # Create issue
-                issues.append(
-                    SecurityIssue(
-                        filename=rel_file,
-                        line_number=0,
-                        issue_text=info_text,
-                        severity="HIGH",  # Retire.js vulnerabilities are typically high
-                        confidence="HIGH",
-                        issue_type="known_vulnerability",
-                        line_range=[0],
-                        code=f"{component}@{version}",
-                        tool="retire-js",
-                        fix_suggestion=f"Update to version {vuln.get('below', 'latest')} or newer"
-                    )
-                )
-
-        # Update status based on results
-        if issues:
-            status[tool_name] = f"⚠️ Found {len(issues)} issues"
-        else:
-            status[tool_name] = "✅ No issues found"
+            logger.info(f"Created temporary JSHint config at {jshintrc_path}")
             
-        return issues, status, raw_output
+            # Create a file list instead of passing all files on command line
+            file_list_path = temp_dir / "files.txt"
+            with open(file_list_path, "w") as f:
+                for js_file in js_files[:10]:  # Limit to 10 files
+                    f.write(f"{js_file}\n")
+            
+            # Build JSHint command with shorter timeout
+            command = [
+                cmd_name("npx"), "jshint",
+                "--config", str(jshintrc_path),
+                "--reporter=checkstyle"
+            ]
+            
+            # Add a limited number of files directly (safer than file list which may not be supported)
+            files_to_scan = js_files[:5]  # Limit to just 5 files to avoid hanging
+            command.extend(files_to_scan)
+            
+            logger.info(f"Running JSHint on {len(files_to_scan)}/{len(js_files)} JS files in {app_path}...")
+            
+            # Use a much shorter timeout for JSHint
+            jshint_timeout = min(TOOL_TIMEOUT, 10)  # 10 second max timeout
+            
+            try:
+                proc = subprocess.run(
+                    command,
+                    cwd=str(app_path),
+                    capture_output=True,
+                    text=True,
+                    timeout=jshint_timeout
+                )
+            except subprocess.TimeoutExpired:
+                logger.warning(f"JSHint timed out after {jshint_timeout} seconds")
+                status[tool_name] = "❌ Timed out"
+                return issues, status, "JSHint timed out"
+            except FileNotFoundError:
+                status[tool_name] = "❌ JSHint not found"
+                return issues, status, "JSHint command not found"
+            except Exception as exc:
+                status[tool_name] = f"❌ Failed: {exc}"
+                return issues, status, f"JSHint failed: {exc}"
+
+            raw_output = proc.stdout.strip()
+            
+            # Check for empty or invalid output
+            if not raw_output:
+                status[tool_name] = "✅ No issues found" if proc.returncode == 0 else "❌ No output"
+                return issues, status, "No output from JSHint"
+                
+            # Check for XML format
+            if not raw_output.startswith("<?xml"):
+                status[tool_name] = "❌ Invalid output format"
+                return issues, status, raw_output
+                
+            # Security-related patterns to look for
+            security_patterns = [
+                "eval", "Function(", "setTimeout", "setInterval", 
+                "innerHTML", "document.write"
+            ]
+            
+            try:
+                # Parse XML output safely
+                root = ET.fromstring(raw_output)
+                
+                for file_elem in root.findall("file"):
+                    file_path = file_elem.get("name", "unknown")
+                    try:
+                        rel_path = os.path.relpath(file_path, str(app_path))
+                    except ValueError:
+                        rel_path = file_path
+                    
+                    for error in file_elem.findall("error"):
+                        line = int(error.get("line", 0))
+                        message = error.get("message", "Unknown issue")
+                        
+                        # Check if this is security-related
+                        is_security = any(pattern in message.lower() for pattern in security_patterns)
+                        
+                        # Set appropriate severity and issue type
+                        if is_security:
+                            severity = "HIGH"
+                            confidence = "MEDIUM"
+                            issue_type = "potential_security_issue"
+                        else:
+                            severity = "MEDIUM"
+                            confidence = "MEDIUM"
+                            issue_type = "code_quality"
+                        
+                        # Create issue
+                        issues.append(
+                            SecurityIssue(
+                                filename=rel_path,
+                                line_number=line,
+                                issue_text=message,
+                                severity=severity,
+                                confidence=confidence,
+                                issue_type=issue_type,
+                                line_range=[line],
+                                code="See file content",
+                                tool="jshint",
+                                fix_suggestion="Review and address the issue"
+                            )
+                        )
+                        
+                        # Limit number of issues
+                        if len(issues) >= 20:
+                            break
+                
+            except ET.ParseError:
+                status[tool_name] = "❌ Invalid XML output"
+                return issues, status, "Failed to parse output as XML"
+            except Exception as e:
+                status[tool_name] = f"❌ Error: {e}"
+                return issues, status, f"Error processing output: {e}"
+
+            # Update status based on results
+            if issues:
+                status[tool_name] = f"⚠️ Found {len(issues)} issues"
+            else:
+                status[tool_name] = "✅ No issues found"
+            
+            return issues, status, raw_output
+            
+        except Exception as e:
+            logger.exception(f"Unexpected error in JSHint analysis: {e}")
+            status[tool_name] = f"❌ Failed: {str(e)}"
+            return issues, status, str(e)
+            
+        finally:
+            # Clean up temporary directory
+            if temp_dir and temp_dir.exists():
+                try:
+                    shutil.rmtree(temp_dir)
+                    logger.debug("Cleaned up temporary JSHint directory")
+                except Exception as e:
+                    logger.warning(f"Failed to clean up temporary JSHint directory: {e}")
+            """
+            Run JSHint to detect code quality issues that may lead to security vulnerabilities.
+            
+            Args:
+                app_path: Path to the frontend application
+                
+            Returns:
+                Tuple containing:
+                - List of security issues found
+                - Dictionary of tool status messages
+                - Raw output from the tool
+            """
+            import tempfile
+            import shutil
+            import xml.etree.ElementTree as ET
+            
+            tool_name = "jshint"
+            issues: List[SecurityIssue] = []
+            status = {tool_name: "⚠️ Not run"}
+            
+            # Check if we have frontend files to analyze
+            has_files, source_files = self._check_source_files(app_path)
+            if not has_files:
+                msg = f"No frontend files found in {app_path}"
+                status[tool_name] = "❌ No files to analyze"
+                return issues, status, msg
+            
+            # Filter to just JavaScript/JSX files
+            js_files = [f for f in source_files if f.endswith(('.js', '.jsx'))]
+            if not js_files:
+                msg = f"No JavaScript files found in {app_path}"
+                status[tool_name] = "❌ No JS files to analyze"
+                return issues, status, msg
+
+            # Create temporary JSHint configuration in a separate directory
+            temp_dir = None
+            jshintrc_path = None
+            
+            try:
+                # Create temporary directory for JSHint config
+                temp_dir = Path(tempfile.mkdtemp(prefix="jshint_config_"))
+                jshintrc_path = temp_dir / ".jshintrc"
+                
+                # Create a security-focused JSHint config
+                jshint_config = {
+                    "esversion": 9,      # Support modern JS
+                    "browser": True,     # Browser environment
+                    "node": True,        # Node.js environment
+                    "strict": True,      # Require strict mode
+                    "undef": True,       # Error on undefined variables
+                    "unused": True,      # Error on unused variables
+                    "evil": False,       # Warn on eval
+                    "loopfunc": False,   # Warn on functions in loops
+                    "expr": False,       # Warn on expressions
+                    "-W054": False,      # Warn on Function constructor (can lead to code injection)
+                    "-W061": False,      # Warn on eval
+                    "-W067": False,      # Warn on Function-like calls (potential code injection)
+                    "maxerr": 1000       # Maximum number of errors
+                }
+                
+                # Write the config file
+                with open(jshintrc_path, "w") as f:
+                    json.dump(jshint_config, f, indent=2)
+                    
+                logger.info(f"Created temporary JSHint config at {jshintrc_path}")
+                
+                # Build JSHint command
+                command = [
+                    cmd_name("npx"), "jshint",
+                    "--config", str(jshintrc_path),
+                    "--reporter=checkstyle",  # XML output for parsing
+                ]
+                
+                # Add files to scan - limit to 20 files to prevent command line overflow
+                # For larger projects, we'd scan in batches
+                files_to_scan = js_files[:20]
+                command.extend(files_to_scan)
+                
+                logger.info(f"Running JSHint on {len(files_to_scan)}/{len(js_files)} JS files in {app_path}...")
+                try:
+                    proc = subprocess.run(
+                        command,
+                        cwd=str(app_path),
+                        capture_output=True,
+                        text=True,
+                        timeout=TOOL_TIMEOUT
+                    )
+                except subprocess.TimeoutExpired:
+                    status[tool_name] = "❌ Timed out"
+                    return issues, status, "JSHint timed out"
+                except FileNotFoundError:
+                    status[tool_name] = "❌ JSHint not found"
+                    return issues, status, "JSHint command not found"
+                except Exception as exc:
+                    status[tool_name] = f"❌ Failed: {exc}"
+                    return issues, status, f"JSHint failed: {exc}"
+
+                raw_output = proc.stdout.strip()
+                
+                # If no output, check for errors
+                if not raw_output:
+                    err_msg = proc.stderr.strip() if proc.stderr else "No output"
+                    status[tool_name] = "✅ No issues found" if proc.returncode == 0 else f"❌ Error: {err_msg}"
+                    return issues, status, err_msg
+                
+                # JSHint returns XML in checkstyle format - parse it
+                security_related_rules = [
+                    "eval", "evil", "W054", "W061", "W067", "W089", "insecure",
+                    "unsafe", "prototype", "constructor", "global", "document.write"
+                ]
+                
+                try:
+                    # Parse XML - with error handling for malformed XML
+                    root = ET.fromstring(raw_output)
+                    
+                    for file_elem in root.findall("file"):
+                        file_path = file_elem.get("name", "unknown")
+                        try:
+                            rel_path = os.path.relpath(file_path, str(app_path))
+                        except ValueError:
+                            rel_path = file_path
+                        
+                        for error in file_elem.findall("error"):
+                            line = int(error.get("line", 0))
+                            column = int(error.get("column", 0))
+                            message = error.get("message", "Unknown issue")
+                            source = error.get("source", "")
+                            
+                            # Determine severity based on message and source
+                            severity = "MEDIUM"  # Default
+                            confidence = "MEDIUM"  # JSHint can have false positives
+                            
+                            # Check if it's security related
+                            is_security_related = False
+                            for rule in security_related_rules:
+                                if rule.lower() in message.lower() or rule.lower() in source.lower():
+                                    is_security_related = True
+                                    break
+                            
+                            if is_security_related:
+                                severity = "HIGH"
+                                
+                                # Categorize the issue type
+                                if "eval" in message.lower():
+                                    issue_type = "eval_usage"
+                                elif "unsafe" in message.lower():
+                                    issue_type = "unsafe_operation"
+                                elif any(kw in message.lower() for kw in ["prototype", "constructor"]):
+                                    issue_type = "prototype_pollution"
+                                elif "global" in message.lower():
+                                    issue_type = "global_exposure"
+                                elif "document.write" in message.lower():
+                                    issue_type = "document_write"
+                                else:
+                                    issue_type = "security_concern"
+                                    
+                                # Increase confidence for certain patterns
+                                if any(pattern in message.lower() for pattern in ["eval(", "new Function(", "setTimeout(", "setInterval("]):
+                                    confidence = "HIGH"
+                            else:
+                                # For non-security issues, use a less severe category
+                                issue_type = source.replace("jshint.", "") if source.startswith("jshint.") else "code_quality"
+                                if "W" in source or "E" in source:  # These are JSHint warning/error codes
+                                    severity = "MEDIUM"
+                                else:
+                                    severity = "LOW"
+                            
+                            # Read the code from the file
+                            code_snippet = "Code not available"
+                            try:
+                                with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                                    lines = f.readlines()
+                                    # Get context (2 lines before and after)
+                                    start_line = max(0, line - 2)
+                                    end_line = min(len(lines), line + 2)
+                                    code_snippet = ''.join(lines[start_line:end_line])
+                            except Exception as e:
+                                logger.debug(f"Failed to extract code snippet: {e}")
+                            
+                            # Add the issue
+                            issues.append(
+                                SecurityIssue(
+                                    filename=rel_path,
+                                    line_number=line,
+                                    issue_text=message,
+                                    severity=severity,
+                                    confidence=confidence,
+                                    issue_type=issue_type,
+                                    line_range=[line],
+                                    code=code_snippet,
+                                    tool="jshint",
+                                    fix_suggestion=f"Review and fix this {issue_type.replace('_', ' ')}"
+                                )
+                            )
+                except ET.ParseError as e:
+                    logger.error(f"Failed to parse XML from JSHint: {e}")
+                    # Check if output contains useful error info
+                    if "error" in raw_output.lower():
+                        status[tool_name] = "❌ JSHint reported errors"
+                        return issues, status, raw_output
+                    status[tool_name] = "❌ Invalid XML output"
+                    return issues, status, raw_output
+                except Exception as e:
+                    logger.error(f"Error processing JSHint output: {e}")
+                    status[tool_name] = "❌ Error processing output"
+                    return issues, status, raw_output
+
+                # Update status
+                if issues:
+                    security_issues = sum(1 for i in issues if i.severity == "HIGH")
+                    if security_issues > 0:
+                        status[tool_name] = f"⚠️ Found {security_issues} security issues"
+                    else:
+                        status[tool_name] = f"⚠️ Found {len(issues)} code quality issues"
+                else:
+                    status[tool_name] = "✅ No issues found"
+                
+                return issues, status, raw_output
+                
+            except Exception as e:
+                logger.exception(f"Unexpected error in JSHint analysis: {e}")
+                status[tool_name] = f"❌ Failed: {str(e)}"
+                return issues, status, str(e)
+                
+            finally:
+                # Clean up temporary directory
+                if temp_dir and temp_dir.exists():
+                    try:
+                        shutil.rmtree(temp_dir)
+                        logger.debug("Cleaned up temporary JSHint directory")
+                    except Exception as e:
+                        logger.warning(f"Failed to clean up temporary JSHint directory: {e}")
+                """
+                Run JSHint to detect code quality issues that may lead to security vulnerabilities.
+                
+                Args:
+                    app_path: Path to the frontend application
+                    
+                Returns:
+                    Tuple containing:
+                    - List of security issues found
+                    - Dictionary of tool status messages
+                    - Raw output from the tool
+                """
+                tool_name = "jshint"
+                issues: List[SecurityIssue] = []
+                status = {tool_name: "⚠️ Not run"}
+                
+                # Check if we have frontend files to analyze
+                has_files, source_files = self._check_source_files(app_path)
+                if not has_files:
+                    msg = f"No frontend files found in {app_path}"
+                    status[tool_name] = "❌ No files to analyze"
+                    return issues, status, msg
+                
+                # Filter to just JavaScript/JSX files
+                js_files = [f for f in source_files if f.endswith(('.js', '.jsx'))]
+                if not js_files:
+                    msg = f"No JavaScript files found in {app_path}"
+                    status[tool_name] = "❌ No JS files to analyze"
+                    return issues, status, msg
+
+                # Create temporary JSHint configuration for security checks
+                jshintrc_path = app_path / ".jshintrc"
+                temp_jshintrc_created = False
+                
+                if not jshintrc_path.exists():
+                    # Create a security-focused JSHint config
+                    jshint_config = {
+                        "esversion": 9,      # Support modern JS
+                        "browser": True,     # Browser environment
+                        "node": True,        # Node.js environment
+                        "strict": True,      # Require strict mode
+                        "undef": True,       # Error on undefined variables
+                        "unused": True,      # Error on unused variables
+                        "evil": False,       # Warn on eval
+                        "loopfunc": False,   # Warn on functions in loops
+                        "expr": False,       # Warn on expressions
+                        "-W054": False,      # Warn on Function constructor (can lead to code injection)
+                        "-W061": False,      # Warn on eval
+                        "-W067": False,      # Warn on Function-like calls (potential code injection)
+                        "maxerr": 1000       # Maximum number of errors
+                    }
+                    
+                    try:
+                        with open(jshintrc_path, "w") as f:
+                            json.dump(jshint_config, f, indent=2)
+                        temp_jshintrc_created = True
+                        logger.info(f"Created temporary JSHint config at {jshintrc_path}")
+                    except Exception as e:
+                        logger.warning(f"Failed to create temporary JSHint config: {e}")
+                        # Continue without custom config
+                
+                # Build JSHint command
+                command = [
+                    cmd_name("npx"), "jshint",
+                    "--reporter=checkstyle", # XML output for parsing
+                ]
+                
+                # Add files to scan - limit to 30 files to prevent command line overflow
+                command.extend(js_files[:30])
+                
+                logger.info(f"Running JSHint on {len(js_files[:30])}/{len(js_files)} JS files in {app_path}...")
+                try:
+                    proc = subprocess.run(
+                        command,
+                        cwd=str(app_path),
+                        capture_output=True,
+                        text=True,
+                        timeout=TOOL_TIMEOUT
+                    )
+                except subprocess.TimeoutExpired:
+                    status[tool_name] = "❌ Timed out"
+                    return issues, status, "JSHint timed out"
+                except Exception as exc:
+                    status[tool_name] = f"❌ Failed: {exc}"
+                    return issues, status, f"JSHint failed: {exc}"
+                finally:
+                    # Clean up temporary config
+                    if temp_jshintrc_created:
+                        try:
+                            jshintrc_path.unlink()
+                            logger.debug(f"Removed temporary JSHint config at {jshintrc_path}")
+                        except Exception as e:
+                            logger.warning(f"Failed to remove temporary JSHint config: {e}")
+
+                raw_output = proc.stdout.strip()
+                
+                # JSHint returns XML in checkstyle format - parse it
+                security_related_rules = [
+                    "eval", "evil", "W054", "W061", "W067", "W089", "insecure",
+                    "unsafe", "prototype", "constructor", "global", "this"
+                ]
+                
+                try:
+                    import xml.etree.ElementTree as ET
+                    if raw_output:
+                        root = ET.fromstring(raw_output)
+                        for file_elem in root.findall("file"):
+                            file_path = file_elem.get("name", "unknown")
+                            try:
+                                rel_path = os.path.relpath(file_path, str(app_path))
+                            except ValueError:
+                                rel_path = file_path
+                            
+                            for error in file_elem.findall("error"):
+                                line = int(error.get("line", 0))
+                                column = int(error.get("column", 0))
+                                message = error.get("message", "Unknown issue")
+                                source = error.get("source", "")
+                                
+                                # Determine severity based on message and source
+                                severity = "MEDIUM"  # Default
+                                
+                                # Check if it's security related
+                                is_security_related = any(rule in message.lower() or rule in source.lower() 
+                                                        for rule in security_related_rules)
+                                
+                                if is_security_related:
+                                    severity = "HIGH"
+                                    # Extract issue type from message or source
+                                    if "eval" in message.lower():
+                                        issue_type = "eval_usage"
+                                    elif "unsafe" in message.lower():
+                                        issue_type = "unsafe_operation"
+                                    elif any(kw in message.lower() for kw in ["prototype", "constructor"]):
+                                        issue_type = "prototype_pollution"
+                                    elif "global" in message.lower():
+                                        issue_type = "global_exposure"
+                                    else:
+                                        issue_type = "security_concern"
+                                else:
+                                    # Skip non-security related issues
+                                    continue
+                                
+                                # Read the code from the file
+                                code_snippet = "Code not available"
+                                try:
+                                    with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                                        lines = f.readlines()
+                                        start_line = max(0, line - 2)
+                                        end_line = min(len(lines), line + 2)
+                                        code_snippet = ''.join(lines[start_line:end_line])
+                                except Exception as e:
+                                    logger.debug(f"Failed to extract code snippet: {e}")
+                                
+                                # Add the issue
+                                issues.append(
+                                    SecurityIssue(
+                                        filename=rel_path,
+                                        line_number=line,
+                                        issue_text=message,
+                                        severity=severity,
+                                        confidence="MEDIUM",  # JSHint can have false positives
+                                        issue_type=issue_type,
+                                        line_range=[line],
+                                        code=code_snippet,
+                                        tool="jshint",
+                                        fix_suggestion=f"Review usage of {issue_type.replace('_', ' ')}"
+                                    )
+                                )
+                except Exception as e:
+                    logger.error(f"Error parsing JSHint output: {e}")
+                    status[tool_name] = "❌ Error parsing output"
+                    return issues, status, raw_output
+
+                # Update status
+                if issues:
+                    status[tool_name] = f"⚠️ Found {len(issues)} security concerns"
+                else:
+                    status[tool_name] = "✅ No security issues found"
+                
+                return issues, status, raw_output
+
+
+
+
+
+
 
     def _run_snyk(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
         """
@@ -864,7 +1378,7 @@ class FrontendSecurityAnalyzer:
         tool_map = {
             "npm-audit": self._run_npm_audit,
             "eslint": self._run_eslint,
-            "retire-js": self._run_retire_js,
+            "jshint": self._run_jshint,
             "snyk": self._run_snyk
         }
 

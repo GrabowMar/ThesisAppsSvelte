@@ -3,11 +3,11 @@ Batch Security Analysis Module
 
 This module provides functionality for running batch security analysis 
 on both frontend and backend code across multiple applications or models.
+It offers a robust job management system and detailed reporting capabilities.
 """
 
-import asyncio
+# Standard Library Imports
 import json
-import logging
 import os
 import threading
 import time
@@ -19,12 +19,15 @@ from functools import wraps
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any, Set, Union
 
+# Third-Party Imports
+import flask
 from flask import Blueprint, current_app, jsonify, render_template, request, url_for, g, redirect, flash
 
-# Setup module-level logger
-logger = logging.getLogger(__name__)
+# Create logger
+from logging_service import create_logger_for_component
+logger = create_logger_for_component('batch_analysis')
 
-# Define Blueprint for routes
+# Create Blueprint for batch analysis routes
 batch_analysis_bp = Blueprint("batch_analysis", __name__, template_folder="templates")
 
 # =============================================================================
@@ -101,10 +104,10 @@ class BatchAnalysisResult:
 
 
 # =============================================================================
-# In-memory Storage (replace with database in production)
+# In-memory Storage
 # =============================================================================
-class InMemoryJobStorage:
-    """Simple in-memory storage for batch analysis jobs and results"""
+class JobStorage:
+    """Storage for batch analysis jobs and results"""
     def __init__(self):
         self.jobs: Dict[int, BatchAnalysisJob] = {}
         self.results: Dict[int, List[BatchAnalysisResult]] = {}
@@ -118,6 +121,7 @@ class InMemoryJobStorage:
             job_id = self.next_job_id
             self.next_job_id += 1
             
+            # Create job with provided data
             job = BatchAnalysisJob(
                 id=job_id,
                 name=job_data.get('name', f'Batch Job {job_id}'),
@@ -130,26 +134,35 @@ class InMemoryJobStorage:
             )
             
             # Calculate total tasks based on scan type
-            total_tasks = 0
-            for model in job.models:
-                app_range = job.app_ranges.get(model, [])
-                if not app_range and model in job.app_ranges:
-                    # Empty list means "all apps"
-                    # We'll determine the count when running
-                    # For now, just use a placeholder
-                    total_tasks += 10
-                else:
-                    app_count = len(app_range)
-                    # For BOTH scan type, we count each app twice (frontend + backend)
-                    if job.scan_type == ScanType.BOTH:
-                        app_count *= 2
-                    total_tasks += app_count
-            
+            total_tasks = self._calculate_total_tasks(job)
             job.total_tasks = total_tasks
+            
+            # Store job and initialize results
             self.jobs[job_id] = job
             self.results[job_id] = []
             
+            logger.info(f"Created new job {job_id}: {job.name} with {total_tasks} tasks")
             return job
+    
+    def _calculate_total_tasks(self, job: BatchAnalysisJob) -> int:
+        """Calculate the total number of tasks for a job"""
+        total_tasks = 0
+        
+        for model in job.models:
+            app_range = job.app_ranges.get(model, [])
+            app_count = len(app_range)
+            
+            # If empty range, we'll determine the count when running
+            if not app_range and model in job.app_ranges:
+                app_count = 10  # Default placeholder
+            
+            # For BOTH scan type, we count each app twice (frontend + backend)
+            if job.scan_type == ScanType.BOTH:
+                app_count *= 2
+                
+            total_tasks += app_count
+        
+        return total_tasks
     
     def get_job(self, job_id: int) -> Optional[BatchAnalysisJob]:
         """Get a job by ID"""
@@ -160,24 +173,34 @@ class InMemoryJobStorage:
         return list(self.jobs.values())
     
     def update_job(self, job_id: int, **kwargs) -> Optional[BatchAnalysisJob]:
-        """Update a job"""
+        """Update a job with the provided attributes"""
         with self._lock:
             job = self.jobs.get(job_id)
             if not job:
+                logger.warning(f"Attempted to update non-existent job: {job_id}")
                 return None
             
+            # Update job attributes
             for key, value in kwargs.items():
                 if hasattr(job, key):
                     setattr(job, key, value)
+                else:
+                    logger.warning(f"Attempted to set unknown attribute '{key}' on job {job_id}")
             
             return job
     
     def add_result(self, job_id: int, result_data: Dict[str, Any]) -> BatchAnalysisResult:
         """Add a result to a job"""
         with self._lock:
+            job = self.jobs.get(job_id)
+            if not job:
+                logger.warning(f"Attempted to add result to non-existent job: {job_id}")
+                raise ValueError(f"Job {job_id} not found")
+            
             result_id = self.next_result_id
             self.next_result_id += 1
             
+            # Create result with provided data
             result = BatchAnalysisResult(
                 id=result_id,
                 job_id=job_id,
@@ -193,18 +216,21 @@ class InMemoryJobStorage:
                 details=result_data.get('details', {})
             )
             
+            # Add to results list
             if job_id in self.results:
                 self.results[job_id].append(result)
             else:
                 self.results[job_id] = [result]
             
             # Update job completion stats
-            job = self.jobs.get(job_id)
             if job:
                 job.completed_tasks += 1
-                if job.completed_tasks >= job.total_tasks:
+                
+                # If all tasks are completed, update job status
+                if job.completed_tasks >= job.total_tasks and job.status == JobStatus.RUNNING:
                     job.status = JobStatus.COMPLETED
                     job.completed_at = datetime.now()
+                    logger.info(f"Job {job_id} completed with {job.completed_tasks} tasks")
             
             return result
     
@@ -227,44 +253,68 @@ class InMemoryJobStorage:
                 del self.jobs[job_id]
                 if job_id in self.results:
                     del self.results[job_id]
+                logger.info(f"Deleted job {job_id}")
                 return True
+            logger.warning(f"Attempted to delete non-existent job: {job_id}")
             return False
 
 
-# Global storage instance
-job_storage = InMemoryJobStorage()
+# Create global storage instance
+job_storage = JobStorage()
 
 
 # =============================================================================
-# Batch Analysis Functionality
+# Batch Analysis Service
 # =============================================================================
 class BatchAnalysisService:
     """Service for executing batch analysis jobs"""
-    def __init__(self, storage: InMemoryJobStorage, app=None):
+    
+    def __init__(self, storage: JobStorage):
+        """
+        Initialize the batch analysis service
+        
+        Args:
+            storage: Job storage instance for managing jobs and results
+        """
         self.storage = storage
         self._running_jobs: Dict[int, threading.Thread] = {}
         self._cancel_flags: Set[int] = set()
         self.max_concurrent_jobs = 2
         self.max_concurrent_tasks = 5
-        self.app = app  # Store the Flask app instance
+        self.app = None  # Flask app instance
+        self.logger = create_logger_for_component('batch_service')
     
     def set_app(self, app):
-        """Set the Flask app instance"""
+        """
+        Set the Flask app instance
+        
+        Args:
+            app: Flask application instance
+        """
         self.app = app
+        self.logger.info("Flask app set for batch analysis service")
     
     def start_job(self, job_id: int) -> bool:
-        """Start a batch analysis job in a background thread"""
+        """
+        Start a batch analysis job in a background thread
+        
+        Args:
+            job_id: ID of the job to start
+            
+        Returns:
+            bool: True if job was started successfully, False otherwise
+        """
         job = self.storage.get_job(job_id)
         if not job:
-            logger.error(f"Job {job_id} not found")
+            self.logger.error(f"Job {job_id} not found")
             return False
         
         if job.status == JobStatus.RUNNING:
-            logger.warning(f"Job {job_id} is already running")
+            self.logger.warning(f"Job {job_id} is already running")
             return False
         
         if len(self._running_jobs) >= self.max_concurrent_jobs:
-            logger.warning(f"Maximum number of concurrent jobs ({self.max_concurrent_jobs}) reached")
+            self.logger.warning(f"Maximum number of concurrent jobs ({self.max_concurrent_jobs}) reached")
             return False
         
         # Update job status
@@ -278,75 +328,70 @@ class BatchAnalysisService:
         thread = threading.Thread(
             target=self._run_job,
             args=(job_id,),
-            daemon=True
+            daemon=True,
+            name=f"batch-job-{job_id}"
         )
         self._running_jobs[job_id] = thread
         thread.start()
         
+        self.logger.info(f"Started job {job_id} in background thread")
         return True
     
     def _run_job(self, job_id: int) -> None:
-        """Execute the batch analysis job"""
+        """
+        Execute the batch analysis job
+        
+        Args:
+            job_id: ID of the job to run
+        """
         job = self.storage.get_job(job_id)
         if not job:
-            logger.error(f"Job {job_id} not found")
+            self.logger.error(f"Job {job_id} not found")
             return
         
         try:
-            logger.info(f"Starting batch job {job_id}: {job.name}")
+            self.logger.info(f"Starting batch job {job_id}: {job.name}")
             
-            # Generate task list
-            tasks = []
-            for model in job.models:
-                app_range = job.app_ranges.get(model, [])
-                if not app_range and model in job.app_ranges:
-                    # Empty list means "all apps" - get apps from file system
-                    apps = self._get_all_apps_for_model(model)
-                    for app_num in apps:
-                        if job.scan_type == ScanType.FRONTEND or job.scan_type == ScanType.BOTH:
-                            tasks.append((model, app_num, ScanType.FRONTEND))
-                        if job.scan_type == ScanType.BACKEND or job.scan_type == ScanType.BOTH:
-                            tasks.append((model, app_num, ScanType.BACKEND))
-                else:
-                    for app_num in app_range:
-                        if job.scan_type == ScanType.FRONTEND or job.scan_type == ScanType.BOTH:
-                            tasks.append((model, app_num, ScanType.FRONTEND))
-                        if job.scan_type == ScanType.BACKEND or job.scan_type == ScanType.BOTH:
-                            tasks.append((model, app_num, ScanType.BACKEND))
+            # Generate task list based on job configuration
+            tasks = self._generate_task_list(job)
             
-            # Update total tasks count
-            total_tasks = len(tasks)
-            self.storage.update_job(job_id, total_tasks=total_tasks)
+            # Update total tasks count if needed
+            if len(tasks) != job.total_tasks:
+                self.storage.update_job(job_id, total_tasks=len(tasks))
+                self.logger.info(f"Updated job {job_id} task count from {job.total_tasks} to {len(tasks)}")
             
-            # Execute tasks
+            # Execute tasks with ThreadPoolExecutor
             with ThreadPoolExecutor(max_workers=self.max_concurrent_tasks) as executor:
+                # Submit all tasks for execution
                 future_to_task = {
-                    executor.submit(self._analyze_app, job_id, model, app_num, scan_type, job.scan_options): (model, app_num, scan_type)
+                    executor.submit(self._analyze_app, job_id, model, app_num, scan_type, job.scan_options): 
+                    (model, app_num, scan_type)
                     for model, app_num, scan_type in tasks
                 }
                 
                 # Check for cancellation before waiting for results
                 if job_id in self._cancel_flags:
-                    logger.info(f"Job {job_id} was canceled")
+                    self.logger.info(f"Job {job_id} was canceled")
                     self.storage.update_job(job_id, status=JobStatus.CANCELED)
+                    return
                 
                 # Wait for all tasks to complete
-                for future in concurrent.futures.as_completed(future_to_task):
+                for future in ThreadPoolExecutor.as_completed(future_to_task):
                     try:
                         future.result()
                         # Check for cancellation after each task
                         if job_id in self._cancel_flags:
-                            logger.info(f"Job {job_id} was canceled after a task completed")
+                            self.logger.info(f"Job {job_id} was canceled after a task completed")
                             self.storage.update_job(job_id, status=JobStatus.CANCELED)
                             break
                     except Exception as e:
                         model, app_num, scan_type = future_to_task[future]
                         error_msg = f"Error analyzing {model}/app{app_num} ({scan_type}): {str(e)}"
-                        logger.error(error_msg)
-                        self.storage.update_job(
-                            job_id,
-                            errors=job.errors + [error_msg]
-                        )
+                        self.logger.error(error_msg)
+                        # Add error to job record
+                        job = self.storage.get_job(job_id)
+                        if job:
+                            self.storage.update_job(job_id, errors=job.errors + [error_msg])
             
             # Update job status if not canceled
             if job_id not in self._cancel_flags:
@@ -355,13 +400,13 @@ class BatchAnalysisService:
                     status=JobStatus.COMPLETED,
                     completed_at=datetime.now()
                 )
-            
+                self.logger.info(f"Job {job_id} completed successfully")
         except Exception as e:
-            logger.exception(f"Error running batch job {job_id}: {e}")
+            self.logger.exception(f"Error running batch job {job_id}: {e}")
             self.storage.update_job(
                 job_id,
                 status=JobStatus.FAILED,
-                errors=job.errors + [str(e)]
+                errors=(job.errors + [str(e)] if job else [str(e)])
             )
         finally:
             # Remove from running jobs
@@ -372,69 +417,133 @@ class BatchAnalysisService:
             if job_id in self._cancel_flags:
                 self._cancel_flags.remove(job_id)
     
+    def _generate_task_list(self, job: BatchAnalysisJob) -> List[Tuple[str, int, ScanType]]:
+        """
+        Generate the list of analysis tasks based on job configuration
+        
+        Args:
+            job: Batch analysis job
+            
+        Returns:
+            List of tasks to execute, each as (model, app_num, scan_type)
+        """
+        tasks = []
+        
+        for model in job.models:
+            app_range = job.app_ranges.get(model, [])
+            
+            # If empty range, get all apps for the model
+            if not app_range and model in job.app_ranges:
+                apps = self._get_all_apps_for_model(model)
+            else:
+                apps = app_range
+                
+            # Generate tasks for each app based on scan type
+            for app_num in apps:
+                if job.scan_type == ScanType.FRONTEND or job.scan_type == ScanType.BOTH:
+                    tasks.append((model, app_num, ScanType.FRONTEND))
+                if job.scan_type == ScanType.BACKEND or job.scan_type == ScanType.BOTH:
+                    tasks.append((model, app_num, ScanType.BACKEND))
+        
+        return tasks
+    
     def _get_all_apps_for_model(self, model: str) -> List[int]:
-        """Get all app numbers for a model from the file system"""
-        base_path = Path(model)
-        if not base_path.exists():
-            return []
+        """
+        Get all app numbers for a model from the file system
         
-        app_nums = []
-        for app_dir in base_path.iterdir():
-            if app_dir.is_dir() and app_dir.name.startswith("app"):
-                try:
-                    app_num = int(app_dir.name.replace("app", ""))
-                    app_nums.append(app_num)
-                except ValueError:
-                    continue
-        
-        return sorted(app_nums)
+        Args:
+            model: Model name
+            
+        Returns:
+            List of app numbers
+        """
+        try:
+            # Try to use utils.get_apps_for_model if available
+            from utils import get_apps_for_model
+            
+            apps = get_apps_for_model(model)
+            app_nums = [app["app_num"] for app in apps]
+            self.logger.info(f"Found {len(app_nums)} apps for model {model} using get_apps_for_model")
+            return app_nums
+            
+        except Exception as e:
+            self.logger.warning(f"Error using get_apps_for_model for {model}: {e}")
+            
+            # Fallback to directory scanning
+            base_path = Path(model)
+            if not base_path.exists():
+                self.logger.warning(f"Model directory does not exist: {base_path}")
+                return []
+            
+            app_nums = []
+            for app_dir in base_path.iterdir():
+                if app_dir.is_dir() and app_dir.name.startswith("app"):
+                    try:
+                        app_num = int(app_dir.name.replace("app", ""))
+                        app_nums.append(app_num)
+                    except ValueError:
+                        continue
+            
+            self.logger.info(f"Found {len(app_nums)} apps for model {model} by directory scanning")
+            return sorted(app_nums)
     
     def _analyze_app(self, job_id: int, model: str, app_num: int, scan_type: ScanType, scan_options: Dict[str, Any]) -> None:
         """
-        Run security analysis for a single app based on the scan type
+        Run security analysis for a single app
+        
+        Args:
+            job_id: ID of the job
+            model: Model name
+            app_num: App number
+            scan_type: Type of scan to perform
+            scan_options: Scan options
         """
+        task_logger = create_logger_for_component('batch_task')
+        
+        # Check for cancellation
         if job_id in self._cancel_flags:
-            logger.info(f"Skipping analysis of {model}/app{app_num} ({scan_type}) - job {job_id} was canceled")
+            task_logger.info(f"Skipping analysis of {model}/app{app_num} ({scan_type}) - job {job_id} was canceled")
             return
         
-        logger.info(f"Analyzing {model}/app{app_num} ({scan_type}) for job {job_id}")
+        task_logger.info(f"Analyzing {model}/app{app_num} ({scan_type}) for job {job_id}")
         
         try:
-            # Check if we have the Flask app
+            # Ensure we have the Flask app
             if not self.app:
-                raise RuntimeError("Flask app not available. Make sure to set it with set_app()")
+                task_logger.error("Flask app not available. Make sure to set it with set_app()")
+                raise RuntimeError("Flask app not available")
                 
-            # Use app context to access extensions
+            # Determine scan mode from options
+            full_scan = scan_options.get("full_scan", False)
+            
+            # Use app context to access analyzers
             with self.app.app_context():
-                # Determine scan mode from options
-                full_scan = scan_options.get("full_scan", False)
-                
+                # Select analyzer based on scan type
                 if scan_type == ScanType.FRONTEND:
-                    # Run frontend security analysis
-                    analyzer = self.app.frontend_security_analyzer
+                    # Use frontend security analyzer
+                    analyzer = current_app.frontend_security_analyzer
+                    task_logger.info(f"Running frontend security analysis for {model}/app{app_num}")
+                    
                     issues, tool_status, _ = analyzer.run_security_analysis(
                         model, app_num, use_all_tools=full_scan
                     )
                     summary = analyzer.get_analysis_summary(issues)
-                
+                    
                 elif scan_type == ScanType.BACKEND:
-                    # Run backend security analysis
-                    from backend_security_analysis import BackendSecurityAnalyzer
+                    # Use backend security analyzer
+                    analyzer = current_app.backend_security_analyzer
+                    task_logger.info(f"Running backend security analysis for {model}/app{app_num}")
                     
-                    # Create analyzer with the app's base path
-                    base_path = Path(self.app.config.get('APP_BASE_PATH', '.'))
-                    analyzer = BackendSecurityAnalyzer(base_path)
-                    
-                    # Run backend analysis
                     issues, tool_status, _ = analyzer.run_security_analysis(
                         model, app_num, use_all_tools=full_scan
                     )
                     summary = analyzer.get_analysis_summary(issues)
-                
+                    
                 else:
+                    task_logger.error(f"Unsupported scan type: {scan_type}")
                     raise ValueError(f"Unsupported scan type: {scan_type}")
             
-            # Store result (outside app context)
+            # Store result
             self.storage.add_result(
                 job_id,
                 {
@@ -455,10 +564,10 @@ class BatchAnalysisService:
                 }
             )
             
-            logger.info(f"Completed analysis of {model}/app{app_num} ({scan_type}) for job {job_id}")
+            task_logger.info(f"Completed analysis of {model}/app{app_num} ({scan_type}) for job {job_id}")
             
         except Exception as e:
-            logger.error(f"Error analyzing {model}/app{app_num} ({scan_type}) for job {job_id}: {e}")
+            task_logger.exception(f"Error analyzing {model}/app{app_num} ({scan_type}) for job {job_id}: {e}")
             
             # Store error result
             self.storage.add_result(
@@ -476,14 +585,22 @@ class BatchAnalysisService:
             )
     
     def cancel_job(self, job_id: int) -> bool:
-        """Cancel a running job"""
+        """
+        Cancel a running job
+        
+        Args:
+            job_id: ID of the job to cancel
+            
+        Returns:
+            bool: True if job was marked for cancellation, False otherwise
+        """
         job = self.storage.get_job(job_id)
         if not job:
-            logger.error(f"Job {job_id} not found")
+            self.logger.error(f"Job {job_id} not found")
             return False
         
         if job.status != JobStatus.RUNNING:
-            logger.warning(f"Cannot cancel job {job_id} - not running")
+            self.logger.warning(f"Cannot cancel job {job_id} - not running (status: {job.status})")
             return False
         
         # Mark for cancellation
@@ -492,10 +609,19 @@ class BatchAnalysisService:
         # Update job status
         self.storage.update_job(job_id, status=JobStatus.CANCELED)
         
+        self.logger.info(f"Job {job_id} marked for cancellation")
         return True
     
     def get_job_status(self, job_id: int) -> Dict[str, Any]:
-        """Get detailed status information for a job"""
+        """
+        Get detailed status information for a job
+        
+        Args:
+            job_id: ID of the job
+            
+        Returns:
+            Dict containing detailed job status information
+        """
         job = self.storage.get_job(job_id)
         if not job:
             return {"error": "Job not found"}
@@ -506,6 +632,7 @@ class BatchAnalysisService:
         frontend_results = [r for r in results if r.scan_type == ScanType.FRONTEND]
         backend_results = [r for r in results if r.scan_type == ScanType.BACKEND]
         
+        # Build comprehensive status object
         return {
             "id": job.id,
             "name": job.name,
@@ -558,58 +685,71 @@ class BatchAnalysisService:
         }
 
 
-# Create a service instance - but don't initialize with app yet
+# Create a service instance
 batch_service = BatchAnalysisService(job_storage)
 
-# Missing import
-import concurrent.futures
 
 # =============================================================================
-# Error Handler Decorator
+# Helper Functions and Decorators
 # =============================================================================
 def error_handler(f):
     """Error handling decorator for routes"""
     @wraps(f)
     def wrapped(*args, **kwargs):
+        err_logger = create_logger_for_component('batch_routes')
         try:
             return f(*args, **kwargs)
         except Exception as e:
-            logger.error(f"Error in {f.__name__}: {e}", exc_info=True)
+            err_logger.exception(f"Error in {f.__name__}: {e}")
             if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                return jsonify({"error": str(e)}), 500
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
             flash(f"Error: {str(e)}", "error")
             return redirect(url_for('batch_analysis.batch_dashboard'))
     return wrapped
 
 
+def get_all_models() -> List[str]:
+    """Get all available models for form selection"""
+    try:
+        from utils import AI_MODELS
+        return [m.name for m in AI_MODELS]
+    except ImportError:
+        logger.warning("Could not import AI_MODELS from utils, using empty list")
+        return []
+
+
 # =============================================================================
-# Blueprint Routes
+# Routes
 # =============================================================================
 @batch_analysis_bp.route("/")
 @error_handler
 def batch_dashboard():
     """Display the batch analysis dashboard."""
+    # Get all jobs and sort them by creation date (newest first)
     jobs = job_storage.get_all_jobs()
-    
-    # Sort jobs by creation date, newest first
     jobs.sort(key=lambda j: j.created_at, reverse=True)
     
     # Get all available models for the form
-    all_models = []
-    try:
-        # Avoid circular import
-        from app import AI_MODELS
-        all_models = [m.name for m in AI_MODELS]
-    except ImportError:
-        logger.warning("Could not import AI_MODELS from app, using empty list")
+    all_models = get_all_models()
+    
+    # Calculate job statistics
+    active_jobs = sum(1 for j in jobs if j.status == JobStatus.RUNNING)
+    completed_jobs = sum(1 for j in jobs if j.status == JobStatus.COMPLETED)
+    failed_jobs = sum(1 for j in jobs if j.status in (JobStatus.FAILED, JobStatus.CANCELED))
     
     return render_template(
         "batch_dashboard.html",
         jobs=jobs,
         all_models=all_models,
-        active_jobs=sum(1 for j in jobs if j.status == JobStatus.RUNNING),
-        completed_jobs=sum(1 for j in jobs if j.status == JobStatus.COMPLETED),
-        failed_jobs=sum(1 for j in jobs if j.status in (JobStatus.FAILED, JobStatus.CANCELED))
+        active_jobs=active_jobs,
+        completed_jobs=completed_jobs,
+        failed_jobs=failed_jobs,
+        model=request.args.get('model'),
+        app_num=request.args.get('app_num'),
+        selected_model=request.args.get('selected_model')
     )
 
 
@@ -617,14 +757,8 @@ def batch_dashboard():
 @error_handler
 def create_batch_job():
     """Create a new batch analysis job."""
-    # Avoid circular import
-    all_models = []
-    try:
-        from app import AI_MODELS
-        all_models = [m.name for m in AI_MODELS]
-    except ImportError:
-        logger.warning("Could not import AI_MODELS from app, using empty list")
-        all_models = []  # Default to empty list if import fails
+    # Get model list
+    all_models = get_all_models()
     
     if request.method == "POST":
         try:
@@ -634,12 +768,20 @@ def create_batch_job():
                 flash("Please select at least one model", "error")
                 return render_template("create_batch_job.html", models=all_models)
             
+            # Get scan type
+            scan_type_str = request.form.get("scan_type", "frontend")
+            try:
+                scan_type = ScanType(scan_type_str)
+            except ValueError:
+                scan_type = ScanType.FRONTEND
+            
+            # Build job data
             job_data = {
                 "name": request.form.get("name", "New Batch Job"),
                 "description": request.form.get("description", ""),
                 "models": models,
                 "app_ranges": {},
-                "scan_type": request.form.get("scan_type", ScanType.FRONTEND),
+                "scan_type": scan_type,
                 "scan_options": {
                     "full_scan": request.form.get("full_scan") == "on"
                 }
@@ -686,14 +828,17 @@ def create_batch_job():
             return redirect(url_for("batch_analysis.view_job", job_id=job.id))
             
         except Exception as e:
-            logger.error(f"Error creating batch job: {e}", exc_info=True)
+            logger.exception(f"Error creating batch job: {e}")
             flash(f"Error creating batch job: {str(e)}", "error")
             return render_template("create_batch_job.html", models=all_models)
     
     # GET request - show form
     return render_template(
         "create_batch_job.html",
-        models=all_models
+        models=all_models,
+        model=request.args.get('model'),
+        app_num=request.args.get('app_num'),
+        selected_model=request.args.get('selected_model')
     )
 
 
@@ -712,7 +857,7 @@ def view_job(job_id: int):
     # Sort results by model and app number
     results.sort(key=lambda r: (r.model, r.app_num, r.scan_type))
     
-    # Get detailed status for the job
+    # Get detailed status
     job_status = batch_service.get_job_status(job_id)
     
     return render_template(
@@ -721,6 +866,7 @@ def view_job(job_id: int):
         results=results,
         status=job_status
     )
+
 
 @batch_analysis_bp.route("/job/<int:job_id>/status")
 @error_handler
@@ -796,39 +942,35 @@ def get_result_data(result_id: int):
 # Initialization Function
 # =============================================================================
 def init_batch_analysis(app):
-    """Initialize batch analysis module."""
+    """
+    Initialize batch analysis module.
+    
+    Args:
+        app: Flask application instance
+    """
+    logger.info("Initializing batch analysis module")
+    
     # Pass the Flask app to the service
     batch_service.set_app(app)
     
-    # Add templates folder if needed
-    if not os.path.exists(os.path.join(app.root_path, "templates")):
-        logger.warning("Templates directory not found, batch analysis templates may not be available")
+    # Set the base path in the app config
+    app.config['APP_BASE_PATH'] = app.config.get('BASE_DIR', Path(__file__).parent)
+    
+    # Check for templates directory
+    templates_dir = os.path.join(app.root_path, "templates")
+    os.makedirs(templates_dir, exist_ok=True)
     
     # Check for required templates
-    templates_to_create = [
+    templates_to_check = [
         "batch_dashboard.html",
         "create_batch_job.html",
         "view_job.html",
         "view_result.html"
     ]
     
-    templates_dir = os.path.join(app.root_path, "templates")
-    os.makedirs(templates_dir, exist_ok=True)
-    
-    for template in templates_to_create:
+    for template in templates_to_check:
         template_path = os.path.join(templates_dir, template)
         if not os.path.exists(template_path):
-            logger.warning(f"Template {template} not found, using placeholder")
-            # Create a minimal placeholder template
-            with open(template_path, "w") as f:
-                f.write(f"""
-{{% extends "base.html" %}}
-{{% block content %}}
-<div class="p-4">
-    <h1 class="text-xl font-bold mb-4">{template.replace('.html', '').replace('_', ' ').title()}</h1>
-    <p>This is a placeholder template. Please create a proper template file at {template_path}</p>
-</div>
-{{% endblock %}}
-""")
+            logger.warning(f"Template {template} not found")
     
     logger.info("Batch analysis module initialized")

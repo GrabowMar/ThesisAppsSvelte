@@ -5,5 +5,8 @@
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-security": "^3.0.1",
     "globals": "^16.0.0"
+  },
+  "dependencies": {
+    "jshint": "^2.13.6"
   }
 }
