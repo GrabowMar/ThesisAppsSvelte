@@ -191,10 +191,501 @@ class GPT4AllClient:
             
         # Fallback to default
         return "Llama 3 8B Instruct"
-    
+
+    def summarize_code(self, code: str, max_length: int = 8000, is_frontend: bool = True) -> str:
+        """
+        Intelligently summarize code to reduce size while preserving structure and functionality signatures.
+        
+        Args:
+            code: Original source code
+            max_length: Maximum length to target
+            is_frontend: Whether the code is frontend (affects summarization strategies)
+            
+        Returns:
+            Summarized code that preserves key structural elements
+        """
+        import re
+        from typing import List, Dict, Tuple
+        
+        # If code is already under max length, return as is
+        if len(code) <= max_length:
+            return code
+        
+        logger.info(f"Smart summarizing {'frontend' if is_frontend else 'backend'} code from {len(code)} characters")
+        
+        # Split code into lines for processing
+        lines = code.split('\n')
+        file_separator_pattern = re.compile(r'^---\s*File:\s*(.+?)\s*---$')
+        current_file = None
+        
+        # Track different sections of code
+        sections = []  # List of (file_name, section_type, section_content, priority)
+        current_section_lines = []
+        current_section_type = "unknown"
+        
+        # Helper function to add current section to sections list
+        def add_current_section(priority=1):
+            if current_section_lines:
+                content = '\n'.join(current_section_lines)
+                sections.append((current_file, current_section_type, content, priority))
+                current_section_lines.clear()
+        
+        # Process lines to identify sections
+        for line in lines:
+            # Check for file separator
+            file_match = file_separator_pattern.match(line)
+            if file_match:
+                # Add previous section before moving to new file
+                add_current_section()
+                
+                current_file = file_match.group(1)
+                current_section_type = "unknown"
+                current_section_lines = [line]  # Keep the file separator line
+                continue
+            
+            # Add line to current section
+            current_section_lines.append(line)
+            
+            # Try to identify section type based on content
+            line_stripped = line.strip()
+            
+            # Detect imports (high priority)
+            if line_stripped.startswith('import ') or line_stripped.startswith('from '):
+                if current_section_type != "imports":
+                    add_current_section()
+                    current_section_type = "imports"
+                    current_section_lines = [line]
+            
+            # Detect function/method definitions (high priority)
+            elif re.match(r'^\s*(export\s+)?(async\s+)?function\s+\w+\s*\(', line_stripped) or \
+                re.match(r'^\s*(export\s+)?(const|let|var)\s+\w+\s*=\s*(async\s+)?\(', line_stripped) or \
+                re.match(r'^\s*(public|private|protected|static|async)?\s*\w+\s*\(', line_stripped) or \
+                re.match(r'^\s*def\s+\w+\s*\(', line_stripped):
+                add_current_section()
+                current_section_type = "function_definition"
+                current_section_lines = [line]
+            
+            # Detect class/component definitions (high priority)
+            elif re.match(r'^\s*(export\s+)?(default\s+)?class\s+\w+', line_stripped) or \
+                re.match(r'^\s*class\s+\w+', line_stripped) or \
+                re.match(r'^\s*(export\s+)?(default\s+)?function\s+[A-Z]', line_stripped) or \
+                re.match(r'^\s*(export\s+)?(const|let|var)\s+[A-Z]\w*\s*=', line_stripped):
+                add_current_section()
+                current_section_type = "class_definition"
+                current_section_lines = [line]
+            
+            # Detect JSX/HTML elements for frontend (medium priority)
+            elif is_frontend and (
+                re.match(r'^\s*<\w+.*>$', line_stripped) or
+                "<template>" in line_stripped or
+                "<style" in line_stripped
+            ):
+                if current_section_type != "ui_template":
+                    add_current_section()
+                    current_section_type = "ui_template"
+                    current_section_lines = [line]
+        
+        # Add final section
+        add_current_section()
+        
+        # Helper to simplify function/method bodies
+        def simplify_function_body(section_content: str) -> str:
+            lines = section_content.split('\n')
+            
+            # Find function signature (first line or lines until opening brace)
+            signature_end = 0
+            brace_count = 0
+            
+            for i, line in enumerate(lines):
+                if '{' in line:
+                    brace_count += line.count('{')
+                if '}' in line:
+                    brace_count -= line.count('}')
+                
+                if i > 0 and (
+                    # JavaScript-style function with opening brace
+                    ('{' in line and brace_count > 0) or
+                    # Python-style function with colon
+                    (':' in line and line.strip().endswith(':'))
+                ):
+                    signature_end = i
+                    break
+            
+            # If we couldn't identify a clear signature, preserve just the first line
+            if signature_end == 0:
+                signature_end = 1 if len(lines) > 0 else 0
+            
+            # Keep signature and add simplified body
+            simplified = lines[:signature_end + 1]
+            
+            # Check for key functionality in function body
+            body_text = ' '.join(lines[signature_end + 1:])
+            key_features = []
+            
+            # Common frontend patterns
+            if is_frontend:
+                if 'useState' in body_text:
+                    key_features.append('// Uses state management')
+                if 'useEffect' in body_text:
+                    key_features.append('// Has side effects/lifecycle')
+                if 'fetch(' in body_text or 'axios' in body_text:
+                    key_features.append('// Makes API calls')
+                if 'socket' in body_text.lower() or 'websocket' in body_text.lower():
+                    key_features.append('// Uses websockets/real-time communication')
+                if 'navigate(' in body_text or 'useNavigate' in body_text:
+                    key_features.append('// Uses navigation/routing')
+                if 'context' in body_text.lower():
+                    key_features.append('// Uses context API')
+                if 'reducer' in body_text.lower() or 'dispatch(' in body_text:
+                    key_features.append('// Uses reducer pattern')
+            else:  # Backend patterns
+                if 'db.' in body_text or 'database' in body_text.lower():
+                    key_features.append('# Uses database')
+                if 'request' in body_text.lower() or 'response' in body_text.lower():
+                    key_features.append('# Handles HTTP requests')
+                if 'socket' in body_text.lower() or 'emit(' in body_text:
+                    key_features.append('# Uses websockets/real-time communication')
+                if 'json' in body_text.lower():
+                    key_features.append('# Processes JSON data')
+                if 'authenticate' in body_text.lower() or 'login' in body_text.lower():
+                    key_features.append('# Handles authentication')
+                if 'session' in body_text.lower() or 'cookie' in body_text.lower():
+                    key_features.append('# Manages sessions/cookies')
+            
+            # Add indentation to key features based on last signature line
+            if signature_end < len(lines):
+                indent = re.match(r'^(\s*)', lines[signature_end]).group(1)
+                key_features = [indent + feature for feature in key_features]
+            
+            # Add simplified implementation
+            simplified.extend(key_features)
+            
+            # Add closing brace if needed
+            if '{' in '\n'.join(lines[:signature_end + 1]) and brace_count > 0:
+                # Find the indentation of the function signature
+                if signature_end >= 0:
+                    initial_indent = re.match(r'^(\s*)', lines[0]).group(1)
+                    simplified.append(f"{initial_indent}{'  ' * brace_count}// ... implementation")
+                    simplified.append(f"{initial_indent}" + "}")
+            elif lines and lines[0].strip().startswith('def '):
+                # For Python functions
+                indent = re.match(r'^(\s*)', lines[0]).group(1)
+                simplified.append(f"{indent}    # ... implementation")
+            
+            return '\n'.join(simplified)
+        
+        # Helper to simplify UI templates
+        def simplify_ui_template(section_content: str) -> str:
+            lines = section_content.split('\n')
+            
+            # For JSX/HTML templates, keep opening and closing tags but simplify content
+            if len(lines) <= 5:
+                # Short templates can be kept as is
+                return section_content
+            
+            # Find start and end tags (looking for outermost tags)
+            start_tag_pattern = re.compile(r'^\s*<(\w+)[^>]*>$')
+            end_tag_pattern = re.compile(r'^\s*</(\w+)>$')
+            
+            start_tag_line = -1
+            start_tag_name = ""
+            
+            for i, line in enumerate(lines):
+                match = start_tag_pattern.match(line)
+                if match and start_tag_line == -1:
+                    start_tag_line = i
+                    start_tag_name = match.group(1)
+                    break
+            
+            # If no clear starting tag, keep first few lines
+            if start_tag_line == -1:
+                return '\n'.join(lines[:5]) + '\n// ... (template content)'
+            
+            # Find matching end tag
+            end_tag_line = -1
+            for i in range(len(lines) - 1, start_tag_line, -1):
+                match = end_tag_pattern.match(lines[i])
+                if match and match.group(1) == start_tag_name:
+                    end_tag_line = i
+                    break
+            
+            # If no matching end tag, use original simplification
+            if end_tag_line == -1:
+                return '\n'.join(lines[:5]) + '\n// ... (template content)'
+            
+            # Keep start tag and some content, then simplify
+            simplified = lines[:start_tag_line + 1]
+            
+            # Check for important UI features
+            ui_text = ' '.join(lines[start_tag_line:end_tag_line])
+            features = []
+            
+            # Look for important UI patterns
+            if 'onClick' in ui_text or 'onChange' in ui_text or '@click' in ui_text:
+                features.append('// Has interactive event handlers')
+            if 'v-for' in ui_text or '{' in ui_text and '.map(' in ui_text:
+                features.append('// Uses list rendering')
+            if 'v-if' in ui_text or 'v-show' in ui_text or '?' in ui_text and ':' in ui_text:
+                features.append('// Uses conditional rendering')
+            if 'v-model' in ui_text or 'value=' in ui_text and 'onChange=' in ui_text:
+                features.append('// Has form inputs with binding')
+            if 'className=' in ui_text or 'class=' in ui_text:
+                features.append('// Uses CSS classes for styling')
+            if 'style=' in ui_text:
+                features.append('// Uses inline styles')
+            
+            # Indentation for features
+            if start_tag_line < len(lines):
+                indent = re.match(r'^(\s*)', lines[start_tag_line]).group(1) + "  "
+                features = [indent + feature for feature in features]
+            
+            # Add features
+            simplified.extend(features)
+            simplified.append(indent + "// ... (template content)")
+            
+            # Add end tag
+            simplified.append(lines[end_tag_line])
+            
+            return '\n'.join(simplified)
+        
+        # Prioritize sections for inclusion
+        prioritized_sections = []
+        
+        # Process each section
+        for file_name, section_type, content, base_priority in sections:
+            # Apply different summarization strategies based on section type
+            if section_type == "imports":
+                # Keep imports unchanged (high priority)
+                prioritized_sections.append((file_name, content, 10))
+            elif section_type == "function_definition":
+                # Simplify function body but keep signature
+                simplified = simplify_function_body(content)
+                prioritized_sections.append((file_name, simplified, 8))
+            elif section_type == "class_definition":
+                # Simplify class/component but keep structure
+                simplified = simplify_function_body(content)  # Uses same logic
+                prioritized_sections.append((file_name, simplified, 9))
+            elif section_type == "ui_template":
+                # Simplify UI templates
+                simplified = simplify_ui_template(content)
+                prioritized_sections.append((file_name, simplified, 6))
+            else:
+                # Other code - check for important patterns
+                lower_content = content.lower()
+                priority = base_priority
+                
+                # Increase priority for sections with important keywords
+                important_patterns = [
+                    'router', 'route', 'navigation', 'socket', 'fetch', 'axios',
+                    'usestate', 'useeffect', 'usecontext', 'usereducer',
+                    'database', 'model', 'schema', 'authenticate', 'login',
+                    'register', 'context', 'provider', 'store', 'redux'
+                ]
+                
+                for pattern in important_patterns:
+                    if pattern in lower_content:
+                        priority += 1
+                        break
+                
+                # Add with calculated priority
+                prioritized_sections.append((file_name, content, priority))
+        
+        # Sort sections by priority (descending)
+        prioritized_sections.sort(key=lambda x: x[2], reverse=True)
+        
+        # Reconstruct code, keeping as much as will fit under max_length
+        result = []
+        current_length = 0
+        current_file = None
+        
+        for file_name, content, _ in prioritized_sections:
+            # Add file separator if this is a new file
+            if file_name != current_file:
+                file_line = f"\n\n--- File: {file_name} ---"
+                result.append(file_line)
+                current_length += len(file_line)
+                current_file = file_name
+            
+            # Check if adding this section would exceed max length
+            if current_length + len(content) + 2 > max_length:
+                # If we're close to the limit, see if we can add a truncated version
+                remaining = max_length - current_length - 2
+                if remaining > 200:  # Only bother if we can add something substantial
+                    # For large sections, add a simplified version
+                    if len(content) > 500:
+                        first_lines = '\n'.join(content.split('\n')[:5])
+                        if len(first_lines) < remaining:
+                            result.append("\n" + first_lines)
+                            result.append("\n// ... (content truncated)")
+                            current_length += len(first_lines) + 23
+                    else:
+                        # For smaller sections, just truncate
+                        truncated = content[:remaining-25] + "\n// ... (truncated)"
+                        result.append("\n" + truncated)
+                        current_length += len(truncated) + 1
+                break
+            
+            # Add the section
+            result.append("\n" + content)
+            current_length += len(content) + 1
+        
+        summarized = ''.join(result)
+        
+        # Add a note about summarization
+        summary_note = f"\n\n// Note: Code was intelligently summarized from {len(code)} to {len(summarized)} characters"
+        if len(summarized) + len(summary_note) <= max_length:
+            summarized += summary_note
+        
+        logger.info(f"Summarized code from {len(code)} to {len(summarized)} characters")
+        return summarized
+
+    def _fallback_analyze_code(self, requirement: str, code: str, is_frontend: bool) -> Dict[str, Any]:
+        """
+        Basic fallback analysis when the GPT4All API fails.
+        Uses regex pattern matching for common code patterns.
+        
+        Args:
+            requirement: The requirement to check
+            code: The code to analyze
+            is_frontend: Whether the code is frontend (True) or backend (False)
+            
+        Returns:
+            Dict containing basic analysis result
+        """
+        import re
+        logger.info(f"Using fallback analysis for {'frontend' if is_frontend else 'backend'} code")
+        
+        # Convert requirement to lowercase for case-insensitive matching
+        req_lower = requirement.lower()
+        
+        # Basic analysis based on requirement keywords
+        result = {
+            "met": False,
+            "confidence": "LOW",
+            "explanation": f"Fallback analysis: Unable to analyze with GPT4All API. Basic pattern matching used."
+        }
+        
+        # Feature detection patterns for frontend code
+        if is_frontend:
+            # Detect routing
+            if "routing" in req_lower or "multipage" in req_lower:
+                router_patterns = [
+                    r'import\s+.*\brouter\b',
+                    r'import\s+.*\bRouter\b',
+                    r'<Route',
+                    r'createBrowserRouter',
+                    r'useNavigate',
+                    r'useRouter',
+                    r'useHistory',
+                    r'createWebHistory',
+                    r'createRouter',
+                    r'history\.push',
+                    r'this\.router'
+                ]
+                if any(re.search(pattern, code, re.IGNORECASE) for pattern in router_patterns):
+                    result["met"] = True
+                    result["explanation"] += " Found routing-related code patterns."
+            
+            # Detect UI components/modern UI
+            if "ui" in req_lower or "interface" in req_lower or "modern" in req_lower:
+                ui_patterns = [
+                    r'import\s+.*\b(react|vue|svelte)\b',
+                    r'<template',
+                    r'<style',
+                    r'useState',
+                    r'useEffect',
+                    r'component',
+                    r'className=',
+                    r'class=',
+                    r'@tailwind',
+                    r'tailwindcss',
+                    r'\.css'
+                ]
+                if any(re.search(pattern, code, re.IGNORECASE) for pattern in ui_patterns):
+                    result["met"] = True
+                    result["explanation"] += " Found modern UI code patterns."
+            
+            # Detect real-time messaging
+            if "message" in req_lower or "chat" in req_lower or "real-time" in req_lower:
+                message_patterns = [
+                    r'socket',
+                    r'websocket',
+                    r'\.emit',
+                    r'\.on\(',
+                    r'fetch\(',
+                    r'axios',
+                    r'\.post\(',
+                    r'\.get\(',
+                    r'messages\[',
+                    r'chat'
+                ]
+                if any(re.search(pattern, code, re.IGNORECASE) for pattern in message_patterns):
+                    result["met"] = True
+                    result["explanation"] += " Found messaging/chat-related code patterns."
+        
+        # Feature detection patterns for backend code
+        else:
+            # Detect routing
+            if "routing" in req_lower or "multipage" in req_lower:
+                router_patterns = [
+                    r'@app\.route',
+                    r'@blueprint\.route',
+                    r'app\.get\(',
+                    r'app\.post\(',
+                    r'router\.',
+                    r'Blueprint\(',
+                    r'urlpatterns',
+                    r'path\(',
+                    r'url_for\('
+                ]
+                if any(re.search(pattern, code, re.IGNORECASE) for pattern in router_patterns):
+                    result["met"] = True
+                    result["explanation"] += " Found routing-related code patterns."
+            
+            # Detect database/storage
+            if "database" in req_lower or "storage" in req_lower or "history" in req_lower:
+                db_patterns = [
+                    r'database',
+                    r'db\.',
+                    r'model\.',
+                    r'query\.',
+                    r'find_one',
+                    r'find_by',
+                    r'save\(',
+                    r'cursor\.',
+                    r'execute\(',
+                    r'collection\.'
+                ]
+                if any(re.search(pattern, code, re.IGNORECASE) for pattern in db_patterns):
+                    result["met"] = True
+                    result["explanation"] += " Found database/storage-related code patterns."
+            
+            # Detect real-time messaging
+            if "message" in req_lower or "chat" in req_lower or "real-time" in req_lower:
+                message_patterns = [
+                    r'socket',
+                    r'emit\(',
+                    r'on\(',
+                    r'send\(',
+                    r'receive\(',
+                    r'message',
+                    r'chat',
+                    r'websocket'
+                ]
+                if any(re.search(pattern, code, re.IGNORECASE) for pattern in message_patterns):
+                    result["met"] = True
+                    result["explanation"] += " Found messaging/chat-related code patterns."
+        
+        # Improve confidence if we found evidence
+        if result["met"]:
+            result["confidence"] = "MEDIUM"
+        
+        return result
+        
     def analyze_code(self, requirement: str, code: str, is_frontend: bool = True, model: str = None) -> Dict[str, Any]:
         """
         Analyze code to determine if it meets a requirement.
+        Enhanced with better error handling and smart code summarization.
         
         Args:
             requirement: The requirement to check
@@ -216,11 +707,20 @@ class GPT4AllClient:
         # Select model - ensure we have a string, not an object
         model_to_use = self._extract_model_id(model) if model else self.get_best_model()
         
+        # Check if code is too large and summarize if necessary
+        code_max_length = 8000  # Maximum safe size for the API
+        if len(code) > code_max_length:
+            # Use smart summarization instead of simple truncation
+            original_len = len(code)
+            code = self.summarize_code(code, code_max_length, is_frontend)
+            logger.info(f"Code intelligently summarized from {original_len} to {len(code)} characters")
+        
         # Create system prompt
         system_prompt = """
 You are an expert code reviewer focused on determining if code meets specific requirements.
 Analyze the provided code and determine if it satisfies the given requirement.
 Focus on concrete evidence in the code, not assumptions.
+Some code may be summarized or simplified - look for key patterns and functionality.
 Respond with JSON containing only the following fields:
 {
   "met": true/false,
@@ -236,6 +736,8 @@ Requirement: {requirement}
 
 Code Type: {code_type}
 
+{f"Note: Due to size limitations, this code has been intelligently summarized to preserve structure while reducing details." if len(code) > code_max_length else ""}
+
 Analyze if the following code meets the requirement:
 
 ```
@@ -248,58 +750,79 @@ Respond with JSON containing:
 - "explanation": Specific evidence from the code
 """
         
-        try:
-            # Prepare the request payload - ensure model is a string
-            if not model_to_use or not isinstance(model_to_use, str):
-                logger.warning(f"Invalid model: {model_to_use}, using fallback")
-                model_to_use = "Llama 3 8B Instruct"  # Fallback to a default model
-                
-            payload = {
-                "model": model_to_use,
-                "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                "temperature": 0.2,
-                "max_tokens": 1024
-            }
-            
-            # Send request to GPT4All API
-            logger.info(f"Sending analysis request to GPT4All API using model: {model_to_use}")
-            response = requests.post(
-                f"{self.api_url}/chat/completions",
-                json=payload,
-                timeout=self.timeout
-            )
-            
-            if response.status_code == 200:
-                data = response.json()
-                content = data.get("choices", [{}])[0].get("message", {}).get("content", "")
-                
-                # Parse the response content as JSON
-                try:
-                    result = json.loads(content)
-                    logger.info(f"Analysis result: requirement met = {result.get('met', False)}")
-                    return result
-                except json.JSONDecodeError:
-                    # If response is not valid JSON, try to extract JSON from the content
-                    return self._extract_json_from_text(content)
-            else:
-                logger.error(f"GPT4All API request failed: {response.status_code}")
-                logger.error(f"Response: {response.text[:500]}")
-                return {
-                    "met": False,
-                    "confidence": "LOW",
-                    "explanation": f"API request failed: {response.status_code}"
+        # Try multiple models if first one fails
+        available_models = self.available_models.copy() if self.available_models else [model_to_use]
+        if model_to_use in available_models:
+            # Move preferred model to front of list
+            available_models.remove(model_to_use)
+            available_models.insert(0, model_to_use)
+        
+        # Attempt analysis with up to 2 different models
+        max_attempts = min(2, len(available_models))
+        
+        for attempt in range(max_attempts):
+            current_model = available_models[attempt]
+            try:
+                # Prepare the request payload
+                if not current_model or not isinstance(current_model, str):
+                    logger.warning(f"Invalid model: {current_model}, using fallback")
+                    current_model = "Llama 3 8B Instruct"  # Fallback to a default model
+                    
+                payload = {
+                    "model": current_model,
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    "temperature": 0.2,
+                    "max_tokens": 1024
                 }
                 
-        except Exception as e:
-            logger.exception(f"Error analyzing code: {str(e)}")
-            return {
-                "met": False,
-                "confidence": "LOW",
-                "explanation": f"Error analyzing code: {str(e)}"
-            }
+                # Send request to GPT4All API
+                logger.info(f"Sending analysis request to GPT4All API using model: {current_model}")
+                response = requests.post(
+                    f"{self.api_url}/chat/completions",
+                    json=payload,
+                    timeout=self.timeout
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    content = data.get("choices", [{}])[0].get("message", {}).get("content", "")
+                    
+                    # Parse the response content as JSON
+                    try:
+                        result = json.loads(content)
+                        logger.info(f"Analysis result: requirement met = {result.get('met', False)}")
+                        return result
+                    except json.JSONDecodeError:
+                        # If response is not valid JSON, try to extract JSON from the content
+                        return self._extract_json_from_text(content)
+                else:
+                    logger.error(f"GPT4All API request failed: {response.status_code}")
+                    logger.error(f"Response: {response.text[:500]}")
+                    
+                    # Try next model if available
+                    if attempt < max_attempts - 1:
+                        logger.info(f"Retrying with alternate model: {available_models[attempt+1]}")
+                        continue
+                    
+                    # If we've tried all models, fall back to regex-based basic analysis
+                    return self._fallback_analyze_code(requirement, code, is_frontend)
+                    
+            except Exception as e:
+                logger.exception(f"Error analyzing code: {str(e)}")
+                
+                # Try next model if available
+                if attempt < max_attempts - 1:
+                    logger.info(f"Retrying with alternate model due to exception: {available_models[attempt+1]}")
+                    continue
+                
+                # If we've tried all models, fall back to regex-based basic analysis
+                return self._fallback_analyze_code(requirement, code, is_frontend)
+        
+        # Should not reach here, but just in case:
+        return self._fallback_analyze_code(requirement, code, is_frontend)
     
     def _extract_json_from_text(self, text: str) -> Dict[str, Any]:
         """
@@ -397,6 +920,7 @@ class GPT4AllAnalyzer:
     def collect_code_files(self, directory: Path) -> Tuple[List[Path], List[Path]]:
         """
         Collect frontend and backend code files from the app directory.
+        Specifically looks for frontend/ and backend/ subdirectories.
         
         Args:
             directory: App directory
@@ -410,68 +934,159 @@ class GPT4AllAnalyzer:
         # Skip directories
         skip_dirs = {
             'node_modules', '.git', '__pycache__', 'venv', 'env',
-            'dist', 'build', '.next', 'static'
+            'dist', 'build', '.next', 'static', 'assets', 'out',
+            'coverage', 'logs', 'tmp', 'temp'
         }
+        
+        # Frontend and backend file extensions
+        frontend_exts = ('.js', '.jsx', '.ts', '.tsx', '.html', '.css', '.vue', 
+                        '.svelte', '.json', '.less', '.scss', '.sass', '.xml',
+                        '.mjs', '.cjs', '.esm.js')
+        backend_exts = ('.py', '.flask', '.wsgi', '.django')
         
         if not directory.exists():
             logger.warning(f"Directory does not exist: {directory}")
-            # Try to create the directory
-            try:
-                os.makedirs(directory, exist_ok=True)
-                logger.info(f"Created directory: {directory}")
-            except Exception as e:
-                logger.error(f"Failed to create directory: {e}")
             return [], []
         
+        # Key frontend and backend files to prioritize
+        key_frontend_files = {'App.jsx', 'App.js', 'index.js', 'main.js', 'app.jsx', 
+                            'app.js', 'index.jsx', 'index.tsx', 'App.svelte', 'App.vue'}
+        key_backend_files = {'app.py', 'server.py', 'main.py', 'api.py', 'flask_app.py', 
+                            'django_app.py', 'routes.py', 'views.py'}
+        
         try:
-            # Find files with common extensions
-            for root, dirs, files in os.walk(directory):
-                # Skip directories in-place
-                dirs[:] = [d for d in dirs if d not in skip_dirs]
+            # First, specifically check for frontend/ and backend/ subdirectories
+            frontend_dir = directory / "frontend"
+            backend_dir = directory / "backend"
+            
+            # Create a list to track visited directories to avoid infinite recursion
+            visited_dirs = set()
+            
+            # Lists to hold all potential files
+            all_frontend_files = []
+            all_backend_files = []
+            
+            # Process frontend directory if it exists
+            if frontend_dir.exists() and frontend_dir.is_dir():
+                logger.info(f"Found frontend directory: {frontend_dir}")
                 
-                root_path = Path(root)
-                
-                for file_name in files:
-                    file_path = root_path / file_name
+                for root, dirs, files in os.walk(frontend_dir):
+                    # Skip directories in-place
+                    dirs[:] = [d for d in dirs if d not in skip_dirs]
                     
-                    # Skip large files (>200KB)
-                    try:
-                        if file_path.stat().st_size > 200 * 1024:
-                            continue
-                    except (PermissionError, OSError):
+                    # Skip already visited directories (handle symlinks)
+                    current_dir = os.path.normpath(root)
+                    if current_dir in visited_dirs:
                         continue
-                        
-                    # Categorize by file extension
-                    if file_name.endswith(('.js', '.jsx', '.ts', '.tsx', '.html', '.css', '.vue', '.svelte')):
-                        frontend_files.append(file_path)
-                        
-                    elif file_name.endswith(('.py', '.flask')):
-                        backend_files.append(file_path)
-                
-                # Prioritize key files
-                key_frontend_files = [f for f in frontend_files if f.name in ('App.jsx', 'App.js', 'index.js', 'main.js', 'App.svelte')]
-                key_backend_files = [f for f in backend_files if f.name in ('app.py', 'server.py', 'main.py')]
-                
-                # If we have key files, put them first
-                if key_frontend_files:
-                    frontend_files = key_frontend_files + [f for f in frontend_files if f not in key_frontend_files]
-                if key_backend_files:
-                    backend_files = key_backend_files + [f for f in backend_files if f not in key_backend_files]
+                    visited_dirs.add(current_dir)
                     
-                # Limit number of files for analysis
-                frontend_files = frontend_files[:5]
-                backend_files = backend_files[:5]
+                    root_path = Path(root)
+                    
+                    for file_name in files:
+                        file_path = root_path / file_name
+                        
+                        # Skip large files (>300KB)
+                        try:
+                            if file_path.stat().st_size > 300 * 1024:
+                                continue
+                        except (PermissionError, OSError):
+                            continue
+                            
+                        # Check if it's a frontend file
+                        if file_name.endswith(frontend_exts):
+                            all_frontend_files.append(file_path)
+            else:
+                logger.warning(f"Frontend directory not found: {frontend_dir}")
+            
+            # Process backend directory if it exists
+            if backend_dir.exists() and backend_dir.is_dir():
+                logger.info(f"Found backend directory: {backend_dir}")
                 
-                # If we found files, we can break the loop early
-                if frontend_files or backend_files:
-                    break
+                for root, dirs, files in os.walk(backend_dir):
+                    # Skip directories in-place
+                    dirs[:] = [d for d in dirs if d not in skip_dirs]
+                    
+                    # Skip already visited directories (handle symlinks)
+                    current_dir = os.path.normpath(root)
+                    if current_dir in visited_dirs:
+                        continue
+                    visited_dirs.add(current_dir)
+                    
+                    root_path = Path(root)
+                    
+                    for file_name in files:
+                        file_path = root_path / file_name
+                        
+                        # Skip large files (>300KB)
+                        try:
+                            if file_path.stat().st_size > 300 * 1024:
+                                continue
+                        except (PermissionError, OSError):
+                            continue
+                            
+                        # Check if it's a backend file
+                        if file_name.endswith(backend_exts):
+                            all_backend_files.append(file_path)
+            else:
+                logger.warning(f"Backend directory not found: {backend_dir}")
+            
+            # If we didn't find dedicated frontend/backend directories, fall back to scanning the whole directory
+            if not all_frontend_files or not all_backend_files:
+                logger.info(f"Falling back to scanning entire directory: {directory}")
+                
+                for root, dirs, files in os.walk(directory):
+                    # Skip directories in-place
+                    dirs[:] = [d for d in dirs if d not in skip_dirs]
+                    
+                    # Skip already visited directories (handle symlinks)
+                    current_dir = os.path.normpath(root)
+                    if current_dir in visited_dirs:
+                        continue
+                    visited_dirs.add(current_dir)
+                    
+                    root_path = Path(root)
+                    
+                    for file_name in files:
+                        file_path = root_path / file_name
+                        
+                        # Skip large files (>300KB)
+                        try:
+                            if file_path.stat().st_size > 300 * 1024:
+                                continue
+                        except (PermissionError, OSError):
+                            continue
+                            
+                        # Check if it's a frontend file
+                        if file_name.endswith(frontend_exts) and file_path not in all_frontend_files:
+                            all_frontend_files.append(file_path)
+                        # Check if it's a backend file
+                        elif file_name.endswith(backend_exts) and file_path not in all_backend_files:
+                            all_backend_files.append(file_path)
+            
+            # Prioritize key files
+            # First add key files for frontend
+            for file_path in all_frontend_files:
+                if file_path.name in key_frontend_files:
+                    frontend_files.append(file_path)
+            # Then add other frontend files up to the limit
+            remaining_frontend = [f for f in all_frontend_files if f not in frontend_files]
+            frontend_files.extend(remaining_frontend[:10 - len(frontend_files)])
+            
+            # Same for backend files
+            for file_path in all_backend_files:
+                if file_path.name in key_backend_files:
+                    backend_files.append(file_path)
+            remaining_backend = [f for f in all_backend_files if f not in backend_files]
+            backend_files.extend(remaining_backend[:10 - len(backend_files)])
+                    
         except Exception as e:
             logger.error(f"Error collecting code files: {e}")
+            logger.exception("Traceback for file collection error:")
             
         logger.info(f"Found {len(frontend_files)} frontend files and {len(backend_files)} backend files")
         return frontend_files, backend_files
     
-    def read_code_from_files(self, files: List[Path], max_chars: int = 8000) -> str:
+    def read_code_from_files(self, files: List[Path], max_chars: int = 12000) -> str:
         """
         Read and combine code from files with length limit.
         
@@ -487,11 +1102,16 @@ class GPT4AllAnalyzer:
             
         combined_code = ""
         total_chars = 0
+        files_included = 0
         
         for file_path in files:
             try:
                 with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
                     code = f.read()
+                    
+                    # Skip empty files
+                    if not code.strip():
+                        continue
                     
                     # Add file header and code
                     file_snippet = f"\n\n--- File: {file_path.name} ---\n{code}"
@@ -503,16 +1123,19 @@ class GPT4AllAnalyzer:
                         if remaining > 200:
                             partial = file_snippet[:remaining] + "\n...[truncated]"
                             combined_code += partial
+                            files_included += 1
                         break
                     
                     combined_code += file_snippet
                     total_chars += len(file_snippet)
+                    files_included += 1
                     
                     if total_chars >= max_chars:
                         break
             except Exception as e:
                 logger.error(f"Error reading file {file_path}: {e}")
-                
+        
+        logger.info(f"Included {files_included} files in code analysis (total {total_chars} chars)")        
         return combined_code
     
     def get_requirements_for_app(self, app_num: int) -> Tuple[List[str], str]:
@@ -766,6 +1389,7 @@ class GPT4AllAnalyzer:
             result = RequirementResult()
             
             # Check frontend code
+            frontend_analysis = None
             if frontend_code:
                 logger.info(f"Analyzing frontend code for requirement: {req}")
                 frontend_analysis = self.client.analyze_code(req, frontend_code, is_frontend=True)
@@ -778,6 +1402,7 @@ class GPT4AllAnalyzer:
                 }
                 
             # Check backend code
+            backend_analysis = None
             if backend_code:
                 logger.info(f"Analyzing backend code for requirement: {req}")
                 backend_analysis = self.client.analyze_code(req, backend_code, is_frontend=False)
