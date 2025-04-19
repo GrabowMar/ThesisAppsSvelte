@@ -609,8 +609,7 @@ def get_model_info():
 @ajax_compatible
 def log_client_error():
     """
-    Endpoint to log client-side errors that might be causing
-    undefined route requests.
+    Endpoint to log client-side errors.
     
     Returns:
         JSON status response
@@ -626,22 +625,28 @@ def log_client_error():
                 error="No error data provided",
                 code=400
             )
-            
-        # Log the client error with detailed context
+        
+        # Create a structured error message
+        error_message = {
+            "message": data.get('message', 'Unknown error'),
+            "url": data.get('url', 'Unknown URL'),
+            "file_info": f"{data.get('filename', 'None')}:{data.get('lineno', 'None')}:{data.get('colno', 'None')}",
+            "user_agent": data.get('userAgent', 'Unknown User-Agent')
+        }
+        
+        # Log the client error with structured data
         client_logger.error(
-            f"CLIENT ERROR: {data.get('message')} | "
-            f"URL: {data.get('url')} | "
-            f"File: {data.get('filename')}:{data.get('lineno')}:{data.get('colno')} | "
-            f"User-Agent: {data.get('userAgent')}"
+            "CLIENT ERROR: %(message)s | URL: %(url)s | File: %(file_info)s | User-Agent: %(user_agent)s",
+            error_message
         )
         
-        # Log stack trace at debug level
+        # Log stack trace at debug level if available
         if 'stack' in data:
-            client_logger.debug(f"Error stack trace: {data.get('stack')}")
+            client_logger.debug("Error stack trace: %s", data.get('stack'))
             
         return {"status": "success"}
     except Exception as e:
-        client_logger.exception(f"Error in client error logger: {e}")
+        client_logger.exception("Error in client error logger: %s", str(e))
         return APIResponse(
             success=False,
             error=str(e),

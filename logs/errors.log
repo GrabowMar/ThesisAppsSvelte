@@ -5973,3 +5973,370 @@ jinja2.exceptions.UndefinedError: 'now' is undefined
        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 jinja2.exceptions.UndefinedError: 'now' is undefined
 
+2025-04-15 17:21:30 [ERROR] [c8d18808] gpt4all.check_server:132 - Error checking GPT4All server: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000029310F05A30>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.'))
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 586, in connect
+    self._internal_connect(address)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 630, in _internal_connect
+    raise _SocketError(err, strerror(err))
+ConnectionRefusedError: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x0000029310F05A30>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000029310F05A30>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\gpt4all_analysis.py", line 108, in check_server
+    response = requests.get(f"{self.api_url}/models", timeout=5)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000029310F05A30>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.'))
+2025-04-15 17:21:30 [ERROR] [c8d18808] gpt4all.gpt4all_analysis:1925 - GPT4All server is not available
+2025-04-15 17:21:34 [ERROR] [54c27360] gpt4all.check_server:132 - Error checking GPT4All server: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000029310F40290>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.'))
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 586, in connect
+    self._internal_connect(address)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 630, in _internal_connect
+    raise _SocketError(err, strerror(err))
+ConnectionRefusedError: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x0000029310F40290>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000029310F40290>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\gpt4all_analysis.py", line 108, in check_server
+    response = requests.get(f"{self.api_url}/models", timeout=5)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000029310F40290>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.'))
+2025-04-15 17:22:05 [ERROR] [90260b10] gpt4all.check_server:132 - Error checking GPT4All server: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000029310F9A8D0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.'))
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 586, in connect
+    self._internal_connect(address)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 630, in _internal_connect
+    raise _SocketError(err, strerror(err))
+ConnectionRefusedError: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x0000029310F9A8D0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000029310F9A8D0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\gpt4all_analysis.py", line 108, in check_server
+    response = requests.get(f"{self.api_url}/models", timeout=5)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000029310F9A8D0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.'))
+2025-04-19 20:54:54 [ERROR] [8f01258e] gpt4all.check_server:132 - Error checking GPT4All server: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A4AB3286E0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.'))
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 586, in connect
+    self._internal_connect(address)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 630, in _internal_connect
+    raise _SocketError(err, strerror(err))
+ConnectionRefusedError: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x000001A4AB3286E0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A4AB3286E0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\gpt4all_analysis.py", line 108, in check_server
+    response = requests.get(f"{self.api_url}/models", timeout=5)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A4AB3286E0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.'))
+2025-04-19 20:54:54 [ERROR] [8f01258e] gpt4all.gpt4all_analysis:1925 - GPT4All server is not available
+2025-04-19 20:54:58 [ERROR] [275c6044] gpt4all.check_server:132 - Error checking GPT4All server: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A4AB2C3EF0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.'))
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 586, in connect
+    self._internal_connect(address)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 630, in _internal_connect
+    raise _SocketError(err, strerror(err))
+ConnectionRefusedError: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x000001A4AB2C3EF0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A4AB2C3EF0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\gpt4all_analysis.py", line 108, in check_server
+    response = requests.get(f"{self.api_url}/models", timeout=5)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A4AB2C3EF0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.'))

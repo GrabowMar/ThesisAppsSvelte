@@ -7329,3 +7329,427 @@ Log excerpt:
 2025-04-15 14:55:14,890 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
 2025-04-15 14:55:14,890 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
 2025-04-15 14:55:14,891 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 16:34:26,629 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 16:34:26,733 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 16:34:26,734 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 16:34:26,734 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 16:34:26,735 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 16:34:26,735 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 16:34:31,851 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 16:34:31,926 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 16:34:31,927 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 16:34:31,928 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 16:34:31,928 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 16:34:31,928 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 16:48:11,229 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 16:48:11,317 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 16:48:11,318 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 16:48:11,320 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 16:48:11,320 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 16:48:11,320 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 16:58:28,231 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 16:58:28,344 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 16:58:28,344 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 16:58:28,345 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 16:58:28,346 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 16:58:28,346 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 16:58:28,347 - zap_scanner - INFO - Starting comprehensive scan Claude-7 for http://localhost:5833
+2025-04-15 16:58:28,347 - zap_scanner - INFO - Starting comprehensive scan of target: http://localhost:5833
+2025-04-15 16:58:28,347 - zap_scanner - INFO - Starting ZAP daemon...
+2025-04-15 16:58:28,347 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-15 16:58:33,652 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-15 16:58:33,653 - zap_scanner - INFO - Found ZAP JAR at: C:\Program Files\ZAP\Zed Attack Proxy\zap-2.16.1.jar
+2025-04-15 16:58:33,672 - zap_scanner - INFO - Starting ZAP with command: java -Xmx4G -Djava.io.tmpdir=c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\tmp -Djava.net.preferIPv4Stack=true -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -jar C:\Program Files\ZAP\Zed Attack Proxy\zap-2.16.1.jar -daemon -port 8090 -host 127.0.0.1 -config api.key=5tjkc409k4oaacd69qob5p6uri -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true -config connection.timeoutInSecs=1200 -config ascan.maxScanDurationInMins=120 -config ascan.threadPerHost=8 -config view.mode=standard -config ascan.attackStrength=HIGH -config ascan.alertThreshold=LOW -config pscan.maxAlertsPerRule=0 -config pscan.maxBodySizeInBytes=10000000 -config ajaxSpider.browserId=chrome-headless -config ajaxSpider.maxDuration=600 -config ajaxSpider.clickDefaultElems=true -config ajaxSpider.clickElemsOnce=false -config ajaxSpider.eventWait=2000 -config ajaxSpider.maxCrawlDepth=10 -config ajaxSpider.maxCrawlStates=0 -config ajaxSpider.numberOfBrowsers=4 -config ajaxSpider.randomInputs=true -config pscans.pscanner(10020).enabled=true -config pscans.pscanner(10020).alertThreshold=LOW -config pscans.pscanner(10021).enabled=true -config pscans.pscanner(10021).alertThreshold=LOW -config pscans.pscanner(10038).enabled=true -config pscans.pscanner(10038).alertThreshold=LOW -config pscans.pscanner(10035).enabled=true -config pscans.pscanner(10035).alertThreshold=LOW -config pscans.pscanner(10063).enabled=true -config pscans.pscanner(10063).alertThreshold=LOW -config pscans.pscanner(10054).enabled=true -config pscans.pscanner(10054).alertThreshold=LOW -config pscans.pscanner(10024).enabled=true -config pscans.pscanner(10024).alertThreshold=LOW -config pscans.pscanner(10025).enabled=true -config pscans.pscanner(10025).alertThreshold=LOW -config pscans.pscanner(10027).enabled=true -config pscans.pscanner(10027).alertThreshold=LOW -config pscans.pscanner(10096).enabled=true -config pscans.pscanner(10096).alertThreshold=LOW -config pscans.pscanner(10097).enabled=true -config pscans.pscanner(10097).alertThreshold=LOW -config pscans.pscanner(10094).enabled=true -config pscans.pscanner(10094).alertThreshold=LOW -config pscans.pscanner(90022).enabled=true -config pscans.pscanner(90022).alertThreshold=LOW -config pscans.pscanner(10109).enabled=true -config pscans.pscanner(10109).alertThreshold=LOW -config pscans.pscanner(10110).enabled=true -config pscans.pscanner(10110).alertThreshold=LOW -config ascan.attackStrength=HIGH -config ascan.alertThreshold=LOW
+2025-04-15 16:58:33,683 - zap_scanner - INFO - Waiting for ZAP to initialize (15 seconds)...
+2025-04-15 16:58:48,698 - zap_scanner - INFO - Connecting to ZAP API (attempt 1/5)...
+2025-04-15 16:58:48,808 - zap_scanner - INFO - Successfully connected to ZAP 2.16.1
+2025-04-15 16:58:48,809 - zap_scanner - INFO - ZAP startup completed in 20.46 seconds
+2025-04-15 16:58:48,809 - zap_scanner - INFO - Configuring comprehensive passive scanning...
+2025-04-15 16:58:48,809 - zap_scanner - INFO - Enabling ALL passive scanners...
+2025-04-15 16:58:48,853 - zap_scanner - INFO - Setting passive scan to analyze ALL traffic (not just in-scope)...
+2025-04-15 16:58:48,871 - zap_scanner - INFO - Setting LOW alert threshold for all passive scanners to increase detection rate...
+2025-04-15 16:58:49,511 - zap_scanner - INFO - Setting unlimited maximum alerts per rule...
+2025-04-15 16:58:49,517 - zap_scanner - INFO - Passive scanning fully configured with 57 enabled scanners.
+2025-04-15 16:58:49,517 - zap_scanner - INFO - Accessing target URL: http://localhost:5833
+2025-04-15 16:58:49,601 - zap_scanner - INFO - Initial target access complete
+2025-04-15 16:58:51,613 - zap_scanner - INFO - Performing extended spidering...
+2025-04-15 16:58:54,254 - zap_scanner - INFO - Extended spidering completed
+2025-04-15 16:58:54,255 - zap_scanner - INFO - Checking passive scan status after initial discovery...
+2025-04-15 16:58:54,256 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-15 16:58:54,267 - zap_scanner - INFO - Passive scan in progress: 4 records left to scan (elapsed: 0.0s)
+2025-04-15 16:58:59,287 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 5.0s)
+2025-04-15 16:58:59,287 - zap_scanner - INFO - Passive scan completed in 5.0 seconds
+2025-04-15 16:58:59,288 - zap_scanner - INFO - Starting traditional spider scan with maxChildren=30
+2025-04-15 16:58:59,321 - zap_scanner - INFO - Spider scan started with ID: 0
+2025-04-15 16:58:59,321 - zap_scanner - INFO - Monitoring Spider progress for scan ID: 0
+2025-04-15 16:58:59,338 - zap_scanner - INFO - Spider progress: 0% (elapsed: 0.0s)
+2025-04-15 16:59:01,361 - zap_scanner - INFO - Spider progress: 100% (elapsed: 2.0s)
+2025-04-15 16:59:01,362 - zap_scanner - INFO - Spider scan completed in 2.0 seconds
+2025-04-15 16:59:01,364 - zap_scanner - INFO - Starting AJAX Spider for JavaScript-rendered content...
+2025-04-15 16:59:01,374 - zap_scanner - INFO - Running AJAX Spider on target: http://localhost:5833
+2025-04-15 16:59:01,402 - zap_scanner - INFO - AJAX Spider started: OK
+2025-04-15 16:59:01,403 - zap_scanner - INFO - Monitoring AJAX Spider progress...
+2025-04-15 16:59:01,410 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 0%, elapsed: 0.0s)
+2025-04-15 16:59:06,422 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 0%, elapsed: 5.0s)
+2025-04-15 16:59:11,428 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 1%, elapsed: 10.0s)
+2025-04-15 16:59:16,437 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 2%, elapsed: 15.0s)
+2025-04-15 16:59:21,452 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 3%, elapsed: 20.0s)
+2025-04-15 16:59:26,475 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 4%, elapsed: 25.1s)
+2025-04-15 16:59:31,498 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 5%, elapsed: 30.1s)
+2025-04-15 16:59:36,519 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 5%, elapsed: 35.1s)
+2025-04-15 16:59:41,536 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 6%, elapsed: 40.1s)
+2025-04-15 16:59:46,555 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 7%, elapsed: 45.2s)
+2025-04-15 16:59:51,559 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 8%, elapsed: 50.2s)
+2025-04-15 16:59:56,574 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 9%, elapsed: 55.2s)
+2025-04-15 17:00:01,592 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 10%, elapsed: 60.2s)
+2025-04-15 17:00:06,611 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 10%, elapsed: 65.2s)
+2025-04-15 17:00:11,631 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 11%, elapsed: 70.2s)
+2025-04-15 17:00:16,647 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 12%, elapsed: 75.2s)
+2025-04-15 17:00:21,652 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 13%, elapsed: 80.2s)
+2025-04-15 17:00:26,681 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 14%, elapsed: 85.3s)
+2025-04-15 17:00:31,707 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 15%, elapsed: 90.3s)
+2025-04-15 17:00:36,722 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 15%, elapsed: 95.3s)
+2025-04-15 17:00:41,735 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 16%, elapsed: 100.3s)
+2025-04-15 17:00:46,749 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 17%, elapsed: 105.3s)
+2025-04-15 17:00:51,758 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 18%, elapsed: 110.4s)
+2025-04-15 17:00:56,780 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 19%, elapsed: 115.4s)
+2025-04-15 17:01:01,801 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 20%, elapsed: 120.4s)
+2025-04-15 17:01:06,812 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 20%, elapsed: 125.4s)
+2025-04-15 17:01:11,844 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 21%, elapsed: 130.4s)
+2025-04-15 17:01:16,852 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 22%, elapsed: 135.4s)
+2025-04-15 17:01:21,859 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 23%, elapsed: 140.5s)
+2025-04-15 17:01:27,195 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 24%, elapsed: 145.8s)
+2025-04-15 17:01:32,219 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 25%, elapsed: 150.8s)
+2025-04-15 17:01:37,238 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 25%, elapsed: 155.8s)
+2025-04-15 17:01:42,257 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 26%, elapsed: 160.9s)
+2025-04-15 17:01:47,278 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 27%, elapsed: 165.9s)
+2025-04-15 17:01:52,315 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 28%, elapsed: 170.9s)
+2025-04-15 17:01:57,333 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 29%, elapsed: 175.9s)
+2025-04-15 17:02:02,353 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 30%, elapsed: 180.9s)
+2025-04-15 17:02:07,383 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 30%, elapsed: 186.0s)
+2025-04-15 17:02:12,394 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 31%, elapsed: 191.0s)
+2025-04-15 17:02:17,443 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 32%, elapsed: 196.0s)
+2025-04-15 17:02:22,458 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 33%, elapsed: 201.1s)
+2025-04-15 17:02:27,472 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 34%, elapsed: 206.1s)
+2025-04-15 17:02:32,483 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 35%, elapsed: 211.1s)
+2025-04-15 17:02:37,501 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 36%, elapsed: 216.1s)
+2025-04-15 17:02:42,508 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 36%, elapsed: 221.1s)
+2025-04-15 17:02:47,524 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 37%, elapsed: 226.1s)
+2025-04-15 17:02:52,533 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 38%, elapsed: 231.1s)
+2025-04-15 17:02:57,582 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 39%, elapsed: 236.2s)
+2025-04-15 17:03:02,600 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 40%, elapsed: 241.2s)
+2025-04-15 17:03:07,609 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 41%, elapsed: 246.2s)
+2025-04-15 17:03:12,627 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 41%, elapsed: 251.2s)
+2025-04-15 17:03:17,652 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 42%, elapsed: 256.2s)
+2025-04-15 17:03:22,663 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 43%, elapsed: 261.3s)
+2025-04-15 17:03:27,682 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 44%, elapsed: 266.3s)
+2025-04-15 17:03:32,696 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 45%, elapsed: 271.3s)
+2025-04-15 17:03:37,708 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 46%, elapsed: 276.3s)
+2025-04-15 17:03:42,730 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 46%, elapsed: 281.3s)
+2025-04-15 17:03:47,740 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 47%, elapsed: 286.3s)
+2025-04-15 17:03:52,758 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 48%, elapsed: 291.4s)
+2025-04-15 17:03:57,773 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 49%, elapsed: 296.4s)
+2025-04-15 17:04:02,823 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 50%, elapsed: 301.4s)
+2025-04-15 17:04:07,833 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 51%, elapsed: 306.4s)
+2025-04-15 17:04:12,838 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 51%, elapsed: 311.4s)
+2025-04-15 17:04:17,855 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 52%, elapsed: 316.5s)
+2025-04-15 17:04:22,876 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 53%, elapsed: 321.5s)
+2025-04-15 17:04:27,895 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 54%, elapsed: 326.5s)
+2025-04-15 17:04:32,914 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 55%, elapsed: 331.5s)
+2025-04-15 17:04:37,925 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 56%, elapsed: 336.5s)
+2025-04-15 17:04:42,934 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 56%, elapsed: 341.5s)
+2025-04-15 17:04:47,949 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 57%, elapsed: 346.5s)
+2025-04-15 17:04:52,964 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 58%, elapsed: 351.6s)
+2025-04-15 17:04:57,981 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 59%, elapsed: 356.6s)
+2025-04-15 17:05:03,001 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 60%, elapsed: 361.6s)
+2025-04-15 17:05:08,062 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 61%, elapsed: 366.7s)
+2025-04-15 17:05:13,077 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 61%, elapsed: 371.7s)
+2025-04-15 17:05:18,083 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 62%, elapsed: 376.7s)
+2025-04-15 17:05:23,101 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 63%, elapsed: 381.7s)
+2025-04-15 17:05:28,118 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 64%, elapsed: 386.7s)
+2025-04-15 17:05:33,136 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 65%, elapsed: 391.7s)
+2025-04-15 17:05:38,147 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 66%, elapsed: 396.7s)
+2025-04-15 17:05:43,154 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 66%, elapsed: 401.8s)
+2025-04-15 17:05:48,199 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 67%, elapsed: 406.8s)
+2025-04-15 17:05:53,207 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 68%, elapsed: 411.8s)
+2025-04-15 17:05:58,226 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 69%, elapsed: 416.8s)
+2025-04-15 17:06:03,242 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 70%, elapsed: 421.8s)
+2025-04-15 17:06:08,250 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 71%, elapsed: 426.8s)
+2025-04-15 17:06:13,260 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 71%, elapsed: 431.9s)
+2025-04-15 17:06:18,274 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 72%, elapsed: 436.9s)
+2025-04-15 17:06:23,296 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 73%, elapsed: 441.9s)
+2025-04-15 17:06:28,306 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 74%, elapsed: 446.9s)
+2025-04-15 17:06:33,312 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 75%, elapsed: 451.9s)
+2025-04-15 17:06:38,321 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 76%, elapsed: 456.9s)
+2025-04-15 17:06:43,328 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 76%, elapsed: 461.9s)
+2025-04-15 17:06:48,346 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 77%, elapsed: 466.9s)
+2025-04-15 17:06:53,373 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 78%, elapsed: 472.0s)
+2025-04-15 17:06:58,382 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 79%, elapsed: 477.0s)
+2025-04-15 17:07:03,400 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 80%, elapsed: 482.0s)
+2025-04-15 17:07:08,423 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 81%, elapsed: 487.0s)
+2025-04-15 17:07:13,434 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 82%, elapsed: 492.0s)
+2025-04-15 17:07:18,452 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 82%, elapsed: 497.0s)
+2025-04-15 17:07:23,468 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 83%, elapsed: 502.1s)
+2025-04-15 17:07:28,481 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 84%, elapsed: 507.1s)
+2025-04-15 17:07:33,495 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 85%, elapsed: 512.1s)
+2025-04-15 17:07:38,555 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 86%, elapsed: 517.2s)
+2025-04-15 17:07:43,569 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 87%, elapsed: 522.2s)
+2025-04-15 17:07:48,582 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 87%, elapsed: 527.2s)
+2025-04-15 17:07:53,605 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 88%, elapsed: 532.2s)
+2025-04-15 17:07:58,647 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 89%, elapsed: 537.2s)
+2025-04-15 17:08:03,669 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 90%, elapsed: 542.3s)
+2025-04-15 17:08:08,681 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 91%, elapsed: 547.3s)
+2025-04-15 17:08:13,691 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 92%, elapsed: 552.3s)
+2025-04-15 17:08:18,705 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 92%, elapsed: 557.3s)
+2025-04-15 17:08:23,727 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 93%, elapsed: 562.3s)
+2025-04-15 17:08:28,744 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 94%, elapsed: 567.3s)
+2025-04-15 17:08:33,770 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 95%, elapsed: 572.4s)
+2025-04-15 17:08:38,783 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 96%, elapsed: 577.4s)
+2025-04-15 17:08:43,797 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 97%, elapsed: 582.4s)
+2025-04-15 17:08:48,807 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 97%, elapsed: 587.4s)
+2025-04-15 17:08:53,821 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 98%, elapsed: 592.4s)
+2025-04-15 17:08:58,831 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 99%, elapsed: 597.4s)
+2025-04-15 17:09:03,857 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 99%, elapsed: 602.5s)
+2025-04-15 17:09:03,858 - zap_scanner - WARNING - AJAX Spider exceeded maximum time of 600 seconds. Stopping...
+2025-04-15 17:09:04,472 - zap_scanner - INFO - AJAX Spider completed with 1940 URLs discovered
+2025-04-15 17:09:04,472 - zap_scanner - INFO - Sample of AJAX-discovered URLs:
+2025-04-15 17:09:04,473 - zap_scanner - INFO -  - Unknown URL
+2025-04-15 17:09:04,473 - zap_scanner - INFO -  - Unknown URL
+2025-04-15 17:09:04,473 - zap_scanner - INFO -  - Unknown URL
+2025-04-15 17:09:04,473 - zap_scanner - INFO -  - Unknown URL
+2025-04-15 17:09:04,473 - zap_scanner - INFO -  - Unknown URL
+2025-04-15 17:09:04,474 - zap_scanner - INFO - Waiting for passive scan to process all discovered content...
+2025-04-15 17:09:04,474 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-15 17:09:04,482 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 0.0s)
+2025-04-15 17:09:04,482 - zap_scanner - INFO - Passive scan completed in 0.0 seconds
+2025-04-15 17:09:04,482 - zap_scanner - INFO - Configuring comprehensive active scanning...
+2025-04-15 17:09:04,483 - zap_scanner - INFO - Enabling ALL active scanners...
+2025-04-15 17:09:04,510 - zap_scanner - INFO - Setting HIGH attack strength for all policies...
+2025-04-15 17:09:04,577 - zap_scanner - INFO - Setting LOW alert threshold for all policies...
+2025-04-15 17:09:04,637 - zap_scanner - INFO - Configuring scan policy options...
+2025-04-15 17:09:04,693 - zap_scanner - INFO - Enabled 47 active scanners in category: Other
+2025-04-15 17:09:04,693 - zap_scanner - INFO - Active scanning fully configured with 47 enabled scanners
+2025-04-15 17:09:04,694 - zap_scanner - INFO - Starting active scan with comprehensive settings...
+2025-04-15 17:09:04,708 - zap_scanner - INFO - Active scan started with ID: 0
+2025-04-15 17:09:04,708 - zap_scanner - INFO - Monitoring Active scan progress for scan ID: 0
+2025-04-15 17:09:04,713 - zap_scanner - INFO - Active scan progress: 0% (elapsed: 0.0s)
+2025-04-15 17:09:09,726 - zap_scanner - INFO - Active scan progress: 13% (elapsed: 5.0s)
+2025-04-15 17:09:14,738 - zap_scanner - INFO - Active scan progress: 19% (elapsed: 10.0s)
+2025-04-15 17:09:34,801 - zap_scanner - INFO - Active scan progress: 19% (elapsed: 30.1s)
+2025-04-15 17:09:49,840 - zap_scanner - INFO - Active scan progress: 27% (elapsed: 45.1s)
+2025-04-15 17:10:04,884 - zap_scanner - INFO - Active scan progress: 32% (elapsed: 60.2s)
+2025-04-15 17:10:11,677 - zap_scanner - INFO - Active scan progress: 38% (elapsed: 67.0s)
+2025-04-15 17:12:06,487 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 17:12:06,562 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 17:12:06,562 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 17:12:06,562 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:12:06,562 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 17:12:06,562 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:12:12,610 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 17:12:12,673 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 17:12:12,673 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 17:12:12,673 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:12:12,673 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 17:12:12,673 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:13:09,776 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 17:13:09,857 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 17:13:09,858 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 17:13:09,858 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:13:09,858 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 17:13:09,859 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:13:14,317 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 17:13:14,373 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 17:13:14,373 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 17:13:14,373 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:13:14,373 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 17:13:14,373 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:14:16,662 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 17:14:16,733 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 17:14:16,733 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 17:14:16,733 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:14:16,733 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 17:14:16,733 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:14:16,733 - zap_scanner - INFO - Starting comprehensive scan Claude-1 for http://localhost:5821
+2025-04-15 17:14:16,733 - zap_scanner - INFO - Starting comprehensive scan of target: http://localhost:5821
+2025-04-15 17:14:16,733 - zap_scanner - INFO - Starting ZAP daemon...
+2025-04-15 17:14:16,733 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-15 17:14:21,972 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-15 17:14:21,974 - zap_scanner - INFO - Found ZAP JAR at: C:\Program Files\ZAP\Zed Attack Proxy\zap-2.16.1.jar
+2025-04-15 17:14:21,978 - zap_scanner - INFO - Starting ZAP with command: java -Xmx4G -Djava.io.tmpdir=c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\tmp -Djava.net.preferIPv4Stack=true -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UseStringDeduplication -jar C:\Program Files\ZAP\Zed Attack Proxy\zap-2.16.1.jar -daemon -port 8090 -host 127.0.0.1 -config api.key=5tjkc409k4oaacd69qob5p6uri -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true -config connection.timeoutInSecs=1200 -config ascan.maxScanDurationInMins=120 -config ascan.threadPerHost=8 -config view.mode=standard -config ascan.attackStrength=HIGH -config ascan.alertThreshold=LOW -config pscan.maxAlertsPerRule=0 -config pscan.maxBodySizeInBytes=10000000 -config ajaxSpider.browserId=chrome-headless -config ajaxSpider.maxDuration=600 -config ajaxSpider.clickDefaultElems=true -config ajaxSpider.clickElemsOnce=false -config ajaxSpider.eventWait=2000 -config ajaxSpider.maxCrawlDepth=10 -config ajaxSpider.maxCrawlStates=0 -config ajaxSpider.numberOfBrowsers=4 -config ajaxSpider.randomInputs=true -config pscans.pscanner(10020).enabled=true -config pscans.pscanner(10020).alertThreshold=LOW -config pscans.pscanner(10021).enabled=true -config pscans.pscanner(10021).alertThreshold=LOW -config pscans.pscanner(10038).enabled=true -config pscans.pscanner(10038).alertThreshold=LOW -config pscans.pscanner(10035).enabled=true -config pscans.pscanner(10035).alertThreshold=LOW -config pscans.pscanner(10063).enabled=true -config pscans.pscanner(10063).alertThreshold=LOW -config pscans.pscanner(10054).enabled=true -config pscans.pscanner(10054).alertThreshold=LOW -config pscans.pscanner(10024).enabled=true -config pscans.pscanner(10024).alertThreshold=LOW -config pscans.pscanner(10025).enabled=true -config pscans.pscanner(10025).alertThreshold=LOW -config pscans.pscanner(10027).enabled=true -config pscans.pscanner(10027).alertThreshold=LOW -config pscans.pscanner(10096).enabled=true -config pscans.pscanner(10096).alertThreshold=LOW -config pscans.pscanner(10097).enabled=true -config pscans.pscanner(10097).alertThreshold=LOW -config pscans.pscanner(10094).enabled=true -config pscans.pscanner(10094).alertThreshold=LOW -config pscans.pscanner(90022).enabled=true -config pscans.pscanner(90022).alertThreshold=LOW -config pscans.pscanner(10109).enabled=true -config pscans.pscanner(10109).alertThreshold=LOW -config pscans.pscanner(10110).enabled=true -config pscans.pscanner(10110).alertThreshold=LOW -config ascan.attackStrength=HIGH -config ascan.alertThreshold=LOW
+2025-04-15 17:14:21,985 - zap_scanner - INFO - Waiting for ZAP to initialize (15 seconds)...
+2025-04-15 17:14:36,991 - zap_scanner - INFO - Connecting to ZAP API (attempt 1/5)...
+2025-04-15 17:14:37,054 - zap_scanner - INFO - Successfully connected to ZAP 2.16.1
+2025-04-15 17:14:37,054 - zap_scanner - INFO - ZAP startup completed in 20.32 seconds
+2025-04-15 17:14:37,054 - zap_scanner - INFO - Configuring comprehensive passive scanning...
+2025-04-15 17:14:37,054 - zap_scanner - INFO - Enabling ALL passive scanners...
+2025-04-15 17:14:37,066 - zap_scanner - INFO - Setting passive scan to analyze ALL traffic (not just in-scope)...
+2025-04-15 17:14:37,076 - zap_scanner - INFO - Setting LOW alert threshold for all passive scanners to increase detection rate...
+2025-04-15 17:14:37,411 - zap_scanner - INFO - Setting unlimited maximum alerts per rule...
+2025-04-15 17:14:37,418 - zap_scanner - INFO - Passive scanning fully configured with 57 enabled scanners.
+2025-04-15 17:14:37,418 - zap_scanner - INFO - Accessing target URL: http://localhost:5821
+2025-04-15 17:14:37,493 - zap_scanner - INFO - Initial target access complete
+2025-04-15 17:14:39,507 - zap_scanner - INFO - Performing extended spidering...
+2025-04-15 17:14:42,053 - zap_scanner - INFO - Extended spidering completed
+2025-04-15 17:14:42,053 - zap_scanner - INFO - Checking passive scan status after initial discovery...
+2025-04-15 17:14:42,053 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-15 17:14:42,058 - zap_scanner - INFO - Passive scan in progress: 4 records left to scan (elapsed: 0.0s)
+2025-04-15 17:14:47,067 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 5.0s)
+2025-04-15 17:14:47,068 - zap_scanner - INFO - Passive scan completed in 5.0 seconds
+2025-04-15 17:14:47,068 - zap_scanner - INFO - Starting traditional spider scan with maxChildren=30
+2025-04-15 17:14:47,077 - zap_scanner - INFO - Spider scan started with ID: 0
+2025-04-15 17:14:47,077 - zap_scanner - INFO - Monitoring Spider progress for scan ID: 0
+2025-04-15 17:14:47,081 - zap_scanner - INFO - Spider progress: 0% (elapsed: 0.0s)
+2025-04-15 17:14:49,092 - zap_scanner - INFO - Spider progress: 100% (elapsed: 2.0s)
+2025-04-15 17:14:49,092 - zap_scanner - INFO - Spider scan completed in 2.0 seconds
+2025-04-15 17:14:49,092 - zap_scanner - INFO - Starting AJAX Spider for JavaScript-rendered content...
+2025-04-15 17:14:49,097 - zap_scanner - INFO - Running AJAX Spider on target: http://localhost:5821
+2025-04-15 17:14:49,108 - zap_scanner - INFO - AJAX Spider started: OK
+2025-04-15 17:14:49,108 - zap_scanner - INFO - Monitoring AJAX Spider progress...
+2025-04-15 17:14:49,112 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 0%, elapsed: 0.0s)
+2025-04-15 17:14:54,139 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 0%, elapsed: 5.0s)
+2025-04-15 17:14:59,146 - zap_scanner - INFO - AJAX Spider is running... (estimated progress: 1%, elapsed: 10.0s)
+2025-04-15 17:15:04,155 - zap_scanner - INFO - AJAX Spider completed with status: stopped (elapsed: 15.0s)
+2025-04-15 17:15:04,373 - zap_scanner - INFO - AJAX Spider found 80 results
+2025-04-15 17:15:04,615 - zap_scanner - INFO - AJAX Spider completed with 80 URLs discovered
+2025-04-15 17:15:04,615 - zap_scanner - INFO - Sample of AJAX-discovered URLs:
+2025-04-15 17:15:04,615 - zap_scanner - INFO -  - Unknown URL
+2025-04-15 17:15:04,615 - zap_scanner - INFO -  - Unknown URL
+2025-04-15 17:15:04,615 - zap_scanner - INFO -  - Unknown URL
+2025-04-15 17:15:04,615 - zap_scanner - INFO -  - Unknown URL
+2025-04-15 17:15:04,615 - zap_scanner - INFO -  - Unknown URL
+2025-04-15 17:15:04,615 - zap_scanner - INFO - Waiting for passive scan to process all discovered content...
+2025-04-15 17:15:04,615 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-15 17:15:04,628 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 0.0s)
+2025-04-15 17:15:04,628 - zap_scanner - INFO - Passive scan completed in 0.0 seconds
+2025-04-15 17:15:04,628 - zap_scanner - INFO - Configuring comprehensive active scanning...
+2025-04-15 17:15:04,629 - zap_scanner - INFO - Enabling ALL active scanners...
+2025-04-15 17:15:04,644 - zap_scanner - INFO - Setting HIGH attack strength for all policies...
+2025-04-15 17:15:04,696 - zap_scanner - INFO - Setting LOW alert threshold for all policies...
+2025-04-15 17:15:04,748 - zap_scanner - INFO - Configuring scan policy options...
+2025-04-15 17:15:04,817 - zap_scanner - INFO - Enabled 47 active scanners in category: Other
+2025-04-15 17:15:04,817 - zap_scanner - INFO - Active scanning fully configured with 47 enabled scanners
+2025-04-15 17:15:04,817 - zap_scanner - INFO - Starting active scan with comprehensive settings...
+2025-04-15 17:15:04,831 - zap_scanner - INFO - Active scan started with ID: 0
+2025-04-15 17:15:04,832 - zap_scanner - INFO - Monitoring Active scan progress for scan ID: 0
+2025-04-15 17:15:04,835 - zap_scanner - INFO - Active scan progress: 0% (elapsed: 0.0s)
+2025-04-15 17:15:09,857 - zap_scanner - INFO - Active scan progress: 16% (elapsed: 5.0s)
+2025-04-15 17:15:14,868 - zap_scanner - INFO - Active scan progress: 19% (elapsed: 10.0s)
+2025-04-15 17:15:19,881 - zap_scanner - INFO - Active scan progress: 27% (elapsed: 15.0s)
+2025-04-15 17:15:34,912 - zap_scanner - INFO - Active scan progress: 38% (elapsed: 30.1s)
+2025-04-15 17:15:40,291 - zap_scanner - INFO - Active scan progress: 40% (elapsed: 35.5s)
+2025-04-15 17:15:45,310 - zap_scanner - INFO - Active scan progress: 47% (elapsed: 40.5s)
+2025-04-15 17:15:50,336 - zap_scanner - INFO - Active scan progress: 51% (elapsed: 45.5s)
+2025-04-15 17:15:55,352 - zap_scanner - INFO - Active scan progress: 92% (elapsed: 50.5s)
+2025-04-15 17:16:00,375 - zap_scanner - INFO - Active scan progress: 100% (elapsed: 55.5s)
+2025-04-15 17:16:00,375 - zap_scanner - INFO - Active scan scan completed in 55.5 seconds
+2025-04-15 17:16:00,375 - zap_scanner - INFO - Performing final passive scan check...
+2025-04-15 17:16:00,375 - zap_scanner - INFO - Waiting for passive scan to complete...
+2025-04-15 17:16:00,383 - zap_scanner - INFO - Passive scan in progress: 0 records left to scan (elapsed: 0.0s)
+2025-04-15 17:16:00,383 - zap_scanner - INFO - Passive scan completed in 0.0 seconds
+2025-04-15 17:16:00,383 - zap_scanner - INFO - Collecting source files for code analysis...
+2025-04-15 17:16:14,467 - zap_scanner - INFO - Collected 0 potential source files for analysis
+2025-04-15 17:16:14,495 - zap_scanner - INFO - Collected 0 source files for code analysis
+2025-04-15 17:16:14,495 - zap_scanner - INFO - Retrieving final scan alerts...
+2025-04-15 17:16:14,565 - zap_scanner - INFO - Found 59 total alerts
+2025-04-15 17:16:14,565 - zap_scanner - INFO - Processing alert details and extracting affected code...
+2025-04-15 17:16:14,565 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821
+2025-04-15 17:16:14,565 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/sitemap.xml
+2025-04-15 17:16:14,565 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/.well-known/security.txt
+2025-04-15 17:16:14,565 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/robots.txt
+2025-04-15 17:16:14,565 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/crossdomain.xml
+2025-04-15 17:16:14,565 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/manifest.json
+2025-04-15 17:16:14,567 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/humans.txt
+2025-04-15 17:16:14,567 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/clientaccesspolicy.xml
+2025-04-15 17:16:14,567 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5821/package.json - Parameter: x-frame-options
+2025-04-15 17:16:14,567 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/package.json
+2025-04-15 17:16:14,568 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/.well-known
+2025-04-15 17:16:14,568 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5821/ - Parameter: x-frame-options
+2025-04-15 17:16:14,568 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5821/node_modules/vite/dist/client/env.mjs - Parameter: x-frame-options
+2025-04-15 17:16:14,568 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/?token=fw0Zgy8wcBwz
+2025-04-15 17:16:14,569 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5821/src/App.css - Parameter: x-frame-options
+2025-04-15 17:16:14,569 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/
+2025-04-15 17:16:14,569 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5821/node_modules/.vite/deps/react.js?v=639b9a37 - Parameter: x-frame-options
+2025-04-15 17:16:14,570 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/favicon.ico
+2025-04-15 17:16:15,331 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/node_modules/.vite/deps/react.js?v=639b9a37
+2025-04-15 17:16:15,332 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5821/node_modules/.vite/deps/react-dom_client.js?v=ab7c8a22 - Parameter: x-frame-options
+2025-04-15 17:16:15,332 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/node_modules/vite/dist/client/env.mjs
+2025-04-15 17:16:15,332 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/src/App.css
+2025-04-15 17:16:30,735 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/node_modules/.vite/deps/react-dom_client.js?v=ab7c8a22
+2025-04-15 17:16:30,735 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5821/@react-refresh - Parameter: x-frame-options
+2025-04-15 17:16:30,735 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5821/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=639b9a37 - Parameter: x-frame-options
+2025-04-15 17:16:30,735 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/@react-refresh
+2025-04-15 17:16:30,735 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5821/src/App.jsx - Parameter: x-frame-options
+2025-04-15 17:16:31,382 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5821/node_modules/.vite/deps/chunk-3ON3CNAS.js?v=0c924fb8 - Parameter: x-frame-options
+2025-04-15 17:16:31,382 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5821/@vite/client - Parameter: x-frame-options
+2025-04-15 17:16:32,951 - zap_scanner - INFO - [Medium] Application Error Disclosure - URL: http://localhost:5821/@vite/client - Affected code identified at line 428
+2025-04-15 17:16:32,952 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/@vite/client
+2025-04-15 17:16:32,952 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=639b9a37
+2025-04-15 17:16:36,089 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/src/App.jsx
+2025-04-15 17:16:36,090 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/node_modules/.vite/deps/chunk-3ON3CNAS.js?v=0c924fb8
+2025-04-15 17:16:37,127 - zap_scanner - INFO - [Medium] Missing Anti-clickjacking Header - URL: http://localhost:5821/node_modules/.vite/deps/chunk-FMOPAGIP.js?v=0c924fb8 - Parameter: x-frame-options
+2025-04-15 17:16:37,128 - zap_scanner - INFO - [Medium] Content Security Policy (CSP) Header Not Set - URL: http://localhost:5821/node_modules/.vite/deps/chunk-FMOPAGIP.js?v=0c924fb8
+2025-04-15 17:16:59,388 - zap_scanner - INFO - [High] Obchodzenie Œcie¿ki - URL: http://localhost:5821/node_modules/.vite/deps/react-dom_client.js?v=%2Freact-dom_client.js - Parameter: v
+2025-04-15 17:16:59,388 - zap_scanner - INFO - [High] Obchodzenie Œcie¿ki - URL: http://localhost:5821/node_modules/.vite/deps/react.js?v=%2Freact.js - Parameter: v
+2025-04-15 17:16:59,388 - zap_scanner - INFO - Alert categories summary:
+2025-04-15 17:16:59,388 - zap_scanner - INFO - Category 'Security Headers': 47 alerts
+2025-04-15 17:16:59,388 - zap_scanner - INFO -   Examples: Content Security Policy (CSP) Header Not Set, Content Security Policy (CSP) Header Not Set, Content Security Policy (CSP) Header Not Set
+2025-04-15 17:16:59,388 - zap_scanner - INFO - Category 'Information Disclosure': 6 alerts
+2025-04-15 17:16:59,388 - zap_scanner - INFO -   Examples: Information Disclosure - Sensitive Information in URL, Information Disclosure - Suspicious Comments, Information Disclosure - Debug Error Messages
+2025-04-15 17:16:59,388 - zap_scanner - INFO - Category 'Other': 6 alerts
+2025-04-15 17:16:59,388 - zap_scanner - INFO -   Examples: Modern Web Application, Application Error Disclosure, Timestamp Disclosure - Unix
+2025-04-15 17:16:59,388 - zap_scanner - INFO - Scan completed in 162 seconds (2.7 minutes)
+2025-04-15 17:16:59,388 - zap_scanner - INFO - Risk breakdown: High=2, Medium=36, Low=15, Info=0
+2025-04-15 17:16:59,388 - zap_scanner - INFO - Vulnerabilities with affected code identified: 10/59
+2025-04-15 17:16:59,388 - zap_scanner - INFO - Cleaning up ZAP resources...
+2025-04-15 17:16:59,388 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-15 17:16:59,388 - zap_scanner - INFO - Terminating existing ZAP process...
+2025-04-15 17:17:04,856 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-15 17:17:04,857 - zap_scanner - INFO - Generating affected code report...
+2025-04-15 17:17:04,857 - zap_scanner - ERROR - Error saving report to c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Claude\app1\.zap_code_report.md: [Errno 2] No such file or directory: 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\Claude\\app1\\.zap_code_report.md'
+2025-04-15 17:17:04,873 - zap_scanner - INFO - Saving scan results to c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Claude\app1\.zap_results.json
+2025-04-15 17:17:04,876 - zap_scanner - INFO - Scan Claude-1 completed successfully with 2 high, 36 medium, 15 low risks
+2025-04-15 17:17:04,897 - zap_scanner - INFO - Cleaning up any existing ZAP processes...
+2025-04-15 17:17:04,897 - zap_scanner - INFO - Terminating existing ZAP process...
+2025-04-15 17:17:10,141 - zap_scanner - INFO - ZAP process cleanup complete
+2025-04-15 17:29:44,310 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 17:29:44,383 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 17:29:44,384 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 17:29:44,385 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:29:44,385 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 17:29:44,385 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:32:59,206 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 17:32:59,259 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 17:32:59,259 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 17:32:59,259 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:32:59,259 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 17:32:59,264 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:34:21,358 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 17:34:21,421 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 17:34:21,421 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 17:34:21,422 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:34:21,422 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 17:34:21,422 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:35:31,445 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-15 17:35:31,498 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-15 17:35:31,499 - zap_scanner - INFO - Found free port: 8090
+2025-04-15 17:35:31,499 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-15 17:35:31,499 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-15 17:35:31,499 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-19 20:51:31,737 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-19 20:51:31,857 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-19 20:51:31,858 - zap_scanner - INFO - Found free port: 8090
+2025-04-19 20:51:31,858 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-19 20:51:31,858 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-19 20:51:31,859 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-19 20:51:47,612 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-19 20:51:47,682 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-19 20:51:47,682 - zap_scanner - INFO - Found free port: 8090
+2025-04-19 20:51:47,682 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-19 20:51:47,682 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-19 20:51:47,682 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-19 20:51:59,747 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-19 20:51:59,846 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-19 20:51:59,848 - zap_scanner - INFO - Found free port: 8090
+2025-04-19 20:51:59,849 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-19 20:51:59,849 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-19 20:51:59,849 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app

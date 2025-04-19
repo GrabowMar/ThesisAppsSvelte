@@ -1,0 +1,1000 @@
+Defaulting ZAP install dir to C:\Program Files\ZAP\Zed Attack Proxy
+630 [main] INFO  org.zaproxy.zap.DaemonBootstrap - ZAP 2.16.1 started 15.04.2025, 17:14:22 with home: C:\Users\grabowmar\ZAP\ cores: 16 maxMemory: 4 GB
+680 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config api.key = 5tjkc409k4oaacd69qob5p6uri was 5tjkc409k4oaacd69qob5p6uri
+681 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config api.addrs.addr.name = .* was .*
+681 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config api.addrs.addr.regex = true was true
+681 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config connection.timeoutInSecs = 1200 was null
+681 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config ascan.maxScanDurationInMins = 120 was 120
+682 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config ascan.threadPerHost = 8 was 8
+682 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config view.mode = standard was standard
+682 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config ascan.attackStrength = HIGH was HIGH
+682 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config ascan.alertThreshold = LOW was LOW
+682 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscan.maxAlertsPerRule = 0 was 0
+682 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscan.maxBodySizeInBytes = 10000000 was 10000000
+682 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config ajaxSpider.browserId = chrome-headless was chrome-headless
+683 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config ajaxSpider.maxDuration = 600 was 600
+684 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config ajaxSpider.clickDefaultElems = true was true
+684 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config ajaxSpider.clickElemsOnce = false was false
+684 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config ajaxSpider.eventWait = 2000 was 2000
+684 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config ajaxSpider.maxCrawlDepth = 10 was 10
+684 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config ajaxSpider.maxCrawlStates = 0 was 0
+684 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config ajaxSpider.numberOfBrowsers = 4 was 4
+684 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config ajaxSpider.randomInputs = true was true
+685 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10020).enabled = true was null
+685 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10020).alertThreshold = LOW was null
+685 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10021).enabled = true was null
+685 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10021).alertThreshold = LOW was null
+685 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10038).enabled = true was null
+686 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10038).alertThreshold = LOW was null
+686 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10035).enabled = true was null
+686 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10035).alertThreshold = LOW was null
+686 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10063).enabled = true was null
+686 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10063).alertThreshold = LOW was null
+686 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10054).enabled = true was null
+687 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10054).alertThreshold = LOW was null
+687 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10024).enabled = true was null
+688 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10024).alertThreshold = LOW was null
+688 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10025).enabled = true was null
+688 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10025).alertThreshold = LOW was null
+688 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10027).enabled = true was null
+688 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10027).alertThreshold = LOW was null
+688 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10096).enabled = true was null
+688 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10096).alertThreshold = LOW was null
+688 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10097).enabled = true was null
+689 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10097).alertThreshold = LOW was null
+689 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10094).enabled = true was null
+689 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10094).alertThreshold = LOW was null
+689 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(90022).enabled = true was null
+690 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(90022).alertThreshold = LOW was null
+690 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10109).enabled = true was null
+690 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10109).alertThreshold = LOW was null
+690 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10110).enabled = true was null
+690 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config pscans.pscanner(10110).alertThreshold = LOW was null
+706 [main] WARN  org.zaproxy.zap.extension.api.OptionsParamApi - Failed to read a permitted address entry, required value is empty.
+707 [main] WARN  org.zaproxy.zap.extension.api.OptionsParamApi - Failed to read a permitted address entry, required value is empty.
+708 [main] WARN  org.zaproxy.zap.extension.api.OptionsParamApi - Failed to read a permitted address entry, required value is empty.
+1330 [ZAP-daemon] WARN  org.zaproxy.zap.control.AddOn - Invalid add-on: C:\Users\grabowmar\ZAP\plugin\ascanrules-release-71.zap. zip END header not found
+1353 [ZAP-daemon] WARN  org.zaproxy.zap.control.AddOn - Invalid add-on: C:\Users\grabowmar\ZAP\plugin\database-alpha-0.8.0.zap. zip END header not found
+1368 [ZAP-daemon] WARN  org.zaproxy.zap.control.AddOn - Invalid add-on: C:\Users\grabowmar\ZAP\plugin\network-beta-0.21.0.zap. zip END header not found
+1372 [ZAP-daemon] WARN  org.zaproxy.zap.control.AddOn - Invalid add-on: C:\Users\grabowmar\ZAP\plugin\openapi-beta-45.zap. zip END header not found
+1400 [ZAP-daemon] WARN  org.zaproxy.zap.control.AddOn - Invalid add-on: C:\Users\grabowmar\ZAP\plugin\reports-release-0.38.0.zap. zip END header not found
+1416 [ZAP-daemon] WARN  org.zaproxy.zap.control.AddOn - Invalid add-on: C:\Users\grabowmar\ZAP\plugin\selenium-release-15.34.0.zap. zip END header not found
+1422 [ZAP-daemon] WARN  org.zaproxy.zap.control.AddOn - Invalid add-on: C:\Users\grabowmar\ZAP\plugin\webdriverwindows-release-128.zap. zip END header not found
+1428 [ZAP-daemon] WARN  org.zaproxy.zap.control.AddOn - Invalid add-on: C:\Users\grabowmar\ZAP\plugin\webdriverwindows-release-131.zap. zip END header not found
+1740 [ZAP-daemon] INFO  org.zaproxy.zap.control.ExtensionFactory - Installed add-ons: [[id=alertFilters, version=23.0.0], [id=ascanrules, version=71.0.0], [id=authhelper, version=0.25.0], [id=automation, version=0.49.0], [id=bruteforce, version=17.0.0], [id=callhome, version=0.14.0], [id=client, version=0.15.0], [id=commonlib, version=1.32.0], [id=database, version=0.8.0], [id=diff, version=17.0.0], [id=directorylistv1, version=9.0.0], [id=domxss, version=21.0.0], [id=encoder, version=1.6.0], [id=exim, version=0.14.0], [id=formhandler, version=6.7.0], [id=fuzz, version=13.15.0], [id=gettingStarted, version=19.0.0], [id=graaljs, version=0.9.0], [id=graphql, version=0.28.0], [id=help, version=20.0.0], [id=hud, version=0.19.0], [id=invoke, version=16.0.0], [id=network, version=0.21.0], [id=oast, version=0.21.0], [id=onlineMenu, version=14.0.0], [id=openapi, version=45.0.0], [id=postman, version=0.6.0], [id=pscan, version=0.2.1], [id=pscanrules, version=64.0.0], [id=quickstart, version=51.0.0], [id=replacer, version=20.0.0], [id=reports, version=0.38.0], [id=requester, version=7.8.0], [id=retest, version=0.11.0], [id=retire, version=0.46.0], [id=reveal, version=9.0.0], [id=scanpolicies, version=0.2.0], [id=scripts, version=45.11.0], [id=selenium, version=15.36.0], [id=sequence, version=8.0.0], [id=soap, version=24.0.0], [id=spider, version=0.14.0], [id=spiderAjax, version=23.23.0], [id=tips, version=14.0.0], [id=webdriverwindows, version=133.0.0], [id=websocket, version=32.0.0], [id=zest, version=48.5.0]]
+1741 [ZAP-daemon] INFO  org.zaproxy.zap.control.ExtensionFactory - Loading extensions
+1802 [ZAP-daemon] WARN  org.zaproxy.zap.control.AddOnCollection - Failed to create add-on for ascanrules
+java.util.zip.ZipException: zip END header not found
+	at java.base/java.util.zip.ZipFile$Source.findEND(ZipFile.java:1649) ~[?:?]
+	at java.base/java.util.zip.ZipFile$Source.initCEN(ZipFile.java:1657) ~[?:?]
+	at java.base/java.util.zip.ZipFile$Source.<init>(ZipFile.java:1495) ~[?:?]
+	at java.base/java.util.zip.ZipFile$Source.get(ZipFile.java:1458) ~[?:?]
+	at java.base/java.util.zip.ZipFile$CleanableResource.<init>(ZipFile.java:724) ~[?:?]
+	at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:251) ~[?:?]
+	at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:180) ~[?:?]
+	at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:194) ~[?:?]
+	at org.zaproxy.zap.control.AddOn.loadManifestFile(AddOn.java:504) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOn.<init>(AddOn.java:596) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOnCollection.load(AddOnCollection.java:143) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOnCollection.<init>(AddOnCollection.java:62) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOnCollection.<init>(AddOnCollection.java:54) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate.getPreviousVersionInfo(ExtensionAutoUpdate.java:1073) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate.<init>(ExtensionAutoUpdate.java:152) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.CoreFunctionality.createExtensions(CoreFunctionality.java:87) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.CoreFunctionality.getBuiltInExtensions(CoreFunctionality.java:70) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.ExtensionFactory.loadAllExtension(ExtensionFactory.java:107) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.Control.addExtension(Control.java:190) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.AbstractControl.loadExtension(AbstractControl.java:54) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.Control.init(Control.java:156) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.Control.initSingletonWithoutView(Control.java:389) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.HeadlessBootstrap.initControl(HeadlessBootstrap.java:59) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.DaemonBootstrap$1.run(DaemonBootstrap.java:75) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+1825 [ZAP-daemon] WARN  org.zaproxy.zap.control.AddOnCollection - Failed to create add-on for database
+java.util.zip.ZipException: zip END header not found
+	at java.base/java.util.zip.ZipFile$Source.findEND(ZipFile.java:1649) ~[?:?]
+	at java.base/java.util.zip.ZipFile$Source.initCEN(ZipFile.java:1657) ~[?:?]
+	at java.base/java.util.zip.ZipFile$Source.<init>(ZipFile.java:1495) ~[?:?]
+	at java.base/java.util.zip.ZipFile$Source.get(ZipFile.java:1458) ~[?:?]
+	at java.base/java.util.zip.ZipFile$CleanableResource.<init>(ZipFile.java:724) ~[?:?]
+	at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:251) ~[?:?]
+	at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:180) ~[?:?]
+	at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:194) ~[?:?]
+	at org.zaproxy.zap.control.AddOn.loadManifestFile(AddOn.java:504) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOn.<init>(AddOn.java:596) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOnCollection.load(AddOnCollection.java:143) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOnCollection.<init>(AddOnCollection.java:62) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOnCollection.<init>(AddOnCollection.java:54) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate.getPreviousVersionInfo(ExtensionAutoUpdate.java:1073) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate.<init>(ExtensionAutoUpdate.java:152) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.CoreFunctionality.createExtensions(CoreFunctionality.java:87) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.CoreFunctionality.getBuiltInExtensions(CoreFunctionality.java:70) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.ExtensionFactory.loadAllExtension(ExtensionFactory.java:107) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.Control.addExtension(Control.java:190) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.AbstractControl.loadExtension(AbstractControl.java:54) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.Control.init(Control.java:156) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.Control.initSingletonWithoutView(Control.java:389) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.HeadlessBootstrap.initControl(HeadlessBootstrap.java:59) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.DaemonBootstrap$1.run(DaemonBootstrap.java:75) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+1842 [ZAP-daemon] WARN  org.zaproxy.zap.control.AddOnCollection - Failed to create add-on for network
+java.util.zip.ZipException: zip END header not found
+	at java.base/java.util.zip.ZipFile$Source.findEND(ZipFile.java:1649) ~[?:?]
+	at java.base/java.util.zip.ZipFile$Source.initCEN(ZipFile.java:1657) ~[?:?]
+	at java.base/java.util.zip.ZipFile$Source.<init>(ZipFile.java:1495) ~[?:?]
+	at java.base/java.util.zip.ZipFile$Source.get(ZipFile.java:1458) ~[?:?]
+	at java.base/java.util.zip.ZipFile$CleanableResource.<init>(ZipFile.java:724) ~[?:?]
+	at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:251) ~[?:?]
+	at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:180) ~[?:?]
+	at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:194) ~[?:?]
+	at org.zaproxy.zap.control.AddOn.loadManifestFile(AddOn.java:504) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOn.<init>(AddOn.java:596) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOnCollection.load(AddOnCollection.java:143) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOnCollection.<init>(AddOnCollection.java:62) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOnCollection.<init>(AddOnCollection.java:54) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate.getPreviousVersionInfo(ExtensionAutoUpdate.java:1073) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate.<init>(ExtensionAutoUpdate.java:152) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.CoreFunctionality.createExtensions(CoreFunctionality.java:87) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.CoreFunctionality.getBuiltInExtensions(CoreFunctionality.java:70) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.ExtensionFactory.loadAllExtension(ExtensionFactory.java:107) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.Control.addExtension(Control.java:190) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.AbstractControl.loadExtension(AbstractControl.java:54) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.Control.init(Control.java:156) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.Control.initSingletonWithoutView(Control.java:389) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.HeadlessBootstrap.initControl(HeadlessBootstrap.java:59) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.DaemonBootstrap$1.run(DaemonBootstrap.java:75) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+1845 [ZAP-daemon] WARN  org.zaproxy.zap.control.AddOnCollection - Failed to create add-on for openapi
+java.util.zip.ZipException: zip END header not found
+	at java.base/java.util.zip.ZipFile$Source.findEND(ZipFile.java:1649) ~[?:?]
+	at java.base/java.util.zip.ZipFile$Source.initCEN(ZipFile.java:1657) ~[?:?]
+	at java.base/java.util.zip.ZipFile$Source.<init>(ZipFile.java:1495) ~[?:?]
+	at java.base/java.util.zip.ZipFile$Source.get(ZipFile.java:1458) ~[?:?]
+	at java.base/java.util.zip.ZipFile$CleanableResource.<init>(ZipFile.java:724) ~[?:?]
+	at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:251) ~[?:?]
+	at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:180) ~[?:?]
+	at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:194) ~[?:?]
+	at org.zaproxy.zap.control.AddOn.loadManifestFile(AddOn.java:504) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOn.<init>(AddOn.java:596) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOnCollection.load(AddOnCollection.java:143) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOnCollection.<init>(AddOnCollection.java:62) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOnCollection.<init>(AddOnCollection.java:54) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate.getPreviousVersionInfo(ExtensionAutoUpdate.java:1073) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate.<init>(ExtensionAutoUpdate.java:152) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.CoreFunctionality.createExtensions(CoreFunctionality.java:87) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.CoreFunctionality.getBuiltInExtensions(CoreFunctionality.java:70) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.ExtensionFactory.loadAllExtension(ExtensionFactory.java:107) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.Control.addExtension(Control.java:190) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.AbstractControl.loadExtension(AbstractControl.java:54) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.Control.init(Control.java:156) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.Control.initSingletonWithoutView(Control.java:389) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.HeadlessBootstrap.initControl(HeadlessBootstrap.java:59) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.DaemonBootstrap$1.run(DaemonBootstrap.java:75) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+1859 [ZAP-daemon] WARN  org.zaproxy.zap.control.AddOnCollection - Failed to create add-on for reports
+java.util.zip.ZipException: zip END header not found
+	at java.base/java.util.zip.ZipFile$Source.findEND(ZipFile.java:1649) ~[?:?]
+	at java.base/java.util.zip.ZipFile$Source.initCEN(ZipFile.java:1657) ~[?:?]
+	at java.base/java.util.zip.ZipFile$Source.<init>(ZipFile.java:1495) ~[?:?]
+	at java.base/java.util.zip.ZipFile$Source.get(ZipFile.java:1458) ~[?:?]
+	at java.base/java.util.zip.ZipFile$CleanableResource.<init>(ZipFile.java:724) ~[?:?]
+	at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:251) ~[?:?]
+	at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:180) ~[?:?]
+	at java.base/java.util.zip.ZipFile.<init>(ZipFile.java:194) ~[?:?]
+	at org.zaproxy.zap.control.AddOn.loadManifestFile(AddOn.java:504) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOn.<init>(AddOn.java:596) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOnCollection.load(AddOnCollection.java:143) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOnCollection.<init>(AddOnCollection.java:62) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.AddOnCollection.<init>(AddOnCollection.java:54) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate.getPreviousVersionInfo(ExtensionAutoUpdate.java:1073) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate.<init>(ExtensionAutoUpdate.java:152) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.CoreFunctionality.createExtensions(CoreFunctionality.java:87) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.CoreFunctionality.getBuiltInExtensions(CoreFunctionality.java:70) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.control.ExtensionFactory.loadAllExtension(ExtensionFactory.java:107) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.Control.addExtension(Control.java:190) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.AbstractControl.loadExtension(AbstractControl.java:54) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.Control.init(Control.java:156) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.control.Control.initSingletonWithoutView(Control.java:389) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.HeadlessBootstrap.initControl(HeadlessBootstrap.java:59) ~[zap-2.16.1.jar:2.16.1]
+	at org.zaproxy.zap.DaemonBootstrap$1.run(DaemonBootstrap.java:75) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+2242 [ZAP-daemon] INFO  org.zaproxy.addon.network.internal.TlsUtils - Using supported SSL/TLS protocols: [TLSv1.2, TLSv1.3]
+2614 [ZAP-daemon] INFO  org.zaproxy.zap.control.ExtensionFactory - Extensions loaded
+2717 [ZAP-daemon] INFO  org.flywaydb.core.internal.license.VersionPrinter - Flyway Community Edition 9.22.3 by Redgate
+2717 [ZAP-daemon] INFO  org.flywaydb.core.internal.license.VersionPrinter - See release notes here: https://rd.gt/416ObMi
+2717 [ZAP-daemon] INFO  org.flywaydb.core.internal.license.VersionPrinter - 
+2734 [ZAP-daemon] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:hsqldb:file:C:/Users/grabowmar/ZAP/session/untitled1 (HSQL Database Engine 2.7)
+2739 [ZAP-daemon] WARN  org.flywaydb.core.internal.database.base.Database - Flyway upgrade recommended: HSQLDB 2.7 is newer than this version of Flyway and support has not been tested. The latest supported version of HSQLDB is 2.6.
+2753 [ZAP-daemon] INFO  org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory - Schema history table "PUBLIC"."AUTHHELPER_FLYWAY_SCHEMA_HISTORY" does not exist yet
+2753 [ZAP-daemon] INFO  org.flywaydb.core.internal.command.DbValidate - Successfully validated 2 migrations (execution time 00:00.012s)
+2766 [ZAP-daemon] INFO  org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory - Creating Schema History table "PUBLIC"."AUTHHELPER_FLYWAY_SCHEMA_HISTORY" with baseline ...
+2794 [ZAP-daemon] INFO  org.flywaydb.core.internal.command.DbBaseline - Successfully baselined schema with version: 0
+2808 [ZAP-daemon] INFO  org.flywaydb.core.internal.command.DbMigrate - Current version of schema "PUBLIC": 0
+2821 [ZAP-daemon] INFO  org.flywaydb.core.internal.command.DbMigrate - Migrating schema "PUBLIC" to version "1 - Create tables"
+2836 [ZAP-daemon] INFO  org.flywaydb.core.internal.command.DbMigrate - Migrating schema "PUBLIC" to version "2 - Create storage tables"
+2854 [ZAP-daemon] INFO  org.flywaydb.core.internal.command.DbMigrate - Successfully applied 2 migrations to schema "PUBLIC", now at version v2 (execution time 00:00.006s)
+3668 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Auto-update Extension - Pozwala ZAP sprawdzać dostępność aktualizacji
+3668 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Options Extension - Options Extension
+3668 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Edytuj Menu Rozszerzeń - Edytuj Menu Rozszerzeń
+3668 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Rozszerzenie API - Zapewnia API bazujące na rest w celu kontroli i dostępu do ZAP
+3675 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Historia Add-on - Historia Add-on
+3675 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionReveal - Show hidden fields and enable disabled fields
+3675 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Search Extension - Search messages for strings and regular expressions
+3681 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Breakpoint Extension - Pozwala na przechwytywanie i modyfikowanie żądań i odpowiedzi
+3683 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Passive Scan Extension - Skaner pasywny
+3683 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Rozszerzenie alertów - Pozwala na przeglądanie i zarządzanie alertami
+3684 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Dodatek aktywnego skanowania - Skaner aktywny, mocno oparty na skanerze Paros, ale z dodatkowymi testami
+3692 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionSequence - ExtensionSequence
+3692 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Standard Menus Extension - A set of common popup menus for miscellaneous tasks
+3692 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionBruteForce - Wymuszone przeglądanie plików i katalogów za pomocą kodu wygenerowanego przez OWASP DirBuster
+3694 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Porównaj Rozszerzenia - Porównuje 2 sesje i generuje plik HTML z pokazanymi różnicami
+3694 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionInvoke - Invoke external applications passing context related information such as URLs and parameters
+3694 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Rozszerzenie Anty-CSRF - Obsługuje tokeny przeciw Cross-Site Request Forgery (CSRF)
+3697 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Authentication Extension - Authentication Extension
+3706 [ZAP-daemon] INFO  org.zaproxy.zap.extension.authentication.ExtensionAuthentication - Loaded authentication method types: [Uwierzytelnianie oparte o formularz, Uwierzytelnienie HTTP, Ręczna autoryzacja, Uwierzytelnianie oparte o skrypt, Uwierzytelnienie oparte na JSON-ie]
+3709 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Users Extension - Users Extension
+3709 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Parameters Extension - Summarise and analyse FORM and URL parameters as well as cookies
+3710 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Script Extension - Script integration
+3713 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionScripts - Scripting console, supports all JSR 223 scripting languages
+3719 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Forced User Extension - Forced User Extension
+3719 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing HTTP Sessions Extension - Extension handling HTTP sessions
+3723 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionZest - Zest is a specialized scripting language, originally, from Mozilla specifically designed to be used in security tools
+3793 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionDiff - ExtensionDiff
+3793 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing HTTP Panel Post Table View Extension - HTTP Panel Post Table View Extension
+3793 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Encoder Addon - Adds support for scriptable encoders to ZAP.
+3793 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Session Management Extension - Session Management Extension
+3798 [ZAP-daemon] INFO  org.zaproxy.zap.extension.sessions.ExtensionSessionManagement - Loaded session management method types: [Zarządzanie oparte na plikach cookie sesji, Zarządzanie sesjami uwierzytelniania HTTP, Script-based Session Management]
+3798 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing HTTP Panel Form Table View Extension - HTTP Panel Form Table View Extension
+3798 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing WebSockets Support - Capture messages from WebSockets with the ability to set breakpoints.
+3808 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing SOAP/WSDL Support - Allows you to import a WSDL file containing operations which ZAP will access, adding them to the Sites tree.
+3809 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Core UI Extension - Core UI related functionality.
+3809 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Authorization Extension - Authorization Extension
+3809 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Requester - Allows to manually edit and send messages.
+3812 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing "pająka AJAX" - AJAX Spider, uses Crawljax
+3816 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing WebDriver Provider - Provides WebDrivers to control several browsers using Selenium and includes HtmlUnit browser.
+3828 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Refresh Sites Tree Extension - Adds menu item to refresh the Sites tree
+3828 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Rozszerzenie Pomocy - ZAP User Guide
+3829 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Call Home - Handles all of the calls to ZAP services
+3830 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Network Extension - Provides core networking capabilities.
+4025 [ZAP-daemon] INFO  org.zaproxy.addon.network.ConnectionOptions - Unsafe SSL/TLS renegotiation disabled.
+4027 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Extension Configuration Extension - Umożliwia zdefiniowanie, które rozszerzenia są ładowane, gdy ZAP jest uruchamiany 
+4027 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Combined HTTP Panels Extension - Combined HTTP Panels Extension
+4027 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing HTTP Panel Hex View Extension - HTTP Panel Hex View Extension
+4029 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing HTTP Panel Image View Extension - HTTP Panel Image View Extension
+4029 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing HTTP Panel Query Table View Extension - HTTP Panel Query Table View Extension
+4029 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing HTTP Panel Syntax Highlighter View Extension - HTTP Panel Syntax Highlighter View Extension
+4029 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Keyboard Configuration Extension - Adds support for configurable keyboard shortcuts for all of the ZAP menus.
+4030 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Scanner Rule Configuration Extension - Active and passive rule configuration
+4031 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Statistics Extension - Statystyki
+4031 [ZAP-daemon] INFO  org.zaproxy.zap.extension.stats.ExtensionStats - Start recording in memory stats
+4031 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Custom Pages Extension - Custom Pages Definition
+4036 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionAlertFilters - Context alert rules filter
+4038 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Alert Filters Automation - Alert Filters Automation Framework Integration
+4038 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Active Scan Rules - Release status active scan rules
+4038 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Authentication Helper - Authentication Helper
+4051 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Client Spider Browser Based Authentication Support - Enables browser based authentication when performing an authenticated Client Spider scan.
+4051 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Authentication Helper Reports - Authentication Helper Reports
+4051 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing AJAX Spider Browser Based Authentication Support - Enables browser based authentication when performing an authenticated AJAX Spider scan.
+4051 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Automation Framework - Provides functionality to simplify using ZAP in an automated manner
+4051 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionClientIntegration - Client Side Integration
+4059 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Client Spider Automation - Client Spider Automation Framework Integration
+4060 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Client Zest Script Recording Support - Allows recording client events as Zest scripts.
+4064 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Database Extension - Provides databases and persistence capabilities.
+4065 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionDomXSS - Reguły aktywnego skanowania DOM XSS
+4121 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionFormHandler - This extension allows a user to change the default values used for generated content (e.g. spiders, importers).
+4121 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Zaawansowany Fuzzer - Provides the foundation for concrete message types (for example, HTTP, WebSockets) expose fuzzer implementations.
+4121 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing HTTP Fuzzer - Allows to fuzz HTTP messages.
+4121 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionGettingStarted - ZAP Przewodnik dla początkujących
+4121 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing GraalVM JavaScript Engine Extension - Provides the GraalVM JavaScript engine for ZAP scripting.
+4417 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionHUD - Heads Up Display
+4558 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionHUDlaunch - ExtensionHUDlaunch
+4558 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Out-of-band Application Security Testing - Adds Out-of-band Application Security Testing functionality.
+4558 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing OAST Scripts - Adds OAST scripts.
+4558 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionOnlineMenu - Linki menu Online
+4558 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing OpenAPI Import - Allows you to spider and import OpenAPI (Swagger) definitions 
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing OpenAPI Automation - OpenAPI Automation Framework Integration
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing OpenAPI Spider - OpenAPI Spider Integration
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Postman Import - Allows you to spider and import Postman collections
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Postman Automation - Postman Automation Framework Integration
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Quick Start panel  - Adds the Quick Start panel for scanning and exploring applications
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Quick Start Ajax Spider integration - Add the option to use the Ajax Spider in the Quick Start scan
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Quick Start HUD Integration - HUD integration for the quick start panel
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Quick Start Browser Launcher - Launch browsers preset proxying through ZAP
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Quick Start Spider Integration - Adds the option to use the traditional Spider in the Quick Start scan.
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Match and Replace - Easy way to replace strings in requests and responses
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Replacer Automation - Replacer Automation Framework Integration
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Report Generator - Templated and themed report generation functionality
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Report Generation Automation Integration - Report Generation Automation Integration
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Retest - Facilitates the verification of presence/absence of certain alerts.
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Sequence Automation - Sequence Automation Framework Integration
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing SOAP Automation - SOAP Automation Framework Integration
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing SOAP Spider - SOAP Spider Integration
+4573 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Spider Extension - Spider used for automatically finding URIs on a site.
+4589 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Spider Automation - Spider Automation Integration
+4589 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Ajax Spider Automation - Ajax Spider Automation Framework Integration
+4589 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionTipsAndTricks - Porady i wskazówki
+4589 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing WebSocket Fuzzer - Allows to fuzz WebSocket messages.
+4589 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing WebSocket Message Editor - Provides the WebSocket Message Editor dialogues.
+4589 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Common Library - A library of shared functionality
+4605 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Import/Export - Import and Export functionality supporting multiple formats.
+4605 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Import/Export Automation - Import/Export Automation Framework Integration
+4605 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionGraphQl - Allows you to inspect and attack GraphQL endpoints.
+4608 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing GraphQL Automation - GraphQL Automation Framework Integration
+4608 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing GraphQL Spider - GraphQL Spider Integration
+4608 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Passive Scanner Extension - Provides core passive scanning capabilities.
+4623 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Passive Scanner Automation Framework Extension - Provides jobs and result data related to the passive scanner.
+4623 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Zasady skanowania pasywnego - Release status passive scan rules.
+4623 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Scripts Automation Framework Integration - Scripts Automation
+4733 [ZAP-daemon] INFO  org.zaproxy.addon.oast.services.callback.CallbackService - Started callback service on 0.0.0.0:55882
+4741 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Authentication Request Identified
+4741 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Session Management Response Identified
+4742 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Verification Request Identified
+4743 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Vulnerable JS Library (Powered by Retire.js)
+4744 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: WSDL File Detection
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Anti-clickjacking Header
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Application Error Disclosure
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Big Redirect Detected (Potential Sensitive Information Leak)
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Re-examine Cache-control Directives
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Charset Mismatch
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Content Security Policy (CSP) Header Not Set
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: CSP
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Content-Type Header Missing
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Cookie No HttpOnly Flag
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Loosely Scoped Cookie
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Cookie without SameSite Attribute
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Cookie Without Secure Flag
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Cross-Domain Misconfiguration
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Cross-Domain JavaScript Source File Inclusion
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Absence of Anti-CSRF Tokens
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Directory Browsing
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Hash Disclosure
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Heartbleed OpenSSL Vulnerability (Indicative)
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Private IP Disclosure
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Session ID in URL Rewrite
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Information Disclosure - Debug Error Messages
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Information Disclosure - Sensitive Information in URL
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Information Disclosure - Sensitive Information in HTTP Referrer Header
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Information Disclosure - Suspicious Comments
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Weak Authentication Method
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: HTTP to HTTPS Insecure Transition in Form Post
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: HTTPS to HTTP Insecure Transition in Form Post
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Insecure JSF ViewState
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Reverse Tabnabbing
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Secure Pages Include Mixed Content
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Modern Web Application
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: PII Disclosure
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Script Served From Malicious Domain (polyfill)
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Retrieved from Cache
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: HTTP Server Response Header
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Strict-Transport-Security Header
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Timestamp Disclosure
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: User Controllable Charset
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Cookie Poisoning
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: User Controllable HTML Element Attribute (Potential XSS)
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: User Controllable JavaScript Event (XSS)
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Open Redirect
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Username Hash Found
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Viewstate
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-AspNet-Version Response Header
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-Backend-Server Header Information Leak
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-ChromeLogger-Data (XCOLD) Header Information Leak
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-Content-Type-Options Header Missing
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-Debug-Token Information Leak
+4772 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Server Leaks Information via "X-Powered-By" HTTP Response Header Field(s)
+4788 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Script Passive Scan Rules
+4788 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Stats Passive Scan Rule
+4811 [ZAP-daemon] INFO  org.zaproxy.addon.network.ExtensionNetwork - ZAP is now listening on 127.0.0.1:8090
+25035 [ZAP-SpiderInitThread-0] INFO  org.zaproxy.addon.spider.SpiderThread - Starting spidering scan on http://localhost:5821 at 2025-04-15T17:14:47.076+0200
+25036 [ZAP-SpiderInitThread-0] INFO  org.zaproxy.addon.spider.Spider - Spider initializing...
+25042 [ZAP-SpiderInitThread-0] INFO  org.zaproxy.addon.spider.Spider - Starting spider...
+25069 [ZAP-SpiderThreadPool-0-thread-10] INFO  org.zaproxy.addon.spider.Spider - Spidering process is complete. Shutting down...
+25069 [ZAP-SpiderShutdownThread-0] INFO  org.zaproxy.addon.spider.SpiderThread - Spider scanning complete: true on http://localhost:5821 at 2025-04-15T17:14:47.111+0200
+27063 [ZAP-AjaxSpiderApi] INFO  org.zaproxy.zap.extension.spiderAjax.SpiderThread - Running Crawljax (with chrome-headless): API - http://localhost:5821
+27066 [ZAP-AjaxSpiderApi] INFO  org.zaproxy.zap.extension.spiderAjax.SpiderThread - Starting proxy...
+27068 [ZAP-AjaxSpiderApi] INFO  org.zaproxy.zap.extension.spiderAjax.SpiderThread - Proxy started, listening at port [56014].
+27208 [ZAP-AjaxSpiderApi] INFO  com.crawljax.core.plugin.Plugins - Loaded org.zaproxy.zap.extension.spiderAjax.SpiderThread$DummyPlugin@5374c256 as a OnBrowserCreatedPlugin
+28306 [ZAP-AjaxSpiderApi] WARN  org.openqa.selenium.devtools.CdpVersionFinder - Unable to find an exact match for CDP version 135, returning the closest version; found: 134; Please update to a Selenium version that supports CDP version 135
+31322 [ZAP-AjaxSpiderApi] WARN  org.openqa.selenium.devtools.CdpVersionFinder - Unable to find an exact match for CDP version 135, returning the closest version; found: 134; Please update to a Selenium version that supports CDP version 135
+32079 [ZAP-AjaxSpiderApi] WARN  org.openqa.selenium.devtools.CdpVersionFinder - Unable to find an exact match for CDP version 135, returning the closest version; found: 134; Please update to a Selenium version that supports CDP version 135
+32982 [ZAP-AjaxSpiderApi] WARN  org.openqa.selenium.devtools.CdpVersionFinder - Unable to find an exact match for CDP version 135, returning the closest version; found: 134; Please update to a Selenium version that supports CDP version 135
+37470 [ZAP-AjaxSpiderApi] INFO  com.crawljax.core.CrawlController - Received shutdown notice. Reason is Exausted
+37489 [pool-2-thread-2] ERROR com.crawljax.core.CrawlTaskConsumer - Cound not complete state crawl: Build info: version: '4.30.0', revision: '509c7f17cc*'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '21.0.6'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Command: [c84d8b565ce070ab34fb8b0eaa8ef6cf, getCurrentUrl {}]
+Capabilities {acceptInsecureCerts: true, browserName: chrome, browserVersion: 135.0.7049.85, chrome: {chromedriverVersion: 135.0.7049.84 (6c019e560019..., userDataDir: C:\Users\GRABOW~1\AppData\L...}, fedcm:accounts: true, goog:chromeOptions: {debuggerAddress: localhost:56019}, networkConnectionEnabled: false, pageLoadStrategy: normal, platformName: windows, proxy: Proxy(manual, http=127.0.0...., se:cdp: ws://localhost:56019/devtoo..., se:cdpVersion: 135.0.7049.85, setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webSocketUrl: ws://localhost:42107/sessio..., webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:extension:minPinLength: true, webauthn:extension:prf: true, webauthn:virtualAuthenticators: true}
+Session ID: c84d8b565ce070ab34fb8b0eaa8ef6cf
+org.openqa.selenium.WebDriverException: Build info: version: '4.30.0', revision: '509c7f17cc*'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '21.0.6'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Command: [c84d8b565ce070ab34fb8b0eaa8ef6cf, getCurrentUrl {}]
+Capabilities {acceptInsecureCerts: true, browserName: chrome, browserVersion: 135.0.7049.85, chrome: {chromedriverVersion: 135.0.7049.84 (6c019e560019..., userDataDir: C:\Users\GRABOW~1\AppData\L...}, fedcm:accounts: true, goog:chromeOptions: {debuggerAddress: localhost:56019}, networkConnectionEnabled: false, pageLoadStrategy: normal, platformName: windows, proxy: Proxy(manual, http=127.0.0...., se:cdp: ws://localhost:56019/devtoo..., se:cdpVersion: 135.0.7049.85, setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webSocketUrl: ws://localhost:42107/sessio..., webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:extension:minPinLength: true, webauthn:extension:prf: true, webauthn:virtualAuthenticators: true}
+Session ID: c84d8b565ce070ab34fb8b0eaa8ef6cf
+	at org.openqa.selenium.remote.http.jdk.JdkHttpClient.execute(JdkHttpClient.java:419) ~[?:?]
+	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:212) ~[?:?]
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.invokeExecute(DriverCommandExecutor.java:216) ~[?:?]
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:174) ~[?:?]
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:545) ~[?:?]
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:618) ~[?:?]
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:622) ~[?:?]
+	at org.openqa.selenium.remote.RemoteWebDriver.getCurrentUrl(RemoteWebDriver.java:325) ~[?:?]
+	at com.crawljax.browser.WebDriverBackedEmbeddedBrowser.getCurrentUrl(WebDriverBackedEmbeddedBrowser.java:585) ~[?:?]
+	at com.crawljax.core.Crawler.crawlerNotInScope(Crawler.java:411) ~[?:?]
+	at com.crawljax.core.Crawler.crawlThroughActions(Crawler.java:330) ~[?:?]
+	at com.crawljax.core.Crawler.execute(Crawler.java:129) ~[?:?]
+	at com.crawljax.core.CrawlTaskConsumer.handleTask(CrawlTaskConsumer.java:79) ~[?:?]
+	at com.crawljax.core.CrawlTaskConsumer.pollAndHandleCrawlTasks(CrawlTaskConsumer.java:71) ~[?:?]
+	at com.crawljax.core.CrawlTaskConsumer.call(CrawlTaskConsumer.java:47) ~[?:?]
+	at com.crawljax.core.CrawlTaskConsumer.call(CrawlTaskConsumer.java:16) ~[?:?]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[?:?]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144) ~[?:?]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642) ~[?:?]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+Caused by: java.lang.InterruptedException
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:386) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2073) ~[?:?]
+	at org.openqa.selenium.remote.http.jdk.JdkHttpClient.execute(JdkHttpClient.java:413) ~[?:?]
+	... 19 more
+37489 [pool-2-thread-5] WARN  com.crawljax.browser.WebDriverBackedEmbeddedBrowser - Could not get the dom
+org.openqa.selenium.WebDriverException: Build info: version: '4.30.0', revision: '509c7f17cc*'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '21.0.6'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Command: [cb5d276788885c64e645baade1cea744, getPageSource {}]
+Capabilities {acceptInsecureCerts: true, browserName: chrome, browserVersion: 135.0.7049.85, chrome: {chromedriverVersion: 135.0.7049.84 (6c019e560019..., userDataDir: C:\Users\GRABOW~1\AppData\L...}, fedcm:accounts: true, goog:chromeOptions: {debuggerAddress: localhost:56103}, networkConnectionEnabled: false, pageLoadStrategy: normal, platformName: windows, proxy: Proxy(manual, http=127.0.0...., se:cdp: ws://localhost:56103/devtoo..., se:cdpVersion: 135.0.7049.85, setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webSocketUrl: ws://localhost:35384/sessio..., webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:extension:minPinLength: true, webauthn:extension:prf: true, webauthn:virtualAuthenticators: true}
+Session ID: cb5d276788885c64e645baade1cea744
+	at org.openqa.selenium.remote.http.jdk.JdkHttpClient.execute(JdkHttpClient.java:419) ~[?:?]
+	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:212) ~[?:?]
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.invokeExecute(DriverCommandExecutor.java:216) ~[?:?]
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:174) ~[?:?]
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:545) ~[?:?]
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:618) ~[?:?]
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:622) ~[?:?]
+	at org.openqa.selenium.remote.RemoteWebDriver.getPageSource(RemoteWebDriver.java:394) ~[?:?]
+	at com.crawljax.browser.WebDriverBackedEmbeddedBrowser.getDomTreeWithFrames(WebDriverBackedEmbeddedBrowser.java:618) ~[?:?]
+	at com.crawljax.browser.WebDriverBackedEmbeddedBrowser.getStrippedDom(WebDriverBackedEmbeddedBrowser.java:394) ~[?:?]
+	at com.crawljax.forms.FormHandler.getFormInputs(FormHandler.java:164) ~[?:?]
+	at com.crawljax.core.Crawler.handleInputElements(Crawler.java:209) ~[?:?]
+	at com.crawljax.core.Crawler.follow(Crawler.java:154) ~[?:?]
+	at com.crawljax.core.Crawler.execute(Crawler.java:128) ~[?:?]
+	at com.crawljax.core.CrawlTaskConsumer.handleTask(CrawlTaskConsumer.java:79) ~[?:?]
+	at com.crawljax.core.CrawlTaskConsumer.pollAndHandleCrawlTasks(CrawlTaskConsumer.java:71) ~[?:?]
+	at com.crawljax.core.CrawlTaskConsumer.call(CrawlTaskConsumer.java:47) ~[?:?]
+	at com.crawljax.core.CrawlTaskConsumer.call(CrawlTaskConsumer.java:16) ~[?:?]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[?:?]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144) ~[?:?]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642) ~[?:?]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+Caused by: java.lang.InterruptedException
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:386) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2073) ~[?:?]
+	at org.openqa.selenium.remote.http.jdk.JdkHttpClient.execute(JdkHttpClient.java:413) ~[?:?]
+	... 21 more
+37494 [pool-2-thread-5] WARN  com.crawljax.browser.WebDriverBackedEmbeddedBrowser - Could not get the dom
+org.openqa.selenium.WebDriverException: Build info: version: '4.30.0', revision: '509c7f17cc*'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '21.0.6'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Command: [cb5d276788885c64e645baade1cea744, getPageSource {}]
+Capabilities {acceptInsecureCerts: true, browserName: chrome, browserVersion: 135.0.7049.85, chrome: {chromedriverVersion: 135.0.7049.84 (6c019e560019..., userDataDir: C:\Users\GRABOW~1\AppData\L...}, fedcm:accounts: true, goog:chromeOptions: {debuggerAddress: localhost:56103}, networkConnectionEnabled: false, pageLoadStrategy: normal, platformName: windows, proxy: Proxy(manual, http=127.0.0...., se:cdp: ws://localhost:56103/devtoo..., se:cdpVersion: 135.0.7049.85, setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webSocketUrl: ws://localhost:35384/sessio..., webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:extension:minPinLength: true, webauthn:extension:prf: true, webauthn:virtualAuthenticators: true}
+Session ID: cb5d276788885c64e645baade1cea744
+	at org.openqa.selenium.remote.http.jdk.JdkHttpClient.execute(JdkHttpClient.java:419) ~[?:?]
+	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:212) ~[?:?]
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.invokeExecute(DriverCommandExecutor.java:216) ~[?:?]
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:174) ~[?:?]
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:545) ~[?:?]
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:618) ~[?:?]
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:622) ~[?:?]
+	at org.openqa.selenium.remote.RemoteWebDriver.getPageSource(RemoteWebDriver.java:394) ~[?:?]
+	at com.crawljax.browser.WebDriverBackedEmbeddedBrowser.getDomTreeWithFrames(WebDriverBackedEmbeddedBrowser.java:618) ~[?:?]
+	at com.crawljax.browser.WebDriverBackedEmbeddedBrowser.getStrippedDom(WebDriverBackedEmbeddedBrowser.java:394) ~[?:?]
+	at com.crawljax.util.ElementResolver.resolve(ElementResolver.java:55) ~[?:?]
+	at com.crawljax.util.ElementResolver.resolve(ElementResolver.java:43) ~[?:?]
+	at com.crawljax.core.Crawler.resolveByXpath(Crawler.java:273) ~[?:?]
+	at com.crawljax.core.Crawler.fireEvent(Crawler.java:228) ~[?:?]
+	at com.crawljax.core.Crawler.tryToFireEvent(Crawler.java:184) ~[?:?]
+	at com.crawljax.core.Crawler.follow(Crawler.java:155) ~[?:?]
+	at com.crawljax.core.Crawler.execute(Crawler.java:128) ~[?:?]
+	at com.crawljax.core.CrawlTaskConsumer.handleTask(CrawlTaskConsumer.java:79) ~[?:?]
+	at com.crawljax.core.CrawlTaskConsumer.pollAndHandleCrawlTasks(CrawlTaskConsumer.java:71) ~[?:?]
+	at com.crawljax.core.CrawlTaskConsumer.call(CrawlTaskConsumer.java:47) ~[?:?]
+	at com.crawljax.core.CrawlTaskConsumer.call(CrawlTaskConsumer.java:16) ~[?:?]
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[?:?]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144) ~[?:?]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642) ~[?:?]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+Caused by: java.lang.InterruptedException
+	at java.base/java.util.concurrent.CompletableFuture.reportGet(CompletableFuture.java:386) ~[?:?]
+	at java.base/java.util.concurrent.CompletableFuture.get(CompletableFuture.java:2073) ~[?:?]
+	at org.openqa.selenium.remote.http.jdk.JdkHttpClient.execute(JdkHttpClient.java:413) ~[?:?]
+	... 24 more
+39111 [ZAP-AjaxSpiderApi] INFO  com.crawljax.core.CrawlController - Shutdown process complete
+39111 [ZAP-AjaxSpiderApi] INFO  org.zaproxy.zap.extension.spiderAjax.SpiderThread - Stopping proxy...
+39114 [ZAP-AjaxSpiderApi] INFO  org.zaproxy.zap.extension.spiderAjax.SpiderThread - Proxy stopped.
+39114 [ZAP-AjaxSpiderApi] INFO  org.zaproxy.zap.extension.spiderAjax.SpiderThread - Finished Crawljax: API - http://localhost:5821
+42788 [ZAP-IO-Server-1-5] INFO  org.parosproxy.paros.core.scanner.Scanner - scanner with ID 0 started
+42830 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - Scanning 31 node(s) from http://localhost:5821
+42831 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | PathTraversalScanRule strength HIGH threshold LOW
+45066 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | PathTraversalScanRule in 2,235s with 944 message(s) sent and 2 alert(s) raised.
+45066 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | RemoteFileIncludeScanRule strength HIGH threshold LOW
+45981 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | RemoteFileIncludeScanRule in 0,915s with 620 message(s) sent and 0 alert(s) raised.
+45981 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | SourceCodeDisclosureWebInfScanRule strength HIGH threshold LOW
+45982 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | HeartBleedActiveScanRule strength HIGH threshold LOW
+45982 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | SourceCodeDisclosureCve20121823ScanRule strength HIGH threshold LOW
+45986 [ZAP-ActiveScanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | SourceCodeDisclosureWebInfScanRule in 0,004s with 2 message(s) sent and 0 alert(s) raised.
+45993 [ZAP-ActiveScanner-1] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | HeartBleedActiveScanRule in 0,01s with 3 message(s) sent and 0 alert(s) raised.
+46235 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | SourceCodeDisclosureCve20121823ScanRule in 0,253s with 13 message(s) sent and 0 alert(s) raised.
+46235 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | RemoteCodeExecutionCve20121823ScanRule strength HIGH threshold LOW
+46277 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | RemoteCodeExecutionCve20121823ScanRule in 0,042s with 62 message(s) sent and 0 alert(s) raised.
+46277 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | ExternalRedirectScanRule strength HIGH threshold LOW
+47057 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | ExternalRedirectScanRule in 0,78s with 372 message(s) sent and 0 alert(s) raised.
+47057 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | ServerSideIncludeScanRule strength HIGH threshold LOW
+47875 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | ServerSideIncludeScanRule in 0,818s with 124 message(s) sent and 0 alert(s) raised.
+47875 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | CrossSiteScriptingScanRule strength HIGH threshold LOW
+55024 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | CrossSiteScriptingScanRule in 7,149s with 630 message(s) sent and 0 alert(s) raised.
+55024 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | PersistentXssPrimeScanRule strength HIGH threshold LOW
+55310 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | PersistentXssPrimeScanRule in 0,286s with 31 message(s) sent and 0 alert(s) raised.
+55310 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | PersistentXssSpiderScanRule strength HIGH threshold LOW
+55358 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | PersistentXssSpiderScanRule in 0,048s with 31 message(s) sent and 0 alert(s) raised.
+55358 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | PersistentXssScanRule strength HIGH threshold LOW
+55377 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | PersistentXssScanRule in 0,019s with 0 message(s) sent and 0 alert(s) raised.
+55378 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | SqlInjectionScanRule strength HIGH threshold LOW
+68552 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | SqlInjectionScanRule in 13,175s with 1467 message(s) sent and 0 alert(s) raised.
+68552 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | SqlInjectionMySqlScanRule strength HIGH threshold LOW
+69449 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | SqlInjectionMySqlScanRule in 0,897s with 372 message(s) sent and 0 alert(s) raised.
+69449 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | SqlInjectionHypersonicScanRule strength HIGH threshold LOW
+70334 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | SqlInjectionHypersonicScanRule in 0,885s with 372 message(s) sent and 0 alert(s) raised.
+70334 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | SqlInjectionOracleScanRule strength HIGH threshold LOW
+71185 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | SqlInjectionOracleScanRule in 0,851s with 341 message(s) sent and 0 alert(s) raised.
+71185 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | SqlInjectionPostgreScanRule strength HIGH threshold LOW
+72144 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | SqlInjectionPostgreScanRule in 0,959s with 310 message(s) sent and 0 alert(s) raised.
+72144 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | SqlInjectionSqLiteScanRule strength HIGH threshold LOW
+73294 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | SqlInjectionSqLiteScanRule in 1,15s with 742 message(s) sent and 0 alert(s) raised.
+73294 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | DomXssScanRule strength HIGH threshold LOW
+76751 [Thread-547] INFO  org.zaproxy.zap.extension.domxss.DomXssScanRule - Reaper thread starting
+77100 [ZAP-ActiveScanner-7] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: JdkWebSocket initial request execution error
+Build info: version: '4.30.0', revision: '509c7f17cc*'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '21.0.6'
+Driver info: driver.version: FirefoxDriver
+77221 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - skipped plugin [nie udało się uruchomić lub połączyć z przeglądarką] http://localhost:5821 | DomXssScanRule in 3,927s with 0 message(s) sent and 0 alert(s) raised.
+77221 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | SqlInjectionMsSqlScanRule strength HIGH threshold LOW
+77522 [ZAP-ActiveScanner-5] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: JdkWebSocket initial request execution error
+Build info: version: '4.30.0', revision: '509c7f17cc*'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '21.0.6'
+Driver info: driver.version: FirefoxDriver
+78767 [ZAP-ActiveScanner-3] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: JdkWebSocket initial request execution error
+Build info: version: '4.30.0', revision: '509c7f17cc*'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '21.0.6'
+Driver info: driver.version: FirefoxDriver
+79329 [ZAP-ActiveScanner-2] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: JdkWebSocket initial request execution error
+Build info: version: '4.30.0', revision: '509c7f17cc*'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '21.0.6'
+Driver info: driver.version: FirefoxDriver
+81762 [ZAP-DomXssReaper] INFO  org.zaproxy.zap.extension.domxss.DomXssScanRule - Reaper thread exiting 0
+82889 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | SqlInjectionMsSqlScanRule in 5,668s with 372 message(s) sent and 0 alert(s) raised.
+82889 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | Log4ShellScanRule strength HIGH threshold LOW
+82890 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - skipped plugin [no Active Scan OAST service is selected] http://localhost:5821 | Log4ShellScanRule in 0,001s with 0 message(s) sent and 0 alert(s) raised.
+82890 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | Spring4ShellScanRule strength HIGH threshold LOW
+83226 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | Spring4ShellScanRule in 0,336s with 63 message(s) sent and 0 alert(s) raised.
+83226 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | CodeInjectionScanRule strength HIGH threshold LOW
+84005 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | CodeInjectionScanRule in 0,779s with 248 message(s) sent and 0 alert(s) raised.
+84005 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | CommandInjectionScanRule strength HIGH threshold LOW
+87791 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | CommandInjectionScanRule in 3,786s with 1674 message(s) sent and 0 alert(s) raised.
+87791 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | XpathInjectionScanRule strength HIGH threshold LOW
+88686 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | XpathInjectionScanRule in 0,895s with 93 message(s) sent and 0 alert(s) raised.
+88687 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | XxeScanRule strength HIGH threshold LOW
+88712 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | XxeScanRule in 0,025s with 0 message(s) sent and 0 alert(s) raised.
+88712 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | PaddingOracleScanRule strength HIGH threshold LOW
+88736 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | PaddingOracleScanRule in 0,024s with 0 message(s) sent and 0 alert(s) raised.
+88736 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | CloudMetadataScanRule strength HIGH threshold LOW
+88737 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | SstiScanRule strength HIGH threshold LOW
+88786 [ZAP-ActiveScanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | CloudMetadataScanRule in 0,05s with 9 message(s) sent and 0 alert(s) raised.
+89558 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | SstiScanRule in 0,821s with 434 message(s) sent and 0 alert(s) raised.
+89558 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | SstiBlindScanRule strength HIGH threshold LOW
+89561 [ZAP-ActiveScanner-4] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89561 [ZAP-ActiveScanner-3] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89561 [ZAP-ActiveScanner-2] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89561 [ZAP-ActiveScanner-5] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89561 [ZAP-ActiveScanner-0] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89561 [ZAP-ActiveScanner-1] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89562 [ZAP-ActiveScanner-6] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89562 [ZAP-ActiveScanner-7] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89771 [ZAP-ActiveScanner-0] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89772 [ZAP-ActiveScanner-1] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89772 [ZAP-ActiveScanner-2] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89772 [ZAP-ActiveScanner-4] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89772 [ZAP-ActiveScanner-3] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89774 [ZAP-ActiveScanner-0] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89776 [ZAP-ActiveScanner-0] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89778 [ZAP-ActiveScanner-0] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89778 [ZAP-ActiveScanner-1] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89778 [ZAP-ActiveScanner-2] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89779 [ZAP-ActiveScanner-3] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89779 [ZAP-ActiveScanner-5] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89779 [ZAP-ActiveScanner-4] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89781 [ZAP-ActiveScanner-0] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89782 [ZAP-ActiveScanner-1] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89784 [ZAP-ActiveScanner-1] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89784 [ZAP-ActiveScanner-2] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89784 [ZAP-ActiveScanner-0] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89784 [ZAP-ActiveScanner-4] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89784 [ZAP-ActiveScanner-3] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89786 [ZAP-ActiveScanner-0] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89786 [ZAP-ActiveScanner-1] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89786 [ZAP-ActiveScanner-2] ERROR org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "org.parosproxy.paros.network.HttpMessage.getTimeSentMillis()" because "message" is null
+	at org.zaproxy.addon.oast.internal.MessageEntity.<init>(MessageEntity.java:57) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.persistAlert(ExtensionOast.java:314) ~[?:?]
+	at org.zaproxy.addon.oast.ExtensionOast.registerAlertAndGetPayloadForCallbackService(ExtensionOast.java:296) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.sendPayloadsToMakeCallBack(SstiBlindScanRule.java:357) ~[?:?]
+	at org.zaproxy.zap.extension.ascanrules.SstiBlindScanRule.scan(SstiBlindScanRule.java:195) ~[?:?]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:216) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:132) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:92) ~[zap-2.16.1.jar:2.16.1]
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:391) ~[zap-2.16.1.jar:2.16.1]
+	at java.base/java.lang.Thread.run(Thread.java:1583) [?:?]
+89787 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | SstiBlindScanRule in 0,229s with 0 message(s) sent and 0 alert(s) raised.
+89787 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | DirectoryBrowsingScanRule strength HIGH threshold LOW
+89843 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | DirectoryBrowsingScanRule in 0,056s with 31 message(s) sent and 0 alert(s) raised.
+89843 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | BufferOverflowScanRule strength HIGH threshold LOW
+90119 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | BufferOverflowScanRule in 0,276s with 31 message(s) sent and 0 alert(s) raised.
+90119 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | FormatStringScanRule strength HIGH threshold LOW
+90663 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | FormatStringScanRule in 0,544s with 93 message(s) sent and 0 alert(s) raised.
+90663 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | CrlfInjectionScanRule strength HIGH threshold LOW
+91435 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | CrlfInjectionScanRule in 0,772s with 217 message(s) sent and 0 alert(s) raised.
+91435 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | ParameterTamperScanRule strength HIGH threshold LOW
+91968 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | ParameterTamperScanRule in 0,533s with 109 message(s) sent and 0 alert(s) raised.
+91968 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | ElmahScanRule strength HIGH threshold LOW
+91969 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | TraceAxdScanRule strength HIGH threshold LOW
+91981 [ZAP-ActiveScanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | ElmahScanRule in 0,013s with 1 message(s) sent and 0 alert(s) raised.
+91994 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | TraceAxdScanRule in 0,025s with 12 message(s) sent and 0 alert(s) raised.
+91994 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | HtAccessScanRule strength HIGH threshold LOW
+92007 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | HtAccessScanRule in 0,013s with 10 message(s) sent and 0 alert(s) raised.
+92007 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | EnvFileScanRule strength HIGH threshold LOW
+92047 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | EnvFileScanRule in 0,04s with 10 message(s) sent and 0 alert(s) raised.
+92047 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | HiddenFilesScanRule strength HIGH threshold LOW
+92051 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | SpringActuatorScanRule strength HIGH threshold LOW
+92051 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | XsltInjectionScanRule strength HIGH threshold LOW
+92055 [ZAP-ActiveScanner-1] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | SpringActuatorScanRule in 0,004s with 2 message(s) sent and 0 alert(s) raised.
+92098 [ZAP-ActiveScanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | HiddenFilesScanRule in 0,051s with 50 message(s) sent and 0 alert(s) raised.
+93121 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | XsltInjectionScanRule in 1,07s with 248 message(s) sent and 0 alert(s) raised.
+93121 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | GetForPostScanRule strength HIGH threshold LOW
+93135 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | GetForPostScanRule in 0,013s with 0 message(s) sent and 0 alert(s) raised.
+93135 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | UserAgentScanRule strength HIGH threshold LOW
+93908 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | UserAgentScanRule in 0,773s with 372 message(s) sent and 0 alert(s) raised.
+93908 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | ScriptsActiveScanner strength HIGH threshold LOW
+93909 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - skipped plugin [skrypty są niedozwolone] http://localhost:5821 | ScriptsActiveScanner in 0s with 0 message(s) sent and 0 alert(s) raised.
+93909 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | SOAPActionSpoofingActiveScanRule strength HIGH threshold LOW
+93926 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | SOAPActionSpoofingActiveScanRule in 0,017s with 0 message(s) sent and 0 alert(s) raised.
+93926 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host http://localhost:5821 | SOAPXMLInjectionActiveScanRule strength HIGH threshold LOW
+93942 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin http://localhost:5821 | SOAPXMLInjectionActiveScanRule in 0,016s with 0 message(s) sent and 0 alert(s) raised.
+93942 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host http://localhost:5821 in 51,148s with 2 alert(s) raised.
+93942 [Thread-23] INFO  org.parosproxy.paros.core.scanner.Scanner - scanner with ID 0 completed in 51,153s

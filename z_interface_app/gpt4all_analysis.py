@@ -894,14 +894,14 @@ class GPT4AllAnalyzer:
         """
         # Try common directory patterns
         patterns = [
-            self.base_path / f"{model}/app{app_num}",
-            self.base_path / f"{model.lower()}/app{app_num}",
-            self.base_path / f"{model}/App{app_num}",
-            self.base_path / f"models/{model}/app{app_num}",
-            self.base_path / f"z_interface_app/{model}/app{app_num}",
-            self.base_path / f"z_interface_app/{model.lower()}/app{app_num}",
-            Path.cwd() / f"{model}/app{app_num}",
-            Path.cwd() / f"z_interface_app/{model}/app{app_num}"
+            self.base_path.parent / f"{model}/app{app_num}",
+            self.base_path.parent / f"{model.lower()}/app{app_num}",
+            self.base_path.parent / f"{model}/App{app_num}",
+            # self.base_path.parent / f"models/{model}/app{app_num}",
+            # self.base_path.parent / f"z_interface_app/{model}/app{app_num}",
+            # self.base_path / f"z_interface_app/{model.lower()}/app{app_num}",
+            # Path.cwd() / f"{model}/app{app_num}",
+            # Path.cwd() / f"z_interface_app/{model}/app{app_num}"
         ]
         
         # Try each pattern
@@ -1154,7 +1154,9 @@ class GPT4AllAnalyzer:
             return self.requirements_cache[app_num]
         
         # First, try to find requirements.json in the app directory
-        app_directory = self.find_app_directory("Llama", app_num)  # Model doesn't matter for just finding JSON
+        app_directory = self.find_app_directory("Claude", 1)  # Model doesn't matter for just finding JSON
+
+        #Imoortant to make dynamic
         requirements_file = app_directory.parent.parent / "requirements.json"
         
         logger.info(f"Looking for requirements.json at: {requirements_file}")
