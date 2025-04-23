@@ -22357,3 +22357,338 @@
 2025-04-19 20:54:56 [INFO] [fc5e4958] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
 2025-04-19 20:54:57 [INFO] [fc5e4958] Request completed: GET /api/system-info - Status: 200 - Duration: 0.751s
 2025-04-19 20:54:58 [INFO] [275c6044] Request completed: GET /gpt4all/server-status - Status: 200 [SLOW] - Duration: 4.194s
+2025-04-23 23:37:16 [INFO] [6d097ea0] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-23 23:37:16 [INFO] [20d73bb2] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-23 23:37:18 [INFO] [20d73bb2] Request completed: GET / - Status: 200 [SLOW] - Duration: 1.580s
+2025-04-23 23:37:18 [INFO] [8c63a52c] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:37:18 [INFO] [3b0d4644] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:37:19 [INFO] [3b0d4644] Request completed: GET /api/system-info - Status: 200 - Duration: 0.843s
+2025-04-23 23:38:19 [INFO] [4b463079] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:38:19 [INFO] [23843854] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:38:19 [INFO] [23843854] Request completed: GET /api/system-info - Status: 200 - Duration: 0.871s
+2025-04-23 23:39:19 [INFO] [cdbe65f5] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:39:19 [INFO] [0d891c9a] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:39:19 [INFO] [0d891c9a] Request completed: GET /api/system-info - Status: 200 - Duration: 0.872s
+2025-04-23 23:40:19 [INFO] [88e713b1] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:40:19 [INFO] [25f82ae1] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:40:19 [INFO] [25f82ae1] Request completed: GET /api/system-info - Status: 200 - Duration: 0.819s
+2025-04-23 23:41:19 [INFO] [1e2d7766] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:41:19 [INFO] [4b6d7b24] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:41:19 [INFO] [4b6d7b24] Request completed: GET /api/system-info - Status: 200 - Duration: 0.822s
+2025-04-23 23:42:19 [INFO] [b376cd88] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:42:19 [INFO] [fb9ff431] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:43:20 [INFO] [d99ff288] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:43:20 [INFO] [5f2d1a32] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:43:20 [ERROR] [5f2d1a32] Request completed: GET /api/system-info - Status: 500 - Duration: 0.053s
+2025-04-23 23:44:21 [INFO] [34fa4783] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:44:21 [INFO] [09d9f13f] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:44:21 [ERROR] [09d9f13f] Request completed: GET /api/system-info - Status: 500 - Duration: 0.004s
+2025-04-23 23:45:22 [INFO] [f9821869] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:45:22 [INFO] [bfa89ad7] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:45:22 [ERROR] [bfa89ad7] Request completed: GET /api/system-info - Status: 500 - Duration: 0.003s
+2025-04-23 23:46:23 [INFO] [0b66ba73] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:46:23 [INFO] [3acbd33d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:46:23 [ERROR] [3acbd33d] Request completed: GET /api/system-info - Status: 500 - Duration: 0.003s
+2025-04-23 23:47:24 [INFO] [b149dfe8] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:47:24 [INFO] [65da3402] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:47:24 [ERROR] [65da3402] Request completed: GET /api/system-info - Status: 500 - Duration: 0.004s
+2025-04-23 23:48:25 [INFO] [62c9079d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:48:25 [INFO] [9955fa69] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:48:25 [ERROR] [9955fa69] Request completed: GET /api/system-info - Status: 500 - Duration: 0.003s
+2025-04-23 23:49:26 [INFO] [462f3fd4] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:49:26 [INFO] [29a0211a] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:49:26 [ERROR] [29a0211a] Request completed: GET /api/system-info - Status: 500 - Duration: 0.003s
+2025-04-23 23:50:27 [INFO] [11bb7dbd] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:50:27 [INFO] [c031f83e] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:50:27 [ERROR] [c031f83e] Request completed: GET /api/system-info - Status: 500 - Duration: 0.003s
+2025-04-23 23:54:19 [INFO] [fd7e4d69] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-23 23:54:19 [INFO] [42fa6134] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-23 23:54:20 [INFO] [42fa6134] Request completed: GET / - Status: 200 [SLOW] - Duration: 1.501s
+2025-04-23 23:54:21 [INFO] [ead550c5] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:54:21 [INFO] [b0f2515a] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:54:22 [INFO] [b0f2515a] Request completed: GET /api/system-info - Status: 200 - Duration: 0.789s
+2025-04-23 23:54:31 [INFO] [421f94ce] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:54:31 [INFO] [2c6baf68] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:54:31 [INFO] [2c6baf68] Request completed: GET /api/system-info - Status: 200 - Duration: 0.814s
+2025-04-23 23:55:22 [INFO] [f0a6ac1e] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:55:22 [INFO] [876fcc2e] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:55:22 [INFO] [876fcc2e] Request completed: GET /api/system-info - Status: 200 - Duration: 0.810s
+2025-04-23 23:55:32 [INFO] [8b7c00b5] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:55:32 [INFO] [6085b77b] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:55:32 [INFO] [6085b77b] Request completed: GET /api/system-info - Status: 200 - Duration: 0.783s
+2025-04-23 23:56:22 [INFO] [ad30ce09] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:56:22 [INFO] [ad1a53fa] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:56:22 [INFO] [ad1a53fa] Request completed: GET /api/system-info - Status: 200 - Duration: 0.879s
+2025-04-23 23:56:33 [INFO] [73a69863] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:56:33 [INFO] [3c916da3] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:56:33 [INFO] [3c916da3] Request completed: GET /api/system-info - Status: 200 - Duration: 0.852s
+2025-04-23 23:57:22 [INFO] [6ebd2b54] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:57:22 [INFO] [a6c38ea3] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:57:22 [INFO] [a6c38ea3] Request completed: GET /api/system-info - Status: 200 - Duration: 0.793s
+2025-04-23 23:57:34 [INFO] [9499f31b] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:57:34 [INFO] [8becc36e] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:57:34 [INFO] [8becc36e] Request completed: GET /api/system-info - Status: 200 - Duration: 0.850s
+2025-04-23 23:58:19 [INFO] [8d0c5b2e] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:58:19 [INFO] [d467d060] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:58:19 [INFO] [d467d060] Request completed: GET /api/system-info - Status: 200 - Duration: 0.817s
+2025-04-23 23:58:22 [INFO] [3bd97148] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:58:22 [INFO] [bcea0a65] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:58:22 [INFO] [bcea0a65] Request completed: GET /api/system-info - Status: 200 - Duration: 0.738s
+2025-04-23 23:59:20 [INFO] [243ba5ff] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:59:20 [INFO] [6a25ac6c] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:59:20 [INFO] [6a25ac6c] Request completed: GET /api/system-info - Status: 200 - Duration: 0.851s
+2025-04-23 23:59:23 [INFO] [e14cd629] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:59:23 [INFO] [46414d33] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-23 23:59:23 [INFO] [46414d33] Request completed: GET /api/system-info - Status: 200 - Duration: 0.755s
+2025-04-24 00:02:51 [INFO] [6833b931] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:02:51 [INFO] [4035f68a] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:02:52 [INFO] [4035f68a] Request completed: GET / - Status: 200 [SLOW] - Duration: 1.592s
+2025-04-24 00:02:53 [INFO] [34d67bf3] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:02:53 [INFO] [6c8024e4] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:02:54 [INFO] [6c8024e4] Request completed: GET /api/system-info - Status: 200 - Duration: 0.886s
+2025-04-24 00:02:56 [INFO] [144c0ef5] Request started: GET /start/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:02:56 [INFO] [da5eae53] Request started: GET /start/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:02:56 [INFO] [da5eae53] Request completed: GET /start/Llama/2 - Status: 200 - Duration: 0.276s
+2025-04-24 00:02:56 [INFO] [e289aef7] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:02:56 [INFO] [3ceb1651] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:02:56 [INFO] [3ceb1651] Request completed: GET /status/Llama/2 - Status: 200 - Duration: 0.006s
+2025-04-24 00:03:03 [INFO] [30b2c817] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:03:03 [INFO] [8386858c] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:03:05 [INFO] [8386858c] Request completed: GET / - Status: 200 [SLOW] - Duration: 1.481s
+2025-04-24 00:03:05 [INFO] [70254e5c] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:05 [INFO] [684b8549] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:06 [INFO] [684b8549] Request completed: GET /api/system-info - Status: 200 - Duration: 0.776s
+2025-04-24 00:03:07 [INFO] [1ee4278f] Request started: GET /stop/Llama/3 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:07 [INFO] [89aca951] Request started: GET /stop/Llama/3 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:09 [INFO] [e0a8700b] Request started: GET /start/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:09 [INFO] [2b404ca2] Request started: GET /start/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:09 [INFO] [2b404ca2] Request completed: GET /start/Llama/2 - Status: 200 - Duration: 0.074s
+2025-04-24 00:03:09 [INFO] [d7f2e66a] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:09 [INFO] [d62e8cdf] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:09 [INFO] [d62e8cdf] Request completed: GET /status/Llama/2 - Status: 200 - Duration: 0.006s
+2025-04-24 00:03:10 [INFO] [98cbeb23] Request started: GET /start/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:10 [INFO] [82990956] Request started: GET /start/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:10 [INFO] [82990956] Request completed: GET /start/Llama/2 - Status: 200 - Duration: 0.080s
+2025-04-24 00:03:10 [INFO] [6fa6f30a] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:10 [INFO] [748389cd] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:10 [INFO] [748389cd] Request completed: GET /status/Llama/2 - Status: 200 - Duration: 0.000s
+2025-04-24 00:03:11 [INFO] [70fa603d] Request started: GET /start/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:11 [INFO] [c429c9e3] Request started: GET /start/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:11 [INFO] [c429c9e3] Request completed: GET /start/Llama/2 - Status: 200 - Duration: 0.083s
+2025-04-24 00:03:11 [INFO] [4b1f5954] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:11 [INFO] [2500e417] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:11 [INFO] [2500e417] Request completed: GET /status/Llama/2 - Status: 200 - Duration: 0.000s
+2025-04-24 00:03:19 [INFO] [89aca951] Request completed: GET /stop/Llama/3 - Status: 200 [SLOW] - Duration: 11.667s
+2025-04-24 00:03:19 [INFO] [cda64928] Request started: GET /status/Llama/3 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:19 [INFO] [09ad7deb] Request started: GET /status/Llama/3 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:19 [INFO] [09ad7deb] Request completed: GET /status/Llama/3 - Status: 200 - Duration: 0.012s
+2025-04-24 00:03:27 [INFO] [b57e6130] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:27 [INFO] [9b201522] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:27 [INFO] [9b201522] Request completed: GET /api/system-info - Status: 200 - Duration: 0.830s
+2025-04-24 00:03:40 [INFO] [25816554] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:03:40 [INFO] [d3725069] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:03:42 [INFO] [d3725069] Request completed: GET / - Status: 200 [SLOW] - Duration: 1.501s
+2025-04-24 00:03:42 [INFO] [547244d7] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:42 [INFO] [c0543a8e] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:43 [INFO] [c0543a8e] Request completed: GET /api/system-info - Status: 200 - Duration: 0.859s
+2025-04-24 00:03:44 [INFO] [ebbe2328] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:44 [INFO] [933cefb6] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:44 [INFO] [933cefb6] Request completed: GET /status/Llama/2 - Status: 200 - Duration: 0.001s
+2025-04-24 00:03:44 [INFO] [8e5f9489] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:44 [INFO] [2930ca49] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:44 [INFO] [2930ca49] Request completed: GET /status/Llama/2 - Status: 200 - Duration: 0.000s
+2025-04-24 00:03:45 [INFO] [f07f2079] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:45 [INFO] [d2e7af4b] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:45 [INFO] [d2e7af4b] Request completed: GET /status/Llama/2 - Status: 200 - Duration: 0.000s
+2025-04-24 00:03:45 [INFO] [d9d1ba65] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:45 [INFO] [d434f07c] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:03:45 [INFO] [d434f07c] Request completed: GET /status/Llama/2 - Status: 200 - Duration: 0.000s
+2025-04-24 00:04:28 [INFO] [e01e0812] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:04:28 [INFO] [0ded09eb] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:04:28 [INFO] [0ded09eb] Request completed: GET /api/system-info - Status: 200 - Duration: 0.806s
+2025-04-24 00:04:42 [INFO] [a04c0edd] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:04:42 [INFO] [151b07d9] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:04:43 [INFO] [151b07d9] Request completed: GET /api/system-info - Status: 200 - Duration: 0.830s
+2025-04-24 00:05:29 [INFO] [c90851d0] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:05:29 [INFO] [3037e67f] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:05:29 [INFO] [3037e67f] Request completed: GET /api/system-info - Status: 200 - Duration: 0.849s
+2025-04-24 00:05:43 [INFO] [7f28cbe5] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:05:43 [INFO] [93316a19] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:05:43 [INFO] [93316a19] Request completed: GET /api/system-info - Status: 200 - Duration: 0.845s
+2025-04-24 00:06:13 [INFO] [962c264b] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:06:13 [INFO] [52ace312] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:06:14 [INFO] [52ace312] Request completed: GET / - Status: 200 [SLOW] - Duration: 1.506s
+2025-04-24 00:06:15 [INFO] [496f2836] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:06:15 [INFO] [b4bed68b] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:06:15 [INFO] [b4bed68b] Request completed: GET /api/system-info - Status: 200 - Duration: 0.793s
+2025-04-24 00:06:29 [INFO] [44021689] Request started: GET /stop/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:06:29 [INFO] [d78e594c] Request started: GET /stop/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:06:30 [INFO] [8f83fef5] Request started: GET /start/Llama/3 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:06:30 [INFO] [e150953f] Request started: GET /start/Llama/3 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:06:31 [INFO] [e150953f] Request completed: GET /start/Llama/3 - Status: 200 - Duration: 0.872s
+2025-04-24 00:06:31 [INFO] [e90ecf89] Request started: GET /status/Llama/3 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:06:31 [INFO] [6c824748] Request started: GET /status/Llama/3 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:06:31 [INFO] [6c824748] Request completed: GET /status/Llama/3 - Status: 200 - Duration: 0.011s
+2025-04-24 00:06:41 [INFO] [d78e594c] Request completed: GET /stop/Llama/2 - Status: 200 [SLOW] - Duration: 11.677s
+2025-04-24 00:06:41 [INFO] [1e6fc23f] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:06:41 [INFO] [1af6d6bb] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:06:41 [INFO] [1af6d6bb] Request completed: GET /status/Llama/2 - Status: 200 - Duration: 0.007s
+2025-04-24 00:06:43 [INFO] [ce4a11d0] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:06:43 [INFO] [8c671557] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:06:43 [INFO] [8c671557] Request completed: GET /api/system-info - Status: 200 - Duration: 0.801s
+2025-04-24 00:06:45 [INFO] [c170655b] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:06:45 [INFO] [94aa8013] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:06:46 [INFO] [94aa8013] Request completed: GET / - Status: 200 [SLOW] - Duration: 1.360s
+2025-04-24 00:06:46 [INFO] [e52e9566] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:06:46 [INFO] [4bc57de9] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:06:47 [INFO] [4bc57de9] Request completed: GET /api/system-info - Status: 200 - Duration: 0.771s
+2025-04-24 00:06:51 [INFO] [88441d11] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:06:51 [INFO] [b566a94e] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:06:53 [INFO] [b566a94e] Request completed: GET / - Status: 200 [SLOW] - Duration: 1.758s
+2025-04-24 00:06:53 [INFO] [d69a9bcd] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:06:53 [INFO] [5d43fff4] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:06:54 [INFO] [5d43fff4] Request completed: GET /api/system-info - Status: 200 - Duration: 0.948s
+2025-04-24 00:07:04 [INFO] [ab3e816f] Request started: GET /start/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:07:04 [INFO] [3b58d8df] Request started: GET /start/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:07:05 [INFO] [3b58d8df] Request completed: GET /start/Llama/2 - Status: 200 - Duration: 0.753s
+2025-04-24 00:07:05 [INFO] [a44de1a9] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:07:05 [INFO] [b67dd12b] Request started: GET /status/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:07:05 [INFO] [b67dd12b] Request completed: GET /status/Llama/2 - Status: 200 - Duration: 0.009s
+2025-04-24 00:07:10 [INFO] [2b6abb58] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:07:10 [INFO] [bbdf5de5] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:07:11 [INFO] [bbdf5de5] Request completed: GET / - Status: 200 [SLOW] - Duration: 1.448s
+2025-04-24 00:07:11 [INFO] [f3b66fa7] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:07:11 [INFO] [2b425564] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:07:12 [INFO] [2b425564] Request completed: GET /api/system-info - Status: 200 - Duration: 0.793s
+2025-04-24 00:07:43 [INFO] [697e2467] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:07:43 [INFO] [82a010b4] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:07:43 [INFO] [82a010b4] Request completed: GET /api/system-info - Status: 200 - Duration: 0.866s
+2025-04-24 00:08:12 [INFO] [3dc3e177] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:08:12 [INFO] [73c3d212] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:08:12 [INFO] [73c3d212] Request completed: GET /api/system-info - Status: 200 - Duration: 0.809s
+2025-04-24 00:08:44 [INFO] [50a12ebb] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:08:44 [INFO] [7ad073dc] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:08:44 [INFO] [7ad073dc] Request completed: GET /api/system-info - Status: 200 - Duration: 0.879s
+2025-04-24 00:09:12 [INFO] [a23315d4] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:09:12 [INFO] [0ff13225] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:09:12 [INFO] [0ff13225] Request completed: GET /api/system-info - Status: 200 - Duration: 0.849s
+2025-04-24 00:09:45 [INFO] [c707faab] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:09:45 [INFO] [a4ca7278] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:09:45 [INFO] [a4ca7278] Request completed: GET /api/system-info - Status: 200 - Duration: 0.871s
+2025-04-24 00:10:12 [INFO] [0a92fc4d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:10:12 [INFO] [156c0c6f] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:10:12 [INFO] [156c0c6f] Request completed: GET /api/system-info - Status: 200 - Duration: 0.821s
+2025-04-24 00:10:46 [INFO] [3c334e41] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:10:46 [INFO] [59d53d15] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:10:46 [INFO] [59d53d15] Request completed: GET /api/system-info - Status: 200 - Duration: 0.880s
+2025-04-24 00:11:12 [INFO] [4b77fb06] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:11:12 [INFO] [f66d688e] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:11:12 [INFO] [f66d688e] Request completed: GET /api/system-info - Status: 200 - Duration: 0.860s
+2025-04-24 00:11:47 [INFO] [50e43fb4] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:11:47 [INFO] [950f2aa9] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:11:47 [INFO] [950f2aa9] Request completed: GET /api/system-info - Status: 200 - Duration: 0.889s
+2025-04-24 00:12:13 [INFO] [f7e48da8] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:12:13 [INFO] [b1135e2e] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:12:13 [INFO] [b1135e2e] Request completed: GET /api/system-info - Status: 200 - Duration: 0.849s
+2025-04-24 00:12:48 [INFO] [e8212957] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:12:48 [INFO] [6755a9d5] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:12:48 [INFO] [6755a9d5] Request completed: GET /api/system-info - Status: 200 - Duration: 0.910s
+2025-04-24 00:13:14 [INFO] [a680c55d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:13:14 [INFO] [7286b232] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:13:14 [INFO] [7286b232] Request completed: GET /api/system-info - Status: 200 - Duration: 0.864s
+2025-04-24 00:13:49 [INFO] [5ce9f695] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:13:49 [INFO] [313366f1] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:13:49 [INFO] [313366f1] Request completed: GET /api/system-info - Status: 200 - Duration: 0.841s
+2025-04-24 00:14:15 [INFO] [b40572e2] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:14:15 [INFO] [3f53526d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:14:15 [INFO] [3f53526d] Request completed: GET /api/system-info - Status: 200 - Duration: 0.848s
+2025-04-24 00:14:50 [INFO] [37d44622] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:14:50 [INFO] [1812f011] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:14:50 [INFO] [1812f011] Request completed: GET /api/system-info - Status: 200 - Duration: 0.862s
+2025-04-24 00:15:16 [INFO] [d5711aab] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:15:16 [INFO] [6df58929] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:15:16 [INFO] [6df58929] Request completed: GET /api/system-info - Status: 200 - Duration: 0.853s
+2025-04-24 00:15:51 [INFO] [058204f7] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:15:51 [INFO] [889b4caa] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:15:51 [INFO] [889b4caa] Request completed: GET /api/system-info - Status: 200 - Duration: 0.862s
+2025-04-24 00:16:17 [INFO] [4e846ce4] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:16:17 [INFO] [dac3bd30] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:16:17 [INFO] [dac3bd30] Request completed: GET /api/system-info - Status: 200 - Duration: 0.824s
+2025-04-24 00:16:43 [INFO] [d3b3e625] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:16:43 [INFO] [b342bb8f] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:16:44 [INFO] [b342bb8f] Request completed: GET / - Status: 200 [SLOW] - Duration: 1.549s
+2025-04-24 00:16:45 [INFO] [9b158ac5] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:16:45 [INFO] [3aad026d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:16:45 [INFO] [3aad026d] Request completed: GET /api/system-info - Status: 200 - Duration: 0.821s
+2025-04-24 00:16:52 [INFO] [1fa3a62a] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:16:52 [INFO] [bd9fbbf2] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:16:52 [INFO] [bd9fbbf2] Request completed: GET /api/system-info - Status: 200 - Duration: 0.834s
+2025-04-24 00:17:42 [INFO] [05e5cc77] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:17:42 [INFO] [d8ff4d3b] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:17:43 [INFO] [d8ff4d3b] Request completed: GET /api/system-info - Status: 200 - Duration: 0.857s
+2025-04-24 00:17:45 [INFO] [cd038ece] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:17:45 [INFO] [88e891ac] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:17:45 [INFO] [88e891ac] Request completed: GET /api/system-info - Status: 200 - Duration: 0.762s
+2025-04-24 00:18:42 [INFO] [ddf6a0ec] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:18:42 [INFO] [d6171e2d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:18:43 [INFO] [d6171e2d] Request completed: GET /api/system-info - Status: 200 - Duration: 0.890s
+2025-04-24 00:18:45 [INFO] [1b7faefe] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:18:45 [INFO] [6a9ebb9f] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:18:45 [INFO] [6a9ebb9f] Request completed: GET /api/system-info - Status: 200 - Duration: 0.770s
+2025-04-24 00:19:42 [INFO] [d571edcd] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:19:42 [INFO] [81944b7f] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:19:43 [INFO] [81944b7f] Request completed: GET /api/system-info - Status: 200 - Duration: 0.861s
+2025-04-24 00:19:45 [INFO] [40f00992] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:19:45 [INFO] [f4d3b4f5] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:19:45 [INFO] [f4d3b4f5] Request completed: GET /api/system-info - Status: 200 - Duration: 0.752s
+2025-04-24 00:21:10 [INFO] [4d956105] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:21:10 [INFO] [8c3fbb23] Request started: GET / - Ref: No referrer - IP: 127.0.0.1
+2025-04-24 00:21:12 [INFO] [8c3fbb23] Request completed: GET / - Status: 200 [SLOW] - Duration: 1.598s
+2025-04-24 00:21:12 [INFO] [4793ab18] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:12 [INFO] [b2b465d8] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:13 [INFO] [b2b465d8] Request completed: GET /api/system-info - Status: 200 - Duration: 0.847s
+2025-04-24 00:21:25 [INFO] [cad76fbd] Request started: GET /backend-security/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:25 [INFO] [fc56b902] Request started: GET /backend-security/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:25 [INFO] [fc56b902] Request completed: GET /backend-security/Llama/2 - Status: 200 - Duration: 0.558s
+2025-04-24 00:21:25 [INFO] [838fb685] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/backend-... - IP: 127.0.0.1
+2025-04-24 00:21:25 [INFO] [0fa4bf78] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/backend-... - IP: 127.0.0.1
+2025-04-24 00:21:26 [INFO] [0fa4bf78] Request completed: GET /api/system-info - Status: 200 - Duration: 0.861s
+2025-04-24 00:21:27 [INFO] [a92ca8c8] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:27 [INFO] [c22c6808] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:27 [INFO] [c22c6808] Request completed: GET /api/system-info - Status: 200 - Duration: 0.815s
+2025-04-24 00:21:27 [INFO] [92935661] Request started: GET /frontend-security/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:27 [INFO] [2b1a8621] Request started: GET /frontend-security/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:29 [INFO] [2b1a8621] Request completed: GET /frontend-security/Llama/2 - Status: 200 [SLOW] - Duration: 1.061s
+2025-04-24 00:21:29 [INFO] [8a381893] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/frontend... - IP: 127.0.0.1
+2025-04-24 00:21:29 [INFO] [9809114d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/frontend... - IP: 127.0.0.1
+2025-04-24 00:21:29 [INFO] [9809114d] Request completed: GET /api/system-info - Status: 200 - Duration: 0.759s
+2025-04-24 00:21:30 [INFO] [4be8834a] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:30 [INFO] [0ad74fea] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:31 [INFO] [0ad74fea] Request completed: GET /api/system-info - Status: 200 - Duration: 0.795s
+2025-04-24 00:21:31 [INFO] [4d2bc92a] Request started: GET /zap/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:31 [INFO] [b5ae489f] Request started: GET /zap/Llama/2 - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:31 [INFO] [b5ae489f] Request completed: GET /zap/Llama/2 - Status: 200 - Duration: 0.028s
+2025-04-24 00:21:31 [INFO] [d4870b74] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-24 00:21:31 [INFO] [8fb622a1] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/zap/Llam... - IP: 127.0.0.1
+2025-04-24 00:21:32 [INFO] [8fb622a1] Request completed: GET /api/system-info - Status: 200 - Duration: 0.835s
+2025-04-24 00:21:33 [INFO] [cff96725] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:33 [INFO] [f53eb33e] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:33 [INFO] [f53eb33e] Request completed: GET /api/system-info - Status: 200 - Duration: 0.759s
+2025-04-24 00:21:34 [INFO] [c7632fd2] Request started: GET /gpt4all/analysis - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:34 [INFO] [b98b2161] Request started: GET /gpt4all/analysis - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:34 [INFO] [b98b2161] Request completed: GET /gpt4all/analysis - Status: 200 - Duration: 0.067s
+2025-04-24 00:21:34 [INFO] [5a1dee62] Request started: GET /gpt4all/server-status - Ref: http://127.0.0.1:5000/gpt4all/... - IP: 127.0.0.1
+2025-04-24 00:21:34 [INFO] [818587d0] Request started: GET /gpt4all/server-status - Ref: http://127.0.0.1:5000/gpt4all/... - IP: 127.0.0.1
+2025-04-24 00:21:34 [INFO] [818587d0] Request completed: GET /gpt4all/server-status - Status: 200 - Duration: 0.000s
+2025-04-24 00:21:34 [INFO] [db7cb79b] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all/... - IP: 127.0.0.1
+2025-04-24 00:21:34 [INFO] [47c40624] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all/... - IP: 127.0.0.1
+2025-04-24 00:21:34 [INFO] [47c40624] Request completed: GET /api/system-info - Status: 200 - Duration: 0.775s
+2025-04-24 00:21:36 [INFO] [8ebd174a] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:36 [INFO] [2dcfd5b7] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:36 [INFO] [2dcfd5b7] Request completed: GET /api/system-info - Status: 200 - Duration: 0.798s
+2025-04-24 00:21:37 [INFO] [c74d75aa] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all/... - IP: 127.0.0.1
+2025-04-24 00:21:37 [INFO] [ac2b1ab2] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/gpt4all/... - IP: 127.0.0.1
+2025-04-24 00:21:37 [INFO] [ac2b1ab2] Request completed: GET /api/system-info - Status: 200 - Duration: 0.834s
+2025-04-24 00:21:39 [INFO] [80bf7f60] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:39 [INFO] [1546822d] Request started: GET /api/system-info - Ref: http://127.0.0.1:5000/ - IP: 127.0.0.1
+2025-04-24 00:21:40 [INFO] [1546822d] Request completed: GET /api/system-info - Status: 200 - Duration: 0.794s
