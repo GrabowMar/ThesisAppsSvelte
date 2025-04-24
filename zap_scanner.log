@@ -7860,3 +7860,305 @@ Log excerpt:
 2025-04-24 00:21:36,967 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
 2025-04-24 00:21:37,990 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
 2025-04-24 00:21:40,282 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:21:46,921 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:22:40,917 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:22:47,939 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:23:07,700 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 00:23:07,753 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 00:23:07,753 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 00:23:07,754 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 00:23:07,754 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 00:23:07,754 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 00:23:07,849 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:23:26,745 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 00:23:26,813 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 00:23:26,814 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 00:23:26,814 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 00:23:26,815 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 00:23:26,815 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 00:23:26,920 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:23:31,324 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 00:23:31,386 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 00:23:31,387 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 00:23:31,387 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 00:23:31,387 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 00:23:31,387 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 00:23:31,479 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:23:40,915 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:23:48,947 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:24:40,917 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:24:49,909 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:25:40,867 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:25:50,911 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:26:41,881 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:26:51,889 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:27:40,970 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:27:52,941 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:28:41,890 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:28:53,973 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:29:42,902 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:29:54,876 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:30:40,424 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:30:55,945 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:31:40,878 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:31:56,880 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:32:41,884 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:32:57,917 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:33:13,292 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 00:33:13,346 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 00:33:13,347 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 00:33:13,347 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 00:33:13,348 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 00:33:13,348 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 00:33:13,446 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:33:15,098 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:33:15,200 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:33:15,203 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:33:15,568 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:33:42,451 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:34:16,439 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:34:43,474 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:35:16,484 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:35:45,349 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:36:17,710 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:36:46,716 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:37:17,713 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:37:47,709 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:38:18,574 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:38:48,638 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:39:19,686 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:39:49,600 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:40:20,567 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:40:50,619 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:41:21,610 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:41:51,596 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:42:09,010 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:42:09,091 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:42:09,103 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:42:10,979 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:42:17,891 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:42:41,962 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 00:42:42,021 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 00:42:42,023 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 00:42:42,024 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 00:42:42,025 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 00:42:42,027 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 00:42:42,160 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:42:47,419 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:42:52,662 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:42:52,751 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:42:52,758 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:42:54,113 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:43:18,434 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:43:54,439 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:44:19,494 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:44:54,519 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:45:20,452 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:45:54,426 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:46:21,427 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:46:54,435 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:47:22,397 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:47:55,532 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:48:23,377 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:48:56,546 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:59:22,835 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 00:59:22,900 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 00:59:22,901 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 00:59:22,901 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 00:59:22,902 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 00:59:22,902 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 00:59:23,000 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:59:26,862 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 00:59:26,910 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 00:59:26,911 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 00:59:26,911 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 00:59:26,911 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 00:59:26,911 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 00:59:27,000 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:59:29,674 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:59:29,785 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:59:29,788 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 00:59:30,287 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:00:30,429 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:01:30,440 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:02:30,423 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:03:30,423 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:04:31,435 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:05:32,430 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:06:33,425 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:14:15,025 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 01:14:15,089 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 01:14:15,089 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 01:14:15,089 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:14:15,090 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 01:14:15,090 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:14:15,209 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:14:18,871 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 01:14:18,927 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 01:14:18,928 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 01:14:18,928 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:14:18,928 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 01:14:18,928 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:14:19,012 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:14:28,251 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:14:28,337 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:14:28,339 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:14:28,897 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:14:41,459 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:15:29,451 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:15:42,421 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:16:29,477 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:16:43,441 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:17:29,477 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:17:44,378 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:18:29,425 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:18:45,398 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:19:30,479 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:19:46,423 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:20:31,488 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:20:47,413 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:21:32,449 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:24:59,948 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 01:25:00,001 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 01:25:00,001 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 01:25:00,001 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:25:00,001 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 01:25:00,001 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:25:00,089 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:03,885 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 01:25:03,942 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 01:25:03,943 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 01:25:03,943 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:25:03,943 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 01:25:03,943 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:25:04,025 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:11,448 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:11,528 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:11,529 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:11,985 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:15,047 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:15,054 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:15,058 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:18,700 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:18,707 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:18,708 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:22,796 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:22,873 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:22,874 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:23,303 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:23,863 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:23,923 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:23,923 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:24,539 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:25:52,397 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:26:25,042 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:26:25,657 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:26:53,389 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:27:25,694 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:27:54,443 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:28:25,454 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:28:55,405 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:30:20,501 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 01:30:20,567 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 01:30:20,568 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 01:30:20,568 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:30:20,568 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 01:30:20,568 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:30:24,614 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 01:30:24,669 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 01:30:24,669 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 01:30:24,669 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:30:24,669 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 01:30:24,670 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:33:27,321 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 01:33:27,376 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 01:33:27,377 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 01:33:27,377 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:33:27,377 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 01:33:27,377 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:33:27,469 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:33:31,346 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 01:33:31,405 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 01:33:31,405 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 01:33:31,405 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:33:31,406 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 01:33:31,406 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:33:31,500 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:33:32,063 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:33:42,856 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 01:33:42,911 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 01:33:42,912 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 01:33:42,912 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:33:42,912 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 01:33:42,912 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:33:43,014 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:33:46,822 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 01:33:46,886 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 01:33:46,887 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 01:33:46,887 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:33:46,888 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 01:33:46,888 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:33:46,977 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:34:32,470 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:35:33,229 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:35:33,696 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:36:34,536 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:37:35,487 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:38:36,545 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:39:37,663 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:40:38,580 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:41:39,487 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:42:40,494 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:43:41,485 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:44:42,453 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:45:43,496 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:46:44,730 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:47:45,523 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:48:46,491 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:49:47,502 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:50:48,465 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:51:49,445 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:52:51,849 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 01:52:51,912 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 01:52:51,912 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 01:52:51,912 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:52:51,913 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 01:52:51,913 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 01:52:52,013 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:52:52,565 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:53:51,519 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:54:52,487 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:55:53,596 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:56:54,529 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:57:55,486 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:58:56,475 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 01:59:57,467 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 02:00:58,474 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 02:01:59,516 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 02:02:30,037 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 02:02:30,462 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 02:02:47,625 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 02:02:47,700 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 02:02:47,701 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 02:02:47,702 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 02:02:47,702 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 02:02:47,702 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 02:02:47,817 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 02:02:59,584 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 02:02:59,635 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 02:02:59,635 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 02:02:59,636 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 02:02:59,636 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 02:02:59,636 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 02:02:59,732 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 02:03:03,467 - zap_scanner - INFO - Creating comprehensive ZAP scanner instance...
+2025-04-24 02:03:03,518 - zap_scanner - INFO - Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-04-24 02:03:03,519 - zap_scanner - INFO - Found free port: 8090
+2025-04-24 02:03:03,519 - zap_scanner - INFO - ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 02:03:03,519 - zap_scanner - INFO - ZAP proxy configuration: 127.0.0.1:8090
+2025-04-24 02:03:03,519 - zap_scanner - INFO - Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-04-24 02:03:03,611 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 02:03:22,170 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 02:03:22,256 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 02:03:22,258 - zap_scanner.stop - INFO - No active ZAP scans found to stop.
+2025-04-24 02:03:22,866 - zap_scanner.stop - INFO - No active ZAP scans found to stop.

@@ -6340,3 +6340,130 @@ Traceback (most recent call last):
   File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 700, in send
     raise ConnectionError(e, request=request)
 requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001A4AB2C3EF0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie mo¿na nawi¹zaæ po³¹czenia, poniewa¿ komputer docelowy aktywnie go odmawia.'))
+2025-04-24 01:25:15 [ERROR   ] [9546c344] errors.handle_exception:144 - Unhandled exception (405 - Method Not Allowed): /stop/Llama/3 - 405 Method Not Allowed: The method is not allowed for the requested URL.
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 624, in match
+    raise MethodNotAllowed(valid_methods=list(e.have_match_for)) from None
+werkzeug.exceptions.MethodNotAllowed: 405 Method Not Allowed: The method is not allowed for the requested URL.
+2025-04-24 01:25:15 [ERROR   ] [ffc1f843] client_errors.log_client_error:761 - ClientError: Unknown error | URL: http://127.0.0.1:5000/ | File: N/A:N/A:N/A | UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36
+2025-04-24 01:25:15 [ERROR   ] [37055eb5] client_errors.log_client_error:761 - ClientError: Action 'stop' failed | URL: http://127.0.0.1:5000/ | File: N/A:N/A:N/A | UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36
+2025-04-24 01:25:18 [ERROR   ] [233e2e26] errors.handle_exception:144 - Unhandled exception (405 - Method Not Allowed): /stop/Llama/2 - 405 Method Not Allowed: The method is not allowed for the requested URL.
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 624, in match
+    raise MethodNotAllowed(valid_methods=list(e.have_match_for)) from None
+werkzeug.exceptions.MethodNotAllowed: 405 Method Not Allowed: The method is not allowed for the requested URL.
+2025-04-24 01:25:18 [ERROR   ] [7bd0bfa4] client_errors.log_client_error:761 - ClientError: Unknown error | URL: http://127.0.0.1:5000/ | File: N/A:N/A:N/A | UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36
+2025-04-24 01:25:18 [ERROR   ] [b85d9da6] client_errors.log_client_error:761 - ClientError: Action 'stop' failed | URL: http://127.0.0.1:5000/ | File: N/A:N/A:N/A | UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36
+2025-04-24 01:31:23 [CRITICAL] [-       ] startup(24552) [app.py:426]: CRITICAL: Failed to create or run the application: name 'use_colored_logs' is not defined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 386, in <module>
+    app = create_app(config)
+          ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 302, in create_app
+    initialize_logging(app)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\logging_service.py", line 353, in initialize_logging
+    _logging_service_instance.init_app(app)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\logging_service.py", line 246, in init_app
+    if not use_colored_logs:
+           ^^^^^^^^^^^^^^^^
+NameError: name 'use_colored_logs' is not defined. Did you mean: 'coloredlogs'?
+2025-04-24 01:31:32 [CRITICAL] [-       ] startup(8380) [app.py:426]: CRITICAL: Failed to create or run the application: name 'use_colored_logs' is not defined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 386, in <module>
+    app = create_app(config)
+          ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 302, in create_app
+    initialize_logging(app)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\logging_service.py", line 353, in initialize_logging
+    _logging_service_instance.init_app(app)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\logging_service.py", line 246, in init_app
+    if not use_colored_logs:
+           ^^^^^^^^^^^^^^^^
+NameError: name 'use_colored_logs' is not defined. Did you mean: 'coloredlogs'?
+2025-04-24 01:31:40 [CRITICAL] [-       ] startup(10252) [app.py:426]: CRITICAL: Failed to create or run the application: name 'use_colored_logs' is not defined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 386, in <module>
+    app = create_app(config)
+          ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 302, in create_app
+    initialize_logging(app)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\logging_service.py", line 353, in initialize_logging
+    _logging_service_instance.init_app(app)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\logging_service.py", line 246, in init_app
+    if not use_colored_logs:
+           ^^^^^^^^^^^^^^^^
+NameError: name 'use_colored_logs' is not defined. Did you mean: 'coloredlogs'?
+2025-04-24 01:31:50 [CRITICAL] [-       ] main(11032) [app.py:349]: Failed to start application: name 'use_colored_logs' is not defined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 320, in <module>
+    app = create_app(config)
+          ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 238, in create_app
+    initialize_logging(app)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\logging_service.py", line 353, in initialize_logging
+    _logging_service_instance.init_app(app)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\logging_service.py", line 246, in init_app
+    if not use_colored_logs:
+           ^^^^^^^^^^^^^^^^
+NameError: name 'use_colored_logs' is not defined. Did you mean: 'coloredlogs'?
+2025-04-24 01:32:00 [CRITICAL] [-       ] startup(10648) [app.py:426]: CRITICAL: Failed to create or run the application: name 'use_colored_logs' is not defined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 386, in <module>
+    app = create_app(config)
+          ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 302, in create_app
+    initialize_logging(app)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\logging_service.py", line 353, in initialize_logging
+    _logging_service_instance.init_app(app)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\logging_service.py", line 246, in init_app
+    if not use_colored_logs:
+           ^^^^^^^^^^^^^^^^
+NameError: name 'use_colored_logs' is not defined. Did you mean: 'coloredlogs'?
+2025-04-24 01:32:15 [CRITICAL] [-       ] startup(21716) [app.py:426]: CRITICAL: Failed to create or run the application: name 'use_colored_logs' is not defined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 386, in <module>
+    app = create_app(config)
+          ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 302, in create_app
+    initialize_logging(app)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\logging_service.py", line 353, in initialize_logging
+    _logging_service_instance.init_app(app)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\logging_service.py", line 246, in init_app
+    if not use_colored_logs:
+           ^^^^^^^^^^^^^^^^
+NameError: name 'use_colored_logs' is not defined. Did you mean: 'coloredlogs'?
+2025-04-24 01:33:17 [CRITICAL] [-       ] main(23936) [app.py:372]: Failed to start application: name 'use_colored_logs' is not defined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 328, in <module>
+    app = create_app(config)
+          ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 245, in create_app
+    initialize_logging(app)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\logging_service.py", line 353, in initialize_logging
+    _logging_service_instance.init_app(app)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\logging_service.py", line 246, in init_app
+    if not use_colored_logs:
+           ^^^^^^^^^^^^^^^^
+NameError: name 'use_colored_logs' is not defined. Did you mean: 'coloredlogs'?

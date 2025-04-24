@@ -223,7 +223,7 @@
             <a href="{{ url_for('analysis.frontend_security_analysis', model=app.model, app_num=app.app_num) }}" class="action-btn text-center text-2xs py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700">UI</a>
             
             <!-- Advanced Tools -->
-            <a href="{{ url_for('zap.zap_scan', model=app.model, app_num=app.app_num) }}" class="action-btn text-center text-2xs py-1 bg-amber-50 hover:bg-amber-100 text-amber-700">ZAP</a>
+            <a href="{{ url_for('zap.zap_scan_page', model=app.model, app_num=app.app_num) }}" class="action-btn text-center text-2xs py-1 bg-amber-50 hover:bg-amber-100 text-amber-700">ZAP</a>
             <button class="action-btn bg-purple-600 hover:bg-purple-700 text-white text-2xs py-1 col-span-2" title="Rebuild App" data-action="rebuild" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">Rebuild</button>
             <a href="{{ url_for('gpt4all.gpt4all_analysis', model=app.model, app_num=app.app_num) }}" class="action-btn text-center text-2xs py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700">Reqs</a>
           </div>
