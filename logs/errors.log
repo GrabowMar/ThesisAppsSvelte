@@ -6467,3 +6467,384 @@ Traceback (most recent call last):
     if not use_colored_logs:
            ^^^^^^^^^^^^^^^^
 NameError: name 'use_colored_logs' is not defined. Did you mean: 'coloredlogs'?
+2025-04-24 02:04:56 [ERROR] [4178e641] ajax.ajax.start_zap_scan.wrapped:228 - Error encountered in decorated function 'start_zap_scan'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 877, in start_zap_scan
+    ScanStatus.STARTING.value, ScanStatus.SPIDERING.value, ScanStatus.SCANNING.value
+    ^^^^^^^^^^
+NameError: name 'ScanStatus' is not defined
+2025-04-24 02:04:56 [ERROR] [0da8985d] ajax.ajax.zap_scan_status.wrapped:228 - Error encountered in decorated function 'zap_scan_status'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1039, in zap_scan_status
+    if response["status"] in (ScanStatus.COMPLETE.value, ScanStatus.FAILED.value, ScanStatus.STOPPED.value, ScanStatus.ERROR.value):
+                              ^^^^^^^^^^
+NameError: name 'ScanStatus' is not defined
+2025-04-24 02:04:56 [ERROR] [-] zap.zap.thread.Llama-2.run_scan_thread:959 - Error during background scan Llama-2-1745453096: name 'ScanStatus' is not defined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 913, in run_scan_thread
+    status=ScanStatus.STARTING.value,
+           ^^^^^^^^^^
+NameError: name 'ScanStatus' is not defined
+2025-04-24 02:05:01 [ERROR] [36676286] ajax.ajax.zap_scan_status.wrapped:228 - Error encountered in decorated function 'zap_scan_status'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1039, in zap_scan_status
+    if response["status"] in (ScanStatus.COMPLETE.value, ScanStatus.FAILED.value, ScanStatus.STOPPED.value, ScanStatus.ERROR.value):
+                              ^^^^^^^^^^
+NameError: name 'ScanStatus' is not defined
+2025-04-24 02:05:06 [ERROR] [9c1d5351] ajax.ajax.zap_scan_status.wrapped:228 - Error encountered in decorated function 'zap_scan_status'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1039, in zap_scan_status
+    if response["status"] in (ScanStatus.COMPLETE.value, ScanStatus.FAILED.value, ScanStatus.STOPPED.value, ScanStatus.ERROR.value):
+                              ^^^^^^^^^^
+NameError: name 'ScanStatus' is not defined
+2025-04-24 02:26:14 [ERROR] [2509922d] ajax.ajax.start_zap_scan.wrapped:228 - Error encountered in decorated function 'start_zap_scan'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 877, in start_zap_scan
+    ScanStatus.STARTING.value, ScanStatus.SPIDERING.value, ScanStatus.SCANNING.value
+    ^^^^^^^^^^
+NameError: name 'ScanStatus' is not defined
+2025-04-24 02:26:14 [ERROR] [0a3a6e29] ajax.ajax.zap_scan_status.wrapped:228 - Error encountered in decorated function 'zap_scan_status'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1039, in zap_scan_status
+    if response["status"] in (ScanStatus.COMPLETE.value, ScanStatus.FAILED.value, ScanStatus.STOPPED.value, ScanStatus.ERROR.value):
+                              ^^^^^^^^^^
+NameError: name 'ScanStatus' is not defined
+2025-04-24 02:26:14 [ERROR] [-] zap.zap.thread.Llama-2.run_scan_thread:959 - Error during background scan Llama-2-1745454374: name 'ScanStatus' is not defined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 913, in run_scan_thread
+    status=ScanStatus.STARTING.value,
+           ^^^^^^^^^^
+NameError: name 'ScanStatus' is not defined
+2025-04-24 02:26:20 [ERROR] [67e34c0e] ajax.ajax.zap_scan_status.wrapped:228 - Error encountered in decorated function 'zap_scan_status'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1039, in zap_scan_status
+    if response["status"] in (ScanStatus.COMPLETE.value, ScanStatus.FAILED.value, ScanStatus.STOPPED.value, ScanStatus.ERROR.value):
+                              ^^^^^^^^^^
+NameError: name 'ScanStatus' is not defined
+2025-04-24 02:26:26 [ERROR] [6fd62593] ajax.ajax.zap_scan_status.wrapped:228 - Error encountered in decorated function 'zap_scan_status'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1039, in zap_scan_status
+    if response["status"] in (ScanStatus.COMPLETE.value, ScanStatus.FAILED.value, ScanStatus.STOPPED.value, ScanStatus.ERROR.value):
+                              ^^^^^^^^^^
+NameError: name 'ScanStatus' is not defined
+2025-04-24 02:35:43 [ERROR] [53c8e1cc] ajax.ajax.start_zap_scan.wrapped:228 - Error encountered in decorated function 'start_zap_scan'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 877, in start_zap_scan
+    ScanStatus.STARTING.value, ScanStatus.SPIDERING.value, ScanStatus.SCANNING.value
+    ^^^^^^^^^^
+NameError: name 'ScanStatus' is not defined
+2025-04-24 02:35:43 [ERROR] [39e3c99d] ajax.ajax.zap_scan_status.wrapped:228 - Error encountered in decorated function 'zap_scan_status'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1039, in zap_scan_status
+    if response["status"] in (ScanStatus.COMPLETE.value, ScanStatus.FAILED.value, ScanStatus.STOPPED.value, ScanStatus.ERROR.value):
+                              ^^^^^^^^^^
+NameError: name 'ScanStatus' is not defined
+2025-04-24 02:35:43 [ERROR] [-] zap.zap.thread.Llama-2.run_scan_thread:959 - Error during background scan Llama-2-1745454943: name 'ScanStatus' is not defined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 913, in run_scan_thread
+    status=ScanStatus.STARTING.value,
+           ^^^^^^^^^^
+NameError: name 'ScanStatus' is not defined
+2025-04-24 02:35:48 [ERROR] [bb7f390c] ajax.ajax.zap_scan_status.wrapped:228 - Error encountered in decorated function 'zap_scan_status'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1039, in zap_scan_status
+    if response["status"] in (ScanStatus.COMPLETE.value, ScanStatus.FAILED.value, ScanStatus.STOPPED.value, ScanStatus.ERROR.value):
+                              ^^^^^^^^^^
+NameError: name 'ScanStatus' is not defined
+2025-04-24 02:35:54 [ERROR] [5ac65469] ajax.ajax.zap_scan_status.wrapped:228 - Error encountered in decorated function 'zap_scan_status'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1039, in zap_scan_status
+    if response["status"] in (ScanStatus.COMPLETE.value, ScanStatus.FAILED.value, ScanStatus.STOPPED.value, ScanStatus.ERROR.value):
+                              ^^^^^^^^^^
+NameError: name 'ScanStatus' is not defined
+2025-04-24 02:50:24 [ERROR] [-] zap_scanner.zap_scanner._start_zap_daemon:562 - Failed to start ZAP daemon: ZAP process terminated unexpectedly. Exit code: 1. Check log: C:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\zap_daemon.log
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\zap_scanner.py", line 535, in _start_zap_daemon
+    raise ZAPProcessError(f"ZAP process terminated unexpectedly. Exit code: {self.daemon_process.returncode}. Check log: {self.zap_log_path}")
+zap_scanner.ZAPProcessError: ZAP process terminated unexpectedly. Exit code: 1. Check log: C:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\zap_daemon.log
+2025-04-24 02:50:24 [ERROR] [-] zap_scanner.zap_scanner.scan_target:895 - Scan critically failed for http://localhost:5503: ZAPProcessError - Failed to start or connect to ZAP daemon.
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\zap_scanner.py", line 868, in scan_target
+    raise ZAPProcessError("Failed to start or connect to ZAP daemon.")
+zap_scanner.ZAPProcessError: Failed to start or connect to ZAP daemon.
+2025-04-24 02:50:24 [ERROR] [-] zap_scanner.zap_scanner.start_scan:1071 - Scan Llama-2 indicated failure. Status: failed, Error: Scan critically failed for http://localhost:5503: ZAPProcessError - Failed to start or connect to ZAP daemon.
+2025-04-24 02:50:24 [ERROR] [-] zap.zap.thread.Llama-2.run_scan_thread:858 - Error during background scan Llama-2-1745455804: 'ScanManager' object has no attribute 'get_scan_status'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 812, in run_scan_thread
+    current_state = current_scan_manager.get_scan_status(scan_id_thread)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ScanManager' object has no attribute 'get_scan_status'. Did you mean: 'get_scan_details'?
+2025-04-24 03:15:00 [ERROR] [-] zap.zap.thread.Llama-2.run_scan_thread:858 - Error during background scan Llama-2-1745456241: 'ScanManager' object has no attribute 'get_scan_status'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 812, in run_scan_thread
+    current_state = current_scan_manager.get_scan_status(scan_id_thread)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ScanManager' object has no attribute 'get_scan_status'. Did you mean: 'get_scan_details'?
+2025-04-24 03:36:25 [ERROR] [-] zap_scanner.zap_scanner._run_ajax_spider:1103 - Unexpected error running AJAX Spider: 'ajaxSpider' object has no attribute 'set_option_element_id'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\zap_scanner.py", line 1067, in _run_ajax_spider
+    self.zap.ajaxSpider.set_option_element_id(None)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ajaxSpider' object has no attribute 'set_option_element_id'. Did you mean: 'set_option_event_wait'?
+2025-04-24 03:36:42 [ERROR] [-] zap.zap.thread.Llama-2.run_scan_thread:858 - Error during background scan Llama-2-1745458552: 'ScanManager' object has no attribute 'get_scan_status'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 812, in run_scan_thread
+    current_state = current_scan_manager.get_scan_status(scan_id_thread)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ScanManager' object has no attribute 'get_scan_status'. Did you mean: 'get_scan_details'?
+2025-04-24 03:40:31 [ERROR] [-] zap_scanner.zap_scanner._run_ajax_spider:1103 - Unexpected error running AJAX Spider: 'ajaxSpider' object has no attribute 'set_option_element_id'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\zap_scanner.py", line 1067, in _run_ajax_spider
+    self.zap.ajaxSpider.set_option_element_id(None)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ajaxSpider' object has no attribute 'set_option_element_id'. Did you mean: 'set_option_event_wait'?
+2025-04-24 03:40:48 [ERROR] [-] zap.zap.thread.Llama-2.run_scan_thread:858 - Error during background scan Llama-2-1745458798: 'ScanManager' object has no attribute 'get_scan_status'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 812, in run_scan_thread
+    current_state = current_scan_manager.get_scan_status(scan_id_thread)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ScanManager' object has no attribute 'get_scan_status'. Did you mean: 'get_scan_details'?
+2025-04-24 10:07:34 [ERROR] [-] docker.docker._create_docker_client:124 - Docker client creation or connection failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 118, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+2025-04-24 10:07:37 [ERROR] [-] docker.docker._create_docker_client:124 - Docker client creation or connection failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 118, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+2025-04-24 10:20:48 [ERROR] [-] zap_scanner.zap_scanner._run_ajax_spider:1135 - Unexpected error running AJAX Spider: 'ajaxSpider' object has no attribute 'set_option_element_id'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\zap_scanner.py", line 1099, in _run_ajax_spider
+    self.zap.ajaxSpider.set_option_element_id(None)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ajaxSpider' object has no attribute 'set_option_element_id'. Did you mean: 'set_option_event_wait'?
+2025-04-24 10:22:16 [ERROR] [-] zap_scanner.zap_scanner._run_ajax_spider:1135 - Unexpected error running AJAX Spider: 'ajaxSpider' object has no attribute 'set_option_element_id'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\zap_scanner.py", line 1099, in _run_ajax_spider
+    self.zap.ajaxSpider.set_option_element_id(None)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ajaxSpider' object has no attribute 'set_option_element_id'. Did you mean: 'set_option_event_wait'?
+2025-04-24 10:22:33 [ERROR] [-] zap.zap.thread.Llama-2.run_scan_thread:858 - Error during background scan Llama-2-1745482904: 'ScanManager' object has no attribute 'get_scan_status'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 812, in run_scan_thread
+    current_state = current_scan_manager.get_scan_status(scan_id_thread)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ScanManager' object has no attribute 'get_scan_status'. Did you mean: 'get_scan_details'?
+2025-04-24 10:44:44 [ERROR] [-] zap_scanner.zap_scanner._run_ajax_spider:1135 - Unexpected error running AJAX Spider: 'ajaxSpider' object has no attribute 'set_option_element_id'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\zap_scanner.py", line 1099, in _run_ajax_spider
+    self.zap.ajaxSpider.set_option_element_id(None)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ajaxSpider' object has no attribute 'set_option_element_id'. Did you mean: 'set_option_event_wait'?
+2025-04-24 10:45:00 [ERROR] [-] zap.zap.thread.Llama-2.run_scan_thread:858 - Error during background scan Llama-2-1745484251: 'ScanManager' object has no attribute 'get_scan_status'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 812, in run_scan_thread
+    current_state = current_scan_manager.get_scan_status(scan_id_thread)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ScanManager' object has no attribute 'get_scan_status'. Did you mean: 'get_scan_details'?
+2025-04-24 11:08:10 [ERROR] [d436591d] routes.routes.performance.performance_test:1481 - Performance test execution error for Llama on port 5503: LocustPerformanceTester.run_test_cli() got an unexpected keyword argument 'output_dir'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1450, in performance_test
+    result_data = tester.run_test_cli(
+                  ^^^^^^^^^^^^^^^^^^^^
+TypeError: LocustPerformanceTester.run_test_cli() got an unexpected keyword argument 'output_dir'
+2025-04-24 11:08:10 [ERROR] [d436591d] ajax.ajax.performance_test.wrapped:228 - Error encountered in decorated function 'performance_test'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1450, in performance_test
+    result_data = tester.run_test_cli(
+                  ^^^^^^^^^^^^^^^^^^^^
+TypeError: LocustPerformanceTester.run_test_cli() got an unexpected keyword argument 'output_dir'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1482, in performance_test
+    raise InternalServerError("Test execution failed") from e
+werkzeug.exceptions.InternalServerError: 500 Internal Server Error: Test execution failed
+2025-04-24 11:08:10 [ERROR] [fcda0c0f] client_errors.client_errors.log_client_error:668 - ClientError: Unknown error | URL: http://127.0.0.1:5000/performance/Llama/5503 | File: N/A:N/A:N/A | UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36
+2025-04-24 11:08:25 [ERROR] [5463ee3a] routes.routes.performance.performance_test:1481 - Performance test execution error for Llama on port 5503: LocustPerformanceTester.run_test_cli() got an unexpected keyword argument 'output_dir'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1450, in performance_test
+    result_data = tester.run_test_cli(
+                  ^^^^^^^^^^^^^^^^^^^^
+TypeError: LocustPerformanceTester.run_test_cli() got an unexpected keyword argument 'output_dir'
+2025-04-24 11:08:25 [ERROR] [5463ee3a] ajax.ajax.performance_test.wrapped:228 - Error encountered in decorated function 'performance_test'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1450, in performance_test
+    result_data = tester.run_test_cli(
+                  ^^^^^^^^^^^^^^^^^^^^
+TypeError: LocustPerformanceTester.run_test_cli() got an unexpected keyword argument 'output_dir'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1482, in performance_test
+    raise InternalServerError("Test execution failed") from e
+werkzeug.exceptions.InternalServerError: 500 Internal Server Error: Test execution failed
+2025-04-24 11:08:25 [ERROR] [c951961c] client_errors.client_errors.log_client_error:668 - ClientError: Unknown error | URL: http://127.0.0.1:5000/performance/Llama/5503 | File: N/A:N/A:N/A | UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36

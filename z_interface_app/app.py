@@ -92,8 +92,8 @@ def register_error_handlers(app: Flask) -> None:
         elif not app.jinja_env.get_template(template_name):
             # If even 404.html is missing, use a very basic response or log critical error
             error_logger.critical(f"Error template '{template_name}' not found!")
-            return f"<h1>Error {error_code}</h1><p>{error_name}: {error_message}</p>", error_code
-
+            basic_response = f"<h1>Error {error_code}</h1><p>{error_name}: {error_message}</p>"
+            return basic_response, error_code
 
         return render_template(template_name, error=original_error or error_message), error_code
 
@@ -337,16 +337,16 @@ if __name__ == "__main__":
             if docker_manager and docker_manager.client:
                 main_logger.info("Checking system health via Docker manager...")
                 try:
-                     system_health = SystemHealthMonitor.check_health(
-                         docker_manager.client
-                     )
-                     if system_health:
-                         main_logger.info("System health check passed.")
-                     else:
-                         main_logger.warning(
-                             "System health check failed - "
-                             "reduced functionality expected."
-                         )
+                    system_health = SystemHealthMonitor.check_health(
+                        docker_manager.client
+                    )
+                    if system_health:
+                        main_logger.info("System health check passed.")
+                    else:
+                        main_logger.warning(
+                            "System health check failed - "
+                            "reduced functionality expected."
+                        )
                 except Exception as health_check_exc:
                     main_logger.error(
                         f"Error during system health check: {health_check_exc}",
@@ -357,6 +357,21 @@ if __name__ == "__main__":
                     "Docker client unavailable or manager not initialized - "
                     "cannot perform health check; reduced functionality expected."
                 )
+
+        # Add useful links before starting the server
+        host_display = "localhost" if config.HOST in ["0.0.0.0", "127.0.0.1"] else config.HOST
+        main_logger.info(f"\n{'='*50}")
+        main_logger.info(f"AI Model Management System is ready!")
+        main_logger.info(f"Access the application at: http://{host_display}:{config.PORT}/")
+        main_logger.info(f"Available endpoints:")
+        main_logger.info(f" • Dashboard: http://{host_display}:{config.PORT}/")
+        main_logger.info(f" • API: http://{host_display}:{config.PORT}/api")
+        main_logger.info(f" • Security Analysis: http://{host_display}:{config.PORT}/analysis")
+        main_logger.info(f" • Performance Testing: http://{host_display}:{config.PORT}/performance")
+        main_logger.info(f" • GPT4All Analysis: http://{host_display}:{config.PORT}/gpt4all")
+        main_logger.info(f" • Security Scanner: http://{host_display}:{config.PORT}/zap")
+        main_logger.info(f" • Batch Analysis: http://{host_display}:{config.PORT}/batch-analysis")
+        main_logger.info(f"{'='*50}\n")
 
         # Start the Flask development server
         main_logger.info(
