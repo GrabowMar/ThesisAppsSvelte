@@ -17,8 +17,6 @@ from enum import Enum # Added Enum import
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from zap_scanner import CodeContext, ZapVulnerability
-
 # =============================================================================
 # Third-Party Imports
 # =============================================================================
@@ -1398,8 +1396,6 @@ def analyze_single_file():
 # =============================================================================
 # Performance Testing Routes (/performance)
 # =============================================================================
-# Update the performance_test function in routes.py to pass model and app_num
-
 @performance_bp.route("/<string:model>/<int:port>", methods=["GET", "POST"])
 @ajax_compatible # Handles response formatting / errors
 def performance_test(model: str, port: int):
@@ -1417,22 +1413,7 @@ def performance_test(model: str, port: int):
 
     tester = current_app.performance_tester
     base_dir = Path(current_app.config.get("BASE_DIR", "."))
-
-    # Get app_num from port (derive it based on port configuration)
-    app_num = None
-    try:
-        # Simple extraction based on port convention
-        # Assuming BASE_FRONTEND_PORT is 5501
-        BASE_FRONTEND_PORT = 5501
-        port_offset = port - BASE_FRONTEND_PORT
-        if port_offset >= 0:
-            # Calculate app_num (add 1 because app_num is 1-based)
-            # Assuming PORTS_PER_APP is 2
-            PORTS_PER_APP = 2
-            app_num = (port_offset // PORTS_PER_APP) + 1
-            perf_logger.debug(f"Derived app_num={app_num} from port={port}")
-    except Exception as e:
-        perf_logger.warning(f"Could not derive app_num from port {port}: {e}")
+    output_dir = base_dir / "performance_reports" # Report dir relative to base
 
     if request.method == "POST":
         perf_logger.info(f"Starting performance test POST request for {model} on port {port}")
@@ -1469,51 +1450,28 @@ def performance_test(model: str, port: int):
             result_data = tester.run_test_cli(
                 test_name=test_name, host=host_url, endpoints=formatted_endpoints,
                 user_count=num_users, spawn_rate=spawn_rate, run_time=f"{duration}s",
-                html_report=True,
-                model=model,  # Pass model name for consolidated results
-                app_num=app_num  # Pass app_num for consolidated results
+                html_report=True, output_dir=output_dir # Pass output dir to tester
             )
 
             perf_logger.info(f"Test '{test_name}' completed.")
-            
-            # Check for consolidated results file
-            result_file_path = None
-            if app_num:
-                app_dir = base_dir / model / f"app{app_num}"
-                result_file = app_dir / ".locust_result.json"
-                if result_file.exists():
-                    result_file_path = result_file
-                    perf_logger.info(f"Consolidated results saved to {result_file}")
-            
-            # Check for HTML report
             report_path_rel = None
             try:
-                # First check in the model/app directory
-                if app_num:
-                    app_dir = base_dir / model / f"app{app_num}"
-                    report_files = list(app_dir.glob("*_report.html"))
-                
-                # Then check in the performance_reports directory
-                if not report_files:
-                    test_dir = base_dir / "performance_reports" / test_name
-                    if test_dir.exists():
-                        report_files = list(test_dir.glob("*_report.html"))
-                
+                # Construct expected report path based on tester's convention
+                test_output_dir = output_dir / test_name
+                report_files = list(test_output_dir.glob("*_report.html")) # Assumes tester names it this way
                 if report_files:
                     report_path = report_files[0]
-                    # Make path relative to Flask static folder
-                    static_base = base_dir
+                    # Make path relative to Flask static folder (assuming base_dir is project root)
+                    static_base = base_dir # Adjust if static files are elsewhere
                     report_path_rel = report_path.relative_to(static_base)
-                    perf_logger.info(f"Report path: {report_path_rel}")
+                    perf_logger.info(f"Report generated: {report_path_rel}")
             except Exception as report_err:
-                perf_logger.warning(f"Could not determine report path: {report_err}")
+                perf_logger.warning(f"Could not determine report path for {test_name}: {report_err}")
 
             return {
-                "status": "success", 
-                "message": f"Test '{test_name}' completed.",
+                "status": "success", "message": f"Test '{test_name}' completed.",
                 "data": result_data, # Raw results from tester
-                "report_url": url_for('static', filename=str(report_path_rel).replace('\\', '/')) if report_path_rel else None,
-                "result_file": str(result_file_path) if result_file_path else None
+                "report_url": url_for('static', filename=str(report_path_rel).replace('\\', '/')) if report_path_rel else None
             }
 
         except BadRequest as e:

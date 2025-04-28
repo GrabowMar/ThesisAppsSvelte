@@ -1,49 +1,46 @@
 """
-Batch Security Analysis Module - Core Logic
+Batch Security Analysis Module
 
-This module provides the core data models, storage, and service logic
-for running batch security analysis on both frontend and backend code
-across multiple applications or models. It offers a robust job management
-system. Routing and Flask integration are handled elsewhere.
+Provides functionality for running batch security analysis on both frontend
+and backend code across multiple applications or models, including job
+management and reporting.
 """
 
-# Standard Library Imports
 import json
 import os
 import threading
-import time
-import traceback # Added for detailed exception logging
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
+from functools import wraps
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any, Set, Union
 
-# Create logger
-# Assume logging_service is available in the project structure
-try:
-    from logging_service import create_logger_for_component
-    logger = create_logger_for_component('batch_analysis_core') # Renamed logger component
-except ImportError:
-    import logging
-    logger = logging.getLogger('batch_analysis_core')
-    # Add basic handler if logger has none
-    if not logger.handlers:
-        handler = logging.StreamHandler()
-        formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s')
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-        logger.setLevel(logging.INFO)
-    logger.warning("Could not import logging_service, using basic logging.")
+import flask
+from flask import (
+    Blueprint, current_app, jsonify, render_template, request, url_for,
+    redirect, flash
+)
 
+from logging_service import create_logger_for_component
+
+# Module-specific logger
+logger = create_logger_for_component('batch_analysis')
+
+# Flask Blueprint for batch analysis routes
+batch_analysis_bp = Blueprint(
+    "batch_analysis",
+    __name__,
+    template_folder="templates"
+)
 
 # =============================================================================
-# Data Models
+# Data Models & Enums
 # =============================================================================
 
 class JobStatus(str, Enum):
-    """Job status enum for batch analysis jobs"""
+    """Enumeration for batch analysis job statuses."""
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -52,7 +49,7 @@ class JobStatus(str, Enum):
 
 
 class ScanType(str, Enum):
-    """Scan type enum for batch analysis jobs"""
+    """Enumeration for the type of scan performed in a batch job."""
     FRONTEND = "frontend"
     BACKEND = "backend"
     BOTH = "both"
@@ -60,93 +57,88 @@ class ScanType(str, Enum):
 
 @dataclass
 class BatchAnalysisJob:
-    """Represents a batch analysis job"""
+    """Represents a batch analysis job configuration and status."""
     id: int
     name: str
     description: str
     created_at: datetime
     status: JobStatus = JobStatus.PENDING
     models: List[str] = field(default_factory=list)
-    app_ranges: Dict[str, List[int]] = field(default_factory=dict)
-    scan_options: Dict[str, Any] = field(default_factory=dict)
+    app_ranges: Dict[str, List[int]] = field(default_factory=dict) # Maps model name to list of app numbers
+    scan_options: Dict[str, Any] = field(default_factory=dict) # e.g., {"full_scan": True}
     scan_type: ScanType = ScanType.FRONTEND
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
-    total_tasks: int = 0
+    total_tasks: int = 0 # Total number of individual app scans
     completed_tasks: int = 0
-    results: List[Dict[str, Any]] = field(default_factory=list) # Changed to List for better structure
-    errors: List[str] = field(default_factory=list)
+    results: Dict[str, Any] = field(default_factory=dict) # Could store aggregated results if needed
+    errors: List[str] = field(default_factory=list) # Stores errors encountered during job execution
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization"""
-        result = asdict(self)
+        """Converts the job object to a dictionary suitable for JSON serialization."""
+        result_dict = asdict(self)
         # Convert datetime objects to ISO format strings
         for key in ['created_at', 'started_at', 'completed_at']:
-            if result[key] is not None:
-                result[key] = result[key].isoformat()
-        # Ensure enums are strings
-        result['status'] = str(self.status.value)
-        result['scan_type'] = str(self.scan_type.value)
-        return result
+            if isinstance(result_dict[key], datetime):
+                result_dict[key] = result_dict[key].isoformat()
+        # Convert enums to their string values
+        result_dict['status'] = self.status.value
+        result_dict['scan_type'] = self.scan_type.value
+        return result_dict
 
 
 @dataclass
 class BatchAnalysisResult:
-    """Represents a single analysis result within a batch job"""
+    """Represents the result of a single analysis task within a batch job."""
     id: int
     job_id: int
     model: str
     app_num: int
-    status: str # 'completed' or 'failed'
+    status: str # e.g., "completed", "failed"
     scan_type: ScanType
     issues_count: int = 0
     high_severity: int = 0
     medium_severity: int = 0
     low_severity: int = 0
     scan_time: Optional[datetime] = None
-    details: Dict[str, Any] = field(default_factory=dict) # Includes 'issues', 'summary', 'tool_status', 'error'
+    details: Dict[str, Any] = field(default_factory=dict) # Stores raw issues, summary, tool status
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for JSON serialization"""
-        result = asdict(self)
-        if result['scan_time'] is not None:
-            result['scan_time'] = result['scan_time'].isoformat()
-        result['scan_type'] = str(self.scan_type.value)
-        return result
-
+        """Converts the result object to a dictionary suitable for JSON serialization."""
+        result_dict = asdict(self)
+        if isinstance(result_dict['scan_time'], datetime):
+            result_dict['scan_time'] = result_dict['scan_time'].isoformat()
+        result_dict['scan_type'] = self.scan_type.value
+        return result_dict
 
 # =============================================================================
-# In-memory Storage (Consider replacing with a persistent store for production)
+# In-Memory Job Storage
 # =============================================================================
+
 class JobStorage:
-    """Storage for batch analysis jobs and results"""
+    """Simple in-memory storage for batch analysis jobs and their results."""
     def __init__(self):
         self.jobs: Dict[int, BatchAnalysisJob] = {}
-        # Store results separately, linking by job_id
-        self.results: Dict[int, List[BatchAnalysisResult]] = {}
+        self.results: Dict[int, List[BatchAnalysisResult]] = {} # Maps job_id to list of results
         self.next_job_id = 1
         self.next_result_id = 1
-        self._lock = threading.RLock() # Use RLock for reentrant access
+        self._lock = threading.RLock() # Reentrant lock for thread safety
+
+    def _get_next_id(self, counter_attr: str) -> int:
+        """Safely increments and returns the next ID."""
+        with self._lock:
+            current_id = getattr(self, counter_attr)
+            setattr(self, counter_attr, current_id + 1)
+            return current_id
 
     def create_job(self, job_data: Dict[str, Any]) -> BatchAnalysisJob:
-        """Create a new batch analysis job"""
+        """Creates and stores a new batch analysis job."""
         with self._lock:
-            job_id = self.next_job_id
-            self.next_job_id += 1
+            job_id = self._get_next_id('next_job_id')
 
-            # Create job with provided data, ensuring ScanType is correctly instantiated
+            # Ensure scan_type is an Enum member
             scan_type_input = job_data.get('scan_type', ScanType.FRONTEND)
-            if isinstance(scan_type_input, str):
-                try:
-                    scan_type = ScanType(scan_type_input)
-                except ValueError:
-                    logger.warning(f"Invalid scan_type string '{scan_type_input}', defaulting to FRONTEND.")
-                    scan_type = ScanType.FRONTEND
-            elif isinstance(scan_type_input, ScanType):
-                scan_type = scan_type_input
-            else:
-                logger.warning(f"Invalid scan_type type '{type(scan_type_input)}', defaulting to FRONTEND.")
-                scan_type = ScanType.FRONTEND
+            scan_type = ScanType(scan_type_input) if isinstance(scan_type_input, str) else scan_type_input
 
             job = BatchAnalysisJob(
                 id=job_id,
@@ -156,114 +148,107 @@ class JobStorage:
                 models=job_data.get('models', []),
                 app_ranges=job_data.get('app_ranges', {}),
                 scan_options=job_data.get('scan_options', {}),
-                scan_type=scan_type, # Use validated enum
+                scan_type=scan_type,
             )
 
-            # Calculate total tasks based on scan type
-            # Note: This is an initial estimate, might be updated when job runs if ranges are dynamic
-            total_tasks = self._calculate_total_tasks(job)
-            job.total_tasks = total_tasks
+            # Pre-calculate an estimated total task count
+            job.total_tasks = self._calculate_total_tasks(job)
 
-            # Store job and initialize results list
             self.jobs[job_id] = job
-            self.results[job_id] = [] # Initialize results list for this job
+            self.results[job_id] = []
 
-            logger.info(f"Created new job {job_id}: {job.name} with estimated {total_tasks} tasks")
+            logger.info(f"Created Job {job_id}: '{job.name}' ({job.scan_type.value}, est. {job.total_tasks} tasks)")
             return job
 
     def _calculate_total_tasks(self, job: BatchAnalysisJob) -> int:
-        """Calculate the *estimated* total number of tasks for a job"""
+        """Calculates an estimated total number of tasks for a job based on configuration."""
         total_tasks = 0
+        base_path = current_app.config.get('APP_BASE_PATH', Path('.')) # Needs app context or default
 
         for model in job.models:
             app_range = job.app_ranges.get(model, [])
-            app_count = len(app_range)
+            app_count = 0
 
-            # If empty range means 'all apps', we can't know the count yet
             if not app_range and model in job.app_ranges:
-                # Placeholder - actual count determined when job runs
-                # Return -1 to indicate dynamic task count? Or estimate?
-                # For now, let's estimate 10, but log a warning.
-                app_count = 10 # Placeholder estimate
-                logger.warning(f"Job {job.id} uses dynamic app range for model '{model}'. Task count is an estimate.")
+                # Empty range means scan all apps for this model
+                try:
+                     # Attempt to get actual count dynamically if possible
+                     model_path = base_path / model
+                     app_count = sum(1 for item in model_path.iterdir()
+                                     if item.is_dir() and item.name.startswith('app') and item.name[3:].isdigit())
+                     logger.debug(f"Dynamically found {app_count} apps for model '{model}' for task calculation.")
+                     if app_count == 0:
+                         logger.warning(f"No app directories found for model '{model}' when calculating tasks.")
+                except Exception as e:
+                    logger.warning(f"Could not dynamically determine app count for model '{model}': {e}. Using placeholder count 10.")
+                    app_count = 10 # Fallback placeholder if dynamic check fails
+            else:
+                app_count = len(app_range)
 
-            # For BOTH scan type, we count each app twice (frontend + backend)
-            if job.scan_type == ScanType.BOTH:
-                app_count *= 2
-
-            total_tasks += app_count
+            # Factor in scan type (BOTH means double the tasks)
+            multiplier = 2 if job.scan_type == ScanType.BOTH else 1
+            total_tasks += app_count * multiplier
 
         return total_tasks
 
     def get_job(self, job_id: int) -> Optional[BatchAnalysisJob]:
-        """Get a job by ID"""
-        with self._lock:
-            return self.jobs.get(job_id)
+        """Retrieves a job by its ID."""
+        return self.jobs.get(job_id)
 
     def get_all_jobs(self) -> List[BatchAnalysisJob]:
-        """Get all jobs"""
+        """Returns a list of all stored jobs."""
         with self._lock:
             return list(self.jobs.values())
 
     def update_job(self, job_id: int, **kwargs) -> Optional[BatchAnalysisJob]:
-        """Update a job with the provided attributes"""
+        """Updates attributes of an existing job."""
         with self._lock:
             job = self.jobs.get(job_id)
             if not job:
                 logger.warning(f"Attempted to update non-existent job: {job_id}")
                 return None
 
-            updated = False
+            updated_fields = []
             for key, value in kwargs.items():
                 if hasattr(job, key):
-                    # Special handling for enums
+                    # Special handling for enums if necessary
                     if key == 'status' and isinstance(value, str):
-                        try:
-                            setattr(job, key, JobStatus(value))
-                            updated = True
-                        except ValueError:
-                            logger.warning(f"Attempted to set invalid status '{value}' on job {job_id}")
-                    elif key == 'scan_type' and isinstance(value, str):
-                        try:
-                            setattr(job, key, ScanType(value))
-                            updated = True
-                        except ValueError:
-                             logger.warning(f"Attempted to set invalid scan_type '{value}' on job {job_id}")
-                    # Handle appending to errors list
-                    elif key == 'errors' and isinstance(value, list):
-                        job.errors.extend(value) # Append new errors
-                        updated = True
-                    elif getattr(job, key) != value:
-                        setattr(job, key, value)
-                        updated = True
+                       try:
+                           setattr(job, key, JobStatus(value))
+                       except ValueError:
+                            logger.error(f"Invalid status value '{value}' for job {job_id}")
+                            continue # Skip invalid update
+                    else:
+                         setattr(job, key, value)
+                    updated_fields.append(f"{key}={value}")
                 else:
                     logger.warning(f"Attempted to set unknown attribute '{key}' on job {job_id}")
 
-            if updated:
-                logger.debug(f"Updated job {job_id} with: {kwargs}")
-
+            if updated_fields:
+                 logger.debug(f"Updated job {job_id}: {', '.join(updated_fields)}")
             return job
 
     def add_result(self, job_id: int, result_data: Dict[str, Any]) -> Optional[BatchAnalysisResult]:
-        """Add a result to a job"""
+        """Adds an analysis result for a specific job."""
         with self._lock:
             job = self.jobs.get(job_id)
             if not job:
-                logger.error(f"Attempted to add result to non-existent job: {job_id}")
-                return None # Changed from raising ValueError
+                logger.warning(f"Attempted to add result to non-existent job: {job_id}")
+                return None # Indicate failure to add result
 
-            result_id = self.next_result_id
-            self.next_result_id += 1
+            result_id = self._get_next_id('next_result_id')
 
-            # Create result with provided data
+            # Ensure scan_type is an Enum member
+            scan_type_input = result_data.get('scan_type', ScanType.FRONTEND)
+            scan_type = ScanType(scan_type_input) if isinstance(scan_type_input, str) else scan_type_input
+
             result = BatchAnalysisResult(
                 id=result_id,
                 job_id=job_id,
-                model=result_data.get('model', ''),
+                model=result_data.get('model', 'UnknownModel'),
                 app_num=result_data.get('app_num', 0),
-                status=result_data.get('status', 'completed'),
-                # Ensure ScanType is correctly instantiated
-                scan_type=ScanType(result_data.get('scan_type', ScanType.FRONTEND)),
+                status=result_data.get('status', 'failed'),
+                scan_type=scan_type,
                 issues_count=result_data.get('issues_count', 0),
                 high_severity=result_data.get('high_severity', 0),
                 medium_severity=result_data.get('medium_severity', 0),
@@ -272,631 +257,712 @@ class JobStorage:
                 details=result_data.get('details', {})
             )
 
-            # Add to results list for the specific job
-            if job_id not in self.results:
-                self.results[job_id] = []
-            self.results[job_id].append(result)
-            logger.debug(f"Added result {result_id} to job {job_id}")
+            self.results.setdefault(job_id, []).append(result)
 
-            # --- Update job completion stats ---
-            # Increment completed tasks atomically within the lock
+            # Update job progress statistics
             job.completed_tasks += 1
-            logger.debug(f"Job {job_id} task progress: {job.completed_tasks}/{job.total_tasks}")
-
-            # Check if job is now complete
-            # Only mark complete if currently RUNNING to avoid race conditions with cancellation
-            if job.status == JobStatus.RUNNING and job.total_tasks > 0 and job.completed_tasks >= job.total_tasks:
-                job.status = JobStatus.COMPLETED
-                job.completed_at = datetime.now()
-                logger.info(f"Job {job_id} ({job.name}) completed with {job.completed_tasks} tasks at {job.completed_at}")
-            # --- End job completion update ---
+            if job.status == JobStatus.RUNNING and job.completed_tasks >= job.total_tasks:
+                final_status = JobStatus.COMPLETED if not job.errors else JobStatus.FAILED
+                self.update_job(job_id, status=final_status, completed_at=datetime.now())
+                logger.info(f"Job {job_id} finished. Status: {final_status}. Tasks: {job.completed_tasks}/{job.total_tasks}")
 
             return result
 
     def get_results(self, job_id: int) -> List[BatchAnalysisResult]:
-        """Get all results for a job"""
-        with self._lock:
-            # Return a copy to prevent modification outside the lock
-            return list(self.results.get(job_id, []))
+        """Retrieves all results associated with a job ID."""
+        return self.results.get(job_id, [])
 
     def get_result(self, result_id: int) -> Optional[BatchAnalysisResult]:
-        """Get a specific result by ID"""
+        """Retrieves a specific result by its unique ID."""
         with self._lock:
             for results_list in self.results.values():
                 for result in results_list:
                     if result.id == result_id:
-                        return result # No need to copy single immutable dataclass
-            return None
+                        return result
+        return None
 
     def delete_job(self, job_id: int) -> bool:
-        """Delete a job and all its results"""
+        """Deletes a job and all its associated results."""
         with self._lock:
             if job_id in self.jobs:
                 del self.jobs[job_id]
                 if job_id in self.results:
                     del self.results[job_id]
-                logger.info(f"Deleted job {job_id}")
+                logger.info(f"Deleted job {job_id} and its results.")
                 return True
             logger.warning(f"Attempted to delete non-existent job: {job_id}")
             return False
 
-
-# Create global storage instance
+# Global instance of the job storage
 job_storage = JobStorage()
 
+# =============================================================================
+# Batch Analysis Execution Service
+# =============================================================================
 
-# =============================================================================
-# Batch Analysis Service
-# =============================================================================
 class BatchAnalysisService:
-    """Service for executing batch analysis jobs"""
+    """Manages the execution lifecycle of batch analysis jobs."""
 
     def __init__(self, storage: JobStorage):
         """
-        Initialize the batch analysis service
+        Initializes the service.
 
         Args:
-            storage: Job storage instance for managing jobs and results
+            storage: The JobStorage instance to use.
         """
         self.storage = storage
         self._running_jobs: Dict[int, threading.Thread] = {}
-        # Use a dictionary for cancel flags to potentially store reason/time
-        self._cancel_requests: Dict[int, bool] = {}
-        # Use ThreadPoolExecutor for managing task execution within a job
-        # Initialize with a default, will be reconfigured by set_app
-        self.thread_pool = ThreadPoolExecutor(max_workers=5, thread_name_prefix='batch_task_worker')
-        self.max_concurrent_jobs = 2 # Limit concurrent *jobs*
-        self.max_concurrent_tasks = 5 # Default tasks per job
-        self.app = None # Flask app instance, set via set_app
+        self._cancel_flags: Set[int] = set() # Stores IDs of jobs marked for cancellation
+        self.max_concurrent_jobs = int(os.environ.get("BATCH_MAX_JOBS", 2))
+        self.max_concurrent_tasks = int(os.environ.get("BATCH_MAX_TASKS", 5))
+        self.app: Optional[flask.Flask] = None # To be set later via set_app
         self.logger = create_logger_for_component('batch_service')
+        self.logger.info(f"Initialized BatchAnalysisService (Max Jobs: {self.max_concurrent_jobs}, Max Tasks: {self.max_concurrent_tasks})")
 
-    def set_app(self, app):
-        """
-        Set the Flask app instance and configure concurrency settings.
-        Required for accessing app context and config.
-
-        Args:
-            app: Flask application instance
-        """
+    def set_app(self, app: flask.Flask):
+        """Stores the Flask application instance for accessing context."""
         self.app = app
-        if self.app:
-            # Get config settings safely with defaults
-            self.max_concurrent_tasks = self.app.config.get('MAX_CONCURRENT_BATCH_TASKS', 5)
-            self.max_concurrent_jobs = self.app.config.get('MAX_CONCURRENT_BATCH_JOBS', 2)
-
-            # Recreate thread pool with configured size
-            # Ensure graceful shutdown of old pool if already running?
-            # For simplicity, we assume set_app is called only once at startup.
-            if hasattr(self, 'thread_pool') and self.thread_pool:
-                self.thread_pool.shutdown(wait=False) # Don't wait for current tasks
-
-            self.thread_pool = ThreadPoolExecutor(
-                max_workers=self.max_concurrent_tasks,
-                thread_name_prefix='batch_task_worker'
-            )
-            self.logger.info(
-                f"Flask app set. Max concurrent jobs: {self.max_concurrent_jobs}, "
-                f"Max concurrent tasks per job: {self.max_concurrent_tasks}"
-            )
-        else:
-             self.logger.warning("Flask app instance is not set. Analysis tasks requiring app context will fail.")
+        self.logger.info("Flask app instance registered with BatchAnalysisService.")
 
     def start_job(self, job_id: int) -> bool:
         """
-        Start a batch analysis job in a background thread if concurrency limits allow.
+        Starts a batch analysis job execution in a background thread.
 
         Args:
-            job_id: ID of the job to start
+            job_id: The ID of the job to start.
 
         Returns:
-            bool: True if job was started successfully, False otherwise
+            True if the job was started successfully, False otherwise.
         """
         job = self.storage.get_job(job_id)
         if not job:
-            self.logger.error(f"Job {job_id} not found, cannot start.")
+            self.logger.error(f"Cannot start job {job_id}: Job not found.")
             return False
 
-        if job.status not in [JobStatus.PENDING, JobStatus.CANCELED, JobStatus.FAILED]: # Allow restarting failed/canceled
-            self.logger.warning(f"Job {job_id} is not in a startable state (current status: {job.status})")
+        if job.status == JobStatus.RUNNING:
+            self.logger.warning(f"Cannot start job {job_id}: Job is already running.")
             return False
 
-        with self.storage._lock: # Use storage lock to check running job count atomically
+        if job.status in [JobStatus.COMPLETED, JobStatus.FAILED, JobStatus.CANCELED]:
+             self.logger.warning(f"Cannot start job {job_id}: Job has already finished (Status: {job.status.value}).")
+             return False
+
+        with self.storage._lock: # Ensure atomicity of check and update
             if len(self._running_jobs) >= self.max_concurrent_jobs:
-                self.logger.warning(f"Maximum concurrent jobs ({self.max_concurrent_jobs}) reached. Job {job_id} will remain pending.")
-                # Optionally, add to a queue here instead of returning False
+                self.logger.warning(f"Cannot start job {job_id}: Maximum concurrent jobs ({self.max_concurrent_jobs}) reached.")
+                # Optionally change status to QUEUED or similar here
                 return False
 
-            # Update job status immediately within the lock
+            # Update job status and start time
             self.storage.update_job(
                 job_id,
                 status=JobStatus.RUNNING,
                 started_at=datetime.now(),
                 completed_tasks=0, # Reset progress if restarting
-                errors=[], # Clear previous errors
-                completed_at=None # Clear completion time
+                errors=[] # Clear previous errors
             )
 
-            # Start job processing in a background thread
             thread = threading.Thread(
-                target=self._run_job,
+                target=self._run_job_wrapper, # Use wrapper for app context
                 args=(job_id,),
                 daemon=True,
                 name=f"batch-job-{job_id}"
             )
-            self._running_jobs[job_id] = thread # Register before starting
+            self._running_jobs[job_id] = thread
             thread.start()
 
-        self.logger.info(f"Started job {job_id} ({job.name}) in background thread {thread.name}")
+        self.logger.info(f"Started job {job_id} ('{job.name}') in background thread.")
         return True
 
-    def _run_job(self, job_id: int) -> None:
-        """
-        Execute the tasks for a specific batch analysis job using a ThreadPoolExecutor.
-        This function runs in its own background thread.
+    def _run_job_wrapper(self, job_id: int) -> None:
+         """Wrapper to run the job logic within the Flask app context."""
+         if not self.app:
+              self.logger.error(f"Cannot run job {job_id}: Flask app context is not available.")
+              self.storage.update_job(job_id, status=JobStatus.FAILED, errors=["Flask app context unavailable"])
+              return
+         with self.app.app_context():
+              self._run_job_logic(job_id)
 
-        Args:
-            job_id: ID of the job to run
-        """
+
+    def _run_job_logic(self, job_id: int) -> None:
+        """The core logic for executing tasks within a batch job."""
         job = self.storage.get_job(job_id)
-        if not job:
-            self.logger.error(f"Job runner: Job {job_id} not found.")
-            return # Should not happen if start_job is used correctly
-
-        if not self.app:
-            self.logger.error(f"Job runner: Flask app context not available for job {job_id}. Aborting.")
-            self.storage.update_job(job_id, status=JobStatus.FAILED, errors=["Flask app not configured for service."])
-            if job_id in self._running_jobs: del self._running_jobs[job_id] # Clean up running job entry
+        # Re-check job existence and status within the context
+        if not job or job.status != JobStatus.RUNNING:
+            self.logger.warning(f"Job {job_id} execution aborted: Job not found or status changed.")
+            if job_id in self._running_jobs: del self._running_jobs[job_id] # Clean up running jobs dict
             return
 
-        tasks_submitted = 0
         try:
-            self.logger.info(f"Job runner starting execution for job {job_id}: {job.name}")
+            self.logger.info(f"Executing Job {job_id}: '{job.name}'")
+            tasks = self._generate_task_list(job)
 
-            # Generate task list *before* starting execution
-            # Need app context if _get_all_apps_for_model (via _generate_task_list) needs it
-            with self.app.app_context():
-                tasks = self._generate_task_list(job)
+            # Update total tasks if the dynamic calculation differs significantly
+            if abs(len(tasks) - job.total_tasks) > 0: # Update if calculation changed
+                self.storage.update_job(job_id, total_tasks=len(tasks))
+                self.logger.info(f"Refreshed task count for Job {job_id} to {len(tasks)}")
 
             if not tasks:
                  self.logger.warning(f"Job {job_id} has no tasks to execute.")
-                 self.storage.update_job(job_id, status=JobStatus.COMPLETED, completed_at=datetime.now(), total_tasks=0)
-                 if job_id in self._running_jobs: del self._running_jobs[job_id] # Clean up running job entry
+                 self.storage.update_job(job_id, status=JobStatus.COMPLETED, completed_at=datetime.now()) # Mark as complete if no tasks
+                 if job_id in self._running_jobs: del self._running_jobs[job_id]
                  return
 
-            # Update total tasks count if it was estimated or needs correction
-            if len(tasks) != job.total_tasks:
-                self.logger.info(f"Updating job {job_id} task count from {job.total_tasks} to {len(tasks)}")
-                self.storage.update_job(job_id, total_tasks=len(tasks))
-                job.total_tasks = len(tasks) # Update local copy too
+            with ThreadPoolExecutor(max_workers=self.max_concurrent_tasks, thread_name_prefix=f"batch_task_{job_id}") as executor:
+                future_to_task = {
+                    executor.submit(self._analyze_app_task, job_id, model, app_num, scan_type, job.scan_options):
+                    (model, app_num, scan_type)
+                    for model, app_num, scan_type in tasks
+                }
 
-            # --- Execute tasks using ThreadPoolExecutor ---
-            futures = []
-            task_errors = []
+                for future in concurrent.futures.as_completed(future_to_task):
+                    if job_id in self._cancel_flags:
+                        self.logger.info(f"Cancellation detected for job {job_id}. Stopping task processing.")
+                        # Attempt to cancel pending futures (may not work if already running)
+                        for f in future_to_task: f.cancel()
+                        break # Exit task processing loop
+
+                    try:
+                        future.result() # Retrieve result (or raise exception if task failed)
+                    except Exception as task_exc:
+                        model, app_num, scan_type = future_to_task[future]
+                        error_msg = f"Task Error ({model}/app{app_num}/{scan_type.value}): {str(task_exc)}"
+                        self.logger.error(error_msg, exc_info=False) # Log exception without full trace unless debugging
+                        job = self.storage.get_job(job_id) # Re-fetch job to append error
+                        if job:
+                            # Record the specific task error
+                             self.storage.add_result(job_id, {
+                                 "model": model, "app_num": app_num, "scan_type": scan_type,
+                                 "status": "failed", "details": {"error": str(task_exc)}
+                             })
+                             # Append general error to job
+                             self.storage.update_job(job_id, errors=job.errors + [error_msg])
 
 
-            # Submit tasks to the pool
-            for task_args in tasks:
-                # Check for cancellation before submitting each task
-                if job_id in self._cancel_requests:
-                    self.logger.info(f"Job {job_id} cancellation detected before submitting all tasks.")
-                    break # Stop submitting new tasks
-
-                model, app_num, scan_type_enum = task_args
-                future = self.thread_pool.submit(
-                    self._analyze_app, # Target function
-                    job_id, model, app_num, scan_type_enum, job.scan_options # Args for _analyze_app
-                )
-                futures.append(future)
-                tasks_submitted += 1
-
-            self.logger.info(f"Job {job_id}: Submitted {tasks_submitted} tasks to the thread pool.")
-
-            # --- Process completed futures ---
-            for future in as_completed(futures):
-                 # Check for cancellation after each task completes
-                 if job_id in self._cancel_requests:
-                      self.logger.info(f"Job {job_id} cancellation detected while processing results.")
-                      # Attempt to cancel remaining futures (best effort)
-                      for f in futures:
-                          if not f.done():
-                              f.cancel()
-                      break # Stop processing results
-
-                 try:
-                      # Check if the task raised an exception
-                      future.result() # Call result() to raise exceptions from the task
-                 except Exception as e:
-                      # This exception originates *from within _analyze_app*
-                      error_msg = f"Task failed in job {job_id}: {str(e)}"
-                      self.logger.error(error_msg, exc_info=True) # Log with stack trace
-                      task_errors.append(error_msg)
-                      # No need to update job.errors here, _analyze_app should have recorded its failure
-
-            # --- Final Job Status Update ---
-            # Acquire lock to safely update final job state
-            with self.storage._lock:
-                # Refresh job object to get the latest state (completed_tasks count)
-                job = self.storage.get_job(job_id)
-                if not job: return # Job might have been deleted externally
-
-                final_status = job.status # Keep current status unless changed below
-
-                if job_id in self._cancel_requests:
+            # Final status update after all tasks attempt completion or cancellation
+            job = self.storage.get_job(job_id) # Get final state
+            if job:
+                if job_id in self._cancel_flags:
                     final_status = JobStatus.CANCELED
-                    self.logger.info(f"Job {job_id} finished with status: CANCELED")
-                elif task_errors:
-                     final_status = JobStatus.FAILED # Mark as failed if any task had errors
-                     # Append task-level errors to job errors
-                     self.storage.update_job(job_id, errors=task_errors)
-                     self.logger.warning(f"Job {job_id} finished with status: FAILED due to {len(task_errors)} task errors.")
-                elif job.status == JobStatus.RUNNING: # If still running and no errors/cancellation
-                     # This case handles jobs where total_tasks might be 0 or completion logic failed
-                     # If all submitted tasks completed without error, mark as COMPLETED.
-                     # Check if completed_tasks matches tasks_submitted (as total_tasks might be inaccurate)
-                     # Ensure total_tasks > 0 before checking completion based on it
-                     if job.total_tasks > 0 and job.completed_tasks >= job.total_tasks:
-                         final_status = JobStatus.COMPLETED
-                         # job.completed_at = datetime.now() # Already set by add_result
-                         self.logger.info(f"Job {job_id} marked complete based on task count.")
-                     elif job.total_tasks == 0 and tasks_submitted == 0: # No tasks were generated/submitted
-                          final_status = JobStatus.COMPLETED
-                          job.completed_at = datetime.now()
-                          self.logger.info(f"Job {job_id} marked complete as no tasks were generated.")
-                     elif tasks_submitted > 0 and job.completed_tasks >= tasks_submitted:
-                          # Fallback check if total_tasks was dynamic/inaccurate
-                          final_status = JobStatus.COMPLETED
-                          job.completed_at = datetime.now()
-                          self.logger.info(f"Job {job_id} marked complete based on submitted tasks ({tasks_submitted}).")
+                elif job.errors:
+                    final_status = JobStatus.FAILED
+                elif job.completed_tasks >= job.total_tasks:
+                     final_status = JobStatus.COMPLETED
+                else:
+                     # Should not happen if logic is correct, but handle unexpected state
+                     final_status = JobStatus.FAILED
+                     self.storage.update_job(job_id, errors=job.errors + ["Job ended prematurely"])
 
-                     else:
-                         # Should not normally happen if task completion logic is correct
-                         final_status = JobStatus.FAILED
-                         self.logger.error(f"Job {job_id} ended unexpectedly. Status: {job.status}, Tasks completed: {job.completed_tasks}, Submitted: {tasks_submitted}, Total Est: {job.total_tasks}. Marking as FAILED.")
-                         self.storage.update_job(job_id, errors=["Job ended unexpectedly before all tasks completed."])
-
-
-                # Apply final status update
-                job.status = final_status
-                if job.completed_at is None and final_status != JobStatus.RUNNING:
-                     job.completed_at = datetime.now() # Set completion time if not already set
+                self.storage.update_job(job_id, status=final_status, completed_at=datetime.now())
+                self.logger.info(f"Job {job_id} finished processing. Final status: {final_status.value}")
 
         except Exception as e:
-            # Catch errors during task generation or submission phase
-            self.logger.exception(f"Critical error running job {job_id}: {e}")
-            self.storage.update_job(job_id, status=JobStatus.FAILED, errors=[f"Job execution error: {str(e)}"])
+            self.logger.exception(f"Critical error during execution of job {job_id}: {e}")
+            self.storage.update_job(job_id, status=JobStatus.FAILED, errors=["Critical job execution error: " + str(e)])
         finally:
-            # --- Cleanup ---
-            # Remove from running jobs list
+            # Cleanup: Remove from running jobs dict and clear cancel flag
             if job_id in self._running_jobs:
                 del self._running_jobs[job_id]
-            # Remove from cancel requests
-            if job_id in self._cancel_requests:
-                del self._cancel_requests[job_id]
-            self.logger.info(f"Job runner finished for job {job_id}. Final status: {job.status if job else 'Unknown'}")
-            # Check if other jobs are pending and start one if possible
-            self._check_and_start_pending_jobs()
+            if job_id in self._cancel_flags:
+                self._cancel_flags.remove(job_id)
 
 
     def _generate_task_list(self, job: BatchAnalysisJob) -> List[Tuple[str, int, ScanType]]:
-        """
-        Generate the list of analysis tasks based on job configuration.
-        Handles dynamic app ranges ('all apps'). Requires app context.
-
-        Args:
-            job: Batch analysis job
-
-        Returns:
-            List of tasks to execute, each as (model, app_num, scan_type_enum)
-
-        Raises:
-            RuntimeError: If app context is required but not available.
-        """
-        if not self.app:
-             raise RuntimeError("Flask app context needed for _generate_task_list but not available.")
-
+        """Generates the list of individual analysis tasks based on job config."""
         tasks = []
-        utils_available = False
-        try:
-            from utils import get_apps_for_model # Try importing needed utility
-            utils_available = True
-        except ImportError:
-             self.logger.warning("Cannot import 'get_apps_for_model' from utils. Dynamic app ranges will be skipped.")
+        base_path = current_app.config.get('APP_BASE_PATH', Path('.'))
 
         for model in job.models:
-            app_range_config = job.app_ranges.get(model) # Could be list or None
-
+            app_range = job.app_ranges.get(model, [])
             apps_to_scan = []
-            # If app_range_config is explicitly an empty list, it means "all apps"
-            if isinstance(app_range_config, list) and not app_range_config:
-                if utils_available:
-                    try:
-                        # Use the utility function to get all app numbers
-                        # Ensure we are in an app context as get_apps_for_model might need it
-                        # The caller (_run_job) ensures this context.
-                        apps_data = get_apps_for_model(model)
-                        apps_to_scan = [app_data["app_num"] for app_data in apps_data]
-                        self.logger.info(f"Dynamically found {len(apps_to_scan)} apps for model '{model}'")
-                    except Exception as e:
-                        self.logger.error(f"Failed to get dynamic app list for model '{model}': {e}. Skipping model.")
-                        job.errors.append(f"Failed to get apps for model '{model}': {e}")
-                        continue # Skip this model if dynamic lookup fails
-                else:
-                    self.logger.error(f"Cannot process 'all apps' for model '{model}' because 'get_apps_for_model' utility is unavailable.")
-                    job.errors.append(f"Cannot get app list for model '{model}'.")
-                    continue # Skip this model
-            elif isinstance(app_range_config, list):
-                # Specific list of apps provided
-                apps_to_scan = app_range_config
+
+            if not app_range and model in job.app_ranges:
+                # Empty list means "all apps for this model"
+                try:
+                    model_path = base_path / model
+                    apps_to_scan = sorted([
+                        int(item.name[3:]) for item in model_path.iterdir()
+                        if item.is_dir() and item.name.startswith('app') and item.name[3:].isdigit()
+                    ])
+                    if not apps_to_scan:
+                         logger.warning(f"No app directories found for model '{model}' when generating tasks.")
+                except Exception as e:
+                    logger.error(f"Failed to list apps for model '{model}': {e}")
             else:
-                # app_ranges[model] was not set or was None/invalid
-                self.logger.warning(f"No valid app range specified for model '{model}' in job {job.id}. Skipping.")
-                continue # Skip this model
+                apps_to_scan = sorted(list(set(app_range))) # Use provided list, ensure unique & sorted
 
-            # Generate tasks for each app based on scan type
             for app_num in apps_to_scan:
-                if not isinstance(app_num, int) or app_num <= 0:
-                    self.logger.warning(f"Skipping invalid app number '{app_num}' for model '{model}'.")
-                    continue
-
                 if job.scan_type == ScanType.FRONTEND or job.scan_type == ScanType.BOTH:
                     tasks.append((model, app_num, ScanType.FRONTEND))
                 if job.scan_type == ScanType.BACKEND or job.scan_type == ScanType.BOTH:
                     tasks.append((model, app_num, ScanType.BACKEND))
 
+        logger.debug(f"Generated {len(tasks)} tasks for Job {job.id}")
         return tasks
 
+    # This method is deprecated - logic moved to _generate_task_list with dynamic lookup
+    # def _get_all_apps_for_model(self, model: str) -> List[int]: ...
 
-    def _analyze_app(self, job_id: int, model: str, app_num: int, scan_type_enum: ScanType, scan_options: Dict[str, Any]) -> None:
-        """
-        Run security analysis for a single app within the job's ThreadPoolExecutor.
-        Handles app context and records results or errors.
-
-        Args:
-            job_id: ID of the parent job
-            model: Model name
-            app_num: App number
-            scan_type_enum: Type of scan to perform (ScanType.FRONTEND or ScanType.BACKEND)
-            scan_options: Scan options from the job
-        """
-        # Need access to current_app from Flask
-        from flask import current_app
-
-        task_logger = create_logger_for_component(f'batch_task.{model}-{app_num}.{scan_type_enum.value}')
-        task_start_time = datetime.now()
-        task_logger.info(f"Starting analysis task (Job: {job_id})")
-
-        result_data = {
-            "model": model,
-            "app_num": app_num,
-            "scan_type": scan_type_enum, # Store the enum member
-            "status": "failed", # Default to failed
-            "scan_time": task_start_time,
-            "details": {}
-        }
+    def _analyze_app_task(self, job_id: int, model: str, app_num: int, scan_type: ScanType, scan_options: Dict[str, Any]) -> None:
+        """Performs the analysis for a single app within a Flask app context."""
+        task_logger = create_logger_for_component(f'batch_task_{job_id}')
 
         # Check for cancellation before starting analysis
-        if job_id in self._cancel_requests:
-            task_logger.info(f"Task skipped - job {job_id} was canceled.")
-            # No result is recorded for canceled tasks
-            return # Exit the task function
-
-        if not self.app:
-            task_logger.error("Task cannot run: Flask app context is not available.")
-            result_data["details"]["error"] = "Flask app context unavailable"
-            self.storage.add_result(job_id, result_data)
+        if job_id in self._cancel_flags:
+            task_logger.info(f"Skipping task {model}/app{app_num} ({scan_type.value}) due to job cancellation.")
+            # Still need to update completed tasks count maybe? Or handle differently?
+            # Let's assume cancellation stops adding results, job status handled elsewhere.
             return
 
+        task_logger.info(f"Starting task: {model}/app{app_num} ({scan_type.value})")
+        start_time = datetime.now()
+        issues = []
+        summary = {}
+        tool_status = {}
+        status = "failed" # Default status
+
         try:
-            # --- Execute Analysis within App Context ---
-            with self.app.app_context():
-                task_logger.debug("App context acquired.")
-                full_scan = scan_options.get("full_scan", False)
-                analyzer = None
-                issues = []
-                tool_status = {}
-                summary = {}
+            analyzer = None
+            # Select the correct analyzer based on scan_type
+            if scan_type == ScanType.FRONTEND:
+                analyzer = current_app.frontend_security_analyzer
+            elif scan_type == ScanType.BACKEND:
+                analyzer = current_app.backend_security_analyzer
+            else:
+                 raise ValueError(f"Unsupported scan type for analysis task: {scan_type}")
 
-                if scan_type_enum == ScanType.FRONTEND:
-                    # Access analyzer from current_app within the context
-                    analyzer = current_app.frontend_security_analyzer
-                    task_logger.info(f"Running frontend analysis (full_scan={full_scan})")
-                elif scan_type_enum == ScanType.BACKEND:
-                     # Access analyzer from current_app within the context
-                    analyzer = current_app.backend_security_analyzer
-                    task_logger.info(f"Running backend analysis (full_scan={full_scan})")
-                else:
-                    # Should not happen if _generate_task_list is correct
-                    raise ValueError(f"Unsupported scan type enum: {scan_type_enum}")
+            if not analyzer:
+                 raise RuntimeError(f"Required analyzer for {scan_type.value} not found in app context.")
 
-                if not analyzer:
-                     raise RuntimeError(f"{scan_type_enum.value.capitalize()} security analyzer not available in app context.")
-
-                # Execute the analysis
-                # Ensure the method exists before calling
-                if not hasattr(analyzer, 'run_security_analysis'):
-                    raise NotImplementedError(f"Analyzer {type(analyzer).__name__} does not have 'run_security_analysis' method.")
-
-                # Make the actual call to the analyzer
-                task_logger.debug(f"Calling {type(analyzer).__name__}.run_security_analysis...")
-                issues, tool_status, _ = analyzer.run_security_analysis(
-                    model, app_num, use_all_tools=full_scan
-                )
-                task_logger.debug(f"Analysis method completed. Found {len(issues)} issues.")
-
-                # Get summary from the analyzer
-                if hasattr(analyzer, 'get_analysis_summary'):
-                    summary = analyzer.get_analysis_summary(issues)
-                    task_logger.debug("Generated analysis summary.")
-                else:
-                    task_logger.warning(f"Analyzer {type(analyzer).__name__} does not have 'get_analysis_summary' method.")
-                    # Basic summary fallback
-                    summary = {
-                        "total_issues": len(issues),
-                        "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0} # Placeholder counts
-                    }
-
-                # --- Prepare Successful Result ---
-                result_data["status"] = "completed"
-                result_data["issues_count"] = len(issues)
-                result_data["high_severity"] = summary.get("severity_counts", {}).get("HIGH", 0)
-                result_data["medium_severity"] = summary.get("severity_counts", {}).get("MEDIUM", 0)
-                result_data["low_severity"] = summary.get("severity_counts", {}).get("LOW", 0)
-                result_data["details"] = {
-                    # Serialize issues carefully
-                    "issues": [asdict(issue) if hasattr(issue, '__dataclass_fields__') else issue for issue in issues],
-                    "summary": summary,
-                    "tool_status": tool_status
-                }
-                task_logger.info(f"Analysis task completed successfully in {(datetime.now() - task_start_time).total_seconds():.2f}s")
+            full_scan = scan_options.get("full_scan", False)
+            issues, tool_status, _ = analyzer.run_security_analysis(
+                model, app_num, use_all_tools=full_scan
+            )
+            summary = analyzer.get_analysis_summary(issues)
+            status = "completed"
+            task_logger.info(f"Completed task: {model}/app{app_num} ({scan_type.value}). Issues: {len(issues)}")
 
         except Exception as e:
-            task_logger.exception(f"Error during analysis task: {e}")
-            # Prepare Failed Result
-            result_data["status"] = "failed"
-            result_data["details"]["error"] = str(e)
-            result_data["details"]["traceback"] = traceback.format_exc() # Include traceback in details
+            task_logger.exception(f"Failed task: {model}/app{app_num} ({scan_type.value}): {e}")
+            # Store error details
+            summary = {"error": str(e)} # Put error in summary for reporting
 
         finally:
-            # --- Record Result (Success or Failure) ---
-            # Pass the original enum member back
-            result_data['scan_type'] = scan_type_enum
-            self.storage.add_result(job_id, result_data)
-            task_logger.debug("Result recorded in storage.")
+             # Ensure result is always added, even on failure or cancellation check *after* task start
+            if not job_id in self._cancel_flags: # Only add result if not cancelled during execution
+                 self.storage.add_result(
+                     job_id,
+                     {
+                         "model": model,
+                         "app_num": app_num,
+                         "scan_type": scan_type,
+                         "status": status,
+                         "issues_count": len(issues),
+                         "high_severity": summary.get("severity_counts", {}).get("HIGH", 0) if status == "completed" else 0,
+                         "medium_severity": summary.get("severity_counts", {}).get("MEDIUM", 0) if status == "completed" else 0,
+                         "low_severity": summary.get("severity_counts", {}).get("LOW", 0) if status == "completed" else 0,
+                         "scan_time": start_time, # Log start time, duration can be calculated
+                         "details": {
+                             "issues": [asdict(issue) for issue in issues], # Use asdict for nested dataclasses
+                             "summary": summary,
+                             "tool_status": tool_status
+                         }
+                     }
+                 )
 
 
     def cancel_job(self, job_id: int) -> bool:
         """
-        Request cancellation of a running job.
+        Marks a running job for cancellation.
 
         Args:
-            job_id: ID of the job to cancel
+            job_id: The ID of the job to cancel.
 
         Returns:
-            bool: True if job was running and marked for cancellation, False otherwise
-        """
-        with self.storage._lock: # Ensure atomic check and update
-            job = self.storage.get_job(job_id)
-            if not job:
-                self.logger.error(f"Cannot cancel job {job_id}: Not found.")
-                return False
-
-            if job.status != JobStatus.RUNNING:
-                self.logger.warning(f"Cannot cancel job {job_id}: Not currently running (status: {job.status}).")
-                return False
-
-            # Mark for cancellation
-            self._cancel_requests[job_id] = True
-
-            # Update job status immediately to CANCELED
-            # The running thread will see the flag and stop processing/clean up.
-            self.storage.update_job(job_id, status=JobStatus.CANCELED)
-
-            self.logger.info(f"Job {job_id} marked for cancellation.")
-            # Note: Actual task cancellation in the thread pool is best-effort.
-            # Running tasks will complete, but new ones won't be scheduled by _run_job.
-            return True
-
-    def get_job_status(self, job_id: int) -> Dict[str, Any]:
-        """
-        Get detailed status information for a job, including progress and results summary.
-
-        Args:
-            job_id: ID of the job
-
-        Returns:
-            Dict containing detailed job status information, or error dict.
+            True if the job was successfully marked for cancellation, False otherwise.
         """
         job = self.storage.get_job(job_id)
         if not job:
-            return {"error": "Job not found", "status_code": 404} # Use status_code for API
+            self.logger.error(f"Cannot cancel job {job_id}: Job not found.")
+            return False
 
-        results = self.storage.get_results(job_id) # Get results associated with the job
+        if job.status != JobStatus.RUNNING:
+            self.logger.warning(f"Cannot cancel job {job_id}: Not currently running (Status: {job.status.value}).")
+            return False
 
-        # Calculate summary stats from results
-        summary_stats = {
-            "total_results": len(results),
-            "completed_ok": sum(1 for r in results if r.status == "completed"),
-            "failed": sum(1 for r in results if r.status == "failed"),
-            "total_issues": sum(r.issues_count for r in results),
-            "high_issues": sum(r.high_severity for r in results),
-            "medium_issues": sum(r.medium_severity for r in results),
-            "low_issues": sum(r.low_severity for r in results),
-            "frontend": {"count": 0, "issues": 0, "high": 0, "medium": 0, "low": 0},
-            "backend": {"count": 0, "issues": 0, "high": 0, "medium": 0, "low": 0},
-        }
+        self._cancel_flags.add(job_id)
+        # The running thread will check this flag and update status accordingly
+        self.logger.info(f"Job {job_id} marked for cancellation. Running tasks will attempt to stop.")
+        # We don't immediately set status to CANCELED here, let the runner thread handle it.
+        return True
 
-        for r in results:
-            target_key = r.scan_type.value # Use enum value ('frontend' or 'backend')
-            if target_key in summary_stats:
-                target = summary_stats[target_key]
-                target["count"] += 1
-                target["issues"] += r.issues_count
-                target["high"] += r.high_severity
-                target["medium"] += r.medium_severity
-                target["low"] += r.low_severity
+    def get_job_status(self, job_id: int) -> Dict[str, Any]:
+        """
+        Retrieves detailed status information for a specific job.
 
-        # Calculate progress percentage safely
-        percent_complete = 0
+        Args:
+            job_id: The ID of the job.
+
+        Returns:
+            A dictionary containing the job's status and progress details.
+        """
+        job = self.storage.get_job(job_id)
+        if not job:
+            return {"error": f"Job {job_id} not found"}
+
+        results = self.storage.get_results(job_id)
+        frontend_results = [r for r in results if r.scan_type == ScanType.FRONTEND]
+        backend_results = [r for r in results if r.scan_type == ScanType.BACKEND]
+
+        # Calculate progress safely
+        progress_percent = 0
         if job.total_tasks > 0:
-            percent_complete = int((job.completed_tasks / job.total_tasks) * 100)
-        elif job.status == JobStatus.COMPLETED: # Handle case where total_tasks might be 0 but job finished
-             percent_complete = 100
-        elif job.status in [JobStatus.FAILED, JobStatus.CANCELED]:
-              # If failed/canceled, show progress based on completed tasks before stopping
-              if job.total_tasks > 0:
-                  percent_complete = int((job.completed_tasks / job.total_tasks) * 100)
-              else: # If total tasks was 0 or unknown, can't show percentage
-                   percent_complete = 0
+            progress_percent = int((job.completed_tasks / job.total_tasks) * 100)
 
-        # Build comprehensive status object using job.to_dict for base structure
-        status_data = job.to_dict()
-        status_data["progress"] = {
-            "total": job.total_tasks,
-            "completed": job.completed_tasks,
-            "percent": percent_complete
+        # Aggregate issue counts safely
+        def sum_results(results_list, key):
+            return sum(getattr(r, key, 0) for r in results_list)
+
+        return {
+            "job": job.to_dict(), # Use the job's own serialization method
+            "progress": {
+                "total": job.total_tasks,
+                "completed": job.completed_tasks,
+                "percent": progress_percent
+            },
+            "results_summary": {
+                "total_analyzed": len(results),
+                "completed": sum(1 for r in results if r.status == "completed"),
+                "failed": sum(1 for r in results if r.status == "failed"),
+                "frontend": {
+                    "count": len(frontend_results),
+                    "issues_total": sum_results(frontend_results, 'issues_count'),
+                    "high": sum_results(frontend_results, 'high_severity'),
+                    "medium": sum_results(frontend_results, 'medium_severity'),
+                    "low": sum_results(frontend_results, 'low_severity'),
+                },
+                "backend": {
+                     "count": len(backend_results),
+                    "issues_total": sum_results(backend_results, 'issues_count'),
+                    "high": sum_results(backend_results, 'high_severity'),
+                    "medium": sum_results(backend_results, 'medium_severity'),
+                    "low": sum_results(backend_results, 'low_severity'),
+                },
+                "overall_issues": {
+                    "total": sum_results(results, 'issues_count'),
+                    "high": sum_results(results, 'high_severity'),
+                    "medium": sum_results(results, 'medium_severity'),
+                    "low": sum_results(results, 'low_severity'),
+                }
+            },
+             "results_preview": [r.to_dict() for r in results[:20]] # Include a preview of recent results
         }
-        status_data["results_summary"] = summary_stats
 
-        return status_data
-
-    def _check_and_start_pending_jobs(self):
-        """Checks for pending jobs and starts one if concurrency limit allows."""
-        with self.storage._lock:
-            if len(self._running_jobs) < self.max_concurrent_jobs:
-                pending_jobs = sorted(
-                    [j for j in self.storage.get_all_jobs() if j.status == JobStatus.PENDING],
-                    key=lambda j: j.created_at # Start oldest pending job first
-                )
-                if pending_jobs:
-                    job_to_start = pending_jobs[0]
-                    self.logger.info(f"Auto-starting pending job {job_to_start.id} due to available capacity.")
-                    # Use Thread to avoid blocking current operation
-                    threading.Thread(target=self.start_job, args=(job_to_start.id,), daemon=True).start()
-
-
-# Create a service instance - this should be accessible globally or via app context
+# Global instance of the service
 batch_service = BatchAnalysisService(job_storage)
 
+# =============================================================================
+# Route Helper Functions & Decorators
+# =============================================================================
+
+def error_handler(f):
+    """Decorator for handling exceptions in Flask routes."""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        err_logger = create_logger_for_component('batch_routes')
+        try:
+            return f(*args, **kwargs)
+        except Exception as e:
+            err_logger.exception(f"Error in route {request.path} ({f.__name__}): {e}")
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest": # Check if AJAX
+                return jsonify({"success": False, "error": str(e)}), 500
+            else:
+                flash(f"An unexpected error occurred: {str(e)}", "error")
+                # Redirect to dashboard or a generic error page
+                return redirect(url_for('batch_analysis.batch_dashboard'))
+    return decorated_function
+
+
+def get_available_models() -> List[str]:
+    """Retrieves the list of available AI models for selection forms."""
+    try:
+        # Assumes AI_MODELS is defined in utils and accessible
+        from utils import AI_MODELS
+        return sorted([m.name for m in AI_MODELS])
+    except (ImportError, AttributeError):
+        logger.warning("Could not load AI_MODELS from utils. Falling back to directory scan.")
+        # Fallback: Scan directories in the base path
+        try:
+             base_path = current_app.config.get('APP_BASE_PATH', Path('.'))
+             return sorted([item.name for item in base_path.iterdir() if item.is_dir() and not item.name.startswith('.')])
+        except Exception as e:
+             logger.error(f"Failed to list models from directory scan: {e}")
+             return []
+
+
+def parse_app_range(range_str: str) -> List[int]:
+     """Parses a comma-separated string of numbers and ranges (e.g., "1-3,5,8")."""
+     app_nums = set()
+     if not range_str or not range_str.strip():
+          return [] # Return empty list for empty input
+
+     for part in range_str.split(','):
+         part = part.strip()
+         if not part: continue
+         if '-' in part:
+             try:
+                 start, end = map(int, part.split('-', 1))
+                 if start <= end:
+                      app_nums.update(range(start, end + 1))
+                 else:
+                      logger.warning(f"Invalid range order in '{part}', skipping.")
+             except ValueError:
+                 logger.warning(f"Invalid range format '{part}', skipping.")
+         else:
+             try:
+                 app_nums.add(int(part))
+             except ValueError:
+                 logger.warning(f"Invalid app number '{part}', skipping.")
+     return sorted(list(app_nums))
+
 
 # =============================================================================
-# Initialization Function (for use by app factory)
+# Flask Routes
 # =============================================================================
-def init_batch_analysis_logic(app):
+
+@batch_analysis_bp.route("/")
+@error_handler
+def batch_dashboard():
+    """Displays the main dashboard for batch analysis jobs."""
+    jobs = sorted(job_storage.get_all_jobs(), key=lambda j: j.created_at, reverse=True)
+    all_models = get_available_models()
+
+    stats = {
+        "running": sum(1 for j in jobs if j.status == JobStatus.RUNNING),
+        "completed": sum(1 for j in jobs if j.status == JobStatus.COMPLETED),
+        "failed": sum(1 for j in jobs if j.status in (JobStatus.FAILED, JobStatus.CANCELED)),
+        "pending": sum(1 for j in jobs if j.status == JobStatus.PENDING),
+    }
+
+    return render_template(
+        "batch_dashboard.html",
+        jobs=jobs,
+        all_models=all_models,
+        stats=stats,
+        # Pass through potential query args for form pre-population
+        model=request.args.get('model'),
+        app_num=request.args.get('app_num'),
+        selected_model=request.args.get('selected_model')
+    )
+
+
+@batch_analysis_bp.route("/create", methods=["GET", "POST"])
+@error_handler
+def create_batch_job():
+    """Handles the creation of a new batch analysis job via a form."""
+    all_models = get_available_models()
+
+    if request.method == "POST":
+        selected_models = request.form.getlist("models")
+        if not selected_models:
+            flash("Please select at least one model to analyze.", "warning")
+            return render_template("create_batch_job.html", models=all_models), 400
+
+        try:
+            scan_type = ScanType(request.form.get("scan_type", "frontend"))
+        except ValueError:
+            flash("Invalid scan type selected.", "error")
+            return render_template("create_batch_job.html", models=all_models), 400
+
+        job_data = {
+            "name": request.form.get("name", f"Batch Scan - {datetime.now():%Y-%m-%d %H:%M}"),
+            "description": request.form.get("description", ""),
+            "models": selected_models,
+            "app_ranges": {
+                model: parse_app_range(request.form.get(f"app_range_{model}", ""))
+                for model in selected_models
+            },
+            "scan_type": scan_type,
+            "scan_options": {"full_scan": request.form.get("full_scan") == "on"}
+        }
+
+        job = job_storage.create_job(job_data)
+        success = batch_service.start_job(job.id)
+
+        if success:
+            flash(f"Batch job '{job.name}' created and started successfully.", "success")
+        else:
+            flash(f"Batch job '{job.name}' created but could not be started (queue full or error). Check logs.", "warning")
+
+        return redirect(url_for("batch_analysis.view_job", job_id=job.id))
+
+    # GET request: Display the creation form
+    return render_template(
+        "create_batch_job.html",
+        models=all_models,
+        model=request.args.get('model'),
+        app_num=request.args.get('app_num'),
+        selected_model=request.args.get('selected_model')
+    )
+
+
+@batch_analysis_bp.route("/job/<int:job_id>")
+@error_handler
+def view_job(job_id: int):
+    """Displays the detailed view for a specific batch job."""
+    job_status_data = batch_service.get_job_status(job_id)
+
+    if "error" in job_status_data:
+        flash(job_status_data["error"], "error")
+        return redirect(url_for("batch_analysis.batch_dashboard"))
+
+    # Results are included in job_status_data['results_preview']
+    # If full results needed, query separately:
+    # results = sorted(job_storage.get_results(job_id), key=lambda r: (r.model, r.app_num, r.scan_type.value))
+
+    return render_template(
+        "view_job.html",
+        job=job_status_data['job'], # The job data dict
+        status_data=job_status_data # The full status object including summaries
+        # results=results # Pass full results if needed
+    )
+
+
+@batch_analysis_bp.route("/job/<int:job_id>/status")
+@error_handler
+def get_job_status_api(job_id: int):
+    """API endpoint to get the status of a batch job (for AJAX updates)."""
+    status_data = batch_service.get_job_status(job_id)
+    if "error" in status_data:
+        return jsonify(status_data), 404
+    return jsonify(status_data)
+
+
+@batch_analysis_bp.route("/job/<int:job_id>/cancel", methods=["POST"])
+@error_handler
+def cancel_job_api(job_id: int):
+    """API endpoint or form target to cancel a running job."""
+    success = batch_service.cancel_job(job_id)
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+
+    if is_ajax:
+        if success:
+            return jsonify({"message": "Job marked for cancellation.", "status": "canceling"})
+        else:
+            # Provide more context if possible
+            job = job_storage.get_job(job_id)
+            reason = "Job not found or not running." if not job or job.status != JobStatus.RUNNING else "Cancellation failed."
+            return jsonify({"error": reason}), 400
+    else:
+        if success:
+            flash(f"Job {job_id} marked for cancellation.", "info")
+        else:
+            flash(f"Failed to cancel job {job_id}. It might have already finished or encountered an error.", "error")
+        return redirect(url_for("batch_analysis.view_job", job_id=job_id))
+
+@batch_analysis_bp.route("/job/<int:job_id>/delete", methods=["POST"])
+@error_handler
+def delete_job_api(job_id: int):
+    """API endpoint or form target to delete a job."""
+    job = job_storage.get_job(job_id)
+    if not job:
+         flash(f"Job {job_id} not found.", "error")
+         return redirect(url_for("batch_analysis.batch_dashboard"))
+
+    if job.status == JobStatus.RUNNING:
+         flash(f"Cannot delete running job {job_id}. Please cancel it first.", "warning")
+         return redirect(url_for("batch_analysis.view_job", job_id=job_id))
+
+    success = job_storage.delete_job(job_id)
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+
+    if is_ajax:
+         if success:
+              return jsonify({"message": f"Job {job_id} deleted."})
+         else:
+              return jsonify({"error": f"Failed to delete job {job_id}."}), 500
+    else:
+         if success:
+              flash(f"Job {job_id} and its results deleted successfully.", "success")
+         else:
+              flash(f"Failed to delete job {job_id}.", "error")
+         return redirect(url_for("batch_analysis.batch_dashboard"))
+
+
+@batch_analysis_bp.route("/job/<int:job_id>/results")
+@error_handler
+def get_job_results_api(job_id: int):
+    """API endpoint to retrieve all results for a specific job."""
+    results = job_storage.get_results(job_id)
+    return jsonify({
+        "job_id": job_id,
+        "results": [r.to_dict() for r in results]
+    })
+
+
+@batch_analysis_bp.route("/result/<int:result_id>")
+@error_handler
+def view_result(result_id: int):
+    """Displays the detailed view for a single analysis result."""
+    result = job_storage.get_result(result_id)
+    if not result:
+        flash(f"Result {result_id} not found.", "error")
+        return redirect(url_for("batch_analysis.batch_dashboard"))
+
+    job = job_storage.get_job(result.job_id) # Get parent job info
+
+    return render_template(
+        "view_result.html",
+        result=result,
+        job=job,
+        # Pass details directly if they exist
+        issues=result.details.get("issues", []),
+        summary=result.details.get("summary", {}),
+        tool_status=result.details.get("tool_status", {})
+    )
+
+
+@batch_analysis_bp.route("/result/<int:result_id>/data")
+@error_handler
+def get_result_data_api(result_id: int):
+    """API endpoint to get the raw data for a specific result."""
+    result = job_storage.get_result(result_id)
+    if not result:
+        return jsonify({"error": "Result not found"}), 404
+    return jsonify(result.to_dict())
+
+
+# =============================================================================
+# Module Initialization
+# =============================================================================
+
+def init_batch_analysis(app: flask.Flask):
     """
-    Initialize batch analysis module logic (e.g., set app context for service).
-    Does NOT register the blueprint.
+    Initializes the batch analysis module and registers components with the Flask app.
 
     Args:
-        app: Flask application instance
+        app: The Flask application instance.
     """
-    logger.info("Initializing batch analysis core logic...")
+    logger.info("Initializing Batch Analysis Module...")
 
-    # Pass the Flask app to the service instance
-    # Assumes batch_service is a global or module-level instance
-    global batch_service
+    # Provide the Flask app instance to the service for context access
     batch_service.set_app(app)
 
-    # Any other logic needed at app startup for this module can go here
-    # For example, loading persistent job data if storage was file-based.
+    # Ensure a base path is available in the app config for file operations
+    if 'APP_BASE_PATH' not in app.config:
+         # Default to parent directory of the app's root path if BASE_DIR isn't set
+        app.config['APP_BASE_PATH'] = app.config.get('BASE_DIR', Path(app.root_path).parent)
+        logger.info(f"APP_BASE_PATH configured to: {app.config['APP_BASE_PATH']}")
 
-    logger.info("Batch analysis core logic initialized.")
+
+    # Optional: Check for required template files during initialization
+    templates_dir = Path(app.root_path) / batch_analysis_bp.template_folder
+    required_templates = [
+        "batch_dashboard.html", "create_batch_job.html",
+        "view_job.html", "view_result.html"
+    ]
+    for template_name in required_templates:
+        if not (templates_dir / template_name).is_file():
+            logger.warning(f"Batch analysis template not found: {template_name}")
+
+    logger.info("Batch Analysis Module initialized successfully.")

@@ -11,27 +11,6 @@ This module orchestrates the execution of these tools, normalizes their outputs
 into a consistent format, and provides aggregated results and summaries.
 """
 
-# =============================================================================
-# FUNCTION GLOSSARY
-# =============================================================================
-# cmd_name: Returns the proper command name for the current operating system
-# BackendSecurityIssue: Dataclass representing a security issue found in backend code
-# BackendSecurityAnalyzer: Class that analyzes backend code for security issues
-#   __init__: Initializes the security analyzer with a base path
-#   _check_source_files: Checks if a directory contains Python source files
-#   _run_tool: Generic method to run a security tool and parse its output
-#   _parse_bandit_output: Parses Bandit JSON output into BackendSecurityIssue objects
-#   _run_bandit: Runs Bandit security analysis on Python code
-#   _parse_safety_output: Parses Safety output into BackendSecurityIssue objects
-#   _run_safety: Runs Safety check on Python dependencies
-#   _parse_pylint_output: Parses Pylint JSON output into BackendSecurityIssue objects
-#   _run_pylint: Runs Pylint for code quality analysis
-#   _parse_vulture_output: Parses Vulture text output into BackendSecurityIssue objects
-#   _run_vulture: Runs Vulture to detect dead code
-#   run_security_analysis: Runs security analysis with selected tools
-#   get_analysis_summary: Generates summary statistics for analysis results
-
-# Standard library imports
 import json
 import logging
 import os
@@ -43,25 +22,28 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Optional, Tuple, Dict, Any, Callable
 
-# Configure logging
+# Configure logging for this module
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+# Consider setting level via application config rather than hardcoding
+# logger.setLevel(logging.DEBUG)
 
 # Constants
-TOOL_TIMEOUT = 30  # seconds
+TOOL_TIMEOUT = 30  # seconds for subprocess execution
 SEVERITY_ORDER = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
 CONFIDENCE_ORDER = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
+DEFAULT_SEVERITY_LEVEL = 3 # Used for sorting unknown severity/confidence
 
 
 def cmd_name(name: str) -> str:
     """
     Return the proper command name for the current operating system.
-    
+    Handles '.cmd' extension needed on Windows.
+
     Args:
-        name: Base command name
-        
+        name: Base command name (e.g., "bandit")
+
     Returns:
-        Command name adjusted for the operating system
+        Command name adjusted for the operating system (e.g., "bandit.cmd" or "bandit")
     """
     return f"{name}.cmd" if os.name == "nt" else name
 
@@ -69,19 +51,19 @@ def cmd_name(name: str) -> str:
 @dataclass
 class BackendSecurityIssue:
     """
-    Represents a security issue found in backend code.
-    
+    Represents a security issue found in backend code by an analysis tool.
+
     Attributes:
-        filename: Relative path to the file containing the issue
-        line_number: Line number where the issue was found
-        issue_text: Description of the security issue
-        severity: Severity level (HIGH, MEDIUM, LOW)
-        confidence: Confidence level (HIGH, MEDIUM, LOW)
-        issue_type: Type of issue (e.g., hardcoded_password, sql_injection)
-        line_range: Range of lines affected by the issue
-        code: Code snippet containing the issue
-        tool: Name of the tool that found the issue
-        fix_suggestion: Optional suggestion on how to fix the issue
+        filename: Relative path to the file containing the issue.
+        line_number: Line number where the issue was found.
+        issue_text: Description of the security issue.
+        severity: Severity level (HIGH, MEDIUM, LOW).
+        confidence: Confidence level (HIGH, MEDIUM, LOW).
+        issue_type: Tool-specific type/ID of the issue.
+        line_range: Range of lines affected by the issue.
+        code: Code snippet containing the issue, if available.
+        tool: Name of the tool that found the issue.
+        fix_suggestion: Optional suggestion on how to fix the issue.
     """
     filename: str
     line_number: int
@@ -97,32 +79,28 @@ class BackendSecurityIssue:
 
 class BackendSecurityAnalyzer:
     """
-    Analyzes backend code for security issues using multiple tools.
-    
-    This class orchestrates the execution of security analysis tools
-    on Python backend code, including:
-    - Bandit for detecting security vulnerabilities
-    - Safety for checking dependency vulnerabilities
-    - Pylint for code quality issues
-    - Vulture for detecting dead code
-    
-    The analysis results are normalized and combined into a single
-    list of BackendSecurityIssue objects, sorted by severity.
+    Analyzes backend Python code for security issues using multiple tools.
+
+    Orchestrates Bandit, Safety, Pylint, and Vulture execution,
+    normalizes results into BackendSecurityIssue objects, and provides summaries.
     """
-    
+
     def __init__(self, base_path: Path):
         """
-        Initialize the security analyzer with a base path.
-        
+        Initialize the security analyzer.
+
         Args:
-            base_path: Base directory containing the code to analyze
+            base_path: Base directory containing the code projects (e.g., 'models/').
+                       Assumes structure like base_path/model_name/appN/backend/.
         """
+        if not base_path.is_dir():
+             logger.warning(f"Base path '{base_path}' does not exist or is not a directory.")
         self.base_path = base_path
-        self.default_tools = ["bandit"]  # Quick scan tool
+        self.default_tools = ["bandit"]  # Tools run in quick scan mode
         self.all_tools = ["bandit", "safety", "pylint", "vulture"]
-        
-        # Map tool names to their execution functions
-        self.tool_functions = {
+
+        # Map tool names to their runner and parser methods
+        self.tool_runners = {
             "bandit": self._run_bandit,
             "safety": self._run_safety,
             "pylint": self._run_pylint,
@@ -131,407 +109,435 @@ class BackendSecurityAnalyzer:
 
     def _check_source_files(self, directory: Path) -> Tuple[bool, List[str]]:
         """
-        Check if the directory contains Python source files.
-        
+        Check if the directory contains any Python source files recursively.
+
         Args:
-            directory: Directory to check for Python files
-            
+            directory: Directory to check.
+
         Returns:
-            Tuple containing:
-            - Boolean indicating if Python files were found
-            - List of found Python file paths
+            Tuple: (bool indicating if .py files were found, list of found .py file paths).
         """
-        if not directory.exists():
+        if not directory.is_dir():
+            logger.warning(f"Target directory '{directory}' does not exist.")
             return False, []
-            
-        source_files = []
-        for root, _, files in os.walk(directory):
-            for file in files:
-                if file.endswith('.py'):
-                    source_files.append(os.path.join(root, file))
-                    
-        return bool(source_files), source_files
+
+        source_files = list(directory.rglob('*.py'))
+        return bool(source_files), [str(f) for f in source_files]
+
 
     def _run_tool(
-        self, 
-        tool_name: str, 
-        command: List[str], 
-        parser: Callable[[str], List[BackendSecurityIssue]], 
-        app_path: Path
+        self,
+        tool_name: str,
+        command: List[str],
+        parser: Callable[[str], List[BackendSecurityIssue]],
+        working_directory: Optional[Path] = None # Allow specifying cwd if needed
     ) -> Tuple[List[BackendSecurityIssue], str]:
         """
-        Generic method to run a security tool and parse its output.
-        
+        Generic method to run an external security tool and parse its output.
+
         Args:
-            tool_name: Name of the tool being run
-            command: Command line arguments for the tool
-            parser: Function to parse the tool's output into BackendSecurityIssue objects
-            app_path: Path to the application code
-            
+            tool_name: Name of the tool (for logging).
+            command: Command line arguments list for the tool.
+            parser: Function to parse the tool's stdout into BackendSecurityIssue objects.
+            working_directory: Directory from which to run the command.
+
         Returns:
-            Tuple containing:
-            - List of security issues found
-            - Raw output from the tool
+            Tuple: (List of found BackendSecurityIssue objects, Raw stdout/stderr from the tool).
         """
+        issues = []
+        raw_output = f"{tool_name} execution failed." # Default error message
         try:
+            logger.debug(f"Running {tool_name}: {' '.join(command)}")
             result = subprocess.run(
                 command,
                 capture_output=True,
                 text=True,
-                timeout=TOOL_TIMEOUT
+                timeout=TOOL_TIMEOUT,
+                check=False, # Don't raise exception on non-zero exit code
+                cwd=working_directory or self.base_path # Default to base_path if not specified
             )
-            
-            raw_output = result.stdout
-            
-            # Log any error output
-            if result.stderr and "ERROR" in result.stderr:
-                logger.error(f"{tool_name} warning: {result.stderr}")
-            
-            # Parse the results
-            try:
-                issues = parser(raw_output)
-                return issues, raw_output
-            except Exception as e:
-                logger.error(f"Failed to parse {tool_name} output: {e}")
-                return [], f"Failed to parse output: {str(e)}"
-                
+
+            raw_output = f"STDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
+
+            if result.returncode != 0:
+                logger.warning(f"{tool_name} exited with code {result.returncode}. Stderr: {result.stderr}")
+                # Some tools might output results even with non-zero exit codes (e.g., Pylint)
+
+            if result.stdout:
+                try:
+                    issues = parser(result.stdout)
+                    logger.info(f"{tool_name} found {len(issues)} issues.")
+                except Exception as e:
+                    logger.error(f"Failed to parse {tool_name} output: {e}\nOutput:\n{result.stdout[:500]}...") # Log partial output
+                    raw_output += f"\nPARSING_ERROR: {str(e)}"
+            else:
+                 logger.info(f"{tool_name} produced no standard output.")
+
+
         except subprocess.TimeoutExpired:
-            logger.error(f"{tool_name} timed out")
-            return [], "Command timed out"
+            logger.error(f"{tool_name} timed out after {TOOL_TIMEOUT} seconds.")
+            raw_output = f"{tool_name} timed out after {TOOL_TIMEOUT} seconds."
+        except FileNotFoundError:
+             logger.error(f"{tool_name} command not found. Is it installed and in PATH? Command: {command[0]}")
+             raw_output = f"{tool_name} command not found: {command[0]}"
         except Exception as e:
-            logger.error(f"{tool_name} failed: {e}")
-            return [], str(e)
+            logger.exception(f"An unexpected error occurred while running {tool_name}: {e}")
+            raw_output = f"Unexpected error running {tool_name}: {str(e)}"
+
+        return issues, raw_output
+
+    def _make_relative_path(self, file_path: str, base_dir: Path) -> str:
+        """Helper to create a relative path string from an absolute path."""
+        try:
+            # Ensure both paths are absolute for correct relativity
+            abs_file_path = Path(file_path).resolve()
+            abs_base_dir = base_dir.resolve()
+            relative = abs_file_path.relative_to(abs_base_dir)
+            return str(relative)
+        except ValueError:
+             # If file_path is not within base_dir, return the original path
+             logger.warning(f"Could not make path relative: '{file_path}' is not inside '{base_dir}'.")
+             # Attempt stripping known base path string as fallback for tools outputting weird paths
+             base_str = str(base_dir)
+             if file_path.startswith(base_str):
+                  return file_path[len(base_str):].lstrip('/\\')
+             return file_path # Fallback to original/absolute
+
 
     def _parse_bandit_output(self, output: str) -> List[BackendSecurityIssue]:
-        """
-        Parse Bandit JSON output into BackendSecurityIssue objects.
-        
-        Args:
-            output: JSON output from Bandit
-            
-        Returns:
-            List of BackendSecurityIssue objects
-        """
+        """Parse Bandit JSON output into BackendSecurityIssue objects."""
         issues = []
-        
         try:
             analysis = json.loads(output)
-            app_path_str = str(self.base_path)
-            
-            for issue in analysis.get("results", []):
+            if "errors" in analysis and analysis["errors"]:
+                 logger.warning(f"Bandit reported errors: {analysis['errors']}")
+
+            for issue_data in analysis.get("results", []):
+                # Bandit paths are usually relative to execution dir already, but ensure consistency
+                relative_filename = self._make_relative_path(issue_data["filename"], self.base_path)
                 issues.append(BackendSecurityIssue(
-                    filename=issue["filename"].replace(app_path_str, "").lstrip('/\\'),
-                    line_number=issue["line_number"],
-                    issue_text=issue["issue_text"],
-                    severity=issue["issue_severity"].upper(),
-                    confidence=issue["issue_confidence"].upper(),
-                    issue_type=issue["test_name"],
-                    line_range=issue["line_range"],
-                    code=issue.get("code", "Code not available"),
+                    filename=relative_filename,
+                    line_number=issue_data["line_number"],
+                    issue_text=issue_data["issue_text"],
+                    severity=issue_data["issue_severity"].upper(),
+                    confidence=issue_data["issue_confidence"].upper(),
+                    issue_type=issue_data["test_name"],
+                    line_range=issue_data["line_range"],
+                    code=issue_data.get("code", "N/A"),
                     tool="Bandit",
-                    fix_suggestion=issue.get("more_info", "No fix suggestion available")
+                    fix_suggestion=issue_data.get("more_info", None)
                 ))
-        except json.JSONDecodeError:
-            logger.error("Failed to parse Bandit output as JSON")
-            
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse Bandit JSON: {e}")
+            # Optionally return partial data or raise error
+
         return issues
 
     def _run_bandit(self, app_path: Path) -> Tuple[List[BackendSecurityIssue], str]:
-        """
-        Run Bandit security analysis on Python code.
-        
-        Args:
-            app_path: Path to the application code
-            
-        Returns:
-            Tuple containing:
-            - List of security issues found
-            - Raw output from Bandit
-        """
-        command = ["bandit", "-r", str(app_path), "-f", "json", "-ll", "-i"]
-        return self._run_tool("Bandit", command, self._parse_bandit_output, app_path)
+        """Run Bandit security analysis."""
+        # Bandit needs to run from the directory containing the code usually
+        command = [cmd_name("bandit"), "-r", ".", "-f", "json", "-ll", "-ii"] # Use -ii for medium confidence
+        return self._run_tool("Bandit", command, self._parse_bandit_output, working_directory=app_path)
 
     def _parse_safety_output(self, output: str) -> List[BackendSecurityIssue]:
-        """
-        Parse Safety output into BackendSecurityIssue objects.
-        
-        Args:
-            output: Text output from Safety
-            
-        Returns:
-            List of BackendSecurityIssue objects
-        """
+        """Parse Safety CLI output into BackendSecurityIssue objects."""
         issues = []
-        
-        # Check if vulnerabilities were found
-        if "0 vulnerabilities reported" in output and "VULNERABILITIES FOUND" not in output:
-            return issues
-        
-        # Look for warnings about unpinned packages
-        unpinned_warnings = re.findall(r'Warning: (\d+) known vulnerabilities match the ([\w-]+) versions', output)
-        
-        for count, package in unpinned_warnings:
-            issues.append(BackendSecurityIssue(
-                filename="requirements.txt",
-                line_number=0,
-                issue_text=f"Unpinned package with potential vulnerabilities: {package}",
-                severity="MEDIUM",
-                confidence="MEDIUM",
-                issue_type="unpinned_dependency",
-                line_range=[0],
-                code=f"{package} (unpinned)",
-                tool="Safety",
-                fix_suggestion="Pin the dependency to a specific version to ensure security"
-            ))
-        
+        # Safety's output is primarily textual reports
+        # This parser focuses on detecting if *any* vulnerabilities were found,
+        # assuming detailed info is in the raw output.
+        # A more robust parser would use safety's JSON output if available (--json).
+
+        # Look for lines indicating found vulnerabilities
+        # Example: "Flask    1.1.2    <2.0.1    High Severity    ID: 39606"
+        vuln_pattern = re.compile(r"([\w-]+)\s+([\d.]+)\s+([<>=]+[\d.]+)\s+(High|Medium|Low) Severity\s+ID: (\d+)")
+        for line in output.splitlines():
+             match = vuln_pattern.search(line)
+             if match:
+                  package, installed_version, affected_versions, severity, vuln_id = match.groups()
+                  issues.append(BackendSecurityIssue(
+                        filename="requirements.txt / dependencies", # Indicate source
+                        line_number=0, # Line number not applicable
+                        issue_text=f"Vulnerable dependency: {package} ({installed_version}). Affected: {affected_versions}. Safety ID: {vuln_id}",
+                        severity=severity.upper(),
+                        confidence="HIGH", # If Safety reports it, confidence is high
+                        issue_type=f"safety_{vuln_id}",
+                        line_range=[0],
+                        code=f"{package}=={installed_version}",
+                        tool="Safety",
+                        fix_suggestion=f"Update {package} to a version not matching {affected_versions}."
+                  ))
+
+        # Check for warnings about unpinned dependencies (less precise)
+        unpinned_match = re.search(r"Warning: unpinned requirement '([\w-]+)'", output)
+        if unpinned_match:
+            package_name = unpinned_match.group(1)
+            # Check if we already reported a specific vulnerability for this package
+            if not any(issue.code.startswith(f"{package_name}==") for issue in issues):
+                issues.append(BackendSecurityIssue(
+                        filename="requirements.txt",
+                        line_number=0,
+                        issue_text=f"Unpinned dependency: {package_name}. May introduce vulnerabilities.",
+                        severity="MEDIUM",
+                        confidence="MEDIUM",
+                        issue_type="unpinned_dependency",
+                        line_range=[0],
+                        code=package_name,
+                        tool="Safety",
+                        fix_suggestion=f"Pin '{package_name}' to a specific, secure version (e.g., {package_name}==x.y.z)."
+                ))
+
         return issues
 
     def _run_safety(self, app_path: Path) -> Tuple[List[BackendSecurityIssue], str]:
-        """
-        Run Safety check on Python dependencies.
-        
-        Args:
-            app_path: Path to the application code
-            
-        Returns:
-            Tuple containing:
-            - List of security issues found
-            - Raw output from Safety
-        """
+        """Run Safety check on dependencies."""
         requirements_file = app_path / "requirements.txt"
         if not requirements_file.exists():
             return [], "No requirements.txt found"
-            
-        command = ["safety", "check", "-r", str(requirements_file)]
-        return self._run_tool("Safety", command, self._parse_safety_output, app_path)
+
+        # Using --stdin to avoid issues with temp files or large requirements
+        # Requires reading the file and passing content via stdin
+        command = [cmd_name("safety"), "check", "--stdin"]
+        issues = []
+        raw_output = "Failed to run Safety check."
+        try:
+             with open(requirements_file, 'r') as f:
+                  req_content = f.read()
+
+             logger.debug(f"Running Safety: {' '.join(command)}")
+             result = subprocess.run(
+                  command,
+                  input=req_content,
+                  capture_output=True,
+                  text=True,
+                  timeout=TOOL_TIMEOUT,
+                  check=False,
+                  cwd=app_path # Run in app dir context if needed
+             )
+             raw_output = f"STDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
+             if result.stdout:
+                  issues = self._parse_safety_output(result.stdout)
+                  logger.info(f"Safety found {len(issues)} issues.")
+
+        except FileNotFoundError:
+             logger.error(f"Safety command not found. Is it installed and in PATH? Command: {command[0]}")
+             raw_output = f"Safety command not found: {command[0]}"
+        except Exception as e:
+             logger.exception(f"An unexpected error occurred while running Safety: {e}")
+             raw_output = f"Unexpected error running Safety: {str(e)}"
+
+        return issues, raw_output
+
 
     def _parse_pylint_output(self, output: str) -> List[BackendSecurityIssue]:
-        """
-        Parse Pylint JSON output into BackendSecurityIssue objects.
-        
-        Args:
-            output: JSON output from Pylint
-            
-        Returns:
-            List of BackendSecurityIssue objects
-        """
+        """Parse Pylint JSON output into BackendSecurityIssue objects."""
         issues = []
-        app_path_str = str(self.base_path)
-        
         try:
             pylint_data = json.loads(output)
-            severity_map = {"E": "HIGH", "W": "MEDIUM", "C": "LOW", "R": "LOW"}
-            
-            for issue in pylint_data:
+            # Pylint severity: (C)onvention, (R)efactor, (W)arning, (E)rror, (F)atal
+            severity_map = {"F": "HIGH", "E": "HIGH", "W": "MEDIUM", "R": "LOW", "C": "LOW"}
+
+            for issue_data in pylint_data:
+                relative_filename = self._make_relative_path(issue_data["path"], self.base_path)
                 issues.append(BackendSecurityIssue(
-                    filename=issue["path"].replace(app_path_str, "").lstrip('/\\'),
-                    line_number=issue["line"],
-                    issue_text=issue["message"],
-                    severity=severity_map.get(issue["type"], "LOW"),
-                    confidence="MEDIUM",
-                    issue_type=f"pylint_{issue['symbol']}",
-                    line_range=[issue["line"]],
-                    code=issue.get("message-id", "No code available"),
+                    filename=relative_filename,
+                    line_number=issue_data["line"],
+                    issue_text=f"[{issue_data['symbol']} ({issue_data['message-id']})] {issue_data['message']}",
+                    severity=severity_map.get(issue_data["type"], "LOW"),
+                    confidence="MEDIUM", # Pylint issues are generally medium confidence for security relevance
+                    issue_type=f"pylint_{issue_data['symbol']}",
+                    line_range=[issue_data["line"]],
+                    code="N/A", # Pylint JSON format doesn't typically include code snippet
                     tool="Pylint",
-                    fix_suggestion=issue.get("suggestion", "No fix suggestion available")
+                    fix_suggestion=None # Pylint doesn't provide structured suggestions
                 ))
-        except json.JSONDecodeError:
-            logger.error("Failed to parse Pylint output as JSON")
-            
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse Pylint JSON: {e}")
         return issues
 
     def _run_pylint(self, app_path: Path) -> Tuple[List[BackendSecurityIssue], str]:
-        """
-        Run Pylint for code quality analysis.
-        
-        Args:
-            app_path: Path to the application code
-            
-        Returns:
-            Tuple containing:
-            - List of code quality issues found
-            - Raw output from Pylint
-        """
-        command = ["pylint", "--output-format=json", str(app_path)]
-        return self._run_tool("Pylint", command, self._parse_pylint_output, app_path)
+        """Run Pylint for code quality analysis."""
+        # Run pylint on all .py files found within the app_path
+        _, source_files = self._check_source_files(app_path)
+        if not source_files:
+            return [], "No Python source files found for Pylint."
+
+        # Pylint works better when run from the project root
+        command = [cmd_name("pylint"), "--output-format=json"] + [str(Path(f).relative_to(app_path)) for f in source_files]
+        # Run tool with working directory set to app_path
+        return self._run_tool("Pylint", command, self._parse_pylint_output, working_directory=app_path)
+
 
     def _parse_vulture_output(self, output: str) -> List[BackendSecurityIssue]:
-        """
-        Parse Vulture text output into BackendSecurityIssue objects.
-        
-        Args:
-            output: Text output from Vulture
-            
-        Returns:
-            List of BackendSecurityIssue objects
-        """
+        """Parse Vulture text output into BackendSecurityIssue objects."""
         issues = []
-        app_path_str = str(self.base_path)
-        
+        # Example: "path/to/file.py:123: unused function 'foobar' (60% confidence)"
+        line_pattern = re.compile(r"^(.*?):(\d+):\s*(.*?) \((\d+)% confidence\)")
+
         for line in output.splitlines():
-            # Skip empty lines
             if not line.strip():
                 continue
-                
-            try:
-                # Parse line like: "path/file.py:123: unused function 'xyz' (90% confidence)"
-                file_part, rest = line.split(':', 1)
-                line_num, desc = rest.split(':', 1)
-                
-                # Extract a confidence value if present
-                confidence = "MEDIUM"
-                if "confidence" in desc:
-                    conf_match = re.search(r'\((\d+)% confidence\)', desc)
-                    if conf_match:
-                        conf_value = int(conf_match.group(1))
-                        if conf_value >= 80:
-                            confidence = "HIGH"
-                        elif conf_value < 50:
-                            confidence = "LOW"
-                
+            match = line_pattern.match(line)
+            if match:
+                file_path, line_num_str, desc, conf_str = match.groups()
+                line_num = int(line_num_str)
+                confidence_val = int(conf_str)
+
+                if confidence_val >= 80:
+                    confidence = "HIGH"
+                elif confidence_val >= 50:
+                    confidence = "MEDIUM"
+                else:
+                    confidence = "LOW"
+
+                relative_filename = self._make_relative_path(file_path, self.base_path)
                 issues.append(BackendSecurityIssue(
-                    filename=file_part.replace(app_path_str, "").lstrip('/\\'),
-                    line_number=int(line_num.strip()),
-                    issue_text=desc.strip(),
-                    severity="LOW",
+                    filename=relative_filename,
+                    line_number=line_num,
+                    issue_text=f"Dead Code: {desc.strip()}",
+                    severity="LOW", # Dead code is generally low severity impact
                     confidence=confidence,
                     issue_type="dead_code",
-                    line_range=[int(line_num.strip())],
-                    code="N/A",
+                    line_range=[line_num],
+                    code="N/A", # Vulture doesn't provide code snippet easily
                     tool="Vulture",
-                    fix_suggestion="Remove unused code to reduce attack surface"
+                    fix_suggestion="Verify if code is unused and remove it to reduce clutter and potential attack surface."
                 ))
-            except Exception as e:
-                logger.debug(f"Could not parse vulture line: {line}. Error: {e}")
-                continue
-                
+            else:
+                logger.debug(f"Could not parse Vulture line: {line}")
+
         return issues
 
     def _run_vulture(self, app_path: Path) -> Tuple[List[BackendSecurityIssue], str]:
-        """
-        Run Vulture to detect dead code.
-        
-        Args:
-            app_path: Path to the application code
-            
-        Returns:
-            Tuple containing:
-            - List of dead code issues found
-            - Raw output from Vulture
-        """
-        command = ["vulture", str(app_path)]
-        return self._run_tool("Vulture", command, self._parse_vulture_output, app_path)
+        """Run Vulture to detect dead code."""
+        # Vulture needs path(s) to scan
+        command = [cmd_name("vulture"), str(app_path), "--min-confidence", "50"] # Scan path directly, set minimum confidence
+        return self._run_tool("Vulture", command, self._parse_vulture_output)
+
 
     def run_security_analysis(
-        self, 
-        model: str, 
-        app_num: int, 
+        self,
+        model: str,
+        app_num: int,
         use_all_tools: bool = False
     ) -> Tuple[List[BackendSecurityIssue], Dict[str, str], Dict[str, str]]:
         """
-        Run backend security analysis.
-        
+        Run backend security analysis on a specific application path.
+
         Args:
-            model: Model identifier
-            app_num: Application number
-            use_all_tools: Whether to run all tools or just quick scan (default: False)
+            model: Model identifier (e.g., "ModelA").
+            app_num: Application number (e.g., 1).
+            use_all_tools: If True, run all configured tools; otherwise, run defaults.
 
         Returns:
             Tuple containing:
-            - List of security issues found, sorted by severity and confidence
-            - Dictionary of tool status messages
-            - Dictionary of raw tool outputs
-            
+            - List of BackendSecurityIssue objects, sorted by severity/confidence.
+            - Dictionary mapping tool names to status messages (e.g., "✅ No issues found", "❌ Error").
+            - Dictionary mapping tool names to their raw output strings.
+
         Raises:
-            ValueError: If no Python files are found in the specified path
+            ValueError: If the target application path does not exist or contains no Python files.
         """
         app_path = self.base_path / f"{model}/app{app_num}/backend"
+        logger.info(f"Starting backend security analysis for: {app_path}")
+
+        if not app_path.is_dir():
+             raise ValueError(f"Application backend path does not exist: {app_path}")
+
         has_files, _ = self._check_source_files(app_path)
-        
         if not has_files:
-            raise ValueError(f"No Python files found in {app_path}")
+             # Allow proceeding if only Safety check is needed (doesn't require .py files)
+             if not (self.all_tools if use_all_tools else self.default_tools) == ['safety']:
+                 raise ValueError(f"No Python source files found in {app_path}, cannot run most tools.")
+             else:
+                 logger.warning(f"No Python source files in {app_path}, only running Safety check.")
+
 
         tools_to_run = self.all_tools if use_all_tools else self.default_tools
         all_issues = []
         tool_status = {}
         tool_outputs = {}
 
-        # Run tools in parallel
+        logger.info(f"Running tools: {', '.join(tools_to_run)}")
+
+        # Use ThreadPoolExecutor for I/O bound tasks (running external processes)
         with concurrent.futures.ThreadPoolExecutor(max_workers=len(tools_to_run)) as executor:
             future_to_tool = {
-                executor.submit(self.tool_functions[tool], app_path): tool
-                for tool in tools_to_run if tool in self.tool_functions
+                executor.submit(self.tool_runners[tool], app_path): tool
+                for tool in tools_to_run if tool in self.tool_runners
             }
-            
+
             for future in concurrent.futures.as_completed(future_to_tool):
                 tool = future_to_tool[future]
                 try:
                     issues, output = future.result()
                     all_issues.extend(issues)
                     tool_outputs[tool] = output
-                    tool_status[tool] = "✅ No issues found" if not issues else f"⚠️ Found {len(issues)} issues"
+                    if "error" in output.lower() or "failed" in output.lower() or "timed out" in output.lower() :
+                         # Basic check in raw output for error indication
+                         if not issues: # If error produced no issues, mark as error
+                              tool_status[tool] = f"⚠️ Error reported, check raw output."
+                         else: # If error but issues found, mark as warning
+                             tool_status[tool] = f"⚠️ Found {len(issues)} issues (errors reported)."
+                    elif not issues:
+                        tool_status[tool] = "✅ No issues found"
+                    else:
+                         tool_status[tool] = f"ℹ️ Found {len(issues)} issues"
                 except Exception as e:
-                    tool_status[tool] = f"❌ Error: {str(e)}"
-                    tool_outputs[tool] = f"Error: {str(e)}"
+                     # Capture errors during future processing itself
+                    logger.exception(f"Error processing result for tool {tool}: {e}")
+                    tool_status[tool] = f"❌ Error processing results: {str(e)}"
+                    tool_outputs[tool] = f"Error processing results: {str(e)}"
 
-        # Mark tools not run
+        # Mark tools that were not run (e.g., in quick scan mode)
         for tool in self.all_tools:
             if tool not in tool_status:
-                tool_status[tool] = "⏸️ Not run in quick scan mode"
+                tool_status[tool] = "⚪ Skipped (quick scan)" if not use_all_tools else "❓ Not configured?"
 
-        # Sort issues by severity, confidence, filename, and line number
+        # Sort issues: Severity (High->Low) -> Confidence (High->Low) -> Filename -> Line number
         sorted_issues = sorted(
             all_issues,
-            key=lambda x: (
-                SEVERITY_ORDER.get(x.severity, 3),
-                CONFIDENCE_ORDER.get(x.confidence, 3),
-                x.filename,
-                x.line_number
+            key=lambda issue: (
+                SEVERITY_ORDER.get(issue.severity, DEFAULT_SEVERITY_LEVEL),
+                CONFIDENCE_ORDER.get(issue.confidence, DEFAULT_SEVERITY_LEVEL),
+                issue.filename,
+                issue.line_number
             )
         )
-
+        logger.info(f"Backend analysis complete for {app_path}. Total issues: {len(sorted_issues)}")
         return sorted_issues, tool_status, tool_outputs
+
 
     def get_analysis_summary(self, issues: List[BackendSecurityIssue]) -> Dict[str, Any]:
         """
         Generate summary statistics for the analysis results.
-        
+
         Args:
-            issues: List of security issues found
-            
+            issues: List of BackendSecurityIssue objects found.
+
         Returns:
-            Dictionary containing summary statistics including:
-            - Total number of issues
-            - Counts by severity
-            - Counts by confidence
-            - Number of affected files
-            - Counts by issue type
-            - Counts by tool
-            - Scan timestamp
+            Dictionary containing summary statistics (counts by severity,
+            confidence, affected files, issue types, tools, timestamp).
         """
-        # Default summary structure for empty results
         summary = {
-            "total_issues": 0,
+            "total_issues": len(issues),
             "severity_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
             "confidence_counts": {"HIGH": 0, "MEDIUM": 0, "LOW": 0},
-            "files_affected": 0,
+            "files_affected": len({issue.filename for issue in issues}),
             "issue_types": {},
             "tool_counts": {},
-            "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "scan_time": datetime.now().isoformat() # Use ISO format for clarity
         }
-        
-        if not issues:
-            return summary
 
-        # Update summary with actual counts
-        summary["total_issues"] = len(issues)
-        summary["files_affected"] = len({issue.filename for issue in issues})
-
-        # Count issues by various attributes
         for issue in issues:
-            summary["severity_counts"][issue.severity] += 1
-            summary["confidence_counts"][issue.confidence] += 1
+            summary["severity_counts"][issue.severity] = summary["severity_counts"].get(issue.severity, 0) + 1
+            summary["confidence_counts"][issue.confidence] = summary["confidence_counts"].get(issue.confidence, 0) + 1
             summary["issue_types"][issue.issue_type] = summary["issue_types"].get(issue.issue_type, 0) + 1
             summary["tool_counts"][issue.tool] = summary["tool_counts"].get(issue.tool, 0) + 1
+
+        # Ensure all defined severity/confidence levels are present in the summary keys
+        for sev in SEVERITY_ORDER:
+            if sev not in summary["severity_counts"]: summary["severity_counts"][sev] = 0
+        for conf in CONFIDENCE_ORDER:
+            if conf not in summary["confidence_counts"]: summary["confidence_counts"][conf] = 0
 
         return summary
