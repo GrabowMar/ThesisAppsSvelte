@@ -1,0 +1,34 @@
+{
+  "total_requests": 33,
+  "total_failures": 0,
+  "avg_response_time": 3.6134939392936896,
+  "median_response_time": 3,
+  "requests_per_sec": 3.3,
+  "start_time": "2025-04-28 19:52:23",
+  "end_time": "2025-04-28 19:52:33",
+  "duration": 10,
+  "endpoints": [
+    {
+      "name": "/",
+      "method": "GET",
+      "num_requests": 33,
+      "num_failures": 0,
+      "median_response_time": 3,
+      "avg_response_time": 3.6134939392936896,
+      "min_response_time": 2.353299998503644,
+      "max_response_time": 14.549199993780348,
+      "avg_content_length": 626.0,
+      "current_rps": 2.75,
+      "current_fail_per_sec": 0.0,
+      "percentiles": {}
+    }
+  ],
+  "errors": [],
+  "percentile_95": 6,
+  "percentile_99": 15,
+  "user_count": 10,
+  "spawn_rate": 1,
+  "test_name": "Llama_5503_20250428_195223",
+  "host": "http://localhost:5503",
+  "graph_urls": []
+}

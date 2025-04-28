@@ -17,6 +17,8 @@ from enum import Enum # Added Enum import
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from zap_scanner import CodeContext, ZapVulnerability
+
 # =============================================================================
 # Third-Party Imports
 # =============================================================================
@@ -1396,302 +1398,398 @@ def analyze_single_file():
 # =============================================================================
 # Performance Testing Routes (/performance)
 # =============================================================================
+
+
+# routes.py (Modified Snippets)
+
+from flask import (
+    Blueprint, render_template, request, jsonify, current_app,
+    flash, url_for, send_from_directory
+)
+from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
+from pathlib import Path
+import json
+from datetime import datetime
+import shutil
+import http # For status codes
+import traceback # For logging exceptions
+
+# Assuming your performance tester instance is initialized in app factory
+# from .services import performance_tester # Or however you access it
+
+# Assuming ajax_compatible decorator handles JSON errors/responses
+# from .decorators import ajax_compatible
+
+# Example setup (adjust based on your actual app structure)
+performance_bp = Blueprint('performance', __name__, url_prefix='/performance')
+# Define logger
+import logging
+perf_logger = logging.getLogger(__name__ + ".performance")
+
+# Define ajax_compatible decorator stub if not already defined
+from functools import wraps
+def ajax_compatible(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        try:
+            result = f(*args, **kwargs)
+            if isinstance(result, (dict, list)):
+                 # Assume success if returning dict/list without explicit status
+                 if isinstance(result, dict) and 'status' in result:
+                      return jsonify(result)
+                 else:
+                      return jsonify({"status": "success", "data": result})
+            return result # Allow returning rendered templates, redirects etc.
+        except BadRequest as e:
+            perf_logger.warning(f"Bad request: {e.description}")
+            return jsonify({"status": "error", "error": e.description}), e.code
+        except InternalServerError as e:
+            perf_logger.error(f"Internal server error: {e.description}")
+            perf_logger.error(traceback.format_exc())
+            return jsonify({"status": "error", "error": e.description or "Internal Server Error"}), e.code
+        except NotFound as e:
+             perf_logger.warning(f"Resource not found: {e.description}")
+             return jsonify({"status": "error", "error": e.description or "Not Found"}), e.code
+        except Exception as e:
+            perf_logger.exception(f"Unhandled exception in {f.__name__}")
+            return jsonify({"status": "error", "error": "An unexpected error occurred."}), 500
+    return decorated_function
+
+# Helper function to get tester instance
+def get_tester():
+     if not hasattr(current_app, 'performance_tester'):
+          raise InternalServerError("Performance tester service is not available.")
+     return current_app.performance_tester
+
+# Helper to get base directory (assuming it's set in app config)
+def get_base_dir():
+     return Path(current_app.config.get("BASE_DIR", "."))
+
+# Helper to derive app_num (adjust logic as needed)
+def derive_app_num(port: int) -> Optional[int]:
+    try:
+        BASE_FRONTEND_PORT = current_app.config.get("BASE_FRONTEND_PORT", 5501)
+        PORTS_PER_APP = current_app.config.get("PORTS_PER_APP", 2)
+        port_offset = port - BASE_FRONTEND_PORT
+        if port_offset >= 0:
+            app_num = (port_offset // PORTS_PER_APP) + 1
+            perf_logger.debug(f"Derived app_num={app_num} from port={port}")
+            return app_num
+        else:
+             perf_logger.warning(f"Port {port} is below BASE_FRONTEND_PORT {BASE_FRONTEND_PORT}, cannot derive app_num.")
+             return None
+    except Exception as e:
+        perf_logger.warning(f"Could not derive app_num from port {port}: {e}")
+        return None
+
 @performance_bp.route("/<string:model>/<int:port>", methods=["GET", "POST"])
-@ajax_compatible # Handles response formatting / errors
+@ajax_compatible
 def performance_test(model: str, port: int):
     """
-    Display performance test page (GET) or run a test (POST).
+    Display performance test page (GET) or run a test using the library (POST).
     """
-    if not hasattr(current_app, 'performance_tester'):
-        msg = "Performance tester service is not available."
-        perf_logger.error(msg)
-        if request.method == "POST":
-            raise RuntimeError(msg)
-        else:
-            flash(msg, "error")
-            return render_template("performance_test.html", model=model, port=port, error=msg)
-
-    tester = current_app.performance_tester
-    base_dir = Path(current_app.config.get("BASE_DIR", "."))
-    output_dir = base_dir / "performance_reports" # Report dir relative to base
+    tester = get_tester() # Will raise InternalServerError if not found
+    base_dir = get_base_dir()
+    app_num = derive_app_num(port)
 
     if request.method == "POST":
-        perf_logger.info(f"Starting performance test POST request for {model} on port {port}")
-        try:
-            data = request.get_json()
-            if not data: raise BadRequest("Missing JSON request body.")
+        perf_logger.info(f"Starting performance test POST request for {model} on port {port} using library method.")
+        data = request.get_json()
+        if not data: raise BadRequest("Missing JSON request body.")
 
+        try:
             num_users = int(data.get("num_users", 10))
-            duration = int(data.get("duration", 30))
+            duration = int(data.get("duration", 30)) # Duration in seconds for library call
             spawn_rate = int(data.get("spawn_rate", 1))
-            endpoints_raw = data.get("endpoints", ["/"]) # Default to root path
+            endpoints_raw = data.get("endpoints", [{"path": "/", "method": "GET", "weight": 1}]) # Default to root path GET
 
             if not (num_users > 0 and duration > 0 and spawn_rate > 0):
                 raise BadRequest("Number of users, duration, and spawn rate must be positive integers.")
             if not endpoints_raw:
-                raise BadRequest("At least one endpoint path must be provided.")
+                raise BadRequest("At least one endpoint configuration must be provided.")
 
             perf_logger.info(
                 f"Test parameters: users={num_users}, duration={duration}s, "
-                f"spawn_rate={spawn_rate}, raw_endpoints={endpoints_raw}"
+                f"spawn_rate={spawn_rate}, endpoints={endpoints_raw}"
             )
 
             formatted_endpoints = []
             for ep in endpoints_raw:
-                if isinstance(ep, str): formatted_endpoints.append({"path": ep, "method": "GET", "weight": 1})
-                elif isinstance(ep, dict) and "path" in ep: formatted_endpoints.append(ep)
-                else: raise BadRequest(f"Invalid endpoint format: {ep}")
+                if isinstance(ep, dict) and "path" in ep:
+                     # Basic validation
+                     ep['method'] = ep.get('method', 'GET').upper()
+                     ep['weight'] = int(ep.get('weight', 1))
+                     if ep['weight'] < 1: ep['weight'] = 1
+                     formatted_endpoints.append(ep)
+                else: raise BadRequest(f"Invalid endpoint format: {ep}. Expecting list of dicts with 'path'.")
 
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            test_name = f"{model}_{port}_{timestamp}"
+            test_base_name = f"{model}_{port}" # Timestamp added by run_test_library
             host_url = f"http://localhost:{port}" # Assuming localhost for now
 
-            perf_logger.info(f"Running performance test '{test_name}' against {host_url}")
-            result_data = tester.run_test_cli(
-                test_name=test_name, host=host_url, endpoints=formatted_endpoints,
-                user_count=num_users, spawn_rate=spawn_rate, run_time=f"{duration}s",
-                html_report=True, output_dir=output_dir # Pass output dir to tester
+            perf_logger.info(f"Running library performance test '{test_base_name}' against {host_url}")
+
+            # *** Call the library method ***
+            result_data = tester.run_test_library(
+                test_name=test_base_name, # Base name, timestamp added internally
+                host=host_url,
+                endpoints=formatted_endpoints,
+                user_count=num_users,
+                spawn_rate=spawn_rate,
+                run_time=duration, # Pass duration in seconds
+                generate_graphs=True, # Generate graphs and include URLs
+                model=model,
+                app_num=app_num
             )
 
-            perf_logger.info(f"Test '{test_name}' completed.")
-            report_path_rel = None
-            try:
-                # Construct expected report path based on tester's convention
-                test_output_dir = output_dir / test_name
-                report_files = list(test_output_dir.glob("*_report.html")) # Assumes tester names it this way
-                if report_files:
-                    report_path = report_files[0]
-                    # Make path relative to Flask static folder (assuming base_dir is project root)
-                    static_base = base_dir # Adjust if static files are elsewhere
-                    report_path_rel = report_path.relative_to(static_base)
-                    perf_logger.info(f"Report generated: {report_path_rel}")
-            except Exception as report_err:
-                perf_logger.warning(f"Could not determine report path for {test_name}: {report_err}")
+            perf_logger.info(f"Test '{result_data.test_name}' completed.")
 
+            # Return the result data directly
             return {
-                "status": "success", "message": f"Test '{test_name}' completed.",
-                "data": result_data, # Raw results from tester
-                "report_url": url_for('static', filename=str(report_path_rel).replace('\\', '/')) if report_path_rel else None
+                "status": "success",
+                "message": f"Test '{result_data.test_name}' completed.",
+                "data": result_data.to_dict() # Send the full result object as dict
             }
 
         except BadRequest as e:
-            perf_logger.warning(f"Bad request for performance test: {e}")
-            raise e
+            raise e # Re-raise for decorator handling
+        except ValueError as e: # Catch specific errors like invalid int conversion
+            perf_logger.warning(f"Invalid input value: {e}")
+            raise BadRequest(f"Invalid input value: {e}")
         except Exception as e:
             perf_logger.exception(f"Performance test execution error for {model} on port {port}: {e}")
             raise InternalServerError("Test execution failed") from e
     else:
         # GET request
         perf_logger.info(f"Rendering performance test form for {model} on port {port}")
-        return render_template("performance_test.html", model=model, port=port)
+        # You might want to load last saved result here if available
+        last_result_data = None
+        if app_num:
+            try:
+                 # Check for consolidated results file
+                 app_dir = base_dir / "performance_reports" / model / f"app{app_num}"
+                 result_file = app_dir / ".locust_result.json"
+                 if result_file.exists():
+                      with open(result_file, "r") as f:
+                           last_result_data = json.load(f)
+                      perf_logger.info(f"Loaded last result from {result_file}")
+            except Exception as load_err:
+                 perf_logger.warning(f"Could not load last result for {model}/app{app_num}: {load_err}")
+
+        return render_template("performance_test.html", model=model, port=port, last_result=last_result_data)
 
 
+# Stop test route remains largely the same (needs actual implementation)
 @performance_bp.route("/<string:model>/<int:port>/stop", methods=["POST"])
-@ajax_compatible # Handles JSON response / errors
+@ajax_compatible
 def stop_performance_test(model: str, port: int):
-    """
-    Stop a running performance test (Placeholder).
-    """
+    """ Stop a running performance test (Needs implementation). """
     perf_logger.info(f"Request to stop performance test for {model} on port {port}")
-    try:
-        # TODO: Implement actual test stopping logic
-        perf_logger.warning("Performance test stopping is not yet implemented.")
-        return {
-            "status": "success",
-            "message": "Test stop request received (implementation pending)."
-        }
-    except Exception as e:
-        perf_logger.exception(f"Error processing stop performance test request for {model} on port {port}: {e}")
-        raise InternalServerError("Failed to process stop request.") from e
+    # TODO: Need mechanism to find and stop the correct Locust runner instance/process.
+    # This is non-trivial, especially if tests run in background threads/processes.
+    # Might involve storing runner references or using process IDs.
+    perf_logger.warning("Performance test stopping is not yet implemented.")
+    return {"status": "warning", "message": "Test stopping not implemented."}
 
 
 @performance_bp.route("/<string:model>/<int:port>/reports", methods=["GET"])
-@ajax_compatible # Handles JSON response / errors
+@ajax_compatible
 def list_performance_reports(model: str, port: int):
     """
-    List available performance test reports for a specific model/port.
+    List available performance test artifacts (directories containing graphs/results).
     """
-    perf_logger.info(f"Listing performance reports for {model} on port {port}")
+    perf_logger.info(f"Listing performance report artifacts for {model} on port {port}")
     reports = []
-    try:
-        base_dir = Path(current_app.config.get("BASE_DIR", "."))
-        report_base_dir = base_dir / "performance_reports"
-        if not report_base_dir.is_dir():
-            perf_logger.debug(f"Report directory does not exist: {report_base_dir}")
-            return {"reports": []}
+    base_dir = get_base_dir()
+    report_base_dir = base_dir / "performance_reports"
+    if not report_base_dir.is_dir():
+        perf_logger.debug(f"Report directory does not exist: {report_base_dir}")
+        return {"reports": []}
 
-        test_name_prefix = f"{model}_{port}_"
+    test_name_prefix = f"{model}_{port}_"
+    tester = get_tester() # Need static_url_path from tester
 
-        for test_dir in report_base_dir.iterdir():
-            if test_dir.is_dir() and test_dir.name.startswith(test_name_prefix):
-                report_id = test_dir.name
-                timestamp_str = report_id.replace(test_name_prefix, "")
-                formatted_time = "Unknown"
-                try:
-                    dt_obj = datetime.strptime(timestamp_str, "%Y%m%d_%H%M%S")
-                    formatted_time = dt_obj.strftime("%Y-%m-%d %H:%M:%S")
-                except ValueError:
-                    perf_logger.warning(f"Could not parse timestamp from report directory: {report_id}")
+    for test_dir in report_base_dir.iterdir():
+        if test_dir.is_dir() and test_dir.name.startswith(test_name_prefix):
+            report_id = test_dir.name # e.g., model_port_YYYYMMDD_HHMMSS
+            timestamp_str = report_id.replace(test_name_prefix, "")
+            formatted_time = "Unknown Time"
+            try:
+                dt_obj = datetime.strptime(timestamp_str, "%Y%m%d_%H%M%S")
+                formatted_time = dt_obj.strftime("%Y-%m-%d %H:%M:%S")
+            except ValueError: pass # Ignore if parsing fails
 
-                html_report_path = next(test_dir.glob("*_report.html"), None)
-                report_url = None
-                if html_report_path:
-                    # URL relative to static folder
-                    static_base = base_dir # Assuming reports are served from under static/performance_reports
-                    relative_path = html_report_path.relative_to(static_base)
-                    report_url = url_for('static', filename=str(relative_path).replace('\\', '/'))
+            graphs = []
+            for graph_file in test_dir.glob("*.png"):
+                 # Construct URL relative to static path
+                 relative_path = graph_file.relative_to(base_dir) # Relative to Flask's static root
+                 graph_url = url_for('static', filename=relative_path.as_posix())
+                 # Alternative using tester's static_url_path
+                 # graph_url = f"/{tester.static_url_path}/{graph_file.relative_to(tester.output_dir).as_posix()}"
 
-                graphs = []
-                for graph_file in test_dir.glob("*.png"):
-                    graph_rel_path = graph_file.relative_to(static_base)
-                    graphs.append({
-                        "name": graph_file.stem.replace("_", " ").title(),
-                        "url": url_for('static', filename=str(graph_rel_path).replace('\\', '/'))
-                    })
+                 graphs.append({
+                     "name": graph_file.stem.replace("_", " ").title(),
+                     "url": graph_url
+                 })
 
-                reports.append({
-                    "id": report_id, "timestamp_str": timestamp_str, "created": formatted_time,
-                    "report_url": report_url, "graphs": graphs
-                })
+            # Check for the consolidated JSON result file
+            consolidated_json_path = None
+            app_num = derive_app_num(port)
+            if app_num:
+                 app_specific_dir = report_base_dir / model / f"app{app_num}"
+                 json_file = app_specific_dir / ".locust_result.json"
+                 if json_file.exists():
+                      consolidated_json_path = str(json_file) # Store path for potential loading
 
-        reports.sort(key=lambda x: x.get("timestamp_str", ""), reverse=True)
-        perf_logger.info(f"Found {len(reports)} performance reports for {model} on port {port}")
-        return {"reports": reports}
-
-    except Exception as e:
-        perf_logger.exception(f"Error listing performance reports for {model} on port {port}: {e}")
-        raise InternalServerError("Failed to list reports.") from e
-
-
-@performance_bp.route("/<string:model>/<int:port>/reports/<path:report_id>", methods=["GET"])
-def view_performance_report(model: str, port: int, report_id: str):
-    """
-    View a specific performance test report HTML page.
-    """
-    perf_logger.info(f"Viewing performance report {report_id} for {model} on port {port}")
-    try:
-        base_dir = Path(current_app.config.get("BASE_DIR", "."))
-        report_dir = base_dir / "performance_reports" / report_id
-
-        expected_prefix = f"{model}_{port}_"
-        if not report_id.startswith(expected_prefix) or ".." in report_id or "/" in report_id or "\\" in report_id:
-            perf_logger.warning(f"Invalid or potentially unsafe report ID requested: {report_id}")
-            return render_template("404.html", message="Invalid Report ID"), http.HTTPStatus.BAD_REQUEST
-
-        if not report_dir.is_dir():
-            perf_logger.warning(f"Report directory not found: {report_dir}")
-            return render_template("404.html", message="Report not found"), http.HTTPStatus.NOT_FOUND
-
-        html_report_path = next(report_dir.glob("*_report.html"), None)
-        if not html_report_path or not html_report_path.is_file():
-            perf_logger.warning(f"No HTML report file found in directory: {report_dir}")
-            return render_template("404.html", message="Report file not found"), http.HTTPStatus.NOT_FOUND
-
-        perf_logger.debug(f"Loading report content from: {html_report_path}")
-        with open(html_report_path, "r", encoding='utf-8', errors='replace') as f:
-            report_content = f.read()
-
-        graphs = []
-        static_base = base_dir # Assuming reports are served from under static/performance_reports
-        for graph_file in report_dir.glob("*.png"):
-            graph_rel_path = graph_file.relative_to(static_base)
-            graphs.append({
-                "name": graph_file.stem.replace("_", " ").title(),
-                "url": url_for('static', filename=str(graph_rel_path).replace('\\', '/'))
+            reports.append({
+                "id": report_id,
+                "timestamp_str": timestamp_str,
+                "created": formatted_time,
+                "graphs": graphs,
+                "has_consolidated_json": consolidated_json_path is not None,
+                # Add URL to view consolidated data if needed
+                "results_url": url_for('.get_performance_results', model=model, port=port, report_id=report_id) if consolidated_json_path else None
             })
 
-        perf_logger.info(f"Rendering report {report_id} with {len(graphs)} graphs.")
-        return render_template(
-            "performance_report_viewer.html",
-            model=model, port=port, report_id=report_id,
-            report_content=report_content, graphs=graphs
-        )
-    except Exception as e:
-        perf_logger.exception(f"Error viewing performance report {report_id}: {e}")
-        return render_template("500.html", error=f"Failed to load report: {e}"), http.HTTPStatus.INTERNAL_SERVER_ERROR
+    reports.sort(key=lambda x: x.get("timestamp_str", ""), reverse=True)
+    perf_logger.info(f"Found {len(reports)} performance report directories for {model} on port {port}")
+    return {"reports": reports} # Return list directly for ajax_compatible
 
 
+# /reports/<report_id> GET - Might be removed or repurposed
+# Option 1: Remove if direct viewing isn't needed
+# Option 2: Repurpose to load and display the .locust_result.json in a template
+
+@performance_bp.route("/<string:model>/<int:port>/reports/<path:report_id>", methods=["GET"])
+def view_performance_report_from_json(model: str, port: int, report_id: str):
+     """
+     Loads saved JSON results and renders them in a view template.
+     """
+     perf_logger.info(f"Attempting to view saved report {report_id} from JSON")
+     base_dir = get_base_dir()
+     report_dir = base_dir / "performance_reports" / report_id # This is the directory with graphs
+
+     # --- Security Check ---
+     expected_prefix = f"{model}_{port}_"
+     # Basic path safety checks
+     if not report_id.startswith(expected_prefix) or ".." in report_id or report_id.startswith('/') or report_id.startswith('\\'):
+          perf_logger.warning(f"Invalid or potentially unsafe report ID requested for viewing: {report_id}")
+          return render_template("404.html", message="Invalid Report ID"), http.HTTPStatus.BAD_REQUEST
+
+     # Find the corresponding consolidated JSON file
+     result_data = None
+     json_file_path = None
+     app_num = derive_app_num(port)
+     if app_num:
+          app_specific_dir = base_dir / "performance_reports" / model / f"app{app_num}"
+          json_file = app_specific_dir / ".locust_result.json"
+          # Check if this JSON corresponds to the requested report_id (e.g., by timestamp)
+          if json_file.exists():
+               try:
+                    with open(json_file, "r") as f:
+                         loaded_data = json.load(f)
+                    # Match based on test_name stored in the JSON
+                    if loaded_data.get("test_name") == report_id:
+                         result_data = loaded_data
+                         json_file_path = json_file
+                         perf_logger.info(f"Found matching consolidated JSON: {json_file}")
+                    else:
+                         perf_logger.warning(f"Consolidated JSON {json_file} does not match test_name {report_id}")
+               except Exception as e:
+                    perf_logger.error(f"Error loading or checking consolidated JSON {json_file}: {e}")
+
+     if not result_data:
+          perf_logger.warning(f"No matching consolidated result JSON found for report ID {report_id}")
+          # Optionally, try finding a JSON within the report_id directory itself if saved there
+          # fallback_json = report_dir / f"{report_id}_results.json" ...
+
+     if not result_data:
+         return render_template("404.html", message=f"Result data for report {report_id} not found."), http.HTTPStatus.NOT_FOUND
+
+
+     # If data found, render it using a template similar to the main one
+     # Ensure the template can handle receiving 'last_result' data
+     return render_template("performance_test.html", # Reuse the main template
+                           model=model,
+                           port=port,
+                           report_id=report_id, # Pass report_id for context
+                           last_result=result_data, # Pass loaded data
+                           is_viewing_report=True) # Flag for template logic
+
+
+# /results/<report_id> GET - Now primarily loads the consolidated JSON
 @performance_bp.route("/<string:model>/<int:port>/results/<path:report_id>", methods=["GET"])
-@ajax_compatible # Handles JSON response / errors
+@ajax_compatible
 def get_performance_results(model: str, port: int, report_id: str):
     """
-    Get raw JSON or parsed CSV results for a specific performance test run.
+    Get raw JSON results from the saved .locust_result.json file.
     """
-    perf_logger.info(f"Getting raw performance results data for {report_id}")
-    try:
-        base_dir = Path(current_app.config.get("BASE_DIR", "."))
-        report_dir = base_dir / "performance_reports" / report_id
+    perf_logger.info(f"Getting raw performance results data for {report_id} from consolidated JSON")
+    base_dir = get_base_dir()
 
-        expected_prefix = f"{model}_{port}_"
-        if not report_id.startswith(expected_prefix) or ".." in report_id or "/" in report_id or "\\" in report_id:
-            perf_logger.warning(f"Invalid or potentially unsafe report ID for results: {report_id}")
-            raise BadRequest("Invalid Report ID")
+    # --- Security Check ---
+    expected_prefix = f"{model}_{port}_"
+    if not report_id.startswith(expected_prefix) or ".." in report_id or report_id.startswith('/') or report_id.startswith('\\'):
+        perf_logger.warning(f"Invalid or potentially unsafe report ID for results: {report_id}")
+        raise BadRequest("Invalid Report ID")
 
-        if not report_dir.is_dir():
-            perf_logger.warning(f"Results directory not found: {report_dir}")
-            raise FileNotFoundError("Report not found")
+    json_file_path = None
+    app_num = derive_app_num(port)
+    if app_num:
+        app_specific_dir = base_dir / "performance_reports" / model / f"app{app_num}"
+        json_file = app_specific_dir / ".locust_result.json"
+        # Check if this file matches the report_id based on its content
+        if json_file.exists():
+             try:
+                  with open(json_file, "r") as f:
+                       data = json.load(f)
+                  if data.get("test_name") == report_id:
+                       json_file_path = json_file
+                       perf_logger.debug(f"Found matching consolidated JSON for {report_id}: {json_file_path}")
+                       return data # Return the loaded data directly
+                  else:
+                      perf_logger.warning(f"Consolidated JSON {json_file} test_name does not match {report_id}")
+             except Exception as e:
+                  perf_logger.error(f"Error reading or checking consolidated JSON {json_file}: {e}")
+                  # Continue searching if error occurs
 
-        json_file = next(report_dir.glob("*_results.json"), None)
-        if json_file and json_file.is_file():
-            perf_logger.debug(f"Loading JSON results from: {json_file}")
-            with open(json_file, "r", encoding='utf-8', errors='replace') as f:
-                return json.load(f)
-
-        stats_file = next(report_dir.glob("*_stats.csv"), None)
-        if stats_file and stats_file.is_file():
-            perf_logger.warning(f"No JSON results file found for {report_id}. CSV parsing not implemented.")
-            static_base = base_dir # Assuming reports are served from under static/performance_reports
-            csv_rel_path = stats_file.relative_to(static_base)
-            return {
-                "status": "partial", "message": "Raw JSON results not found. CSV data available.",
-                "csv_url": url_for('static', filename=str(csv_rel_path).replace('\\', '/'))
-            }
-
-        perf_logger.warning(f"No suitable result data file (JSON or CSV) found in directory: {report_dir}")
-        raise FileNotFoundError("No result data found for this report")
-
-    except BadRequest as e: raise e
-    except FileNotFoundError as e: return APIResponse(success=False, error=str(e), code=http.HTTPStatus.NOT_FOUND)
-    except json.JSONDecodeError as e:
-        perf_logger.exception(f"Error decoding JSON results for {report_id}: {e}")
-        raise InternalServerError(f"Failed to parse result data: {e}") from e
-    except Exception as e:
-        perf_logger.exception(f"Error getting performance results for {report_id}: {e}")
-        raise InternalServerError("Failed to retrieve performance results.") from e
+    # If not found in consolidated location or mismatch, raise NotFound
+    if not json_file_path:
+         perf_logger.warning(f"No matching consolidated JSON result file found for report ID: {report_id}")
+         raise NotFound("Result data not found for this report ID")
 
 
+# Delete route remains the same, but targets the directory in performance_reports
 @performance_bp.route("/<string:model>/<int:port>/reports/<path:report_id>/delete", methods=["POST"])
-@ajax_compatible # Handles JSON response / errors
+@ajax_compatible
 def delete_performance_report(model: str, port: int, report_id: str):
-    """
-    Delete a specific performance test report directory.
-    """
+    """ Delete a specific performance test report directory and its contents. """
     perf_logger.info(f"Request to delete performance report directory {report_id}")
+    base_dir = get_base_dir()
+    report_dir = base_dir / "performance_reports" / report_id
+
+    # --- Security Check ---
+    expected_prefix = f"{model}_{port}_"
+    if not report_id.startswith(expected_prefix) or ".." in report_id or report_id.startswith('/') or report_id.startswith('\\'):
+        perf_logger.warning(f"Invalid or potentially unsafe report ID for deletion: {report_id}")
+        raise BadRequest("Invalid Report ID")
+
+    if not report_dir.is_dir():
+        perf_logger.warning(f"Report directory not found for deletion: {report_dir}")
+        raise NotFound("Report directory not found")
+
     try:
-        base_dir = Path(current_app.config.get("BASE_DIR", "."))
-        report_dir = base_dir / "performance_reports" / report_id
-
-        expected_prefix = f"{model}_{port}_"
-        if not report_id.startswith(expected_prefix) or ".." in report_id or "/" in report_id or "\\" in report_id:
-            perf_logger.warning(f"Invalid or potentially unsafe report ID for deletion: {report_id}")
-            raise BadRequest("Invalid Report ID")
-
-        if not report_dir.is_dir():
-            perf_logger.warning(f"Report directory not found for deletion: {report_dir}")
-            raise FileNotFoundError("Report not found")
-
-        import shutil
-        perf_logger.warning(f"Recursively deleting report directory: {report_dir}") # Log clearly!
+        perf_logger.warning(f"Recursively deleting report directory: {report_dir}")
         shutil.rmtree(report_dir)
         perf_logger.info(f"Successfully deleted report directory {report_id}")
 
-        return {"status": "success", "message": f"Report {report_id} deleted successfully"}
+        # Optionally: Delete the consolidated JSON if it exists and belongs *only* to this report
+        # (Requires careful checking, might be safer to leave it or handle cleanup separately)
 
-    except BadRequest as e: raise e
-    except FileNotFoundError as e: return APIResponse(success=False, error=str(e), code=http.HTTPStatus.NOT_FOUND)
+        return {"status": "success", "message": f"Report directory {report_id} deleted successfully"}
+
     except Exception as e:
-        perf_logger.exception(f"Error deleting performance report {report_id}: {e}")
-        raise InternalServerError(f"Failed to delete report: {e}") from e
+        perf_logger.exception(f"Error deleting performance report directory {report_id}: {e}")
+        raise InternalServerError(f"Failed to delete report directory: {e}") from e
 
 
 # =============================================================================
