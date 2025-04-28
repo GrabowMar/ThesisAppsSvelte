@@ -27,7 +27,8 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 # =============================================================================
 # Custom Module Imports
 # =============================================================================
-from batch_analysis import init_batch_analysis, batch_analysis_bp
+# <<< FIX 1: Corrected import from batch_analysis >>>
+from batch_analysis import init_batch_analysis_logic # Use the new function name, remove blueprint import
 from backend_security_analysis import BackendSecurityAnalyzer
 from frontend_security_analysis import FrontendSecurityAnalyzer
 from gpt4all_analysis import GPT4AllAnalyzer
@@ -85,15 +86,40 @@ def register_error_handlers(app: Flask) -> None:
 
         # Determine template name, default to 500.html for non-404 server errors
         template_name = f"{error_code}.html"
-        if error_code != http.HTTPStatus.NOT_FOUND and error_code >= 500:
-             # Check if specific template exists, otherwise use generic one
-             if not app.jinja_env.get_template(template_name):
-                 template_name = "500.html" # Fallback template
-        elif not app.jinja_env.get_template(template_name):
-            # If even 404.html is missing, use a very basic response or log critical error
-            error_logger.critical(f"Error template '{template_name}' not found!")
-            basic_response = f"<h1>Error {error_code}</h1><p>{error_name}: {error_message}</p>"
-            return basic_response, error_code
+        template_exists = False
+        try:
+            # Check if the specific template exists
+            # Use app.jinja_loader instead of app.jinja_env for template existence check
+            if app.jinja_loader:
+                 app.jinja_loader.get_source(app.jinja_env, template_name)
+                 template_exists = True
+        except Exception: # Catches TemplateNotFound and potentially other errors
+            template_exists = False
+
+        if not template_exists:
+             if error_code != http.HTTPStatus.NOT_FOUND and error_code >= 500:
+                 # Check if 500.html exists as a fallback
+                 try:
+                     if app.jinja_loader:
+                         app.jinja_loader.get_source(app.jinja_env, "500.html")
+                         template_name = "500.html" # Use generic 500
+                     else: raise FileNotFoundError # No loader, can't check
+                 except Exception:
+                     # No 500.html either, critical issue
+                     error_logger.critical(f"Error template '{template_name}' and fallback '500.html' not found!")
+                     basic_response = f"<h1>Error {error_code}</h1><p>{error_name}: {error_message}</p>"
+                     return basic_response, error_code
+             elif error_code == http.HTTPStatus.NOT_FOUND:
+                  # No 404.html found
+                  error_logger.critical(f"Error template '404.html' not found!")
+                  basic_response = f"<h1>Error 404</h1><p>Not Found: The requested resource was not found.</p>"
+                  return basic_response, http.HTTPStatus.NOT_FOUND
+             else:
+                 # Handle cases where a template for non-500/404 errors might be missing
+                 error_logger.warning(f"Error template '{template_name}' not found. Using basic response.")
+                 basic_response = f"<h1>Error {error_code}</h1><p>{error_name}: {error_message}</p>"
+                 return basic_response, error_code
+
 
         return render_template(template_name, error=original_error or error_message), error_code
 
@@ -286,11 +312,14 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     app.register_blueprint(performance_bp, url_prefix="/performance")
     app.register_blueprint(gpt4all_bp, url_prefix="/gpt4all")
     app.register_blueprint(zap_bp, url_prefix="/zap")
+    # NOTE: The batch analysis blueprint registration was removed previously
+    #       as requested. If you have moved the routes to a new blueprint,
+    #       you need to import and register that new blueprint here.
 
-    # Initialize batch analysis module
-    app_logger.info("Initializing batch analysis module")
-    init_batch_analysis(app)
-    app.register_blueprint(batch_analysis_bp, url_prefix="/batch-analysis")
+    # Initialize batch analysis module LOGIC
+    app_logger.info("Initializing batch analysis core logic")
+    # <<< FIX 2: Use the corrected function name >>>
+    init_batch_analysis_logic(app)
 
     # Register error handlers and request hooks
     app_logger.info("Registering error handlers and request hooks")
@@ -366,11 +395,12 @@ if __name__ == "__main__":
         main_logger.info(f"Available endpoints:")
         main_logger.info(f" • Dashboard: http://{host_display}:{config.PORT}/")
         main_logger.info(f" • API: http://{host_display}:{config.PORT}/api")
-        main_logger.info(f" • Security Analysis: http://{host_display}:{config.PORT}/analysis")
+        main_logger.info(f" • Security Analysis: http://{host_display}:{config.PORT}/analysis") # Assuming root prefix
         main_logger.info(f" • Performance Testing: http://{host_display}:{config.PORT}/performance")
         main_logger.info(f" • GPT4All Analysis: http://{host_display}:{config.PORT}/gpt4all")
         main_logger.info(f" • Security Scanner: http://{host_display}:{config.PORT}/zap")
-        main_logger.info(f" • Batch Analysis: http://{host_display}:{config.PORT}/batch-analysis")
+        # Corrected URL prefix for batch analysis based on previous discussion
+        main_logger.info(f" • Batch Analysis: http://{host_display}:{config.PORT}/batch-analysis") # Assuming routes are re-added here
         main_logger.info(f"{'='*50}\n")
 
         # Start the Flask development server

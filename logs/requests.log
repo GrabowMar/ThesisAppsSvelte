@@ -24409,3 +24409,245 @@
 2025-04-24 20:17:27 [INFO] [-]  * Restarting with stat
 2025-04-24 20:17:31 [WARNING] [-]  * Debugger is active!
 2025-04-24 20:17:31 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 20:39:50 [INFO] [-] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-24 20:39:50 [INFO] [-] [33mPress CTRL+C to quit[0m
+2025-04-24 20:39:50 [INFO] [-]  * Restarting with stat
+2025-04-24 20:39:54 [WARNING] [-]  * Debugger is active!
+2025-04-24 20:39:54 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 20:40:16 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 20:40:16] "GET / HTTP/1.1" 200 -
+2025-04-24 20:40:17 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 20:40:17] "[33mGET /static/favicon.svg HTTP/1.1[0m" 404 -
+2025-04-24 20:40:21 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 20:40:21] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 21:02:32 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\performance_analysis.py', reloading
+2025-04-24 21:02:32 [INFO] [-]  * Restarting with stat
+2025-04-24 21:11:35 [INFO] [-] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-24 21:11:35 [INFO] [-] [33mPress CTRL+C to quit[0m
+2025-04-24 21:11:35 [INFO] [-]  * Restarting with stat
+2025-04-24 21:11:39 [WARNING] [-]  * Debugger is active!
+2025-04-24 21:11:39 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 21:11:48 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:11:48] "GET / HTTP/1.1" 200 -
+2025-04-24 21:11:52 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:11:52] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 21:11:57 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:11:57] "[35m[1mPOST /performance/Llama/5503 HTTP/1.1[0m" 500 -
+2025-04-24 21:11:57 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:11:57] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 21:17:42 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\routes.py', reloading
+2025-04-24 21:17:42 [INFO] [-]  * Restarting with stat
+2025-04-24 21:17:49 [WARNING] [-]  * Debugger is active!
+2025-04-24 21:17:49 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 21:17:53 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\routes.py', reloading
+2025-04-24 21:17:53 [INFO] [-]  * Restarting with stat
+2025-04-24 21:17:57 [WARNING] [-]  * Debugger is active!
+2025-04-24 21:17:57 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 21:20:36 [INFO] [-] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-24 21:20:36 [INFO] [-] [33mPress CTRL+C to quit[0m
+2025-04-24 21:20:36 [INFO] [-]  * Restarting with stat
+2025-04-24 21:20:40 [WARNING] [-]  * Debugger is active!
+2025-04-24 21:20:40 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 21:20:40 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:20:40] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 21:20:45 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:20:45] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 21:20:56 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:20:56] "POST /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 21:21:04 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:21:04] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 21:21:14 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:21:14] "POST /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 21:27:41 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:27:41] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 21:27:46 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:27:46] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 21:27:56 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:27:56] "POST /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 21:27:57 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:27:57] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 21:47:50 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\routes.py', reloading
+2025-04-24 21:47:50 [INFO] [-]  * Restarting with stat
+2025-04-24 21:47:55 [WARNING] [-]  * Debugger is active!
+2025-04-24 21:47:55 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 21:48:05 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:48:05] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 21:48:11 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:48:11] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 21:48:18 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:48:18] "[35m[1mPOST /performance/Llama/5503 HTTP/1.1[0m" 503 -
+2025-04-24 21:48:18 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:48:18] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 21:48:19 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:48:19] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 21:52:05 [INFO] [-] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-24 21:52:05 [INFO] [-] [33mPress CTRL+C to quit[0m
+2025-04-24 21:52:05 [INFO] [-]  * Restarting with stat
+2025-04-24 21:52:09 [WARNING] [-]  * Debugger is active!
+2025-04-24 21:52:09 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 21:52:14 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:52:14] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 21:52:20 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:52:20] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 21:52:22 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:52:22] "[35m[1mPOST /performance/Llama/5503 HTTP/1.1[0m" 503 -
+2025-04-24 21:52:22 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:52:22] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 21:52:22 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 21:52:22] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 21:57:58 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\performance_analysis.py', reloading
+2025-04-24 21:57:58 [INFO] [-]  * Restarting with stat
+2025-04-24 22:01:26 [INFO] [-] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-24 22:01:26 [INFO] [-] [33mPress CTRL+C to quit[0m
+2025-04-24 22:01:26 [INFO] [-]  * Restarting with stat
+2025-04-24 22:01:30 [WARNING] [-]  * Debugger is active!
+2025-04-24 22:01:30 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 22:01:30 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:01:30] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 22:01:33 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:01:33] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 22:01:35 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:01:35] "[35m[1mPOST /performance/Llama/5503 HTTP/1.1[0m" 503 -
+2025-04-24 22:01:35 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:01:35] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:01:35 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:01:35] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:02:30 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:02:30] "[35m[1mPOST /performance/Llama/5503 HTTP/1.1[0m" 503 -
+2025-04-24 22:02:30 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:02:30] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:02:30 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:02:30] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:02:41 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:02:41] "[35m[1mPOST /performance/Llama/5503 HTTP/1.1[0m" 503 -
+2025-04-24 22:02:41 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:02:41] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:02:42 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:02:42] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:02:42 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:02:42] "[35m[1mPOST /performance/Llama/5503 HTTP/1.1[0m" 503 -
+2025-04-24 22:02:42 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:02:42] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:02:42 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:02:42] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:02:52 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:02:52] "GET / HTTP/1.1" 200 -
+2025-04-24 22:02:57 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:02:57] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 22:03:01 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:03:01] "[35m[1mPOST /performance/Llama/5503 HTTP/1.1[0m" 503 -
+2025-04-24 22:03:01 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:03:01] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:03:01 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:03:01] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:04:45 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\performance_analysis.py', reloading
+2025-04-24 22:04:45 [INFO] [-]  * Restarting with stat
+2025-04-24 22:08:22 [INFO] [-] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-24 22:08:22 [INFO] [-] [33mPress CTRL+C to quit[0m
+2025-04-24 22:08:22 [INFO] [-]  * Restarting with stat
+2025-04-24 22:08:25 [WARNING] [-]  * Debugger is active!
+2025-04-24 22:08:25 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 22:08:47 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:08:47] "GET / HTTP/1.1" 200 -
+2025-04-24 22:08:47 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:08:47] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 22:08:49 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:08:49] "[35m[1mPOST /performance/Llama/5503 HTTP/1.1[0m" 503 -
+2025-04-24 22:08:49 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:08:49] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:08:49 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:08:49] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:09:04 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\app.py', reloading
+2025-04-24 22:09:04 [INFO] [-]  * Restarting with stat
+2025-04-24 22:33:38 [INFO] [-] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-24 22:33:38 [INFO] [-] [33mPress CTRL+C to quit[0m
+2025-04-24 22:33:38 [INFO] [-]  * Restarting with stat
+2025-04-24 22:33:42 [WARNING] [-]  * Debugger is active!
+2025-04-24 22:33:42 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 22:34:02 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\routes.py', reloading
+2025-04-24 22:34:02 [INFO] [-]  * Restarting with stat
+2025-04-24 22:34:26 [INFO] [-] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-24 22:34:26 [INFO] [-] [33mPress CTRL+C to quit[0m
+2025-04-24 22:34:26 [INFO] [-]  * Restarting with stat
+2025-04-24 22:34:30 [WARNING] [-]  * Debugger is active!
+2025-04-24 22:34:30 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 22:34:30 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:34:30] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 22:34:36 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:34:36] "[35m[1mPOST /performance/Llama/5503 HTTP/1.1[0m" 500 -
+2025-04-24 22:34:36 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:34:36] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:38:06 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\routes.py', reloading
+2025-04-24 22:38:06 [INFO] [-]  * Restarting with stat
+2025-04-24 22:38:10 [WARNING] [-]  * Debugger is active!
+2025-04-24 22:38:10 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 22:38:12 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:38:12] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 22:38:17 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:38:17] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:38:27 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:38:27] "POST /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 22:43:48 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\performance_analysis.py', reloading
+2025-04-24 22:43:48 [INFO] [-]  * Restarting with stat
+2025-04-24 22:43:52 [WARNING] [-]  * Debugger is active!
+2025-04-24 22:43:52 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 22:43:52 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\performance_analysis.py', reloading
+2025-04-24 22:43:52 [INFO] [-]  * Restarting with stat
+2025-04-24 22:43:56 [WARNING] [-]  * Debugger is active!
+2025-04-24 22:43:56 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 22:43:59 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:43:59] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 22:44:05 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:44:05] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:44:15 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:44:15] "POST /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 22:55:44 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\performance_analysis.py', reloading
+2025-04-24 22:55:44 [INFO] [-]  * Restarting with stat
+2025-04-24 22:55:48 [WARNING] [-]  * Debugger is active!
+2025-04-24 22:55:48 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 22:56:11 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\performance_analysis.py', reloading
+2025-04-24 22:56:11 [INFO] [-]  * Restarting with stat
+2025-04-24 22:56:17 [WARNING] [-]  * Debugger is active!
+2025-04-24 22:56:17 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 22:56:34 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\routes.py', reloading
+2025-04-24 22:56:34 [INFO] [-]  * Restarting with stat
+2025-04-24 22:56:38 [WARNING] [-]  * Debugger is active!
+2025-04-24 22:56:38 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 22:56:47 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\performance_analysis.py', reloading
+2025-04-24 22:56:47 [INFO] [-]  * Restarting with stat
+2025-04-24 22:56:55 [INFO] [-] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-24 22:56:55 [INFO] [-] [33mPress CTRL+C to quit[0m
+2025-04-24 22:56:55 [INFO] [-]  * Restarting with stat
+2025-04-24 22:56:59 [WARNING] [-]  * Debugger is active!
+2025-04-24 22:56:59 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 22:56:59 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:56:59] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 22:57:04 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:57:04] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:57:15 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:57:15] "POST /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 22:58:08 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:58:08] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 22:58:18 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 22:58:18] "POST /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 23:00:21 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\services.py', reloading
+2025-04-24 23:00:21 [INFO] [-]  * Restarting with stat
+2025-04-24 23:00:25 [WARNING] [-]  * Debugger is active!
+2025-04-24 23:00:25 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 23:00:37 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\services.py', reloading
+2025-04-24 23:00:37 [INFO] [-]  * Restarting with stat
+2025-04-24 23:00:41 [WARNING] [-]  * Debugger is active!
+2025-04-24 23:00:41 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 23:01:22 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\services.py', reloading
+2025-04-24 23:01:22 [INFO] [-]  * Restarting with stat
+2025-04-24 23:01:26 [WARNING] [-]  * Debugger is active!
+2025-04-24 23:01:26 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 23:02:23 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\services.py', reloading
+2025-04-24 23:02:23 [INFO] [-]  * Restarting with stat
+2025-04-24 23:02:27 [WARNING] [-]  * Debugger is active!
+2025-04-24 23:02:27 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 23:03:14 [INFO] [-] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-24 23:03:14 [INFO] [-] [33mPress CTRL+C to quit[0m
+2025-04-24 23:03:14 [INFO] [-]  * Restarting with stat
+2025-04-24 23:03:18 [WARNING] [-]  * Debugger is active!
+2025-04-24 23:03:18 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 23:03:19 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 23:03:19] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 23:05:00 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 23:05:00] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 23:05:23 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 23:05:23] "GET /analysis/frontend-security/Llama/2 HTTP/1.1" 200 -
+2025-04-24 23:05:49 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 23:05:49] "GET /batch-analysis/ HTTP/1.1" 200 -
+2025-04-24 23:05:59 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 23:05:59] "[32mPOST /batch-analysis/create HTTP/1.1[0m" 302 -
+2025-04-24 23:10:48 [INFO] [-] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-24 23:10:48 [INFO] [-] [33mPress CTRL+C to quit[0m
+2025-04-24 23:10:48 [INFO] [-]  * Restarting with stat
+2025-04-24 23:10:52 [WARNING] [-]  * Debugger is active!
+2025-04-24 23:10:52 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 23:10:52 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 23:10:52] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 23:10:56 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 23:10:56] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 23:11:02 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 23:11:02] "POST /api/log-client-error HTTP/1.1" 200 -
+2025-04-24 23:11:32 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 23:11:32] "POST /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 23:15:30 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 23:15:30] "GET /performance/Llama/5503 HTTP/1.1" 200 -
+2025-04-24 23:17:40 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\batch_analysis.py', reloading
+2025-04-24 23:17:40 [INFO] [-]  * Restarting with stat
+2025-04-24 23:30:44 [INFO] [-] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-24 23:30:44 [INFO] [-] [33mPress CTRL+C to quit[0m
+2025-04-24 23:30:44 [INFO] [-]  * Restarting with stat
+2025-04-24 23:30:48 [WARNING] [-]  * Debugger is active!
+2025-04-24 23:30:48 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 23:30:53 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 23:30:53] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-04-24 23:39:33 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\app.py', reloading
+2025-04-24 23:39:33 [INFO] [-]  * Restarting with stat
+2025-04-24 23:39:37 [WARNING] [-]  * Debugger is active!
+2025-04-24 23:39:37 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 23:40:03 [INFO] [-] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-24 23:40:03 [INFO] [-] [33mPress CTRL+C to quit[0m
+2025-04-24 23:40:03 [INFO] [-]  * Restarting with stat
+2025-04-24 23:40:08 [WARNING] [-]  * Debugger is active!
+2025-04-24 23:40:08 [INFO] [-]  * Debugger PIN: 132-566-999
+2025-04-24 23:40:11 [INFO] [-] 127.0.0.1 - - [24/Apr/2025 23:40:11] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-04-28 10:16:42 [INFO] [-] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-28 10:16:42 [INFO] [-] [33mPress CTRL+C to quit[0m
+2025-04-28 10:16:42 [INFO] [-]  * Restarting with stat
+2025-04-28 10:16:46 [WARNING] [-]  * Debugger is active!
+2025-04-28 10:16:46 [INFO] [-]  * Debugger PIN: 144-267-087
+2025-04-28 10:16:50 [INFO] [-] 127.0.0.1 - - [28/Apr/2025 10:16:50] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-04-28 10:16:51 [INFO] [-] 127.0.0.1 - - [28/Apr/2025 10:16:51] "[33mGET /static/favicon.svg HTTP/1.1[0m" 404 -
+2025-04-28 10:19:41 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\app.py', reloading
+2025-04-28 10:19:41 [INFO] [-]  * Restarting with stat
+2025-04-28 10:19:45 [WARNING] [-]  * Debugger is active!
+2025-04-28 10:19:45 [INFO] [-]  * Debugger PIN: 144-267-087
+2025-04-28 10:20:27 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\backend_security_analysis.py', reloading
+2025-04-28 10:20:27 [INFO] [-]  * Restarting with stat
+2025-04-28 10:20:31 [WARNING] [-]  * Debugger is active!
+2025-04-28 10:20:31 [INFO] [-]  * Debugger PIN: 144-267-087
+2025-04-28 10:21:29 [INFO] [-]  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\batch_analysis.py', reloading
+2025-04-28 10:21:29 [INFO] [-]  * Restarting with stat

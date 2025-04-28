@@ -8,12 +8,13 @@ providing detailed metrics, customizable test scenarios, and comprehensive repor
 import json
 import logging
 import os
+import re
 import tempfile
 from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Union, Any, Callable, Tuple
-
+import socket
 # For direct Locust control
 from locust import HttpUser, task, constant, events, between
 from locust.env import Environment
@@ -184,6 +185,55 @@ class LocustPerformanceTester:
         self.runner = None
         self.user_classes = []
 
+    # Add this method to the LocustPerformanceTester class in performance_analysis.py
+
+    def _save_consolidated_results(self, 
+                                result: PerformanceResult, 
+                                model: str, 
+                                app_num: int) -> str:
+        """
+        Save a consolidated JSON result file in the model/app directory.
+        
+        Args:
+            result: PerformanceResult object containing test results
+            model: Model name
+            app_num: App number
+            
+        Returns:
+            Path to the saved JSON file
+        """
+        try:
+            # Construct path to the model/app directory
+            app_dir = self.output_dir.parent / model / f"app{app_num}"
+            app_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Define the result file path
+            result_file = app_dir / ".locust_result.json"
+            
+            # Convert result to dictionary for JSON serialization
+            result_dict = result.to_dict()
+            
+            # Add some additional metadata
+            result_dict["metadata"] = {
+                "model": model,
+                "app_num": app_num,
+                "timestamp": datetime.now().isoformat(),
+                "test_name": result_dict.get("test_name", f"{model}_app{app_num}"),
+                "server_info": {
+                    "hostname": socket.gethostname() if hasattr(socket, "gethostname") else "unknown"
+                }
+            }
+            
+            # Write to JSON file
+            with open(result_file, "w", encoding="utf-8") as f:
+                json.dump(result_dict, f, indent=2)
+                
+            logger.info(f"Consolidated performance results saved to {result_file}")
+            return str(result_file)
+        except Exception as e:
+            logger.exception(f"Error saving consolidated results: {e}")
+            return ""
+
     def _setup_test_directory(self, test_name: str) -> Path:
         """
         Set up a directory for the current test run.
@@ -195,7 +245,14 @@ class LocustPerformanceTester:
             Path to the test directory
         """
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        test_dir = self.output_dir / f"{test_name}_{timestamp}"
+        # Remove any existing timestamp from test_name to avoid duplication
+        if re.search(r'_\d{8}_\d{6}$', test_name):
+            # Test name already has a timestamp, don't add another one
+            test_dir = self.output_dir / test_name
+        else:
+            # Add timestamp to test name
+            test_dir = self.output_dir / f"{test_name}_{timestamp}"
+        
         test_dir.mkdir(parents=True, exist_ok=True)
         self.current_test_dir = test_dir
         return test_dir
@@ -215,6 +272,9 @@ class LocustPerformanceTester:
         self.user_classes.append(user_class)
         return user_class
 
+    # Update the run_test_cli method in LocustPerformanceTester to save consolidated results
+# In performance_analysis.py
+
     def run_test_cli(
         self, 
         test_name: str,
@@ -227,7 +287,9 @@ class LocustPerformanceTester:
         headless: bool = True,
         workers: int = 0,
         tags: Optional[List[str]] = None,
-        html_report: bool = True
+        html_report: bool = True,
+        model: Optional[str] = None,  # Add model parameter
+        app_num: Optional[int] = None  # Add app_num parameter
     ) -> PerformanceResult:
         """
         Run a Locust test via command line.
@@ -244,6 +306,8 @@ class LocustPerformanceTester:
             workers: Number of worker processes (0 for no distributed testing)
             tags: List of tags to filter user classes or tasks
             html_report: Whether to generate an HTML report
+            model: Model name (optional, for saving consolidated results)
+            app_num: App number (optional, for saving consolidated results)
             
         Returns:
             PerformanceResult object
@@ -302,7 +366,7 @@ class LocustPerformanceTester:
                     f.write(process.stderr)
                 
                 # Return a basic result with error info
-                return PerformanceResult(
+                result = PerformanceResult(
                     total_requests=0,
                     total_failures=0,
                     avg_response_time=0,
@@ -315,6 +379,12 @@ class LocustPerformanceTester:
                     spawn_rate=spawn_rate,
                     csv_stats_path=f"{csv_prefix}_stats.csv"
                 )
+                
+                # Save consolidated results if model and app_num are provided
+                if model and app_num:
+                    self._save_consolidated_results(result, model, app_num)
+                    
+                return result
             
             # Save command output
             output_file = test_dir / "locust_output.txt"
@@ -337,6 +407,10 @@ class LocustPerformanceTester:
             if html_report:
                 report_path = test_dir / f"{test_name}_report.html"
                 self._generate_html_report(result, report_path)
+            
+            # Save consolidated results if model and app_num are provided
+            if model and app_num:
+                self._save_consolidated_results(result, model, app_num)
             
             return result
         
