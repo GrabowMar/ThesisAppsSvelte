@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
+{# Define macro at the top level #}
+{% macro humanize_duration(seconds) %}
+{% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+{% endmacro %}
+
+
 {% block content %}
 <div class="space-y-4 max-w-7xl mx-auto">
   <div class="border border-gray-400 bg-white p-2 rounded-md">
@@ -7,7 +13,8 @@
       <div>
         <h1 class="font-bold text-xl text-gray-900">Result Details: {{ result.model }} App {{ result.app_num }}</h1>
         <p class="text-xs text-gray-600 mt-1">
-            Analysis Type: <span class="font-medium capitalize">{{ result.analysis_type.value.replace('_', ' ') }}</span> |
+            {# FIX: Use result.analysis_type directly as it's already a string #}
+            Analysis Type: <span class="font-medium capitalize">{{ result.analysis_type.replace('_', ' ') }}</span> |
             Part of Job: <a href="{{ url_for('batch_analysis.view_job', job_id=job.id) }}" class="text-blue-600 hover:underline">{{ job.name }} (ID: {{ job.id }})</a>
         </p>
       </div>
@@ -44,15 +51,16 @@
           <tr>
             <td class="font-medium text-gray-600 py-1 pr-2">Analysis Type:</td>
             <td>
-              {# Display analysis type badge #}
+              {# FIX: Use result.analysis_type directly for styling check #}
               <span class="px-1.5 py-0.5 rounded text-white text-[10px] capitalize whitespace-nowrap
-                {% if result.analysis_type == AnalysisType.FRONTEND_SECURITY %}bg-purple-600
-                {% elif result.analysis_type == AnalysisType.BACKEND_SECURITY %}bg-indigo-600
-                {% elif result.analysis_type == AnalysisType.PERFORMANCE %}bg-cyan-600
-                {% elif result.analysis_type == AnalysisType.GPT4ALL %}bg-orange-600
-                {% elif result.analysis_type == AnalysisType.ZAP %}bg-lime-600
+                {% if result.analysis_type == 'frontend_security' %}bg-purple-600
+                {% elif result.analysis_type == 'backend_security' %}bg-indigo-600
+                {% elif result.analysis_type == 'performance' %}bg-cyan-600
+                {% elif result.analysis_type == 'gpt4all' %}bg-orange-600
+                {% elif result.analysis_type == 'zap' %}bg-lime-600
                 {% else %}bg-gray-500{% endif %}">
-                {{ result.analysis_type.value.replace('_', ' ') }}
+                {# FIX: Use result.analysis_type directly for display #}
+                {{ result.analysis_type.replace('_', ' ') }}
               </span>
             </td>
           </tr>
@@ -77,16 +85,18 @@
           </tr>
           <tr>
             <td class="font-medium text-gray-600 py-1 pr-2">Duration:</td>
-            <td>{{ result.duration_seconds|humanize_duration if result.duration_seconds is not none else 'N/A' }}</td>
+            {# Use the macro directly #}
+            <td>{{ humanize_duration(result.duration_seconds) if result.duration_seconds is not none else 'N/A' }}</td>
           </tr>
           {# Display relevant count based on type #}
-          {% if result.analysis_type in [AnalysisType.FRONTEND_SECURITY, AnalysisType.BACKEND_SECURITY] %}
+          {# FIX: Use result.analysis_type directly for checks #}
+          {% if result.analysis_type in ['frontend_security', 'backend_security'] %}
               <tr><td class="font-medium text-gray-600 py-1 pr-2">Total Issues:</td><td>{{ result.issues_count }}</td></tr>
-          {% elif result.analysis_type == AnalysisType.PERFORMANCE %}
+          {% elif result.analysis_type == 'performance' %}
               <tr><td class="font-medium text-gray-600 py-1 pr-2">Total Failures:</td><td>{{ result.details.get('total_failures', 0) }}</td></tr>
-          {% elif result.analysis_type == AnalysisType.GPT4ALL %}
+          {% elif result.analysis_type == 'gpt4all' %}
               <tr><td class="font-medium text-gray-600 py-1 pr-2">Reqs Checked:</td><td>{{ result.details.get('summary', {}).get('requirements_checked', 0) }}</td></tr>
-          {% elif result.analysis_type == AnalysisType.ZAP %}
+          {% elif result.analysis_type == 'zap' %}
               <tr><td class="font-medium text-gray-600 py-1 pr-2">ZAP Scan ID:</td><td>{{ result.details.get('summary', {}).get('zap_scan_id', 'N/A') }}</td></tr>
           {% endif %}
         </table>
@@ -98,7 +108,8 @@
         <h2 class="font-bold text-sm">Analysis Metrics</h2>
       </div>
       <div class="p-2">
-        {% if result.analysis_type in [AnalysisType.FRONTEND_SECURITY, AnalysisType.BACKEND_SECURITY] %}
+        {# FIX: Use result.analysis_type directly for checks #}
+        {% if result.analysis_type in ['frontend_security', 'backend_security'] %}
             <div class="grid grid-cols-3 gap-2 text-xs">
               <div class="border border-gray-300 p-2 rounded-md">
                 <div class="text-red-600">High Severity</div>
@@ -136,7 +147,7 @@
                 </div>
             </div>
 
-        {% elif result.analysis_type == AnalysisType.PERFORMANCE %}
+        {% elif result.analysis_type == 'performance' %}
             {% set perf_data = result.details %}
             <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
                  <div class="border border-gray-300 p-2 rounded-md"><div class="text-gray-600">Avg RPS</div><div class="font-bold">{{ perf_data.get('requests_per_sec', 0)|round(1) }}</div></div>
@@ -158,14 +169,14 @@
             </div>
             {% endif %}
 
-        {% elif result.analysis_type == AnalysisType.GPT4ALL %}
+        {% elif result.analysis_type == 'gpt4all' %}
             {% set gpt_summary = result.details.get('summary', {}) %}
             <div class="grid grid-cols-2 gap-2 text-xs">
                  <div class="border border-gray-300 p-2 rounded-md"><div class="text-gray-600">Reqs Checked</div><div class="font-bold">{{ gpt_summary.get('requirements_checked', 0) }}</div></div>
                  <div class="border border-gray-300 p-2 rounded-md"><div class="text-green-600">Reqs Met</div><div class="font-bold text-green-700">{{ gpt_summary.get('met_count', 0) }}</div></div>
             </div>
 
-        {% elif result.analysis_type == AnalysisType.ZAP %}
+        {% elif result.analysis_type == 'zap' %}
              <div class="text-xs text-gray-600">
                 ZAP scan was triggered with Scan ID: <span class="font-mono font-bold">{{ result.details.get('summary', {}).get('zap_scan_id', 'N/A') }}</span>.<br>
                 Please check the <a href="{{ url_for('zap.zap_scan_page', model=result.model, app_num=result.app_num) }}" class="text-blue-600 hover:underline">ZAP Scan Page for {{result.model}}/{{result.app_num}}</a> for detailed results and status.
@@ -189,7 +200,8 @@
   {# Conditionally render based on analysis type #}
 
   {# Security Issues List #}
-  {% if result.analysis_type in [AnalysisType.FRONTEND_SECURITY, AnalysisType.BACKEND_SECURITY] %}
+  {# FIX: Use result.analysis_type directly for check #}
+  {% if result.analysis_type in ['frontend_security', 'backend_security'] %}
     {% set issues = result.details.get('issues', []) %}
     {% if issues %}
       <div class="border border-gray-400 bg-white rounded-md shadow-sm">
@@ -265,7 +277,8 @@
     {% endif %}
 
   {# Performance Details #}
-  {% elif result.analysis_type == AnalysisType.PERFORMANCE %}
+  {# FIX: Use result.analysis_type directly for check #}
+  {% elif result.analysis_type == 'performance' %}
     {% set perf_data = result.details %}
     <div class="border border-gray-400 bg-white rounded-md shadow-sm">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1"><h2 class="font-bold text-sm">Performance Details</h2></div>
@@ -314,7 +327,8 @@
     </div>
 
   {# GPT4All Details #}
-  {% elif result.analysis_type == AnalysisType.GPT4ALL %}
+  {# FIX: Use result.analysis_type directly for check #}
+  {% elif result.analysis_type == 'gpt4all' %}
     {% set gpt_results = result.details.get('issues', []) %} {# Stored in 'issues' key #}
     <div class="border border-gray-400 bg-white rounded-md shadow-sm">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1"><h2 class="font-bold text-sm">GPT4All Requirement Checks</h2></div>
@@ -341,7 +355,8 @@
     </div>
 
   {# ZAP Details Placeholder #}
-  {% elif result.analysis_type == AnalysisType.ZAP %}
+  {# FIX: Use result.analysis_type directly for check #}
+  {% elif result.analysis_type == 'zap' %}
     <div class="border border-gray-400 bg-white rounded-md shadow-sm">
         <div class="bg-gray-100 border-b border-gray-400 px-2 py-1"><h2 class="font-bold text-sm">ZAP Scan Status</h2></div>
         <div class="p-4">
@@ -369,11 +384,6 @@
 
 </div>
 
-{# Jinja macro for humanizing duration #}
-{% macro humanize_duration(seconds) %}
-{% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
-{% endmacro %}
-
 
 <script>
   $(document).ready(function() {
@@ -389,4 +399,3 @@
   });
 </script>
 {% endblock %}
-

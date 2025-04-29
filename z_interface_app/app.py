@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Flask application factory and entry point for the AI Model Management System.
 
@@ -18,15 +19,20 @@ from flask import Flask, request, render_template, jsonify
 from werkzeug.exceptions import HTTPException
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+# Import Batch Analysis components
 from batch_analysis import init_batch_analysis, batch_analysis_bp
+
+# Import Analyzers
 from backend_security_analysis import BackendSecurityAnalyzer
 from frontend_security_analysis import FrontendSecurityAnalyzer
 from gpt4all_analysis import GPT4AllAnalyzer
-from logging_service import initialize_logging, create_logger_for_component
 from performance_analysis import LocustPerformanceTester
-from zap_scanner import create_scanner
+from zap_scanner import create_scanner # Used for ZAPScanner instance
 
-from services import DockerManager, SystemHealthMonitor
+# Import Core Services and Utilities
+from logging_service import initialize_logging, create_logger_for_component
+# <<< Import necessary classes from services >>>
+from services import DockerManager, SystemHealthMonitor, ScanManager, PortManager
 from utils import AppConfig, CustomJSONEncoder, stop_zap_scanners
 from routes import (
     main_bp, api_bp, analysis_bp, performance_bp,
@@ -250,6 +256,9 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     app.config.from_object(app_config)
     # Ensure BASE_DIR is explicitly available in Flask config if needed elsewhere
     app.config["BASE_DIR"] = app_config.BASE_DIR
+    # Add APP_BASE_PATH to config, used by batch_analysis and others
+    # Derives from BASE_DIR if not set via environment
+    app.config.setdefault('APP_BASE_PATH', app_config.BASE_DIR)
 
     initialize_logging(app)
     app_logger = create_logger_for_component('app')
@@ -260,17 +269,37 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     base_path = app_config.BASE_DIR.parent
     app_logger.info(f"Application base directory: {app_config.BASE_DIR}")
     app_logger.info(f"Parent base path: {base_path}")
+    app_logger.info(f"Effective APP_BASE_PATH: {app.config['APP_BASE_PATH']}")
 
     app_logger.info("Initializing service components and analyzers")
+    # Initialize standard analyzers
     app.backend_security_analyzer = BackendSecurityAnalyzer(base_path)
     app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
     app.gpt4all_analyzer = GPT4AllAnalyzer(app_config.BASE_DIR)
     app.performance_tester = LocustPerformanceTester(base_path)
-    app.zap_scanner = create_scanner(app_config.BASE_DIR)
-    app.config["ZAP_SCANS"] = {} # Store active ZAP scan processes
+    app.zap_scanner = create_scanner(app_config.BASE_DIR) # Instance for potential direct use
+    app.config["ZAP_SCANS"] = {} # Store active ZAP scan processes/managers
 
+    # Initialize core managers
     docker_manager = DockerManager()
-    app.config["docker_manager"] = docker_manager
+    app.config["docker_manager"] = docker_manager # Store in config for broader access if needed
+
+    # --- Initialize ScanManager ---
+    # PortManager uses class methods, no instance needed on app context
+    try:
+        # ScanManager takes no arguments in its __init__
+        app.scan_manager = ScanManager()
+        app_logger.info("Initialized ScanManager on app context.")
+    except ImportError:
+        app_logger.error("Failed to import ScanManager from services. Batch analysis requiring it may fail.")
+        app.scan_manager = None
+    except Exception as e:
+        app_logger.exception(f"Error initializing ScanManager: {e}")
+        app.scan_manager = None
+    # --- End ScanManager Initialization ---
+
+    # PortManager is used via class methods (PortManager.get_app_ports), no instance needed here.
+    app.port_manager = PortManager # Assign the CLASS itself if needed elsewhere, but likely not.
 
     # Apply proxy fix middleware if running behind a reverse proxy
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
@@ -283,9 +312,13 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     app.register_blueprint(gpt4all_bp, url_prefix="/gpt4all")
     app.register_blueprint(zap_bp, url_prefix="/zap")
 
-    app_logger.info("Initializing batch analysis module")
-    init_batch_analysis(app)
+    # --- Initialize and Register Batch Analysis Module ---
+    # This MUST come AFTER ScanManager is initialized on 'app'
+    app_logger.info("Initializing batch analysis module...")
+    init_batch_analysis(app) # It will check for app.scan_manager
+    app_logger.info("Registering batch analysis blueprint...")
     app.register_blueprint(batch_analysis_bp, url_prefix="/batch-analysis")
+    # --- End Batch Analysis Initialization ---
 
     app_logger.info("Registering error handlers and request hooks")
     register_error_handlers(app)
@@ -347,6 +380,11 @@ if __name__ == "__main__":
                     "Docker client unavailable or manager not initialized - "
                     "cannot perform health check; reduced functionality expected."
                 )
+
+            # Check if ScanManager was initialized successfully
+            if not app.scan_manager:
+                 main_logger.warning("ScanManager was not initialized successfully. ZAP-related batch tasks may fail.")
+            # No need to check app.port_manager instance anymore
 
         # Display access information
         host_display = "localhost" if config.HOST in ["0.0.0.0", "127.0.0.1"] else config.HOST

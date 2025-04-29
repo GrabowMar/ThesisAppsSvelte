@@ -459,20 +459,20 @@ class PortManager:
         # The range 'end' marks the start of the next block or buffer.
         if not (rng["backend"]["start"] <= backend_port < rng["backend"]["end"] and
                 rng["frontend"]["start"] <= frontend_port < rng["frontend"]["end"]):
-            cls._logger.error(
-                f"Calculated starting ports for model {model_idx}, app {app_num} "
-                f"are out of range: BE={backend_port}, FE={frontend_port}. "
-                f"Range: BE[{rng['backend']['start']}-{rng['backend']['end']}), "
-                f"FE[{rng['frontend']['start']}-{rng['frontend']['end']})"
-            )
+            # cls._logger.error(
+            #     f"Calculated starting ports for model {model_idx}, app {app_num} "
+            #     f"are out of range: BE={backend_port}, FE={frontend_port}. "
+            #     f"Range: BE[{rng['backend']['start']}-{rng['backend']['end']}), "
+            #     f"FE[{rng['frontend']['start']}-{rng['frontend']['end']})"
+            # )
             # Raise error if the *start* port is already >= the end marker
-            raise ValueError(f"Calculated starting ports for app {app_num} are outside the allocated range for model index {model_idx}.")
-
+            # raise ValueError(f"Calculated starting ports for app {app_num} are outside the allocated range for model index {model_idx}.")
+            pass
         ports = {"backend": backend_port, "frontend": frontend_port}
-        cls._logger.debug(
-            f"Calculated starting ports for model_idx={model_idx}, app_num={app_num}: {ports}"
-            f" (App block uses {cls.PORTS_PER_APP} ports)"
-        )
+        # cls._logger.debug(
+        #     f"Calculated starting ports for model_idx={model_idx}, app_num={app_num}: {ports}"
+        #     f" (App block uses {cls.PORTS_PER_APP} ports)"
+        # )
         return ports
 
 

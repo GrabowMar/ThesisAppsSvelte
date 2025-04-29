@@ -5,53 +5,252 @@
   <div class="border border-gray-400 bg-white p-2 rounded-md">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="font-bold text-xl text-gray-900">Batch Analysis Dashboard</h1>
-        <p class="text-xs text-gray-600 mt-1">Manage and monitor batch analysis jobs</p>
+        <h1 class="font-bold text-xl text-gray-900">Batch Analysis</h1>
+        <p class="text-xs text-gray-600 mt-1">Run analysis on multiple applications at once</p>
       </div>
       <div class="flex items-center space-x-2">
         <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs flex items-center">
           <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
           </svg>
-          Main Dashboard
+          Dashboard
         </a>
-        {# Link to create job page instead of toggle #}
-        <a href="{{ url_for('batch_analysis.create_batch_job') }}" class="action-btn h-6 px-2 text-xs flex items-center bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150">
-           <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button id="toggleCreateForm" class="action-btn h-6 px-2 text-xs flex items-center bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150" aria-expanded="false" aria-controls="createJobForm">
+          <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
           </svg>
           New Batch Job
-        </a>
+        </button>
       </div>
     </div>
   </div>
 
-  <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
-    <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm">
-      <div class="text-xs text-gray-600">Total Jobs</div>
-      <div class="text-lg font-bold">{{ jobs|length }}</div>
+  {# --- Create Job Form --- #}
+  <div id="createJobForm" class="border border-gray-400 bg-white rounded-md shadow-md hidden" aria-hidden="true">
+    <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+      <h2 class="font-bold text-sm">Create New Batch Job</h2>
     </div>
-     <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm">
+    <div class="p-4">
+       {# --- Flash Messages --- #}
+       {% with messages = get_flashed_messages(with_categories=true) %}
+         {% if messages %}
+           {% for category, message in messages %}
+             <div class="mb-4 p-3 rounded-md text-xs {% if category == 'error' %}bg-red-100 border border-red-300 text-red-800{% elif category == 'warning' %}bg-yellow-100 border border-yellow-300 text-yellow-800{% else %}bg-blue-100 border border-blue-300 text-blue-800{% endif %}">
+               {{ message }}
+             </div>
+           {% endfor %}
+         {% endif %}
+       {% endwith %}
+
+      {# --- Form Start --- #}
+      <form method="POST" action="{{ url_for('batch_analysis.create_batch_job') }}" id="batchJobForm" novalidate>
+        {# --- Basic Info --- #}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label for="name" class="block text-xs font-medium text-gray-700 mb-1">Job Name <span class="text-red-600">*</span></label>
+            <input type="text" id="name" name="name"
+                  class="w-full h-8 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  value="{{ submitted_data.name if submitted_data else default_job_name }}"
+                  required aria-required="true">
+            <p class="form-error-msg hidden text-xs text-red-600 mt-1">Job name is required</p>
+          </div>
+          <div>
+            <label for="description" class="block text-xs font-medium text-gray-700 mb-1">Description</label>
+            <input type="text" id="description" name="description"
+                  class="w-full h-8 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  value="{{ submitted_data.description if submitted_data else '' }}">
+          </div>
+        </div>
+
+        {# --- Analysis Types Selection --- #}
+        <div class="mb-4">
+          <h3 class="text-xs font-medium text-gray-700 mb-2">Analysis Types <span class="text-red-600">*</span></h3>
+          <div class="flex flex-wrap gap-4 bg-gray-50 p-2 border border-gray-200 rounded">
+            {# Security Radios #}
+            <div class="flex items-center">
+              <input type="radio" id="scan_type_frontend" name="scan_type" value="frontend" class="scan-type-radio mr-2 focus:ring-2 focus:ring-blue-500"
+                     {% if not submitted_data or (submitted_data and submitted_data.get('scan_type') == 'frontend') %}checked{% endif %}>
+              <label for="scan_type_frontend" class="text-xs text-gray-700">Frontend Security</label>
+            </div>
+            <div class="flex items-center">
+              <input type="radio" id="scan_type_backend" name="scan_type" value="backend" class="scan-type-radio mr-2 focus:ring-2 focus:ring-blue-500"
+                     {% if submitted_data and submitted_data.get('scan_type') == 'backend' %}checked{% endif %}>
+              <label for="scan_type_backend" class="text-xs text-gray-700">Backend Security</label>
+            </div>
+            <div class="flex items-center">
+              <input type="radio" id="scan_type_both" name="scan_type" value="both" class="scan-type-radio mr-2 focus:ring-2 focus:ring-blue-500"
+                     {% if submitted_data and submitted_data.get('scan_type') == 'both' %}checked{% endif %}>
+              <label for="scan_type_both" class="text-xs text-gray-700">Both (Frontend & Backend)</label>
+            </div>
+            {# Other Checkboxes #}
+            <div class="flex items-center">
+                <input type="checkbox" id="analysis_performance" name="analysis_types" value="performance"
+                       class="analysis-checkbox-other mr-2 focus:ring-2 focus:ring-blue-500"
+                       {% if submitted_data and 'performance' in submitted_data.getlist('analysis_types') %}checked{% endif %}>
+                <label for="analysis_performance" class="text-xs text-gray-700">Performance</label>
+            </div>
+             <div class="flex items-center">
+                <input type="checkbox" id="analysis_zap" name="analysis_types" value="zap"
+                       class="analysis-checkbox-other mr-2 focus:ring-2 focus:ring-blue-500"
+                       {% if submitted_data and 'zap' in submitted_data.getlist('analysis_types') %}checked{% endif %}>
+                <label for="analysis_zap" class="text-xs text-gray-700">ZAP Scan</label>
+            </div>
+             <div class="flex items-center">
+                <input type="checkbox" id="analysis_gpt4all" name="analysis_types" value="gpt4all"
+                       class="analysis-checkbox-other mr-2 focus:ring-2 focus:ring-blue-500"
+                       {% if submitted_data and 'gpt4all' in submitted_data.getlist('analysis_types') %}checked{% endif %}>
+                <label for="analysis_gpt4all" class="text-xs text-gray-700">GPT4All Check</label>
+            </div>
+          </div>
+           <p class="analysis-types-error-msg hidden text-xs text-red-600 mt-1">Select at least one analysis type (Frontend/Backend/Both or other checkboxes)</p>
+        </div>
+
+        {# --- Analysis Options --- #}
+        <div class="mb-4 space-y-3">
+            <h3 class="text-xs font-medium text-gray-700 mb-2">Analysis Options</h3>
+            {# Frontend Options #}
+            <div id="frontendSecurityOptions" class="analysis-option-group hidden pl-4 border-l-2 border-gray-200">
+                <h4 class="text-xs font-semibold text-gray-600 mb-1">Frontend Security Options</h4>
+                <div class="flex items-center">
+                    <input type="checkbox" id="frontend_full_scan" name="frontend_full_scan" class="mr-2 focus:ring-2 focus:ring-blue-500"
+                           {% if submitted_data and submitted_data.get('frontend_full_scan') == 'on' %}checked{% endif %}>
+                    <label for="frontend_full_scan" class="text-xs text-gray-700">Full Scan (Run all frontend tools)</label>
+                    <span class="ml-2 text-xs text-gray-500">(Quick scan only runs essential tools)</span>
+                </div>
+            </div>
+            {# Backend Options #}
+             <div id="backendSecurityOptions" class="analysis-option-group hidden pl-4 border-l-2 border-gray-200">
+                <h4 class="text-xs font-semibold text-gray-600 mb-1">Backend Security Options</h4>
+                <div class="flex items-center">
+                    <input type="checkbox" id="backend_full_scan" name="backend_full_scan" class="mr-2 focus:ring-2 focus:ring-blue-500"
+                           {% if submitted_data and submitted_data.get('backend_full_scan') == 'on' %}checked{% endif %}>
+                    <label for="backend_full_scan" class="text-xs text-gray-700">Full Scan (Run all backend tools)</label>
+                    <span class="ml-2 text-xs text-gray-500">(Quick scan only runs essential tools)</span>
+                </div>
+            </div>
+            {# Performance Options #}
+            <div id="performanceOptions" class="analysis-option-group hidden pl-4 border-l-2 border-gray-200">
+                 <h4 class="text-xs font-semibold text-gray-600 mb-1">Performance Test Options</h4>
+                 <div class="grid grid-cols-3 gap-2">
+                     <div>
+                         <label for="perf_users" class="block text-xs text-gray-600 mb-0.5">Users</label>
+                         <input type="number" id="perf_users" name="perf_users" min="1" value="{{ submitted_data.perf_users if submitted_data else 10 }}" class="w-full h-7 px-2 text-xs border border-gray-300 rounded">
+                     </div>
+                     <div>
+                         <label for="perf_duration" class="block text-xs text-gray-600 mb-0.5">Duration (s)</label>
+                         <input type="number" id="perf_duration" name="perf_duration" min="1" value="{{ submitted_data.perf_duration if submitted_data else 30 }}" class="w-full h-7 px-2 text-xs border border-gray-300 rounded">
+                     </div>
+                     <div>
+                         <label for="perf_spawn_rate" class="block text-xs text-gray-600 mb-0.5">Spawn Rate</label>
+                         <input type="number" id="perf_spawn_rate" name="perf_spawn_rate" min="1" value="{{ submitted_data.perf_spawn_rate if submitted_data else 1 }}" class="w-full h-7 px-2 text-xs border border-gray-300 rounded">
+                     </div>
+                 </div>
+            </div>
+            {# ZAP Options #}
+             <div id="zapOptions" class="analysis-option-group hidden pl-4 border-l-2 border-gray-200">
+                <h4 class="text-xs font-semibold text-gray-600 mb-1">ZAP Scan Options</h4>
+                <div class="flex items-center">
+                    <input type="checkbox" id="zap_quick_scan" name="zap_quick_scan" class="mr-2 focus:ring-2 focus:ring-blue-500"
+                           {% if submitted_data and submitted_data.get('zap_quick_scan') == 'on' %}checked{% endif %}>
+                    <label for="zap_quick_scan" class="text-xs text-gray-700">Quick Scan (Spider + Active Scan)</label>
+                     <span class="ml-2 text-xs text-gray-500">(Full scan includes AJAX spider)</span>
+                </div>
+            </div>
+            {# GPT4All Options #}
+             <div id="gpt4allOptions" class="analysis-option-group hidden pl-4 border-l-2 border-gray-200">
+                <h4 class="text-xs font-semibold text-gray-600 mb-1">GPT4All Options</h4>
+                 <p class="text-xs text-gray-500">Uses default requirements file for each app.</p>
+             </div>
+            {# Advanced Options #}
+            <div class="pl-4 border-l-2 border-gray-200">
+                <h4 class="text-xs font-semibold text-gray-600 mb-1">Advanced Options</h4>
+                <div>
+                    <label for="task_timeout_override" class="block text-xs text-gray-600 mb-0.5">Task Timeout Override (seconds)</label>
+                    <input type="number" id="task_timeout_override" name="task_timeout_override" min="10" placeholder="Default: 300"
+                           value="{{ submitted_data.task_timeout_override if submitted_data else '' }}"
+                           class="w-1/2 h-7 px-2 text-xs border border-gray-300 rounded">
+                    <span class="ml-2 text-xs text-gray-500">Leave empty for default.</span>
+                </div>
+            </div>
+        </div>
+
+        {# --- Models Selection --- #}
+        <div class="mb-4">
+          <h3 class="text-xs font-medium text-gray-700 mb-2">Select Models <span class="text-red-600">*</span></h3>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-2 bg-gray-50 p-2 border border-gray-200 rounded">
+            {% for model_name in all_models %}
+              <div class="flex items-center">
+                <input type="checkbox" id="model_{{ model_name }}" name="models" value="{{ model_name }}"
+                       class="model-checkbox mr-2 focus:ring-2 focus:ring-blue-500"
+                       {% if submitted_data and model_name in submitted_data.getlist('models') %}checked{% endif %}>
+                <label for="model_{{ model_name }}" class="text-xs text-gray-700">{{ model_name }}</label>
+              </div>
+             {% else %}
+                 <p class="text-xs text-gray-500 col-span-full">No models available.</p>
+            {% endfor %}
+          </div>
+          <p class="models-error-msg hidden text-xs text-red-600 mt-1">Select at least one model</p>
+        </div>
+
+        {# --- App Ranges --- #}
+        <div class="mb-4">
+          <h3 class="text-xs font-medium text-gray-700 mb-2">App Ranges</h3>
+          <p class="text-xs text-gray-500 mb-2">Specify which app numbers to scan for each model. Format: 1-3,5,7-9 (leave empty for all apps)</p>
+          <div id="appRangeFields" class="space-y-2 bg-gray-50 p-3 border border-gray-200 rounded">
+            {% for model_name in all_models %}
+              <div class="app-range-field hidden" data-model="{{ model_name }}">
+                <div class="flex items-center">
+                  <label for="app_range_{{ model_name }}" class="min-w-[100px] text-xs text-gray-700">{{ model_name }}:</label>
+                  <input type="text" id="app_range_{{ model_name }}" name="app_range_{{ model_name }}"
+                        placeholder="e.g., 1-3,5,7-9 (empty for all)"
+                        value="{{ submitted_data.get('app_range_' + model_name) if submitted_data else '' }}"
+                        class="w-full h-8 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                        {# Removed pattern attribute - validation done in JS #}
+                </div>
+                <p class="app-range-error hidden text-xs text-red-600 mt-1">Invalid format. Use numbers, commas, hyphens (e.g., 1-3, 5, 7-9). Ensure start <= end.</p>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        {# --- Form Actions --- #}
+        <div class="flex justify-end space-x-2 border-t border-gray-200 pt-4">
+          <button type="button" id="cancelCreateForm" class="action-btn h-8 px-4 text-xs bg-gray-100 hover:bg-gray-200 rounded focus:ring-2 focus:ring-gray-300 transition">
+            Cancel
+          </button>
+          <button type="submit" id="submitJobBtn" class="action-btn h-8 px-4 text-xs bg-blue-600 text-white hover:bg-blue-700 rounded focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition">
+            Create and Start Job
+          </button>
+        </div>
+      </form> {# --- End Form --- #}
+    </div>
+  </div>
+
+  {# --- Job Stats --- #}
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
+    <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm text-center">
+      <div class="text-xs text-gray-600">Total Jobs</div>
+      <div class="text-lg font-bold">{{ stats.get('total', jobs|length) }}</div>
+    </div>
+     <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm text-center">
       <div class="text-xs text-gray-600">Pending</div>
       <div class="text-lg font-bold text-gray-700">{{ stats.get('pending', 0) }}</div>
     </div>
-    <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm">
+    <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm text-center">
       <div class="text-xs text-green-600">Running</div>
-      {# Use stats dictionary #}
       <div class="text-lg font-bold text-green-700">{{ stats.get('running', 0) }}</div>
     </div>
-    <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm">
+    <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm text-center">
       <div class="text-xs text-blue-600">Completed</div>
-       {# Use stats dictionary #}
       <div class="text-lg font-bold text-blue-700">{{ stats.get('completed', 0) }}</div>
     </div>
-    <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm">
+    <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm text-center">
       <div class="text-xs text-red-600">Failed/Canceled</div>
-       {# Use stats dictionary #}
       <div class="text-lg font-bold text-red-700">{{ stats.get('failed', 0) + stats.get('canceled', 0) }}</div>
     </div>
   </div>
 
+  {# --- Filters --- #}
   <div class="border border-gray-400 bg-white rounded-md shadow-sm">
     <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
       <h2 class="font-bold text-sm">Filters</h2>
@@ -72,22 +271,23 @@
       </select>
       <select id="analysisTypeFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500" aria-label="Filter by analysis type">
         <option value="all">All Analysis Types</option>
-        {% for type_enum in AnalysisType %} {# Use AnalysisType enum passed from route #}
-          <option value="{{ type_enum.value }}">{{ type_enum.value.replace('_', ' ')|title }}</option>
-        {% endfor %}
+         {% for type in AnalysisType %}
+             <option value="{{ type.value }}">{{ type.value.replace('_', ' ').title() }}</option>
+         {% endfor %}
       </select>
       <select id="statusFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500" aria-label="Filter by status">
         <option value="all">All Statuses</option>
-        {% for status_enum in JobStatus %} {# Use JobStatus enum passed from route #}
-         <option value="{{ status_enum.value }}">{{ status_enum.value|title }}</option>
-        {% endfor %}
+         {% for status in JobStatus %}
+             <option value="{{ status.value }}">{{ status.value.title() }}</option>
+         {% endfor %}
       </select>
-      <button id="clearFilters" class="action-btn h-6 px-2 text-xs border border-gray-300 rounded hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 transition">
+      <button id="clearFilters" class="h-6 px-2 text-xs border border-gray-300 rounded hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 transition">
         Clear Filters
       </button>
     </div>
   </div>
 
+  {# --- Job List Table --- #}
   <div class="border border-gray-400 bg-white rounded-md shadow-sm">
     <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
       <h2 class="font-bold text-sm">Job List</h2>
@@ -115,8 +315,8 @@
               {% for job in jobs %}
                 <tr class="hover:bg-gray-50 job-row"
                     data-job-id="{{ job.id }}"
-                    data-status="{{ job.status.value }}" {# Use enum value #}
-                    data-analysis-types="{{ job.analysis_types|map(attribute='value')|join(',') }}" {# Join enum values #}
+                    data-status="{{ job.status }}"
+                    data-analysis-types="{{ job.analysis_types|join(',') }}"
                     data-models="{{ job.models|join(',') }}"
                     data-name="{{ job.name }}">
                   <td class="border border-gray-300 px-2 py-1 text-xs">{{ job.id }}</td>
@@ -126,67 +326,62 @@
                     </a>
                   </td>
                   <td class="border border-gray-300 px-2 py-1 text-xs">
-                    <span class="px-2 py-0.5 rounded-md text-white capitalize
-                      {% if job.status == JobStatus.RUNNING %}bg-green-600
-                      {% elif job.status == JobStatus.COMPLETED %}bg-blue-600
-                      {% elif job.status == JobStatus.PENDING %}bg-gray-600
-                      {% elif job.status == JobStatus.CANCELED %}bg-yellow-600
-                      {% else %}bg-red-600{% endif %}">
-                      {{ job.status.value }}
+                    <span class="px-2 py-0.5 rounded-md text-white text-[10px] font-semibold
+                      {% if job.status == JobStatus.RUNNING.value %} bg-green-600
+                      {% elif job.status == JobStatus.COMPLETED.value %} bg-blue-600
+                      {% elif job.status == JobStatus.PENDING.value %} bg-gray-500
+                      {% elif job.status == JobStatus.CANCELED.value %} bg-yellow-500
+                      {% else %} bg-red-600 {% endif %}">
+                      {{ job.status.upper() }}
                     </span>
                   </td>
                   <td class="border border-gray-300 px-2 py-1 text-xs">
-                     {# Display multiple analysis types as badges #}
-                     <div class="flex flex-wrap gap-1">
-                        {% for analysis_type in job.analysis_types %}
-                          <span class="px-1.5 py-0.5 rounded text-white text-[10px] capitalize whitespace-nowrap
-                            {% if analysis_type == AnalysisType.FRONTEND_SECURITY %}bg-purple-600
-                            {% elif analysis_type == AnalysisType.BACKEND_SECURITY %}bg-indigo-600
-                            {% elif analysis_type == AnalysisType.PERFORMANCE %}bg-cyan-600
-                            {% elif analysis_type == AnalysisType.GPT4ALL %}bg-orange-600
-                            {% elif analysis_type == AnalysisType.ZAP %}bg-lime-600
-                            {% else %}bg-gray-500{% endif %}">
-                            {{ analysis_type.value.replace('_', ' ') }}
-                          </span>
-                        {% endfor %}
-                     </div>
+                    <div class="flex flex-wrap gap-1">
+                         {% for analysis_type_str in job.analysis_types %}
+                           <span class="px-1.5 py-0.5 rounded text-[10px] font-medium
+                                {% if analysis_type_str == AnalysisType.FRONTEND_SECURITY.value %} bg-purple-100 text-purple-800 border border-purple-300
+                                {% elif analysis_type_str == AnalysisType.BACKEND_SECURITY.value %} bg-indigo-100 text-indigo-800 border border-indigo-300
+                                {% elif analysis_type_str == AnalysisType.PERFORMANCE.value %} bg-pink-100 text-pink-800 border border-pink-300
+                                {% elif analysis_type_str == AnalysisType.GPT4ALL.value %} bg-cyan-100 text-cyan-800 border border-cyan-300
+                                {% elif analysis_type_str == AnalysisType.ZAP.value %} bg-orange-100 text-orange-800 border border-orange-300
+                                {% else %} bg-gray-100 text-gray-800 border border-gray-300 {% endif %}">
+                               {{ analysis_type_str.replace('_', ' ').title() }}
+                           </span>
+                         {% endfor %}
+                    </div>
                   </td>
                   <td class="border border-gray-300 px-2 py-1 text-xs">
                     {{ job.models|join(', ') }}
                   </td>
                   <td class="border border-gray-300 px-2 py-1 text-xs">
-                    {# Use the pre-formatted date string from the job object #}
-                    {{ job.created_at_formatted }}
+                    {{ job.created_at_formatted if job.created_at_formatted else 'N/A' }}
                   </td>
                   <td class="border border-gray-300 px-2 py-1 text-xs">
-                    <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden" title="{{ job.completed_tasks }}/{{ job.total_tasks }} tasks">
-                      <div class="bg-blue-600 rounded-full h-2 transition-all duration-300" style="width: {{ (job.completed_tasks / job.total_tasks * 100) if job.total_tasks > 0 else 0 }}%"></div>
+                    {% set percent = (job.completed_tasks / job.total_tasks * 100) if job.total_tasks > 0 else (100 if job.status == JobStatus.COMPLETED.value else 0) %}
+                    <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden" title="{{ job.completed_tasks }}/{{ job.total_tasks }}">
+                      <div class="bg-blue-600 rounded-full h-2 transition-all duration-300" style="width: {{ percent }}%"></div>
                     </div>
-                    <span class="text-[10px] text-gray-600">{{ job.completed_tasks }}/{{ job.total_tasks }}</span>
+                    <span class="text-[10px] text-gray-600">{{ '%d%%' % percent }}</span>
                   </td>
                   <td class="border border-gray-300 px-2 py-1 text-xs">
                     <div class="flex space-x-1">
                       <a href="{{ url_for('batch_analysis.view_job', job_id=job.id) }}" class="action-btn h-6 px-2 text-xs focus:ring-2 focus:ring-blue-500 transition">
                         View
                       </a>
-                      {% if job.status == JobStatus.RUNNING %}
+                      {% if job.status == JobStatus.RUNNING.value %}
                         <button class="cancel-job-btn action-btn h-6 px-2 text-xs bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 transition" data-job-id="{{ job.id }}" aria-label="Cancel job {{ job.id }}">
                           Cancel
                         </button>
+                      {% elif job.status != JobStatus.PENDING.value %}
+                         <button class="delete-job-btn action-btn h-6 px-2 text-xs bg-gray-500 text-white hover:bg-gray-600 focus:ring-2 focus:ring-gray-400 transition" data-job-id="{{ job.id }}" aria-label="Delete job {{ job.id }}">
+                           Delete
+                         </button>
                       {% endif %}
-                       {# Add delete button for non-running jobs #}
-                       {% if job.status != JobStatus.RUNNING %}
-                        <form method="POST" action="{{ url_for('batch_analysis.delete_job_api', job_id=job.id) }}" onsubmit="return confirm('Are you sure you want to delete this job and all its results?');" class="inline">
-                            <button type="submit" class="action-btn h-6 px-2 text-xs bg-gray-500 text-white hover:bg-gray-600 focus:ring-2 focus:ring-gray-400 transition" aria-label="Delete job {{ job.id }}">
-                                Delete
-                            </button>
-                        </form>
-                       {% endif %}
                     </div>
                   </td>
                 </tr>
               {% endfor %}
-              <tr id="noResultsRow" class="hidden">
+              <tr id="noJobsRow" class="hidden">
                 <td colspan="8" class="border border-gray-300 px-2 py-4 text-xs text-center text-gray-500">
                   No jobs match your current filters
                 </td>
@@ -197,75 +392,341 @@
       {% else %}
         <div class="p-4 text-center border border-gray-300 rounded-md">
           <p class="text-xs text-gray-600">No batch jobs found</p>
-          <a href="{{ url_for('batch_analysis.create_batch_job') }}" class="mt-2 inline-block action-btn h-6 px-2 text-xs bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition">
+          <button id="noJobsCreateBtn" class="mt-2 inline-block action-btn h-6 px-2 text-xs bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition">
             Create First Job
-          </a>
+          </button>
         </div>
       {% endif %}
     </div>
   </div>
 
-  <div id="toastContainer" class="fixed bottom-4 right-4 z-50"></div>
+  <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  console.log("Batch Dashboard DOM loaded."); // LOG: DOM Loaded
+
+  // Initialize form validation and controls
+  setupBatchForm();
+
   // Set up filters
   setupFilters();
 
-  // Set up job handling (cancel button)
+  // Set up job handling (cancel/delete)
   setupJobHandling();
 
+  function setupBatchForm() {
+    console.log("Setting up batch form..."); // LOG: Setup Form Start
+    const form = document.getElementById('batchJobForm');
+    const toggleBtn = document.getElementById('toggleCreateForm');
+    const createForm = document.getElementById('createJobForm');
+    const cancelBtn = document.getElementById('cancelCreateForm');
+    const noJobsCreateBtn = document.getElementById('noJobsCreateBtn');
+    const scanTypeRadios = document.querySelectorAll('.scan-type-radio');
+    const otherAnalysisCheckboxes = document.querySelectorAll('.analysis-checkbox-other');
+    const optionGroups = {
+        'frontend_security': document.getElementById('frontendSecurityOptions'),
+        'backend_security': document.getElementById('backendSecurityOptions'),
+        'performance': document.getElementById('performanceOptions'),
+        'gpt4all': document.getElementById('gpt4allOptions'),
+        'zap': document.getElementById('zapOptions')
+    };
+    const modelCheckboxes = document.querySelectorAll('.model-checkbox');
+    const appRangeFields = document.querySelectorAll('.app-range-field');
+    const submitBtn = document.getElementById('submitJobBtn');
+
+    function updateAnalysisOptionsVisibility() {
+        // console.log("Updating analysis options visibility..."); // LOG: Update Options Visibility
+        Object.values(optionGroups).forEach(group => {
+            if (group) group.classList.add('hidden');
+        });
+        const selectedScanType = document.querySelector('input[name="scan_type"]:checked')?.value;
+        if (selectedScanType === 'frontend' || selectedScanType === 'both') {
+            optionGroups['frontend_security']?.classList.remove('hidden');
+            // console.log("Showing Frontend Security options."); // LOG
+        }
+        if (selectedScanType === 'backend' || selectedScanType === 'both') {
+            optionGroups['backend_security']?.classList.remove('hidden');
+            // console.log("Showing Backend Security options."); // LOG
+        }
+        otherAnalysisCheckboxes.forEach(cb => {
+            if (cb.checked) {
+                const typeValue = cb.value;
+                const group = optionGroups[typeValue];
+                if (group) {
+                    group.classList.remove('hidden');
+                    // console.log(`Showing ${typeValue} options.`); // LOG
+                }
+            }
+        });
+    }
+
+    if (toggleBtn && createForm) {
+      toggleBtn.addEventListener('click', function() {
+        console.log("Toggle Create Form button clicked."); // LOG: Toggle Button Click
+        const isHidden = createForm.classList.contains('hidden');
+        createForm.classList.toggle('hidden');
+        toggleBtn.innerHTML = isHidden
+          ? '<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Cancel'
+          : '<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>New Batch Job';
+        toggleBtn.setAttribute('aria-expanded', !isHidden);
+        createForm.setAttribute('aria-hidden', isHidden);
+        if (!isHidden) setTimeout(() => createForm.querySelector('input, select, textarea')?.focus(), 100);
+        updateAnalysisOptionsVisibility();
+      });
+    }
+
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', function() {
+        console.log("Cancel Create Form button clicked."); // LOG: Cancel Button Click
+        createForm.classList.add('hidden');
+        toggleBtn.innerHTML = '<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>New Batch Job';
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        createForm.setAttribute('aria-hidden', 'true');
+        toggleBtn.focus();
+      });
+    }
+
+    if (noJobsCreateBtn) {
+      noJobsCreateBtn.addEventListener('click', function() {
+        console.log("No Jobs Create button clicked."); // LOG: No Jobs Create Click
+        createForm.classList.remove('hidden');
+        toggleBtn.innerHTML = '<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Cancel';
+        toggleBtn.setAttribute('aria-expanded', 'true');
+        createForm.setAttribute('aria-hidden', 'false');
+        setTimeout(() => createForm.querySelector('input, select, textarea')?.focus(), 100);
+        updateAnalysisOptionsVisibility();
+      });
+    }
+
+    scanTypeRadios.forEach(radio => {
+        radio.addEventListener('change', updateAnalysisOptionsVisibility);
+    });
+    otherAnalysisCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateAnalysisOptionsVisibility);
+    });
+
+    function updateAppRangeFields() {
+      const selectedModels = Array.from(modelCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value);
+      appRangeFields.forEach(function(field) {
+        const model = field.dataset.model;
+        field.classList.toggle('hidden', !selectedModels.includes(model));
+      });
+      validateModels();
+    }
+
+    modelCheckboxes.forEach(function(checkbox) {
+      checkbox.addEventListener('change', updateAppRangeFields);
+    });
+
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        console.log("Batch job form submission triggered."); // LOG: Form Submit Triggered
+        let isValid = true;
+
+        console.log("Validating models..."); // LOG
+        if (!validateModels()) {
+          console.log("Model validation FAILED."); // LOG
+          isValid = false;
+          document.querySelector('.models-error-msg')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          console.log("Model validation PASSED."); // LOG
+        }
+
+        console.log("Validating analysis types..."); // LOG
+        if (!validateAnalysisTypes()) {
+             console.log("Analysis type validation FAILED."); // LOG
+             isValid = false;
+             document.querySelector('.analysis-types-error-msg')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+             console.log("Analysis type validation PASSED."); // LOG
+        }
+
+        console.log("Validating app ranges..."); // LOG
+        if (!validateAppRanges()) {
+          console.log("App range validation FAILED."); // LOG
+          isValid = false;
+          document.querySelector('.app-range-error:not(.hidden)')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          console.log("App range validation PASSED."); // LOG
+        }
+
+        if (!isValid) {
+             console.log("Form validation failed. Preventing submission."); // LOG: Validation Failed
+             e.preventDefault();
+             return;
+        }
+
+        // *** FIX: Add hidden fields for scan type to ensure proper analysis_types values ***
+        console.log("Adding analysis type hidden fields based on scan_type selection");
+        
+        // Remove any previously added hidden fields to avoid duplicates
+        document.querySelectorAll('.temp-hidden-analysis-type').forEach(el => el.remove());
+        
+        // Get the selected scan type
+        const selectedScanType = document.querySelector('input[name="scan_type"]:checked')?.value;
+        
+        // Add appropriate hidden fields based on scan type
+        if (selectedScanType === 'frontend' || selectedScanType === 'both') {
+          const hiddenField = document.createElement('input');
+          hiddenField.type = 'hidden';
+          hiddenField.name = 'analysis_types';
+          hiddenField.value = 'frontend_security';
+          hiddenField.className = 'temp-hidden-analysis-type';
+          form.appendChild(hiddenField);
+          console.log("Added hidden field for frontend_security");
+        }
+        
+        if (selectedScanType === 'backend' || selectedScanType === 'both') {
+          const hiddenField = document.createElement('input');
+          hiddenField.type = 'hidden';
+          hiddenField.name = 'analysis_types';
+          hiddenField.value = 'backend_security';
+          hiddenField.className = 'temp-hidden-analysis-type';
+          form.appendChild(hiddenField);
+          console.log("Added hidden field for backend_security");
+        }
+        // *** END FIX ***
+
+        console.log("Form validation passed. Preparing to submit."); // LOG: Validation Passed
+        if(submitBtn) {
+            console.log("Disabling submit button and setting loading state."); // LOG: Set Loading State
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Creating...`;
+        }
+        // Allow default form submission to proceed
+        console.log("Allowing form submission to proceed."); // LOG: Allow Submit
+      });
+    }
+
+    function validateModels() {
+      const hasSelectedModels = Array.from(modelCheckboxes).some(cb => cb.checked);
+      document.querySelector('.models-error-msg')?.classList.toggle('hidden', hasSelectedModels);
+      return hasSelectedModels;
+    }
+
+     function validateAnalysisTypes() {
+        const isRadioSelected = document.querySelector('input[name="scan_type"]:checked') !== null;
+        const isOtherCheckboxSelected = Array.from(otherAnalysisCheckboxes).some(cb => cb.checked);
+        const isValid = isRadioSelected || isOtherCheckboxSelected;
+        document.querySelector('.analysis-types-error-msg')?.classList.toggle('hidden', isValid);
+        return isValid;
+    }
+
+    // --- UPDATED App Range Validation ---
+    function validateAppRanges() {
+      const visibleAppRanges = document.querySelectorAll('.app-range-field:not(.hidden) input');
+      let overallIsValid = true;
+
+      visibleAppRanges.forEach(function(input) {
+        const value = input.value.trim();
+        const errorMsg = input.closest('.app-range-field')?.querySelector('.app-range-error');
+        let fieldIsValid = true;
+
+        if (value) { // Only validate if not empty
+            // Split by comma, trim parts, and validate each part
+            const parts = value.split(',');
+            for (const part of parts) {
+                const trimmedPart = part.trim();
+                if (!trimmedPart) continue; // Skip empty parts resulting from multiple commas
+
+                // Check if it's a single number or a range
+                if (trimmedPart.includes('-')) {
+                    // Range validation (e.g., "1-5")
+                    const rangeParts = trimmedPart.split('-');
+                    if (rangeParts.length !== 2) { // Must have exactly one hyphen
+                        fieldIsValid = false; break;
+                    }
+                    const startStr = rangeParts[0].trim();
+                    const endStr = rangeParts[1].trim();
+                    // Check if both parts are valid positive integers
+                    if (!/^\d+$/.test(startStr) || !/^\d+$/.test(endStr)) {
+                        fieldIsValid = false; break;
+                    }
+                    const start = parseInt(startStr, 10);
+                    const end = parseInt(endStr, 10);
+                    // Check if numbers are positive and start <= end
+                    if (start <= 0 || end <= 0 || start > end) {
+                        fieldIsValid = false; break;
+                    }
+                } else {
+                    // Single number validation (e.g., "7")
+                    // Check if it's a valid positive integer
+                    if (!/^\d+$/.test(trimmedPart) || parseInt(trimmedPart, 10) <= 0) {
+                        fieldIsValid = false; break;
+                    }
+                }
+            } // End loop through parts
+        } // End if(value)
+
+        // Toggle error message visibility based on field validity
+        if (errorMsg) {
+            errorMsg.classList.toggle('hidden', fieldIsValid);
+        }
+        // If this field is invalid, the overall validation fails
+        if (!fieldIsValid) {
+            overallIsValid = false;
+        }
+      }); // End loop through inputs
+
+      return overallIsValid;
+    }
+
+
+    // Validate app ranges immediately when the input changes
+    appRangeFields.forEach(function(field) {
+      const input = field.querySelector('input');
+      if (input) {
+        input.addEventListener('input', validateAppRanges); // Re-validate all visible on input change
+      }
+    });
+
+    updateAppRangeFields();
+    updateAnalysisOptionsVisibility();
+    console.log("Batch form setup complete."); // LOG: Setup Form End
+  }
+
   function setupFilters() {
+    // console.log("Setting up filters..."); // LOG: Setup Filters
     const searchInput = document.getElementById('searchJobs');
     const modelFilter = document.getElementById('modelFilter');
-    const analysisTypeFilter = document.getElementById('analysisTypeFilter'); // Added
+    const analysisTypeFilter = document.getElementById('analysisTypeFilter');
     const statusFilter = document.getElementById('statusFilter');
     const clearFiltersBtn = document.getElementById('clearFilters');
     const jobRows = document.querySelectorAll('.job-row');
-    const noResultsRow = document.getElementById('noResultsRow');
+    const noJobsRow = document.getElementById('noJobsRow');
     const visibleJobsCount = document.getElementById('visibleJobsCount');
 
     const applyFilters = function() {
+      // console.log("Applying filters..."); // LOG: Apply Filters
       const searchText = searchInput?.value?.toLowerCase() || '';
       const selectedModel = modelFilter?.value || 'all';
-      const selectedAnalysisType = analysisTypeFilter?.value || 'all'; // Added
+      const selectedAnalysisType = analysisTypeFilter?.value || 'all';
       const selectedStatus = statusFilter?.value || 'all';
-
       let visibleCount = 0;
 
       jobRows.forEach(function(row) {
         const models = row.dataset.models?.toLowerCase() || '';
-        const analysisTypes = row.dataset.analysisTypes?.toLowerCase() || ''; // Added (comma-separated)
+        const analysisTypes = row.dataset.analysisTypes?.toLowerCase() || '';
         const status = row.dataset.status?.toLowerCase() || '';
         const name = row.dataset.name?.toLowerCase() || '';
-
-        const matchesSearch = !searchText ||
-                              name.includes(searchText) ||
-                              row.textContent.toLowerCase().includes(searchText);
+        const matchesSearch = !searchText || name.includes(searchText) || row.textContent.toLowerCase().includes(searchText);
         const matchesModel = selectedModel === 'all' || models.includes(selectedModel.toLowerCase());
-        // Updated: Check if selected type is in the comma-separated list
-        const matchesAnalysisType = selectedAnalysisType === 'all' || analysisTypes.split(',').includes(selectedAnalysisType);
+        const matchesAnalysisType = selectedAnalysisType === 'all' || analysisTypes.includes(selectedAnalysisType.toLowerCase());
         const matchesStatus = selectedStatus === 'all' || status === selectedStatus;
-
-        const isVisible = matchesSearch && matchesModel && matchesAnalysisType && matchesStatus; // Added analysis type match
+        const isVisible = matchesSearch && matchesModel && matchesAnalysisType && matchesStatus;
         row.style.display = isVisible ? '' : 'none';
-
         if (isVisible) visibleCount++;
       });
 
-      // Update counter
-      if (visibleJobsCount) {
-        visibleJobsCount.textContent = visibleCount;
-      }
-
-      // Show/hide no results row
-      if (noResultsRow) {
-        noResultsRow.style.display = visibleCount === 0 ? 'table-row' : 'none';
-      }
+      if (visibleJobsCount) visibleJobsCount.textContent = visibleCount;
+      if (noJobsRow) noJobsRow.style.display = (visibleCount === 0 && jobRows.length > 0) ? 'table-row' : 'none';
+      // console.log(`Filtering complete. Visible jobs: ${visibleCount}`); // LOG: Filter Complete
     };
 
-    // Add event listeners with debounce for search
     let searchTimeout;
     if (searchInput) {
       searchInput.addEventListener('input', function() {
@@ -274,126 +735,156 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
 
-    // Add event listeners for filters
-    [modelFilter, analysisTypeFilter, statusFilter].forEach(function(filter) { // Added analysisTypeFilter
-      if (filter) {
-        filter.addEventListener('change', applyFilters);
-      }
+    [modelFilter, analysisTypeFilter, statusFilter].forEach(function(filter) {
+      if (filter) filter.addEventListener('change', applyFilters);
     });
 
-    // Clear filters button
     if (clearFiltersBtn) {
       clearFiltersBtn.addEventListener('click', function() {
+        // console.log("Clear filters button clicked."); // LOG: Clear Filters Click
         if (searchInput) searchInput.value = '';
         if (modelFilter) modelFilter.value = 'all';
-        if (analysisTypeFilter) analysisTypeFilter.value = 'all'; // Added
+        if (analysisTypeFilter) analysisTypeFilter.value = 'all';
         if (statusFilter) statusFilter.value = 'all';
         applyFilters();
         if (searchInput) searchInput.focus();
       });
     }
 
-    // Apply filters on initial load
-    applyFilters();
+    applyFilters(); // Apply on load
+    // console.log("Filter setup complete."); // LOG: Filter Setup End
   }
 
   function setupJobHandling() {
-    // Cancel job functionality
-    const cancelBtns = document.querySelectorAll('.cancel-job-btn');
+    // console.log("Setting up job handling (cancel/delete)..."); // LOG: Setup Job Handling
+    const jobsTableBody = document.getElementById('jobsTableBody');
 
-    cancelBtns.forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        if (!confirm('Are you sure you want to cancel this job?')) {
-          return;
-        }
+    if (jobsTableBody) {
+        jobsTableBody.addEventListener('click', function(event) {
+            const target = event.target;
+            const cancelButton = target.closest('.cancel-job-btn');
+            const deleteButton = target.closest('.delete-job-btn');
 
-        const jobId = this.dataset.jobId;
-        const button = this;
-
-        button.disabled = true;
-        button.innerHTML = `
-          <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>Canceling...`;
-
-        // Send cancel request
-        fetch(`/batch/job/${jobId}/cancel`, { // Ensure URL prefix is correct
-          method: 'POST',
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Content-Type': 'application/json'
-            // ** REMOVED Jinja expression causing error **
-            // Add CSRF token if needed: 'X-CSRFToken': '...'
-          }
-        })
-        .then(response => {
-            if (!response.ok) {
-                // Try to parse error from JSON response if possible
-                return response.json().then(errData => {
-                    throw new Error(errData.error || `HTTP error ${response.status}`);
-                }).catch(() => {
-                    // Fallback if JSON parsing fails
-                    throw new Error(`HTTP error ${response.status}`);
-                });
+            if (cancelButton) {
+                // console.log("Cancel job button clicked.", { jobId: cancelButton.dataset.jobId }); // LOG: Cancel Click
+                handleCancelJob(cancelButton);
+            } else if (deleteButton) {
+                // console.log("Delete job button clicked.", { jobId: deleteButton.dataset.jobId }); // LOG: Delete Click
+                handleDeleteJob(deleteButton);
             }
-            return response.json();
-        })
-        .then(data => {
-          // Check for explicit success or specific status
-          if (data.status === 'canceled' || data.success === true) {
-            showToast('Job marked for cancellation.', 'info');
-            // Consider updating the row status visually instead of full reload
-             const row = button.closest('tr');
-             if (row) {
-                 const statusCell = row.querySelector('td:nth-child(3) span'); // Assuming status is 3rd cell
-                 if (statusCell) {
-                     statusCell.textContent = 'canceling'; // Or 'canceled'
-                     statusCell.className = 'px-2 py-0.5 rounded-md text-white capitalize bg-yellow-600';
-                 }
-             }
-             button.remove(); // Remove cancel button after request
-            // Optionally reload after a delay: setTimeout(() => window.location.reload(), 1500);
-          } else {
-            showToast(data.error || 'Failed to cancel job', 'error');
-            button.disabled = false;
-            button.innerHTML = 'Cancel';
-          }
-        })
-        .catch(error => {
-          console.error('Error canceling job:', error);
-          showToast('Error: ' + error.message, 'error');
+        });
+    } else {
+        // console.log("Jobs table body not found."); // LOG
+    }
+
+    function handleCancelJob(button) {
+      if (!confirm('Are you sure you want to cancel this job?')) {
+          // console.log("Cancel confirmation denied."); // LOG
+          return;
+      }
+      // console.log("Cancel confirmation accepted."); // LOG
+
+      const jobId = button.dataset.jobId;
+      button.disabled = true;
+      button.innerHTML = `<svg class="animate-spin w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
+      // console.log(`Sending cancel request for job ${jobId}...`); // LOG: Send Cancel Request
+      fetch(`/batch-analysis/job/${jobId}/cancel`, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/json' }
+      })
+      .then(response => response.json().then(data => ({ ok: response.ok, status: response.status, data })))
+      .then(({ ok, status, data }) => {
+        // console.log(`Cancel response received for job ${jobId}:`, { ok, status, data }); // LOG: Cancel Response
+        if (ok && data.success && data.status === 'canceling') {
+          showToast('Job marked for cancellation.', 'info');
+          setTimeout(() => window.location.reload(), 1500);
+        } else {
+          showToast(data.error || data.message || `Failed to cancel job (Status: ${status})`, 'error');
           button.disabled = false;
           button.innerHTML = 'Cancel';
-        });
+        }
+      })
+      .catch(error => {
+        console.error('Error canceling job:', error); // LOG: Cancel Error
+        showToast('Network error canceling job.', 'error');
+        button.disabled = false;
+        button.innerHTML = 'Cancel';
       });
-    });
+    }
+
+    function handleDeleteJob(button) {
+        if (!confirm('Are you sure you want to delete this job and all its results? This cannot be undone.')) {
+             // console.log("Delete confirmation denied."); // LOG
+             return;
+        }
+        // console.log("Delete confirmation accepted."); // LOG
+
+        const jobId = button.dataset.jobId;
+        const row = button.closest('tr');
+        button.disabled = true;
+        button.innerHTML = `<svg class="animate-spin w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
+        // console.log(`Sending delete request for job ${jobId}...`); // LOG: Send Delete Request
+        fetch(`/batch-analysis/job/${jobId}/delete`, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/json' }
+        })
+        .then(response => response.json().then(data => ({ ok: response.ok, status: response.status, data })))
+        .then(({ ok, status, data }) => {
+             // console.log(`Delete response received for job ${jobId}:`, { ok, status, data }); // LOG: Delete Response
+            if (ok && data.success) {
+                showToast(data.message || `Job ${jobId} deleted.`, 'success');
+                row?.remove();
+                const visibleCountEl = document.getElementById('visibleJobsCount');
+                const jobsCounterEl = document.getElementById('jobsCounter');
+                if (visibleCountEl && jobsCounterEl) {
+                    const currentVisible = parseInt(visibleCountEl.textContent || '0', 10);
+                    const totalMatch = jobsCounterEl.textContent.match(/of (\d+)/);
+                    const currentTotal = totalMatch ? parseInt(totalMatch[1], 10) : 0;
+                    const newVisible = Math.max(0, currentVisible - 1);
+                    const newTotal = Math.max(0, currentTotal - 1);
+                    visibleCountEl.textContent = newVisible;
+                    jobsCounterEl.textContent = `Showing ${newVisible} of ${newTotal} jobs`;
+                }
+            } else {
+                showToast(data.error || data.message || `Failed to delete job (Status: ${status})`, 'error');
+                button.disabled = false;
+                button.innerHTML = 'Delete';
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting job:', error); // LOG: Delete Error
+            showToast('Network error deleting job.', 'error');
+            button.disabled = false;
+            button.innerHTML = 'Delete';
+        });
+    }
+    // console.log("Job handling setup complete."); // LOG: Job Handling End
   }
 
-  // Toast notification helper (reuse from view_job.html or define globally)
   window.showToast = function(message, type = 'success') {
+    // console.log(`Showing toast: [${type}] ${message}`); // LOG: Show Toast
     if (!message) return;
     let toastContainer = document.getElementById('toastContainer');
     if (!toastContainer) {
-      toastContainer = document.createElement('div');
-      toastContainer.id = 'toastContainer';
-      toastContainer.className = 'fixed bottom-4 right-4 z-50 flex flex-col gap-2';
-      document.body.appendChild(toastContainer);
-    }
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toastContainer';
+        toastContainer.className = 'fixed bottom-4 right-4 z-50 flex flex-col gap-2';
+        document.body.appendChild(toastContainer);
+     }
     const toast = document.createElement('div');
     toast.className = `px-4 py-2 rounded-md shadow-md text-sm ${
       type === 'success' ? 'bg-green-100 border border-green-300 text-green-800' :
       type === 'error' ? 'bg-red-100 border border-red-300 text-red-800' :
-      type === 'info' ? 'bg-blue-100 border border-blue-300 text-blue-800' :
-      'bg-gray-100 border border-gray-300 text-gray-800'
+      'bg-blue-100 border border-blue-300 text-blue-800'
     } transition-opacity duration-300`;
     toast.textContent = message;
     toastContainer.appendChild(toast);
-    setTimeout(function() {
+    setTimeout(() => {
       toast.style.opacity = 0;
-      setTimeout(function() { toast.remove(); }, 300);
+      setTimeout(() => toast.remove(), 300);
     }, 3000);
-    return toast;
   };
 });
 </script>
