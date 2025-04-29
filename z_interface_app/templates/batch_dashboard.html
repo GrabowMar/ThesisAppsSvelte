@@ -2,175 +2,63 @@
 
 {% block content %}
 <div class="space-y-2 max-w-7xl mx-auto">
-  <!-- Dashboard Header Section -->
   <div class="border border-gray-400 bg-white p-2 rounded-md">
     <div class="flex items-center justify-between">
       <div>
-        <h1 class="font-bold text-xl text-gray-900">Batch Security Analysis</h1>
-        <p class="text-xs text-gray-600 mt-1">Run security analysis on multiple applications at once</p>
+        <h1 class="font-bold text-xl text-gray-900">Batch Analysis Dashboard</h1>
+        <p class="text-xs text-gray-600 mt-1">Manage and monitor batch analysis jobs</p>
       </div>
       <div class="flex items-center space-x-2">
         <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs flex items-center">
           <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
           </svg>
-          Dashboard
+          Main Dashboard
         </a>
-        <button id="toggleCreateForm" class="action-btn h-6 px-2 text-xs flex items-center bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150" aria-expanded="false" aria-controls="createJobForm">
-          <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {# Link to create job page instead of toggle #}
+        <a href="{{ url_for('batch_analysis.create_batch_job') }}" class="action-btn h-6 px-2 text-xs flex items-center bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150">
+           <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
           </svg>
           New Batch Job
-        </button>
+        </a>
       </div>
     </div>
   </div>
 
-  <!-- Job Creation Form (hidden by default) -->
-  <div id="createJobForm" class="border border-gray-400 bg-white rounded-md shadow-md hidden" aria-hidden="true">
-    <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-      <h2 class="font-bold text-sm">Create New Batch Job</h2>
-    </div>
-    <div class="p-4">
-      <form method="POST" action="{{ url_for('batch_analysis.create_batch_job') }}" id="batchJobForm" novalidate>
-        <!-- Basic Information -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label for="name" class="block text-xs font-medium text-gray-700 mb-1">Job Name <span class="text-red-600">*</span></label>
-            <input type="text" id="name" name="name" 
-                  class="w-full h-8 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  value="{% if model %}Security Scan - {{ model }}{% elif selected_model %}Security Scan - {{ selected_model }}{% else %}Security Scan{% endif %}"
-                  required aria-required="true">
-            <p class="form-error-msg hidden text-xs text-red-600 mt-1">Job name is required</p>
-          </div>
-          <div>
-            <label for="description" class="block text-xs font-medium text-gray-700 mb-1">Description</label>
-            <input type="text" id="description" name="description" 
-                  class="w-full h-8 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  value="{% if model %}Security analysis for {{ model }} applications{% elif selected_model %}Security analysis for {{ selected_model }} applications{% else %}Comprehensive security analysis{% endif %}">
-          </div>
-        </div>
-
-        <!-- Scan Type -->
-        <div class="mb-4">
-          <h3 class="text-xs font-medium text-gray-700 mb-2">Scan Type <span class="text-red-600">*</span></h3>
-          <div class="flex flex-wrap gap-4">
-            <div class="flex items-center">
-              <input type="radio" id="scan_type_frontend" name="scan_type" value="frontend" class="mr-2 focus:ring-2 focus:ring-blue-500" checked>
-              <label for="scan_type_frontend" class="text-xs text-gray-700">
-                Frontend
-                <span class="ml-1 text-xs text-gray-500">(Analyze JavaScript/HTML/CSS files)</span>
-              </label>
-            </div>
-            <div class="flex items-center">
-              <input type="radio" id="scan_type_backend" name="scan_type" value="backend" class="mr-2 focus:ring-2 focus:ring-blue-500">
-              <label for="scan_type_backend" class="text-xs text-gray-700">
-                Backend
-                <span class="ml-1 text-xs text-gray-500">(Analyze Python files)</span>
-              </label>
-            </div>
-            <div class="flex items-center">
-              <input type="radio" id="scan_type_both" name="scan_type" value="both" class="mr-2 focus:ring-2 focus:ring-blue-500">
-              <label for="scan_type_both" class="text-xs text-gray-700">
-                Both
-                <span class="ml-1 text-xs text-gray-500">(Analyze both Frontend and Backend)</span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Scan Options -->
-        <div class="mb-4">
-          <h3 class="text-xs font-medium text-gray-700 mb-2">Scan Options</h3>
-          <div class="flex items-center">
-            <input type="checkbox" id="full_scan" name="full_scan" class="mr-2 focus:ring-2 focus:ring-blue-500">
-            <label for="full_scan" class="text-xs text-gray-700">
-              Full Scan (Run all analysis tools)
-            </label>
-            <div class="ml-2 text-xs text-gray-500">
-              (Quick scan only runs essential tools)
-            </div>
-          </div>
-        </div>
-
-        <!-- Model Selection -->
-        <div class="mb-4">
-          <h3 class="text-xs font-medium text-gray-700 mb-2">Select Models <span class="text-red-600">*</span></h3>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {% for model_name in all_models %}
-              <div class="flex items-center">
-                <input type="checkbox" id="model_{{ model_name }}" name="models" value="{{ model_name }}" 
-                       class="model-checkbox mr-2 focus:ring-2 focus:ring-blue-500" {% if model_name == model or model_name == selected_model %}checked{% endif %}>
-                <label for="model_{{ model_name }}" class="text-xs text-gray-700">{{ model_name }}</label>
-              </div>
-            {% endfor %}
-          </div>
-          <p class="models-error-msg hidden text-xs text-red-600 mt-1">Select at least one model</p>
-        </div>
-
-        <!-- App Ranges (Dynamic) -->
-        <div class="mb-4">
-          <h3 class="text-xs font-medium text-gray-700 mb-2">App Ranges</h3>
-          <p class="text-xs text-gray-500 mb-2">Specify which app numbers to scan for each model. Format: 1-3,5,7-9 (leave empty for all apps)</p>
-          
-          <div id="appRangeFields" class="space-y-2">
-            {% for model_name in all_models %}
-              <div class="app-range-field {% if model_name != model and model_name != selected_model %}hidden{% endif %}" data-model="{{ model_name }}">
-                <div class="flex items-center">
-                  <label for="app_range_{{ model_name }}" class="min-w-[100px] text-xs text-gray-700">{{ model_name }}:</label>
-                  <input type="text" id="app_range_{{ model_name }}" name="app_range_{{ model_name }}" 
-                        placeholder="e.g., 1-3,5,7-9 (empty for all)"
-                        value="{% if model_name == model and app_num %}{{ app_num }}{% endif %}"
-                        pattern="^(\d+(-\d+)?)(,\d+(-\d+)?)*$"
-                        class="w-full h-8 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <p class="app-range-error hidden text-xs text-red-600 mt-1">Invalid format. Use pattern like: 1-3,5,7-9</p>
-              </div>
-            {% endfor %}
-          </div>
-        </div>
-
-        <!-- Submit Button -->
-        <div class="flex justify-end space-x-2">
-          <button type="button" id="cancelCreateForm" class="action-btn h-8 px-4 text-xs rounded focus:ring-2 focus:ring-gray-300 transition">
-            Cancel
-          </button>
-          <button type="submit" id="submitJobBtn" class="action-btn h-8 px-4 text-xs bg-blue-600 text-white hover:bg-blue-700 rounded focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition">
-            Create and Start Job
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Dashboard Stats Overview -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
     <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm">
       <div class="text-xs text-gray-600">Total Jobs</div>
       <div class="text-lg font-bold">{{ jobs|length }}</div>
     </div>
-    <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm">
-      <div class="text-xs text-green-600">Active Jobs</div>
-      <div class="text-lg font-bold text-green-700">{{ active_jobs }}</div>
+     <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm">
+      <div class="text-xs text-gray-600">Pending</div>
+      <div class="text-lg font-bold text-gray-700">{{ stats.get('pending', 0) }}</div>
     </div>
     <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm">
-      <div class="text-xs text-blue-600">Completed Jobs</div>
-      <div class="text-lg font-bold text-blue-700">{{ completed_jobs }}</div>
+      <div class="text-xs text-green-600">Running</div>
+      {# Use stats dictionary #}
+      <div class="text-lg font-bold text-green-700">{{ stats.get('running', 0) }}</div>
     </div>
     <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm">
-      <div class="text-xs text-red-600">Failed Jobs</div>
-      <div class="text-lg font-bold text-red-700">{{ failed_jobs }}</div>
+      <div class="text-xs text-blue-600">Completed</div>
+       {# Use stats dictionary #}
+      <div class="text-lg font-bold text-blue-700">{{ stats.get('completed', 0) }}</div>
+    </div>
+    <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm">
+      <div class="text-xs text-red-600">Failed/Canceled</div>
+       {# Use stats dictionary #}
+      <div class="text-lg font-bold text-red-700">{{ stats.get('failed', 0) + stats.get('canceled', 0) }}</div>
     </div>
   </div>
 
-  <!-- Filters Section -->
   <div class="border border-gray-400 bg-white rounded-md shadow-sm">
     <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
       <h2 class="font-bold text-sm">Filters</h2>
     </div>
     <div class="p-2 flex flex-wrap items-center gap-2">
       <div class="relative">
-        <input type="text" id="searchJobs" placeholder="Search jobs..." 
+        <input type="text" id="searchJobs" placeholder="Search jobs..."
              class="h-6 pl-6 pr-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
         <svg class="w-3 h-3 absolute left-2 top-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -182,27 +70,24 @@
           <option value="{{ model_name }}">{{ model_name }}</option>
         {% endfor %}
       </select>
-      <select id="scanTypeFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500" aria-label="Filter by scan type">
-        <option value="all">All Scan Types</option>
-        <option value="frontend">Frontend</option>
-        <option value="backend">Backend</option>
-        <option value="both">Both</option>
+      <select id="analysisTypeFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500" aria-label="Filter by analysis type">
+        <option value="all">All Analysis Types</option>
+        {% for type_enum in AnalysisType %} {# Use AnalysisType enum passed from route #}
+          <option value="{{ type_enum.value }}">{{ type_enum.value.replace('_', ' ')|title }}</option>
+        {% endfor %}
       </select>
       <select id="statusFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500" aria-label="Filter by status">
         <option value="all">All Statuses</option>
-        <option value="running">Running</option>
-        <option value="completed">Completed</option>
-        <option value="failed">Failed</option>
-        <option value="canceled">Canceled</option>
-        <option value="pending">Pending</option>
+        {% for status_enum in JobStatus %} {# Use JobStatus enum passed from route #}
+         <option value="{{ status_enum.value }}">{{ status_enum.value|title }}</option>
+        {% endfor %}
       </select>
-      <button id="clearFilters" class="h-6 px-2 text-xs border border-gray-300 rounded hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 transition">
+      <button id="clearFilters" class="action-btn h-6 px-2 text-xs border border-gray-300 rounded hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 transition">
         Clear Filters
       </button>
     </div>
   </div>
 
-  <!-- Job List -->
   <div class="border border-gray-400 bg-white rounded-md shadow-sm">
     <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
       <h2 class="font-bold text-sm">Job List</h2>
@@ -219,7 +104,7 @@
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">ID</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Name</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Status</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Scan Type</th>
+                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Analysis Types</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Models</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Created</th>
                 <th class="border border-gray-300 px-2 py-1 text-xs text-left">Progress</th>
@@ -228,7 +113,12 @@
             </thead>
             <tbody id="jobsTableBody">
               {% for job in jobs %}
-                <tr class="hover:bg-gray-50 job-row" data-job-id="{{ job.id }}" data-status="{{ job.status }}" data-scan-type="{{ job.scan_type }}" data-models="{{ job.models|join(',') }}" data-name="{{ job.name }}">
+                <tr class="hover:bg-gray-50 job-row"
+                    data-job-id="{{ job.id }}"
+                    data-status="{{ job.status.value }}" {# Use enum value #}
+                    data-analysis-types="{{ job.analysis_types|map(attribute='value')|join(',') }}" {# Join enum values #}
+                    data-models="{{ job.models|join(',') }}"
+                    data-name="{{ job.name }}">
                   <td class="border border-gray-300 px-2 py-1 text-xs">{{ job.id }}</td>
                   <td class="border border-gray-300 px-2 py-1 text-xs font-medium">
                     <a href="{{ url_for('batch_analysis.view_job', job_id=job.id) }}" class="text-blue-700 hover:underline">
@@ -236,55 +126,62 @@
                     </a>
                   </td>
                   <td class="border border-gray-300 px-2 py-1 text-xs">
-                    <span class="px-2 py-0.5 rounded-md text-white
-                      {% if job.status == 'running' %}
-                        bg-green-600
-                      {% elif job.status == 'completed' %}
-                        bg-blue-600
-                      {% elif job.status == 'pending' %}
-                        bg-gray-600
-                      {% elif job.status == 'canceled' %}
-                        bg-yellow-600
-                      {% else %}
-                        bg-red-600
-                      {% endif %}">
-                      {{ job.status }}
+                    <span class="px-2 py-0.5 rounded-md text-white capitalize
+                      {% if job.status == JobStatus.RUNNING %}bg-green-600
+                      {% elif job.status == JobStatus.COMPLETED %}bg-blue-600
+                      {% elif job.status == JobStatus.PENDING %}bg-gray-600
+                      {% elif job.status == JobStatus.CANCELED %}bg-yellow-600
+                      {% else %}bg-red-600{% endif %}">
+                      {{ job.status.value }}
                     </span>
                   </td>
                   <td class="border border-gray-300 px-2 py-1 text-xs">
-                    <span class="px-2 py-0.5 rounded-md 
-                      {% if job.scan_type == 'frontend' %}
-                        bg-purple-100 text-purple-800 border border-purple-700
-                      {% elif job.scan_type == 'backend' %}
-                        bg-indigo-100 text-indigo-800 border border-indigo-700
-                      {% else %}
-                        bg-teal-100 text-teal-800 border border-teal-700
-                      {% endif %}">
-                      {{ job.scan_type }}
-                    </span>
+                     {# Display multiple analysis types as badges #}
+                     <div class="flex flex-wrap gap-1">
+                        {% for analysis_type in job.analysis_types %}
+                          <span class="px-1.5 py-0.5 rounded text-white text-[10px] capitalize whitespace-nowrap
+                            {% if analysis_type == AnalysisType.FRONTEND_SECURITY %}bg-purple-600
+                            {% elif analysis_type == AnalysisType.BACKEND_SECURITY %}bg-indigo-600
+                            {% elif analysis_type == AnalysisType.PERFORMANCE %}bg-cyan-600
+                            {% elif analysis_type == AnalysisType.GPT4ALL %}bg-orange-600
+                            {% elif analysis_type == AnalysisType.ZAP %}bg-lime-600
+                            {% else %}bg-gray-500{% endif %}">
+                            {{ analysis_type.value.replace('_', ' ') }}
+                          </span>
+                        {% endfor %}
+                     </div>
                   </td>
                   <td class="border border-gray-300 px-2 py-1 text-xs">
                     {{ job.models|join(', ') }}
                   </td>
                   <td class="border border-gray-300 px-2 py-1 text-xs">
-                    {{ job.created_at.strftime('%Y-%m-%d %H:%M') if job.created_at else 'N/A' }}
+                    {# Use the pre-formatted date string from the job object #}
+                    {{ job.created_at_formatted }}
                   </td>
                   <td class="border border-gray-300 px-2 py-1 text-xs">
-                    <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                    <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden" title="{{ job.completed_tasks }}/{{ job.total_tasks }} tasks">
                       <div class="bg-blue-600 rounded-full h-2 transition-all duration-300" style="width: {{ (job.completed_tasks / job.total_tasks * 100) if job.total_tasks > 0 else 0 }}%"></div>
                     </div>
-                    <span class="text-xs text-gray-600">{{ job.completed_tasks }}/{{ job.total_tasks }}</span>
+                    <span class="text-[10px] text-gray-600">{{ job.completed_tasks }}/{{ job.total_tasks }}</span>
                   </td>
                   <td class="border border-gray-300 px-2 py-1 text-xs">
                     <div class="flex space-x-1">
                       <a href="{{ url_for('batch_analysis.view_job', job_id=job.id) }}" class="action-btn h-6 px-2 text-xs focus:ring-2 focus:ring-blue-500 transition">
                         View
                       </a>
-                      {% if job.status == 'running' %}
+                      {% if job.status == JobStatus.RUNNING %}
                         <button class="cancel-job-btn action-btn h-6 px-2 text-xs bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 transition" data-job-id="{{ job.id }}" aria-label="Cancel job {{ job.id }}">
                           Cancel
                         </button>
                       {% endif %}
+                       {# Add delete button for non-running jobs #}
+                       {% if job.status != JobStatus.RUNNING %}
+                        <form method="POST" action="{{ url_for('batch_analysis.delete_job_api', job_id=job.id) }}" onsubmit="return confirm('Are you sure you want to delete this job and all its results?');" class="inline">
+                            <button type="submit" class="action-btn h-6 px-2 text-xs bg-gray-500 text-white hover:bg-gray-600 focus:ring-2 focus:ring-gray-400 transition" aria-label="Delete job {{ job.id }}">
+                                Delete
+                            </button>
+                        </form>
+                       {% endif %}
                     </div>
                   </td>
                 </tr>
@@ -300,230 +197,74 @@
       {% else %}
         <div class="p-4 text-center border border-gray-300 rounded-md">
           <p class="text-xs text-gray-600">No batch jobs found</p>
-          <button id="noJobsCreateBtn" class="mt-2 inline-block action-btn h-6 px-2 text-xs bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition">
+          <a href="{{ url_for('batch_analysis.create_batch_job') }}" class="mt-2 inline-block action-btn h-6 px-2 text-xs bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition">
             Create First Job
-          </button>
+          </a>
         </div>
       {% endif %}
     </div>
   </div>
 
-  <!-- Toast notification container -->
   <div id="toastContainer" class="fixed bottom-4 right-4 z-50"></div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Initialize form validation and controls
-  setupBatchForm();
-  
   // Set up filters
   setupFilters();
-  
-  // Set up job handling
+
+  // Set up job handling (cancel button)
   setupJobHandling();
-  
-  function setupBatchForm() {
-    const form = document.getElementById('batchJobForm');
-    const toggleBtn = document.getElementById('toggleCreateForm');
-    const createForm = document.getElementById('createJobForm');
-    const cancelBtn = document.getElementById('cancelCreateForm');
-    const noJobsCreateBtn = document.getElementById('noJobsCreateBtn');
-    
-    // Toggle form visibility
-    if (toggleBtn && createForm) {
-      toggleBtn.addEventListener('click', function() {
-        const isHidden = createForm.classList.contains('hidden');
-        
-        if (isHidden) {
-          createForm.classList.remove('hidden');
-          toggleBtn.innerHTML = '<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Cancel';
-          toggleBtn.setAttribute('aria-expanded', 'true');
-          createForm.setAttribute('aria-hidden', 'false');
-          
-          setTimeout(function() {
-            createForm.querySelector('input, select, textarea').focus();
-          }, 100);
-        } else {
-          createForm.classList.add('hidden');
-          toggleBtn.innerHTML = '<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>New Batch Job';
-          toggleBtn.setAttribute('aria-expanded', 'false');
-          createForm.setAttribute('aria-hidden', 'true');
-        }
-      });
-    }
-    
-    // Cancel button in form
-    if (cancelBtn) {
-      cancelBtn.addEventListener('click', function() {
-        createForm.classList.add('hidden');
-        toggleBtn.innerHTML = '<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>New Batch Job';
-        toggleBtn.setAttribute('aria-expanded', 'false');
-        createForm.setAttribute('aria-hidden', 'true');
-        toggleBtn.focus();
-      });
-    }
-    
-    // No jobs create button
-    if (noJobsCreateBtn) {
-      noJobsCreateBtn.addEventListener('click', function() {
-        createForm.classList.remove('hidden');
-        toggleBtn.innerHTML = '<svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>Cancel';
-        toggleBtn.setAttribute('aria-expanded', 'true');
-        createForm.setAttribute('aria-hidden', 'false');
-        
-        setTimeout(function() {
-          createForm.querySelector('input, select, textarea').focus();
-        }, 100);
-      });
-    }
-    
-    // Monitor model checkboxes to show/hide app range fields
-    const modelCheckboxes = document.querySelectorAll('.model-checkbox');
-    const appRangeFields = document.querySelectorAll('.app-range-field');
-    
-    function updateAppRangeFields() {
-      const selectedModels = Array.from(modelCheckboxes)
-        .filter(cb => cb.checked)
-        .map(cb => cb.value);
-      
-      appRangeFields.forEach(function(field) {
-        const model = field.dataset.model;
-        if (selectedModels.includes(model)) {
-          field.classList.remove('hidden');
-        } else {
-          field.classList.add('hidden');
-        }
-      });
-      
-      // Validate models
-      validateModels();
-    }
-    
-    modelCheckboxes.forEach(function(checkbox) {
-      checkbox.addEventListener('change', updateAppRangeFields);
-    });
-    
-    // Form validation
-    if (form) {
-      form.addEventListener('submit', function(e) {
-        // Validate models
-        if (!validateModels()) {
-          e.preventDefault();
-          document.querySelector('.models-error-msg').scrollIntoView({ behavior: 'smooth', block: 'center' });
-          return;
-        }
-        
-        // Validate app ranges
-        if (!validateAppRanges()) {
-          e.preventDefault();
-          document.querySelector('.app-range-error:not(.hidden)').scrollIntoView({ behavior: 'smooth', block: 'center' });
-          return;
-        }
-        
-        // Set loading state
-        const submitBtn = document.getElementById('submitJobBtn');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = `
-          <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>Creating...`;
-      });
-    }
-    
-    function validateModels() {
-      const hasSelectedModels = Array.from(modelCheckboxes).some(cb => cb.checked);
-      document.querySelector('.models-error-msg').classList.toggle('hidden', hasSelectedModels);
-      return hasSelectedModels;
-    }
-    
-    function validateAppRanges() {
-      const visibleAppRanges = document.querySelectorAll('.app-range-field:not(.hidden) input');
-      let isValid = true;
-      
-      visibleAppRanges.forEach(function(input) {
-        const value = input.value.trim();
-        const errorMsg = input.parentElement.nextElementSibling;
-        
-        // Regex for validating ranges like 1-3,5,7-9
-        const validFormat = !value || /^(\d+(-\d+)?)(,\d+(-\d+)?)*$/.test(value);
-        errorMsg.classList.toggle('hidden', validFormat);
-        
-        isValid = isValid && validFormat;
-      });
-      
-      return isValid;
-    }
-    
-    // Validate app ranges when inputs change
-    appRangeFields.forEach(function(field) {
-      const input = field.querySelector('input');
-      
-      if (input) {
-        input.addEventListener('input', function() {
-          const value = input.value.trim();
-          const errorMsg = input.parentElement.nextElementSibling;
-          
-          // Regex for validating ranges like 1-3,5,7-9
-          const validFormat = !value || /^(\d+(-\d+)?)(,\d+(-\d+)?)*$/.test(value);
-          errorMsg.classList.toggle('hidden', validFormat);
-        });
-      }
-    });
-    
-    // Initial update
-    updateAppRangeFields();
-  }
-  
+
   function setupFilters() {
     const searchInput = document.getElementById('searchJobs');
     const modelFilter = document.getElementById('modelFilter');
-    const scanTypeFilter = document.getElementById('scanTypeFilter');
+    const analysisTypeFilter = document.getElementById('analysisTypeFilter'); // Added
     const statusFilter = document.getElementById('statusFilter');
     const clearFiltersBtn = document.getElementById('clearFilters');
     const jobRows = document.querySelectorAll('.job-row');
     const noResultsRow = document.getElementById('noResultsRow');
     const visibleJobsCount = document.getElementById('visibleJobsCount');
-    
+
     const applyFilters = function() {
       const searchText = searchInput?.value?.toLowerCase() || '';
       const selectedModel = modelFilter?.value || 'all';
-      const selectedScanType = scanTypeFilter?.value || 'all';
+      const selectedAnalysisType = analysisTypeFilter?.value || 'all'; // Added
       const selectedStatus = statusFilter?.value || 'all';
-      
+
       let visibleCount = 0;
-      
+
       jobRows.forEach(function(row) {
         const models = row.dataset.models?.toLowerCase() || '';
-        const scanType = row.dataset.scanType?.toLowerCase() || '';
+        const analysisTypes = row.dataset.analysisTypes?.toLowerCase() || ''; // Added (comma-separated)
         const status = row.dataset.status?.toLowerCase() || '';
         const name = row.dataset.name?.toLowerCase() || '';
-        
-        const matchesSearch = !searchText || 
-                              name.includes(searchText) || 
+
+        const matchesSearch = !searchText ||
+                              name.includes(searchText) ||
                               row.textContent.toLowerCase().includes(searchText);
         const matchesModel = selectedModel === 'all' || models.includes(selectedModel.toLowerCase());
-        const matchesScanType = selectedScanType === 'all' || scanType === selectedScanType;
+        // Updated: Check if selected type is in the comma-separated list
+        const matchesAnalysisType = selectedAnalysisType === 'all' || analysisTypes.split(',').includes(selectedAnalysisType);
         const matchesStatus = selectedStatus === 'all' || status === selectedStatus;
-        
-        const isVisible = matchesSearch && matchesModel && matchesScanType && matchesStatus;
+
+        const isVisible = matchesSearch && matchesModel && matchesAnalysisType && matchesStatus; // Added analysis type match
         row.style.display = isVisible ? '' : 'none';
-        
+
         if (isVisible) visibleCount++;
       });
-      
+
       // Update counter
       if (visibleJobsCount) {
         visibleJobsCount.textContent = visibleCount;
       }
-      
+
       // Show/hide no results row
       if (noResultsRow) {
         noResultsRow.style.display = visibleCount === 0 ? 'table-row' : 'none';
       }
     };
-    
+
     // Add event listeners with debounce for search
     let searchTimeout;
     if (searchInput) {
@@ -532,63 +273,87 @@ document.addEventListener('DOMContentLoaded', function() {
         searchTimeout = setTimeout(applyFilters, 300);
       });
     }
-    
+
     // Add event listeners for filters
-    [modelFilter, scanTypeFilter, statusFilter].forEach(function(filter) {
+    [modelFilter, analysisTypeFilter, statusFilter].forEach(function(filter) { // Added analysisTypeFilter
       if (filter) {
         filter.addEventListener('change', applyFilters);
       }
     });
-    
+
     // Clear filters button
     if (clearFiltersBtn) {
       clearFiltersBtn.addEventListener('click', function() {
         if (searchInput) searchInput.value = '';
         if (modelFilter) modelFilter.value = 'all';
-        if (scanTypeFilter) scanTypeFilter.value = 'all';
+        if (analysisTypeFilter) analysisTypeFilter.value = 'all'; // Added
         if (statusFilter) statusFilter.value = 'all';
         applyFilters();
         if (searchInput) searchInput.focus();
       });
     }
-    
+
     // Apply filters on initial load
     applyFilters();
   }
-  
+
   function setupJobHandling() {
     // Cancel job functionality
     const cancelBtns = document.querySelectorAll('.cancel-job-btn');
-    
+
     cancelBtns.forEach(function(btn) {
       btn.addEventListener('click', function() {
         if (!confirm('Are you sure you want to cancel this job?')) {
           return;
         }
-        
+
         const jobId = this.dataset.jobId;
         const button = this;
-        
+
         button.disabled = true;
         button.innerHTML = `
           <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>Canceling...`;
-        
+
         // Send cancel request
-        fetch(`/batch-analysis/job/${jobId}/cancel`, {
+        fetch(`/batch/job/${jobId}/cancel`, { // Ensure URL prefix is correct
           method: 'POST',
           headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'Content-Type': 'application/json'
+            // ** REMOVED Jinja expression causing error **
+            // Add CSRF token if needed: 'X-CSRFToken': '...'
           }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                // Try to parse error from JSON response if possible
+                return response.json().then(errData => {
+                    throw new Error(errData.error || `HTTP error ${response.status}`);
+                }).catch(() => {
+                    // Fallback if JSON parsing fails
+                    throw new Error(`HTTP error ${response.status}`);
+                });
+            }
+            return response.json();
+        })
         .then(data => {
-          if (data.status === 'canceled') {
-            showToast('Job cancelled successfully', 'success');
-            setTimeout(() => window.location.reload(), 1000);
+          // Check for explicit success or specific status
+          if (data.status === 'canceled' || data.success === true) {
+            showToast('Job marked for cancellation.', 'info');
+            // Consider updating the row status visually instead of full reload
+             const row = button.closest('tr');
+             if (row) {
+                 const statusCell = row.querySelector('td:nth-child(3) span'); // Assuming status is 3rd cell
+                 if (statusCell) {
+                     statusCell.textContent = 'canceling'; // Or 'canceled'
+                     statusCell.className = 'px-2 py-0.5 rounded-md text-white capitalize bg-yellow-600';
+                 }
+             }
+             button.remove(); // Remove cancel button after request
+            // Optionally reload after a delay: setTimeout(() => window.location.reload(), 1500);
           } else {
             showToast(data.error || 'Failed to cancel job', 'error');
             button.disabled = false;
@@ -604,12 +369,10 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
   }
-  
-  // Toast notification helper
+
+  // Toast notification helper (reuse from view_job.html or define globally)
   window.showToast = function(message, type = 'success') {
     if (!message) return;
-    
-    // Create container if it doesn't exist
     let toastContainer = document.getElementById('toastContainer');
     if (!toastContainer) {
       toastContainer = document.createElement('div');
@@ -617,27 +380,19 @@ document.addEventListener('DOMContentLoaded', function() {
       toastContainer.className = 'fixed bottom-4 right-4 z-50 flex flex-col gap-2';
       document.body.appendChild(toastContainer);
     }
-    
-    // Create toast element
     const toast = document.createElement('div');
     toast.className = `px-4 py-2 rounded-md shadow-md text-sm ${
       type === 'success' ? 'bg-green-100 border border-green-300 text-green-800' :
       type === 'error' ? 'bg-red-100 border border-red-300 text-red-800' :
-      'bg-blue-100 border border-blue-300 text-blue-800'
+      type === 'info' ? 'bg-blue-100 border border-blue-300 text-blue-800' :
+      'bg-gray-100 border border-gray-300 text-gray-800'
     } transition-opacity duration-300`;
     toast.textContent = message;
-    
-    // Add to container
     toastContainer.appendChild(toast);
-    
-    // Remove after delay
     setTimeout(function() {
       toast.style.opacity = 0;
-      setTimeout(function() {
-        toast.remove();
-      }, 300);
+      setTimeout(function() { toast.remove(); }, 300);
     }, 3000);
-    
     return toast;
   };
 });
