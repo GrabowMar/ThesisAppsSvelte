@@ -1,22 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="space-y-2 max-w-7xl mx-auto">
-  <div class="border border-gray-400 bg-white p-2 rounded-md">
-    <div class="flex items-center justify-between">
+<div class="space-y-4 max-w-7xl mx-auto p-4"> {# Added padding for better spacing on smaller screens #}
+
+  <div class="border border-gray-400 bg-white p-3 rounded-md shadow-sm"> {# Increased padding #}
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2"> {# Responsive flex direction #}
       <div>
         <h1 class="font-bold text-xl text-gray-900">Batch Analysis</h1>
-        <p class="text-xs text-gray-600 mt-1">Run analysis on multiple applications at once</p>
+        <p class="text-sm text-gray-600 mt-1">Run analysis on multiple applications at once</p> {# Slightly larger text #}
       </div>
-      <div class="flex items-center space-x-2">
-        <a href="{{ url_for('main.index') }}" class="action-btn h-6 px-2 text-xs flex items-center">
-          <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="flex items-center space-x-2 flex-shrink-0"> {# Prevent shrinking on flex layouts #}
+        <a href="{{ url_for('main.index') }}" class="action-btn h-7 px-3 text-xs flex items-center"> {# Increased height/padding #}
+          <svg class="w-3.5 h-3.5 inline mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"> {# Slightly larger icon #}
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
           </svg>
           Dashboard
         </a>
-        <button id="toggleCreateForm" class="action-btn h-6 px-2 text-xs flex items-center bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150" aria-expanded="false" aria-controls="createJobForm">
-          <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button id="toggleCreateForm" class="action-btn h-7 px-3 text-xs flex items-center bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150" aria-expanded="false" aria-controls="createJobForm">
+          <svg class="w-3.5 h-3.5 inline mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"> {# Slightly larger icon #}
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
           </svg>
           New Batch Job
@@ -25,290 +26,270 @@
     </div>
   </div>
 
-  {# --- Create Job Form --- #}
   <div id="createJobForm" class="border border-gray-400 bg-white rounded-md shadow-md hidden" aria-hidden="true">
-    <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-      <h2 class="font-bold text-sm">Create New Batch Job</h2>
+    <div class="bg-gray-100 border-b border-gray-400 px-4 py-2"> {# Increased padding #}
+      <h2 class="font-bold text-base">Create New Batch Job</h2> {# Slightly larger text #}
     </div>
     <div class="p-4">
-       {# --- Flash Messages --- #}
-       {% with messages = get_flashed_messages(with_categories=true) %}
-         {% if messages %}
-           {% for category, message in messages %}
-             <div class="mb-4 p-3 rounded-md text-xs {% if category == 'error' %}bg-red-100 border border-red-300 text-red-800{% elif category == 'warning' %}bg-yellow-100 border border-yellow-300 text-yellow-800{% else %}bg-blue-100 border border-blue-300 text-blue-800{% endif %}">
-               {{ message }}
-             </div>
-           {% endfor %}
-         {% endif %}
-       {% endwith %}
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="mb-4 p-3 rounded-md text-sm {% if category == 'error' %}bg-red-100 border border-red-300 text-red-800{% elif category == 'warning' %}bg-yellow-100 border border-yellow-300 text-yellow-800{% else %}bg-blue-100 border border-blue-300 text-blue-800{% endif %}" role="alert">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
 
-      {# --- Form Start --- #}
       <form method="POST" action="{{ url_for('batch_analysis.create_batch_job') }}" id="batchJobForm" novalidate>
-        {# --- Basic Info --- #}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"> {# Increased bottom margin #}
           <div>
-            <label for="name" class="block text-xs font-medium text-gray-700 mb-1">Job Name <span class="text-red-600">*</span></label>
+            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Job Name <span class="text-red-600">*</span></label>
             <input type="text" id="name" name="name"
-                  class="w-full h-8 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  value="{{ submitted_data.name if submitted_data else default_job_name }}"
-                  required aria-required="true">
+                   class="w-full h-9 px-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" {# Increased height/padding/text size #}
+                   value="{{ submitted_data.name if submitted_data else default_job_name }}"
+                   required aria-required="true">
             <p class="form-error-msg hidden text-xs text-red-600 mt-1">Job name is required</p>
           </div>
           <div>
-            <label for="description" class="block text-xs font-medium text-gray-700 mb-1">Description</label>
+            <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
             <input type="text" id="description" name="description"
-                  class="w-full h-8 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                  value="{{ submitted_data.description if submitted_data else '' }}">
+                   class="w-full h-9 px-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500" {# Increased height/padding/text size #}
+                   value="{{ submitted_data.description if submitted_data else '' }}">
           </div>
         </div>
 
-        {# --- Analysis Types Selection --- #}
-        <div class="mb-4">
-          <h3 class="text-xs font-medium text-gray-700 mb-2">Analysis Types <span class="text-red-600">*</span></h3>
-          <div class="flex flex-wrap gap-4 bg-gray-50 p-2 border border-gray-200 rounded">
-            {# Security Radios #}
+        <div class="mb-6"> {# Increased bottom margin #}
+          <h3 class="text-sm font-medium text-gray-700 mb-2">Analysis Types <span class="text-red-600">*</span></h3>
+          <div class="flex flex-wrap gap-x-6 gap-y-3 bg-gray-50 p-3 border border-gray-200 rounded"> {# Increased gap/padding #}
             <div class="flex items-center">
-              <input type="radio" id="scan_type_frontend" name="scan_type" value="frontend" class="scan-type-radio mr-2 focus:ring-2 focus:ring-blue-500"
+              <input type="radio" id="scan_type_frontend" name="scan_type" value="frontend" class="scan-type-radio h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 mr-2" {# Tailwind form styling #}
                      {% if not submitted_data or (submitted_data and submitted_data.get('scan_type') == 'frontend') %}checked{% endif %}>
-              <label for="scan_type_frontend" class="text-xs text-gray-700">Frontend Security</label>
+              <label for="scan_type_frontend" class="text-sm text-gray-700">Frontend Security</label> {# Increased text size #}
             </div>
             <div class="flex items-center">
-              <input type="radio" id="scan_type_backend" name="scan_type" value="backend" class="scan-type-radio mr-2 focus:ring-2 focus:ring-blue-500"
+              <input type="radio" id="scan_type_backend" name="scan_type" value="backend" class="scan-type-radio h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 mr-2" {# Tailwind form styling #}
                      {% if submitted_data and submitted_data.get('scan_type') == 'backend' %}checked{% endif %}>
-              <label for="scan_type_backend" class="text-xs text-gray-700">Backend Security</label>
+              <label for="scan_type_backend" class="text-sm text-gray-700">Backend Security</label> {# Increased text size #}
             </div>
             <div class="flex items-center">
-              <input type="radio" id="scan_type_both" name="scan_type" value="both" class="scan-type-radio mr-2 focus:ring-2 focus:ring-blue-500"
+              <input type="radio" id="scan_type_both" name="scan_type" value="both" class="scan-type-radio h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 mr-2" {# Tailwind form styling #}
                      {% if submitted_data and submitted_data.get('scan_type') == 'both' %}checked{% endif %}>
-              <label for="scan_type_both" class="text-xs text-gray-700">Both (Frontend & Backend)</label>
+              <label for="scan_type_both" class="text-sm text-gray-700">Both (Frontend & Backend)</label> {# Increased text size #}
             </div>
-            {# Other Checkboxes #}
             <div class="flex items-center">
                 <input type="checkbox" id="analysis_performance" name="analysis_types" value="performance"
-                       class="analysis-checkbox-other mr-2 focus:ring-2 focus:ring-blue-500"
+                       class="analysis-checkbox-other h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2" {# Tailwind form styling #}
                        {% if submitted_data and 'performance' in submitted_data.getlist('analysis_types') %}checked{% endif %}>
-                <label for="analysis_performance" class="text-xs text-gray-700">Performance</label>
+                <label for="analysis_performance" class="text-sm text-gray-700">Performance</label> {# Increased text size #}
             </div>
              <div class="flex items-center">
                 <input type="checkbox" id="analysis_zap" name="analysis_types" value="zap"
-                       class="analysis-checkbox-other mr-2 focus:ring-2 focus:ring-blue-500"
+                       class="analysis-checkbox-other h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2" {# Tailwind form styling #}
                        {% if submitted_data and 'zap' in submitted_data.getlist('analysis_types') %}checked{% endif %}>
-                <label for="analysis_zap" class="text-xs text-gray-700">ZAP Scan</label>
+                <label for="analysis_zap" class="text-sm text-gray-700">ZAP Scan</label> {# Increased text size #}
             </div>
              <div class="flex items-center">
                 <input type="checkbox" id="analysis_gpt4all" name="analysis_types" value="gpt4all"
-                       class="analysis-checkbox-other mr-2 focus:ring-2 focus:ring-blue-500"
+                       class="analysis-checkbox-other h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2" {# Tailwind form styling #}
                        {% if submitted_data and 'gpt4all' in submitted_data.getlist('analysis_types') %}checked{% endif %}>
-                <label for="analysis_gpt4all" class="text-xs text-gray-700">GPT4All Check</label>
+                <label for="analysis_gpt4all" class="text-sm text-gray-700">GPT4All Check</label> {# Increased text size #}
             </div>
           </div>
-           <p class="analysis-types-error-msg hidden text-xs text-red-600 mt-1">Select at least one analysis type (Frontend/Backend/Both or other checkboxes)</p>
+            <p class="analysis-types-error-msg hidden text-xs text-red-600 mt-1">Select at least one analysis type (Frontend/Backend/Both or other checkboxes)</p>
         </div>
 
-        {# --- Analysis Options --- #}
-        <div class="mb-4 space-y-3">
-            <h3 class="text-xs font-medium text-gray-700 mb-2">Analysis Options</h3>
-            {# Frontend Options #}
-            <div id="frontendSecurityOptions" class="analysis-option-group hidden pl-4 border-l-2 border-gray-200">
-                <h4 class="text-xs font-semibold text-gray-600 mb-1">Frontend Security Options</h4>
-                <div class="flex items-center">
-                    <input type="checkbox" id="frontend_full_scan" name="frontend_full_scan" class="mr-2 focus:ring-2 focus:ring-blue-500"
-                           {% if submitted_data and submitted_data.get('frontend_full_scan') == 'on' %}checked{% endif %}>
-                    <label for="frontend_full_scan" class="text-xs text-gray-700">Full Scan (Run all frontend tools)</label>
-                    <span class="ml-2 text-xs text-gray-500">(Quick scan only runs essential tools)</span>
-                </div>
+        <div class="mb-6 space-y-4"> {# Increased bottom margin and spacing #}
+            <h3 class="text-sm font-medium text-gray-700 mb-2">Analysis Options</h3>
+            <div id="frontendSecurityOptions" class="analysis-option-group hidden pl-4 border-l-2 border-gray-200"> {# *** FIXED ID *** #}
+              <h4 class="text-sm font-semibold text-gray-600 mb-2">Frontend Security Options</h4> {# Increased text size/margin #}
+              <div class="flex items-center">
+                  <input type="checkbox" id="frontend_full_scan" name="frontend_full_scan" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2" {# Tailwind form styling #}
+                         {% if submitted_data and submitted_data.get('frontend_full_scan') == 'on' %}checked{% endif %}>
+                  <label for="frontend_full_scan" class="text-sm text-gray-700">Full Scan (Run all frontend tools)</label> {# Increased text size #}
+                  <span class="ml-2 text-xs text-gray-500">(Quick scan only runs essential tools)</span>
+              </div>
             </div>
-            {# Backend Options #}
-             <div id="backendSecurityOptions" class="analysis-option-group hidden pl-4 border-l-2 border-gray-200">
-                <h4 class="text-xs font-semibold text-gray-600 mb-1">Backend Security Options</h4>
+            <div id="backendSecurityOptions" class="analysis-option-group hidden pl-4 border-l-2 border-gray-200"> {# Kept original ID #}
+                <h4 class="text-sm font-semibold text-gray-600 mb-2">Backend Security Options</h4> {# Increased text size/margin #}
                 <div class="flex items-center">
-                    <input type="checkbox" id="backend_full_scan" name="backend_full_scan" class="mr-2 focus:ring-2 focus:ring-blue-500"
+                    <input type="checkbox" id="backend_full_scan" name="backend_full_scan" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2" {# Tailwind form styling #}
                            {% if submitted_data and submitted_data.get('backend_full_scan') == 'on' %}checked{% endif %}>
-                    <label for="backend_full_scan" class="text-xs text-gray-700">Full Scan (Run all backend tools)</label>
+                    <label for="backend_full_scan" class="text-sm text-gray-700">Full Scan (Run all backend tools)</label> {# Increased text size #}
                     <span class="ml-2 text-xs text-gray-500">(Quick scan only runs essential tools)</span>
                 </div>
             </div>
-            {# Performance Options #}
             <div id="performanceOptions" class="analysis-option-group hidden pl-4 border-l-2 border-gray-200">
-                 <h4 class="text-xs font-semibold text-gray-600 mb-1">Performance Test Options</h4>
-                 <div class="grid grid-cols-3 gap-2">
+                 <h4 class="text-sm font-semibold text-gray-600 mb-2">Performance Test Options</h4> {# Increased text size/margin #}
+                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4"> {# Responsive grid, increased gap #}
                      <div>
-                         <label for="perf_users" class="block text-xs text-gray-600 mb-0.5">Users</label>
-                         <input type="number" id="perf_users" name="perf_users" min="1" value="{{ submitted_data.perf_users if submitted_data else 10 }}" class="w-full h-7 px-2 text-xs border border-gray-300 rounded">
+                         <label for="perf_users" class="block text-sm text-gray-600 mb-1">Users</label> {# Increased text size #}
+                         <input type="number" id="perf_users" name="perf_users" min="1" value="{{ submitted_data.perf_users if submitted_data else 10 }}" class="w-full h-9 px-3 text-sm border border-gray-300 rounded"> {# Increased height/padding/text size #}
                      </div>
                      <div>
-                         <label for="perf_duration" class="block text-xs text-gray-600 mb-0.5">Duration (s)</label>
-                         <input type="number" id="perf_duration" name="perf_duration" min="1" value="{{ submitted_data.perf_duration if submitted_data else 30 }}" class="w-full h-7 px-2 text-xs border border-gray-300 rounded">
+                         <label for="perf_duration" class="block text-sm text-gray-600 mb-1">Duration (s)</label> {# Increased text size #}
+                         <input type="number" id="perf_duration" name="perf_duration" min="1" value="{{ submitted_data.perf_duration if submitted_data else 30 }}" class="w-full h-9 px-3 text-sm border border-gray-300 rounded"> {# Increased height/padding/text size #}
                      </div>
                      <div>
-                         <label for="perf_spawn_rate" class="block text-xs text-gray-600 mb-0.5">Spawn Rate</label>
-                         <input type="number" id="perf_spawn_rate" name="perf_spawn_rate" min="1" value="{{ submitted_data.perf_spawn_rate if submitted_data else 1 }}" class="w-full h-7 px-2 text-xs border border-gray-300 rounded">
+                         <label for="perf_spawn_rate" class="block text-sm text-gray-600 mb-1">Spawn Rate</label> {# Increased text size #}
+                         <input type="number" id="perf_spawn_rate" name="perf_spawn_rate" min="1" value="{{ submitted_data.perf_spawn_rate if submitted_data else 1 }}" class="w-full h-9 px-3 text-sm border border-gray-300 rounded"> {# Increased height/padding/text size #}
                      </div>
                  </div>
             </div>
-            {# ZAP Options #}
-             <div id="zapOptions" class="analysis-option-group hidden pl-4 border-l-2 border-gray-200">
-                <h4 class="text-xs font-semibold text-gray-600 mb-1">ZAP Scan Options</h4>
+            <div id="zapOptions" class="analysis-option-group hidden pl-4 border-l-2 border-gray-200">
+                <h4 class="text-sm font-semibold text-gray-600 mb-2">ZAP Scan Options</h4> {# Increased text size/margin #}
                 <div class="flex items-center">
-                    <input type="checkbox" id="zap_quick_scan" name="zap_quick_scan" class="mr-2 focus:ring-2 focus:ring-blue-500"
+                    <input type="checkbox" id="zap_quick_scan" name="zap_quick_scan" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2" {# Tailwind form styling #}
                            {% if submitted_data and submitted_data.get('zap_quick_scan') == 'on' %}checked{% endif %}>
-                    <label for="zap_quick_scan" class="text-xs text-gray-700">Quick Scan (Spider + Active Scan)</label>
+                    <label for="zap_quick_scan" class="text-sm text-gray-700">Quick Scan (Spider + Active Scan)</label> {# Increased text size #}
                      <span class="ml-2 text-xs text-gray-500">(Full scan includes AJAX spider)</span>
                 </div>
             </div>
-            {# GPT4All Options #}
-             <div id="gpt4allOptions" class="analysis-option-group hidden pl-4 border-l-2 border-gray-200">
-                <h4 class="text-xs font-semibold text-gray-600 mb-1">GPT4All Options</h4>
-                 <p class="text-xs text-gray-500">Uses default requirements file for each app.</p>
+            <div id="gpt4allOptions" class="analysis-option-group hidden pl-4 border-l-2 border-gray-200">
+                <h4 class="text-sm font-semibold text-gray-600 mb-2">GPT4All Options</h4> {# Increased text size/margin #}
+                 <p class="text-sm text-gray-500">Uses default requirements file for each app.</p> {# Increased text size #}
              </div>
-            {# Advanced Options #}
             <div class="pl-4 border-l-2 border-gray-200">
-                <h4 class="text-xs font-semibold text-gray-600 mb-1">Advanced Options</h4>
+                <h4 class="text-sm font-semibold text-gray-600 mb-2">Advanced Options</h4> {# Increased text size/margin #}
                 <div>
-                    <label for="task_timeout_override" class="block text-xs text-gray-600 mb-0.5">Task Timeout Override (seconds)</label>
-                    <input type="number" id="task_timeout_override" name="task_timeout_override" min="10" placeholder="Default: 300"
+                    <label for="task_timeout_override" class="block text-sm text-gray-600 mb-1">Task Timeout Override (seconds)</label> {# Increased text size #}
+                    <input type="number" id="task_timeout_override" name="task_timeout_override" min="10" placeholder="Default: 1800" {# Updated placeholder #}
                            value="{{ submitted_data.task_timeout_override if submitted_data else '' }}"
-                           class="w-1/2 h-7 px-2 text-xs border border-gray-300 rounded">
-                    <span class="ml-2 text-xs text-gray-500">Leave empty for default.</span>
+                           class="w-full sm:w-1/2 h-9 px-3 text-sm border border-gray-300 rounded"> {# Increased height/padding/text size, responsive width #}
+                    <span class="ml-2 text-xs text-gray-500 block sm:inline mt-1 sm:mt-0">Leave empty for default.</span> {# Responsive helper text #}
                 </div>
             </div>
         </div>
 
-        {# --- Models Selection --- #}
-        <div class="mb-4">
-          <h3 class="text-xs font-medium text-gray-700 mb-2">Select Models <span class="text-red-600">*</span></h3>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-2 bg-gray-50 p-2 border border-gray-200 rounded">
+        <div class="mb-6"> {# Increased bottom margin #}
+          <h3 class="text-sm font-medium text-gray-700 mb-2">Select Models <span class="text-red-600">*</span></h3>
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-3 bg-gray-50 p-3 border border-gray-200 rounded"> {# More columns on larger screens, increased gap/padding #}
             {% for model_name in all_models %}
               <div class="flex items-center">
                 <input type="checkbox" id="model_{{ model_name }}" name="models" value="{{ model_name }}"
-                       class="model-checkbox mr-2 focus:ring-2 focus:ring-blue-500"
+                       class="model-checkbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2" {# Tailwind form styling #}
                        {% if submitted_data and model_name in submitted_data.getlist('models') %}checked{% endif %}>
-                <label for="model_{{ model_name }}" class="text-xs text-gray-700">{{ model_name }}</label>
+                <label for="model_{{ model_name }}" class="text-sm text-gray-700">{{ model_name }}</label> {# Increased text size #}
               </div>
-             {% else %}
-                 <p class="text-xs text-gray-500 col-span-full">No models available.</p>
+            {% else %}
+                 <p class="text-sm text-gray-500 col-span-full">No models available.</p> {# Increased text size #}
             {% endfor %}
           </div>
           <p class="models-error-msg hidden text-xs text-red-600 mt-1">Select at least one model</p>
         </div>
 
-        {# --- App Ranges --- #}
-        <div class="mb-4">
-          <h3 class="text-xs font-medium text-gray-700 mb-2">App Ranges</h3>
-          <p class="text-xs text-gray-500 mb-2">Specify which app numbers to scan for each model. Format: 1-3,5,7-9 (leave empty for all apps)</p>
-          <div id="appRangeFields" class="space-y-2 bg-gray-50 p-3 border border-gray-200 rounded">
+        <div class="mb-6"> {# Increased bottom margin #}
+          <h3 class="text-sm font-medium text-gray-700 mb-2">App Ranges</h3>
+          <p class="text-sm text-gray-500 mb-2">Specify which app numbers to scan for each selected model. Format: 1-3,5,7-9 (leave empty for all apps)</p> {# Increased text size #}
+          <div id="appRangeFields" class="space-y-3 bg-gray-50 p-3 border border-gray-200 rounded"> {# Increased spacing/padding #}
             {% for model_name in all_models %}
               <div class="app-range-field hidden" data-model="{{ model_name }}">
-                <div class="flex items-center">
-                  <label for="app_range_{{ model_name }}" class="min-w-[100px] text-xs text-gray-700">{{ model_name }}:</label>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2"> {# Responsive layout for label/input #}
+                  <label for="app_range_{{ model_name }}" class="w-full sm:w-auto sm:min-w-[120px] text-sm text-gray-700 flex-shrink-0">{{ model_name }}:</label> {# Increased text size, width #}
                   <input type="text" id="app_range_{{ model_name }}" name="app_range_{{ model_name }}"
-                        placeholder="e.g., 1-3,5,7-9 (empty for all)"
-                        value="{{ submitted_data.get('app_range_' + model_name) if submitted_data else '' }}"
-                        class="w-full h-8 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                        {# Removed pattern attribute - validation done in JS #}
+                         placeholder="e.g., 1-3,5,7-9 (empty for all)"
+                         value="{{ submitted_data.get('app_range_' + model_name) if submitted_data else '' }}"
+                         class="w-full h-9 px-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"> {# Increased height/padding/text size #}
+                         {# Removed pattern attribute - validation done in JS #}
                 </div>
-                <p class="app-range-error hidden text-xs text-red-600 mt-1">Invalid format. Use numbers, commas, hyphens (e.g., 1-3, 5, 7-9). Ensure start <= end.</p>
+                <p class="app-range-error hidden text-xs text-red-600 mt-1 pl-0 sm:pl-[128px]">Invalid format. Use numbers, commas, hyphens (e.g., 1-3, 5, 7-9). Ensure start <= end.</p> {# Adjusted padding for responsive layout #}
               </div>
             {% endfor %}
+            <p id="noModelSelectedMsg" class="text-sm text-gray-500 hidden">Select one or more models above to specify app ranges.</p> {# Message when no models are selected #}
           </div>
         </div>
 
-        {# --- Form Actions --- #}
-        <div class="flex justify-end space-x-2 border-t border-gray-200 pt-4">
-          <button type="button" id="cancelCreateForm" class="action-btn h-8 px-4 text-xs bg-gray-100 hover:bg-gray-200 rounded focus:ring-2 focus:ring-gray-300 transition">
+        <div class="flex justify-end space-x-3 border-t border-gray-200 pt-4"> {# Increased spacing #}
+          <button type="button" id="cancelCreateForm" class="action-btn h-9 px-4 text-sm bg-gray-100 hover:bg-gray-200 rounded focus:ring-2 focus:ring-gray-300 transition"> {# Increased size #}
             Cancel
           </button>
-          <button type="submit" id="submitJobBtn" class="action-btn h-8 px-4 text-xs bg-blue-600 text-white hover:bg-blue-700 rounded focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition">
+          <button type="submit" id="submitJobBtn" class="action-btn h-9 px-4 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition"> {# Increased size #}
             Create and Start Job
           </button>
         </div>
-      </form> {# --- End Form --- #}
+      </form> </div>
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"> {# Adjusted grid columns for responsiveness, increased gap #}
+    <div class="border border-gray-400 bg-white p-3 rounded-md shadow-sm text-center"> {# Increased padding #}
+      <div class="text-sm text-gray-600">Total Jobs</div> {# Increased text size #}
+      <div class="text-xl font-bold mt-1">{{ stats.get('total', jobs|length) }}</div> {# Increased text size #}
+    </div>
+     <div class="border border-gray-400 bg-white p-3 rounded-md shadow-sm text-center">
+      <div class="text-sm text-gray-600">Pending</div>
+      <div class="text-xl font-bold text-gray-700 mt-1">{{ stats.get('pending', 0) }}</div>
+    </div>
+    <div class="border border-gray-400 bg-white p-3 rounded-md shadow-sm text-center">
+      <div class="text-sm text-green-600">Running</div>
+      <div class="text-xl font-bold text-green-700 mt-1">{{ stats.get('running', 0) }}</div>
+    </div>
+    <div class="border border-gray-400 bg-white p-3 rounded-md shadow-sm text-center">
+      <div class="text-sm text-blue-600">Completed</div>
+      <div class="text-xl font-bold text-blue-700 mt-1">{{ stats.get('completed', 0) }}</div>
+    </div>
+    <div class="border border-gray-400 bg-white p-3 rounded-md shadow-sm text-center">
+      <div class="text-sm text-red-600">Failed/Canceled</div>
+      <div class="text-xl font-bold text-red-700 mt-1">{{ stats.get('failed', 0) + stats.get('canceled', 0) }}</div>
     </div>
   </div>
 
-  {# --- Job Stats --- #}
-  <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
-    <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm text-center">
-      <div class="text-xs text-gray-600">Total Jobs</div>
-      <div class="text-lg font-bold">{{ stats.get('total', jobs|length) }}</div>
-    </div>
-     <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm text-center">
-      <div class="text-xs text-gray-600">Pending</div>
-      <div class="text-lg font-bold text-gray-700">{{ stats.get('pending', 0) }}</div>
-    </div>
-    <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm text-center">
-      <div class="text-xs text-green-600">Running</div>
-      <div class="text-lg font-bold text-green-700">{{ stats.get('running', 0) }}</div>
-    </div>
-    <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm text-center">
-      <div class="text-xs text-blue-600">Completed</div>
-      <div class="text-lg font-bold text-blue-700">{{ stats.get('completed', 0) }}</div>
-    </div>
-    <div class="border border-gray-400 bg-white p-2 rounded-md shadow-sm text-center">
-      <div class="text-xs text-red-600">Failed/Canceled</div>
-      <div class="text-lg font-bold text-red-700">{{ stats.get('failed', 0) + stats.get('canceled', 0) }}</div>
-    </div>
-  </div>
-
-  {# --- Filters --- #}
   <div class="border border-gray-400 bg-white rounded-md shadow-sm">
-    <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-      <h2 class="font-bold text-sm">Filters</h2>
+    <div class="bg-gray-100 border-b border-gray-400 px-4 py-2"> {# Increased padding #}
+      <h2 class="font-bold text-base">Filters</h2> {# Increased text size #}
     </div>
-    <div class="p-2 flex flex-wrap items-center gap-2">
-      <div class="relative">
-        <input type="text" id="searchJobs" placeholder="Search jobs..."
-             class="h-6 pl-6 pr-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
-        <svg class="w-3 h-3 absolute left-2 top-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="p-3 flex flex-wrap items-center gap-3"> {# Increased padding and gap #}
+      <div class="relative flex-grow sm:flex-grow-0"> {# Allow search to grow on small screens #}
+        <input type="text" id="searchJobs" placeholder="Search jobs by name..."
+               class="h-8 pl-8 pr-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 w-full sm:w-auto"> {# Increased size, responsive width #}
+        <svg class="w-4 h-4 absolute left-2.5 top-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"> {# Adjusted icon position #}
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
         </svg>
       </div>
-      <select id="modelFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500" aria-label="Filter by model">
+      <select id="modelFilter" class="h-8 px-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500" aria-label="Filter by model"> {# Increased size #}
         <option value="all">All Models</option>
         {% for model_name in all_models %}
           <option value="{{ model_name }}">{{ model_name }}</option>
         {% endfor %}
       </select>
-      <select id="analysisTypeFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500" aria-label="Filter by analysis type">
+      <select id="analysisTypeFilter" class="h-8 px-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500" aria-label="Filter by analysis type"> {# Increased size #}
         <option value="all">All Analysis Types</option>
          {% for type in AnalysisType %}
              <option value="{{ type.value }}">{{ type.value.replace('_', ' ').title() }}</option>
          {% endfor %}
       </select>
-      <select id="statusFilter" class="h-6 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500" aria-label="Filter by status">
+      <select id="statusFilter" class="h-8 px-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500" aria-label="Filter by status"> {# Increased size #}
         <option value="all">All Statuses</option>
          {% for status in JobStatus %}
              <option value="{{ status.value }}">{{ status.value.title() }}</option>
          {% endfor %}
       </select>
-      <button id="clearFilters" class="h-6 px-2 text-xs border border-gray-300 rounded hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 transition">
+      <button id="clearFilters" class="h-8 px-3 text-sm border border-gray-300 rounded hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 transition"> {# Increased size #}
         Clear Filters
       </button>
     </div>
   </div>
 
-  {# --- Job List Table --- #}
   <div class="border border-gray-400 bg-white rounded-md shadow-sm">
-    <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
-      <h2 class="font-bold text-sm">Job List</h2>
-      <div class="text-xs text-gray-600" id="jobsCounter">
+    <div class="bg-gray-100 border-b border-gray-400 px-4 py-2 flex justify-between items-center"> {# Increased padding #}
+      <h2 class="font-bold text-base">Job List</h2> {# Increased text size #}
+      <div class="text-sm text-gray-600" id="jobsCounter"> {# Increased text size #}
         Showing <span id="visibleJobsCount">{{ jobs|length }}</span> of {{ jobs|length }} jobs
       </div>
     </div>
     <div class="p-2">
       {% if jobs %}
         <div class="overflow-x-auto">
-          <table class="min-w-full border border-gray-300">
+          <table class="min-w-full border border-gray-300 text-sm"> {# Base text size for table #}
             <thead>
               <tr class="bg-gray-100">
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">ID</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Name</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Status</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Analysis Types</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Models</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Created</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Progress</th>
-                <th class="border border-gray-300 px-2 py-1 text-xs text-left">Actions</th>
+                <th class="border border-gray-300 px-3 py-2 text-left">ID</th> {# Increased padding #}
+                <th class="border border-gray-300 px-3 py-2 text-left">Name</th>
+                <th class="border border-gray-300 px-3 py-2 text-left">Status</th>
+                <th class="border border-gray-300 px-3 py-2 text-left">Analysis Types</th>
+                <th class="border border-gray-300 px-3 py-2 text-left">Models</th>
+                <th class="border border-gray-300 px-3 py-2 text-left">Created</th>
+                <th class="border border-gray-300 px-3 py-2 text-left">Progress</th>
+                <th class="border border-gray-300 px-3 py-2 text-left">Actions</th>
               </tr>
             </thead>
             <tbody id="jobsTableBody">
@@ -319,61 +300,62 @@
                     data-analysis-types="{{ job.analysis_types|join(',') }}"
                     data-models="{{ job.models|join(',') }}"
                     data-name="{{ job.name }}">
-                  <td class="border border-gray-300 px-2 py-1 text-xs">{{ job.id }}</td>
-                  <td class="border border-gray-300 px-2 py-1 text-xs font-medium">
+                  <td class="border border-gray-300 px-3 py-2">{{ job.id }}</td> {# Increased padding #}
+                  <td class="border border-gray-300 px-3 py-2 font-medium">
                     <a href="{{ url_for('batch_analysis.view_job', job_id=job.id) }}" class="text-blue-700 hover:underline">
                       {{ job.name }}
                     </a>
                   </td>
-                  <td class="border border-gray-300 px-2 py-1 text-xs">
-                    <span class="px-2 py-0.5 rounded-md text-white text-[10px] font-semibold
+                  <td class="border border-gray-300 px-3 py-2">
+                    <span class="px-2 py-1 rounded-full text-white text-xs font-semibold {# Adjusted padding/shape #}
                       {% if job.status == JobStatus.RUNNING.value %} bg-green-600
                       {% elif job.status == JobStatus.COMPLETED.value %} bg-blue-600
                       {% elif job.status == JobStatus.PENDING.value %} bg-gray-500
-                      {% elif job.status == JobStatus.CANCELED.value %} bg-yellow-500
+                      {% elif job.status == JobStatus.QUEUED.value %} bg-yellow-500 text-yellow-900 {# Added Queued status #}
+                      {% elif job.status == JobStatus.CANCELED.value %} bg-orange-500 {# Adjusted color #}
                       {% else %} bg-red-600 {% endif %}">
                       {{ job.status.upper() }}
                     </span>
                   </td>
-                  <td class="border border-gray-300 px-2 py-1 text-xs">
+                  <td class="border border-gray-300 px-3 py-2">
                     <div class="flex flex-wrap gap-1">
                          {% for analysis_type_str in job.analysis_types %}
-                           <span class="px-1.5 py-0.5 rounded text-[10px] font-medium
-                                {% if analysis_type_str == AnalysisType.FRONTEND_SECURITY.value %} bg-purple-100 text-purple-800 border border-purple-300
-                                {% elif analysis_type_str == AnalysisType.BACKEND_SECURITY.value %} bg-indigo-100 text-indigo-800 border border-indigo-300
-                                {% elif analysis_type_str == AnalysisType.PERFORMANCE.value %} bg-pink-100 text-pink-800 border border-pink-300
-                                {% elif analysis_type_str == AnalysisType.GPT4ALL.value %} bg-cyan-100 text-cyan-800 border border-cyan-300
-                                {% elif analysis_type_str == AnalysisType.ZAP.value %} bg-orange-100 text-orange-800 border border-orange-300
-                                {% else %} bg-gray-100 text-gray-800 border border-gray-300 {% endif %}">
-                               {{ analysis_type_str.replace('_', ' ').title() }}
+                           <span class="px-1.5 py-0.5 rounded text-xs font-medium {# Adjusted size #}
+                                 {% if analysis_type_str == AnalysisType.FRONTEND_SECURITY.value %} bg-purple-100 text-purple-800 border border-purple-300
+                                 {% elif analysis_type_str == AnalysisType.BACKEND_SECURITY.value %} bg-indigo-100 text-indigo-800 border border-indigo-300
+                                 {% elif analysis_type_str == AnalysisType.PERFORMANCE.value %} bg-pink-100 text-pink-800 border border-pink-300
+                                 {% elif analysis_type_str == AnalysisType.GPT4ALL.value %} bg-cyan-100 text-cyan-800 border border-cyan-300
+                                 {% elif analysis_type_str == AnalysisType.ZAP.value %} bg-orange-100 text-orange-800 border border-orange-300
+                                 {% else %} bg-gray-100 text-gray-800 border border-gray-300 {% endif %}">
+                                 {{ analysis_type_str.replace('_', ' ').title() }}
                            </span>
                          {% endfor %}
                     </div>
                   </td>
-                  <td class="border border-gray-300 px-2 py-1 text-xs">
+                  <td class="border border-gray-300 px-3 py-2">
                     {{ job.models|join(', ') }}
                   </td>
-                  <td class="border border-gray-300 px-2 py-1 text-xs">
+                  <td class="border border-gray-300 px-3 py-2 whitespace-nowrap"> {# Prevent wrapping #}
                     {{ job.created_at_formatted if job.created_at_formatted else 'N/A' }}
                   </td>
-                  <td class="border border-gray-300 px-2 py-1 text-xs">
+                  <td class="border border-gray-300 px-3 py-2">
                     {% set percent = (job.completed_tasks / job.total_tasks * 100) if job.total_tasks > 0 else (100 if job.status == JobStatus.COMPLETED.value else 0) %}
-                    <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden" title="{{ job.completed_tasks }}/{{ job.total_tasks }}">
-                      <div class="bg-blue-600 rounded-full h-2 transition-all duration-300" style="width: {{ percent }}%"></div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden" title="{{ job.completed_tasks }}/{{ job.total_tasks }}"> {# Increased height #}
+                      <div class="bg-blue-600 rounded-full h-2.5 transition-all duration-300" style="width: {{ percent }}%"></div>
                     </div>
-                    <span class="text-[10px] text-gray-600">{{ '%d%%' % percent }}</span>
+                    <span class="text-xs text-gray-600">{{ '%d%%' % percent }}</span> {# Adjusted size #}
                   </td>
-                  <td class="border border-gray-300 px-2 py-1 text-xs">
-                    <div class="flex space-x-1">
-                      <a href="{{ url_for('batch_analysis.view_job', job_id=job.id) }}" class="action-btn h-6 px-2 text-xs focus:ring-2 focus:ring-blue-500 transition">
+                  <td class="border border-gray-300 px-3 py-2">
+                    <div class="flex space-x-2"> {# Increased spacing #}
+                      <a href="{{ url_for('batch_analysis.view_job', job_id=job.id) }}" class="action-btn h-7 px-3 text-xs focus:ring-2 focus:ring-blue-500 transition"> {# Increased size #}
                         View
                       </a>
                       {% if job.status == JobStatus.RUNNING.value %}
-                        <button class="cancel-job-btn action-btn h-6 px-2 text-xs bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 transition" data-job-id="{{ job.id }}" aria-label="Cancel job {{ job.id }}">
+                        <button class="cancel-job-btn action-btn h-7 px-3 text-xs bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 transition" data-job-id="{{ job.id }}" aria-label="Cancel job {{ job.id }}"> {# Increased size #}
                           Cancel
                         </button>
-                      {% elif job.status != JobStatus.PENDING.value %}
-                         <button class="delete-job-btn action-btn h-6 px-2 text-xs bg-gray-500 text-white hover:bg-gray-600 focus:ring-2 focus:ring-gray-400 transition" data-job-id="{{ job.id }}" aria-label="Delete job {{ job.id }}">
+                      {% elif job.status not in [JobStatus.PENDING.value, JobStatus.QUEUED.value] %} {# Allow delete unless Pending/Queued #}
+                         <button class="delete-job-btn action-btn h-7 px-3 text-xs bg-gray-500 text-white hover:bg-gray-600 focus:ring-2 focus:ring-gray-400 transition" data-job-id="{{ job.id }}" aria-label="Delete job {{ job.id }}"> {# Increased size #}
                            Delete
                          </button>
                       {% endif %}
@@ -382,7 +364,7 @@
                 </tr>
               {% endfor %}
               <tr id="noJobsRow" class="hidden">
-                <td colspan="8" class="border border-gray-300 px-2 py-4 text-xs text-center text-gray-500">
+                <td colspan="8" class="border border-gray-300 px-3 py-4 text-center text-gray-500"> {# Increased padding #}
                   No jobs match your current filters
                 </td>
               </tr>
@@ -390,9 +372,9 @@
           </table>
         </div>
       {% else %}
-        <div class="p-4 text-center border border-gray-300 rounded-md">
-          <p class="text-xs text-gray-600">No batch jobs found</p>
-          <button id="noJobsCreateBtn" class="mt-2 inline-block action-btn h-6 px-2 text-xs bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition">
+        <div class="p-6 text-center border border-gray-300 rounded-md"> {# Increased padding #}
+          <p class="text-base text-gray-600">No batch jobs found</p> {# Increased text size #}
+          <button id="noJobsCreateBtn" class="mt-4 inline-block action-btn h-8 px-4 text-sm bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition"> {# Increased size/margin #}
             Create First Job
           </button>
         </div>
@@ -426,6 +408,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const scanTypeRadios = document.querySelectorAll('.scan-type-radio');
     const otherAnalysisCheckboxes = document.querySelectorAll('.analysis-checkbox-other');
     const optionGroups = {
+        // *** FIXED ID MAPPING ***
         'frontend_security': document.getElementById('frontendSecurityOptions'),
         'backend_security': document.getElementById('backendSecurityOptions'),
         'performance': document.getElementById('performanceOptions'),
@@ -433,34 +416,46 @@ document.addEventListener('DOMContentLoaded', function() {
         'zap': document.getElementById('zapOptions')
     };
     const modelCheckboxes = document.querySelectorAll('.model-checkbox');
-    const appRangeFields = document.querySelectorAll('.app-range-field');
+    const appRangeFieldsContainer = document.getElementById('appRangeFields');
+    const appRangeFields = appRangeFieldsContainer?.querySelectorAll('.app-range-field');
+    const noModelSelectedMsg = document.getElementById('noModelSelectedMsg');
     const submitBtn = document.getElementById('submitJobBtn');
 
     function updateAnalysisOptionsVisibility() {
-        // console.log("Updating analysis options visibility..."); // LOG: Update Options Visibility
-        Object.values(optionGroups).forEach(group => {
-            if (group) group.classList.add('hidden');
-        });
-        const selectedScanType = document.querySelector('input[name="scan_type"]:checked')?.value;
-        if (selectedScanType === 'frontend' || selectedScanType === 'both') {
-            optionGroups['frontend_security']?.classList.remove('hidden');
-            // console.log("Showing Frontend Security options."); // LOG
-        }
-        if (selectedScanType === 'backend' || selectedScanType === 'both') {
-            optionGroups['backend_security']?.classList.remove('hidden');
-            // console.log("Showing Backend Security options."); // LOG
-        }
-        otherAnalysisCheckboxes.forEach(cb => {
-            if (cb.checked) {
-                const typeValue = cb.value;
-                const group = optionGroups[typeValue];
-                if (group) {
-                    group.classList.remove('hidden');
-                    // console.log(`Showing ${typeValue} options.`); // LOG
-                }
-            }
-        });
+      // console.log("Updating analysis options visibility..."); // LOG: Update Options Visibility
+      // Hide all option groups first
+      Object.values(optionGroups).forEach(group => {
+          if (group) group.classList.add('hidden');
+      });
+
+      // Get selected security scan type
+      const selectedScanType = document.querySelector('input[name="scan_type"]:checked')?.value;
+
+      // Show frontend options if 'frontend' or 'both' is selected
+      if (selectedScanType === 'frontend' || selectedScanType === 'both') {
+          optionGroups['frontend_security']?.classList.remove('hidden');
+          // console.log("Showing Frontend Security options."); // LOG
+      }
+
+      // Show backend options if 'backend' or 'both' is selected
+      if (selectedScanType === 'backend' || selectedScanType === 'both') {
+          optionGroups['backend_security']?.classList.remove('hidden');
+          // console.log("Showing Backend Security options."); // LOG
+      }
+
+      // Show options for other checked analysis types
+      otherAnalysisCheckboxes.forEach(cb => {
+          if (cb.checked) {
+              const typeValue = cb.value;
+              const group = optionGroups[typeValue];
+              if (group) {
+                  group.classList.remove('hidden');
+                  // console.log(`Showing ${typeValue} options.`); // LOG
+              }
+          }
+      });
     }
+
 
     if (toggleBtn && createForm) {
       toggleBtn.addEventListener('click', function() {
@@ -473,7 +468,7 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleBtn.setAttribute('aria-expanded', !isHidden);
         createForm.setAttribute('aria-hidden', isHidden);
         if (!isHidden) setTimeout(() => createForm.querySelector('input, select, textarea')?.focus(), 100);
-        updateAnalysisOptionsVisibility();
+        updateAnalysisOptionsVisibility(); // Update visibility when toggling
       });
     }
 
@@ -496,10 +491,11 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleBtn.setAttribute('aria-expanded', 'true');
         createForm.setAttribute('aria-hidden', 'false');
         setTimeout(() => createForm.querySelector('input, select, textarea')?.focus(), 100);
-        updateAnalysisOptionsVisibility();
+        updateAnalysisOptionsVisibility(); // Update visibility when opening
       });
     }
 
+    // Add event listeners for analysis type changes
     scanTypeRadios.forEach(radio => {
         radio.addEventListener('change', updateAnalysisOptionsVisibility);
     });
@@ -511,11 +507,22 @@ document.addEventListener('DOMContentLoaded', function() {
       const selectedModels = Array.from(modelCheckboxes)
         .filter(cb => cb.checked)
         .map(cb => cb.value);
-      appRangeFields.forEach(function(field) {
+
+      let anyVisible = false;
+      appRangeFields?.forEach(function(field) {
         const model = field.dataset.model;
-        field.classList.toggle('hidden', !selectedModels.includes(model));
+        const shouldBeVisible = selectedModels.includes(model);
+        field.classList.toggle('hidden', !shouldBeVisible);
+        if (shouldBeVisible) {
+            anyVisible = true;
+        }
       });
-      validateModels();
+
+      // Show/hide the "no model selected" message
+      if (noModelSelectedMsg) {
+          noModelSelectedMsg.classList.toggle('hidden', anyVisible);
+      }
+      validateModels(); // Re-validate models when selection changes
     }
 
     modelCheckboxes.forEach(function(checkbox) {
@@ -526,6 +533,12 @@ document.addEventListener('DOMContentLoaded', function() {
       form.addEventListener('submit', function(e) {
         console.log("Batch job form submission triggered."); // LOG: Form Submit Triggered
         let isValid = true;
+
+        console.log("Validating Name..."); // LOG
+        if (!validateRequiredField(document.getElementById('name'), '.form-error-msg')) {
+            isValid = false;
+            document.getElementById('name')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
 
         console.log("Validating models..."); // LOG
         if (!validateModels()) {
@@ -560,15 +573,15 @@ document.addEventListener('DOMContentLoaded', function() {
              return;
         }
 
-        // *** FIX: Add hidden fields for scan type to ensure proper analysis_types values ***
+        // Add hidden fields for scan type to ensure proper analysis_types values
         console.log("Adding analysis type hidden fields based on scan_type selection");
-        
+
         // Remove any previously added hidden fields to avoid duplicates
         document.querySelectorAll('.temp-hidden-analysis-type').forEach(el => el.remove());
-        
+
         // Get the selected scan type
         const selectedScanType = document.querySelector('input[name="scan_type"]:checked')?.value;
-        
+
         // Add appropriate hidden fields based on scan type
         if (selectedScanType === 'frontend' || selectedScanType === 'both') {
           const hiddenField = document.createElement('input');
@@ -579,7 +592,7 @@ document.addEventListener('DOMContentLoaded', function() {
           form.appendChild(hiddenField);
           console.log("Added hidden field for frontend_security");
         }
-        
+
         if (selectedScanType === 'backend' || selectedScanType === 'both') {
           const hiddenField = document.createElement('input');
           hiddenField.type = 'hidden';
@@ -589,18 +602,26 @@ document.addEventListener('DOMContentLoaded', function() {
           form.appendChild(hiddenField);
           console.log("Added hidden field for backend_security");
         }
-        // *** END FIX ***
+        // End hidden field logic
 
         console.log("Form validation passed. Preparing to submit."); // LOG: Validation Passed
         if(submitBtn) {
             console.log("Disabling submit button and setting loading state."); // LOG: Set Loading State
             submitBtn.disabled = true;
-            submitBtn.innerHTML = `<svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Creating...`;
+            submitBtn.innerHTML = `<svg class="animate-spin w-4 h-4 inline mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Creating...`; // Larger spinner
         }
         // Allow default form submission to proceed
         console.log("Allowing form submission to proceed."); // LOG: Allow Submit
       });
     }
+
+    function validateRequiredField(inputElement, errorSelector) {
+        const errorElement = inputElement?.closest('div')?.querySelector(errorSelector);
+        const isValid = inputElement?.value.trim() !== '';
+        errorElement?.classList.toggle('hidden', isValid);
+        return isValid;
+    }
+
 
     function validateModels() {
       const hasSelectedModels = Array.from(modelCheckboxes).some(cb => cb.checked);
@@ -616,50 +637,40 @@ document.addEventListener('DOMContentLoaded', function() {
         return isValid;
     }
 
-    // --- UPDATED App Range Validation ---
+    // App Range Validation (Improved)
     function validateAppRanges() {
-      const visibleAppRanges = document.querySelectorAll('.app-range-field:not(.hidden) input');
+      const visibleAppRanges = appRangeFieldsContainer?.querySelectorAll('.app-range-field:not(.hidden) input');
       let overallIsValid = true;
 
-      visibleAppRanges.forEach(function(input) {
+      visibleAppRanges?.forEach(function(input) {
         const value = input.value.trim();
         const errorMsg = input.closest('.app-range-field')?.querySelector('.app-range-error');
         let fieldIsValid = true;
 
         if (value) { // Only validate if not empty
-            // Split by comma, trim parts, and validate each part
-            const parts = value.split(',');
-            for (const part of parts) {
-                const trimmedPart = part.trim();
-                if (!trimmedPart) continue; // Skip empty parts resulting from multiple commas
+            // Regex to match valid parts: positive integers or positive integer ranges (start <= end)
+            const validPartRegex = /^(?:[1-9]\d*|[1-9]\d*-[1-9]\d*)$/;
+            // Regex to check the full string structure (comma-separated valid parts)
+            const fullStringRegex = /^[1-9]\d*(?:-[1-9]\d*)?(?:,\s*[1-9]\d*(?:-[1-9]\d*)?)*$/;
 
-                // Check if it's a single number or a range
-                if (trimmedPart.includes('-')) {
-                    // Range validation (e.g., "1-5")
-                    const rangeParts = trimmedPart.split('-');
-                    if (rangeParts.length !== 2) { // Must have exactly one hyphen
-                        fieldIsValid = false; break;
-                    }
-                    const startStr = rangeParts[0].trim();
-                    const endStr = rangeParts[1].trim();
-                    // Check if both parts are valid positive integers
-                    if (!/^\d+$/.test(startStr) || !/^\d+$/.test(endStr)) {
-                        fieldIsValid = false; break;
-                    }
-                    const start = parseInt(startStr, 10);
-                    const end = parseInt(endStr, 10);
-                    // Check if numbers are positive and start <= end
-                    if (start <= 0 || end <= 0 || start > end) {
-                        fieldIsValid = false; break;
-                    }
-                } else {
-                    // Single number validation (e.g., "7")
-                    // Check if it's a valid positive integer
-                    if (!/^\d+$/.test(trimmedPart) || parseInt(trimmedPart, 10) <= 0) {
-                        fieldIsValid = false; break;
+            if (!fullStringRegex.test(value)) {
+                fieldIsValid = false;
+            } else {
+                // Additional check for ranges: start <= end
+                const parts = value.split(',');
+                for (const part of parts) {
+                    const trimmedPart = part.trim();
+                    if (trimmedPart.includes('-')) {
+                        const rangeParts = trimmedPart.split('-');
+                        const start = parseInt(rangeParts[0], 10);
+                        const end = parseInt(rangeParts[1], 10);
+                        if (start > end) {
+                            fieldIsValid = false;
+                            break; // Invalid range found
+                        }
                     }
                 }
-            } // End loop through parts
+            }
         } // End if(value)
 
         // Toggle error message visibility based on field validity
@@ -677,13 +688,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // Validate app ranges immediately when the input changes
-    appRangeFields.forEach(function(field) {
+    appRangeFields?.forEach(function(field) {
       const input = field.querySelector('input');
       if (input) {
         input.addEventListener('input', validateAppRanges); // Re-validate all visible on input change
       }
     });
 
+    // Initial setup calls
     updateAppRangeFields();
     updateAnalysisOptionsVisibility();
     console.log("Batch form setup complete."); // LOG: Setup Form End
@@ -698,7 +710,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const clearFiltersBtn = document.getElementById('clearFilters');
     const jobRows = document.querySelectorAll('.job-row');
     const noJobsRow = document.getElementById('noJobsRow');
-    const visibleJobsCount = document.getElementById('visibleJobsCount');
+    const visibleJobsCountEl = document.getElementById('visibleJobsCount');
+    const jobsCounterEl = document.getElementById('jobsCounter');
+    const totalJobs = jobRows.length; // Store initial total
 
     const applyFilters = function() {
       // console.log("Applying filters..."); // LOG: Apply Filters
@@ -713,17 +727,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const analysisTypes = row.dataset.analysisTypes?.toLowerCase() || '';
         const status = row.dataset.status?.toLowerCase() || '';
         const name = row.dataset.name?.toLowerCase() || '';
-        const matchesSearch = !searchText || name.includes(searchText) || row.textContent.toLowerCase().includes(searchText);
-        const matchesModel = selectedModel === 'all' || models.includes(selectedModel.toLowerCase());
-        const matchesAnalysisType = selectedAnalysisType === 'all' || analysisTypes.includes(selectedAnalysisType.toLowerCase());
+        const matchesSearch = !searchText || name.includes(searchText); // Only search name now
+        const matchesModel = selectedModel === 'all' || models.split(',').includes(selectedModel.toLowerCase());
+        const matchesAnalysisType = selectedAnalysisType === 'all' || analysisTypes.split(',').includes(selectedAnalysisType.toLowerCase());
         const matchesStatus = selectedStatus === 'all' || status === selectedStatus;
         const isVisible = matchesSearch && matchesModel && matchesAnalysisType && matchesStatus;
         row.style.display = isVisible ? '' : 'none';
         if (isVisible) visibleCount++;
       });
 
-      if (visibleJobsCount) visibleJobsCount.textContent = visibleCount;
-      if (noJobsRow) noJobsRow.style.display = (visibleCount === 0 && jobRows.length > 0) ? 'table-row' : 'none';
+      if (visibleJobsCountEl) visibleJobsCountEl.textContent = visibleCount;
+      if (jobsCounterEl) jobsCounterEl.textContent = `Showing ${visibleCount} of ${totalJobs} jobs`; // Use initial total
+      if (noJobsRow) noJobsRow.style.display = (visibleCount === 0 && totalJobs > 0) ? 'table-row' : 'none';
       // console.log(`Filtering complete. Visible jobs: ${visibleCount}`); // LOG: Filter Complete
     };
 
@@ -786,7 +801,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       const jobId = button.dataset.jobId;
       button.disabled = true;
-      button.innerHTML = `<svg class="animate-spin w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+      button.innerHTML = `<svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`; // Larger spinner
 
       // console.log(`Sending cancel request for job ${jobId}...`); // LOG: Send Cancel Request
       fetch(`/batch-analysis/job/${jobId}/cancel`, {
@@ -798,7 +813,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // console.log(`Cancel response received for job ${jobId}:`, { ok, status, data }); // LOG: Cancel Response
         if (ok && data.success && data.status === 'canceling') {
           showToast('Job marked for cancellation.', 'info');
-          setTimeout(() => window.location.reload(), 1500);
+          setTimeout(() => window.location.reload(), 1500); // Refresh page to update status
         } else {
           showToast(data.error || data.message || `Failed to cancel job (Status: ${status})`, 'error');
           button.disabled = false;
@@ -823,7 +838,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const jobId = button.dataset.jobId;
         const row = button.closest('tr');
         button.disabled = true;
-        button.innerHTML = `<svg class="animate-spin w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+        button.innerHTML = `<svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`; // Larger spinner
 
         // console.log(`Sending delete request for job ${jobId}...`); // LOG: Send Delete Request
         fetch(`/batch-analysis/job/${jobId}/delete`, {
@@ -835,18 +850,24 @@ document.addEventListener('DOMContentLoaded', function() {
              // console.log(`Delete response received for job ${jobId}:`, { ok, status, data }); // LOG: Delete Response
             if (ok && data.success) {
                 showToast(data.message || `Job ${jobId} deleted.`, 'success');
-                row?.remove();
+                row?.remove(); // Remove row from table
+                // Update job counts after deletion
                 const visibleCountEl = document.getElementById('visibleJobsCount');
                 const jobsCounterEl = document.getElementById('jobsCounter');
+                const totalJobs = document.querySelectorAll('.job-row').length; // Recalculate total visible rows
                 if (visibleCountEl && jobsCounterEl) {
                     const currentVisible = parseInt(visibleCountEl.textContent || '0', 10);
+                    const newVisible = Math.max(0, currentVisible - 1); // Decrement visible count
+                    visibleCountEl.textContent = newVisible;
+                    // Update total count in the message
                     const totalMatch = jobsCounterEl.textContent.match(/of (\d+)/);
                     const currentTotal = totalMatch ? parseInt(totalMatch[1], 10) : 0;
-                    const newVisible = Math.max(0, currentVisible - 1);
                     const newTotal = Math.max(0, currentTotal - 1);
-                    visibleCountEl.textContent = newVisible;
                     jobsCounterEl.textContent = `Showing ${newVisible} of ${newTotal} jobs`;
-                }
+                    // Check if the "no jobs" row should be shown
+                    const noJobsRow = document.getElementById('noJobsRow');
+                    if (noJobsRow) noJobsRow.style.display = (newVisible === 0 && newTotal > 0) ? 'table-row' : 'none';
+                 }
             } else {
                 showToast(data.error || data.message || `Failed to delete job (Status: ${status})`, 'error');
                 button.disabled = false;
@@ -863,6 +884,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // console.log("Job handling setup complete."); // LOG: Job Handling End
   }
 
+  // Global Toast Function (can be called from anywhere)
   window.showToast = function(message, type = 'success') {
     // console.log(`Showing toast: [${type}] ${message}`); // LOG: Show Toast
     if (!message) return;
@@ -874,17 +896,28 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.appendChild(toastContainer);
      }
     const toast = document.createElement('div');
-    toast.className = `px-4 py-2 rounded-md shadow-md text-sm ${
+    toast.className = `px-4 py-2 rounded-md shadow-lg text-sm ${ // Added shadow-lg
       type === 'success' ? 'bg-green-100 border border-green-300 text-green-800' :
       type === 'error' ? 'bg-red-100 border border-red-300 text-red-800' :
-      'bg-blue-100 border border-blue-300 text-blue-800'
-    } transition-opacity duration-300`;
+      'bg-blue-100 border border-blue-300 text-blue-800' // Default to info style
+    } transition-all duration-300 ease-out opacity-0 transform translate-y-2`; // Added transition classes
     toast.textContent = message;
+    toast.setAttribute('role', 'alert'); // Accessibility
+
     toastContainer.appendChild(toast);
+
+    // Animate in
+    requestAnimationFrame(() => {
+        toast.style.opacity = 1;
+        toast.style.transform = 'translateY(0)';
+    });
+
+    // Animate out and remove
     setTimeout(() => {
       toast.style.opacity = 0;
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
+      toast.style.transform = 'translateY(2px)';
+      setTimeout(() => toast.remove(), 300); // Remove after fade out
+    }, 3000); // Toast visible for 3 seconds
   };
 });
 </script>

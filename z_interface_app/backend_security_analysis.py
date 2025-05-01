@@ -9,6 +9,8 @@ Provides comprehensive security scanning for backend code using multiple tools:
 
 This module orchestrates the execution of these tools, normalizes their outputs
 into a consistent format, and provides aggregated results and summaries.
+
+FIX: Modified tool execution to use `sys.executable -m tool` for reliability.
 """
 
 import json
@@ -16,6 +18,7 @@ import logging
 import os
 import re
 import subprocess
+import sys # <-- Added import
 import concurrent.futures
 from dataclasses import dataclass
 from datetime import datetime
@@ -34,18 +37,8 @@ CONFIDENCE_ORDER = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
 DEFAULT_SEVERITY_LEVEL = 3 # Used for sorting unknown severity/confidence
 
 
-def cmd_name(name: str) -> str:
-    """
-    Return the proper command name for the current operating system.
-    Handles '.cmd' extension needed on Windows.
-
-    Args:
-        name: Base command name (e.g., "bandit")
-
-    Returns:
-        Command name adjusted for the operating system (e.g., "bandit.cmd" or "bandit")
-    """
-    return f"{name}.cmd" if os.name == "nt" else name
+# cmd_name function is no longer needed if running as modules
+# def cmd_name(name: str) -> str: ...
 
 
 @dataclass
@@ -130,16 +123,19 @@ class BackendSecurityAnalyzer:
         tool_name: str,
         command: List[str],
         parser: Callable[[str], List[BackendSecurityIssue]],
-        working_directory: Optional[Path] = None # Allow specifying cwd if needed
+        working_directory: Optional[Path] = None, # Allow specifying cwd if needed
+        input_data: Optional[str] = None # Added for stdin input (e.g., safety)
     ) -> Tuple[List[BackendSecurityIssue], str]:
         """
-        Generic method to run an external security tool and parse its output.
+        Generic method to run an external security tool (potentially as a Python module)
+        and parse its output.
 
         Args:
             tool_name: Name of the tool (for logging).
             command: Command line arguments list for the tool.
             parser: Function to parse the tool's stdout into BackendSecurityIssue objects.
             working_directory: Directory from which to run the command.
+            input_data: Optional string data to pass to the process's stdin.
 
         Returns:
             Tuple: (List of found BackendSecurityIssue objects, Raw stdout/stderr from the tool).
@@ -147,19 +143,25 @@ class BackendSecurityAnalyzer:
         issues = []
         raw_output = f"{tool_name} execution failed." # Default error message
         try:
-            logger.debug(f"Running {tool_name}: {' '.join(command)}")
+            # Determine if running as a module for logging
+            is_module_execution = command[0] == sys.executable and command[1] == "-m"
+            run_description = f"module {command[2]}" if is_module_execution else f"command {' '.join(command)}"
+            logger.info(f"[{tool_name}] Attempting to run: {run_description} in '{working_directory or self.base_path}'") # Enhanced log
+
             result = subprocess.run(
                 command,
                 capture_output=True,
                 text=True,
                 timeout=TOOL_TIMEOUT,
                 check=False, # Don't raise exception on non-zero exit code
-                cwd=working_directory or self.base_path # Default to base_path if not specified
+                cwd=working_directory or self.base_path, # Default to base_path if not specified
+                input=input_data # Pass stdin data if provided
             )
 
+            logger.info(f"[{tool_name}] Subprocess finished with return code: {result.returncode}") # Enhanced log
             raw_output = f"STDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
 
-            if result.returncode != 0:
+            if result.returncode != 0 and not result.stdout: # Log warning only if non-zero exit AND no output
                 logger.warning(f"{tool_name} exited with code {result.returncode}. Stderr: {result.stderr}")
                 # Some tools might output results even with non-zero exit codes (e.g., Pylint)
 
@@ -178,8 +180,10 @@ class BackendSecurityAnalyzer:
             logger.error(f"{tool_name} timed out after {TOOL_TIMEOUT} seconds.")
             raw_output = f"{tool_name} timed out after {TOOL_TIMEOUT} seconds."
         except FileNotFoundError:
-             logger.error(f"{tool_name} command not found. Is it installed and in PATH? Command: {command[0]}")
-             raw_output = f"{tool_name} command not found: {command[0]}"
+             # This error is less likely when using sys.executable, but handle it.
+             cmd_executed = command[0]
+             logger.error(f"{tool_name} command/interpreter not found. Is Python installed and in PATH? Command: {cmd_executed}")
+             raw_output = f"{tool_name} command/interpreter not found: {cmd_executed}"
         except Exception as e:
             logger.exception(f"An unexpected error occurred while running {tool_name}: {e}")
             raw_output = f"Unexpected error running {tool_name}: {str(e)}"
@@ -234,9 +238,9 @@ class BackendSecurityAnalyzer:
         return issues
 
     def _run_bandit(self, app_path: Path) -> Tuple[List[BackendSecurityIssue], str]:
-        """Run Bandit security analysis."""
-        # Bandit needs to run from the directory containing the code usually
-        command = [cmd_name("bandit"), "-r", ".", "-f", "json", "-ll", "-ii"] # Use -ii for medium confidence
+        """Run Bandit security analysis as a module."""
+        # Use sys.executable to call the bandit module
+        command = [sys.executable, "-m", "bandit", "-r", ".", "-f", "json", "-ll", "-ii"]
         return self._run_tool("Bandit", command, self._parse_bandit_output, working_directory=app_path)
 
     def _parse_safety_output(self, output: str) -> List[BackendSecurityIssue]:
@@ -289,50 +293,37 @@ class BackendSecurityAnalyzer:
         return issues
 
     def _run_safety(self, app_path: Path) -> Tuple[List[BackendSecurityIssue], str]:
-        """Run Safety check on dependencies."""
+        """Run Safety check on dependencies as a module."""
         requirements_file = app_path / "requirements.txt"
         if not requirements_file.exists():
             return [], "No requirements.txt found"
 
-        # Using --stdin to avoid issues with temp files or large requirements
-        # Requires reading the file and passing content via stdin
-        command = [cmd_name("safety"), "check", "--stdin"]
-        issues = []
-        raw_output = "Failed to run Safety check."
+        # Use sys.executable to call the safety module and pass requirements via stdin
+        command = [sys.executable, "-m", "safety", "check", "--stdin"]
+        req_content = None
         try:
              with open(requirements_file, 'r') as f:
                   req_content = f.read()
-
-             logger.debug(f"Running Safety: {' '.join(command)}")
-             result = subprocess.run(
-                  command,
-                  input=req_content,
-                  capture_output=True,
-                  text=True,
-                  timeout=TOOL_TIMEOUT,
-                  check=False,
-                  cwd=app_path # Run in app dir context if needed
-             )
-             raw_output = f"STDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"
-             if result.stdout:
-                  issues = self._parse_safety_output(result.stdout)
-                  logger.info(f"Safety found {len(issues)} issues.")
-
-        except FileNotFoundError:
-             logger.error(f"Safety command not found. Is it installed and in PATH? Command: {command[0]}")
-             raw_output = f"Safety command not found: {command[0]}"
         except Exception as e:
-             logger.exception(f"An unexpected error occurred while running Safety: {e}")
-             raw_output = f"Unexpected error running Safety: {str(e)}"
+             logger.error(f"Failed to read requirements file {requirements_file}: {e}")
+             return [], f"Error reading requirements file: {e}"
 
-        return issues, raw_output
+        return self._run_tool("Safety", command, self._parse_safety_output, working_directory=app_path, input_data=req_content)
 
 
     def _parse_pylint_output(self, output: str) -> List[BackendSecurityIssue]:
         """Parse Pylint JSON output into BackendSecurityIssue objects."""
         issues = []
         try:
-            pylint_data = json.loads(output)
+            # Pylint might output non-JSON text before the JSON array on errors/warnings
+            # Try to find the start of the JSON array '['
+            json_start_index = output.find('[')
+            if json_start_index == -1:
+                logger.warning(f"Could not find start of JSON array in Pylint output. Output:\n{output}")
+                return [] # No JSON found
+
+            json_output = output[json_start_index:]
+            pylint_data = json.loads(json_output)
             # Pylint severity: (C)onvention, (R)efactor, (W)arning, (E)rror, (F)atal
             severity_map = {"F": "HIGH", "E": "HIGH", "W": "MEDIUM", "R": "LOW", "C": "LOW"}
 
@@ -351,19 +342,23 @@ class BackendSecurityAnalyzer:
                     fix_suggestion=None # Pylint doesn't provide structured suggestions
                 ))
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse Pylint JSON: {e}")
+            logger.error(f"Failed to parse Pylint JSON: {e}. JSON tried:\n{json_output[:500]}...")
+        except Exception as e:
+            logger.error(f"Unexpected error parsing Pylint output: {e}")
         return issues
 
     def _run_pylint(self, app_path: Path) -> Tuple[List[BackendSecurityIssue], str]:
-        """Run Pylint for code quality analysis."""
-        # Run pylint on all .py files found within the app_path
+        """Run Pylint for code quality analysis as a module."""
         _, source_files = self._check_source_files(app_path)
         if not source_files:
             return [], "No Python source files found for Pylint."
 
-        # Pylint works better when run from the project root
-        command = [cmd_name("pylint"), "--output-format=json"] + [str(Path(f).relative_to(app_path)) for f in source_files]
-        # Run tool with working directory set to app_path
+        # Convert source file paths to be relative to the app_path for the command
+        relative_source_files = [str(Path(f).relative_to(app_path)) for f in source_files]
+
+        # Use sys.executable to call the pylint module
+        # Use --exit-zero to prevent non-zero exit code just for finding issues
+        command = [sys.executable, "-m", "pylint", "--output-format=json", "--exit-zero"] + relative_source_files
         return self._run_tool("Pylint", command, self._parse_pylint_output, working_directory=app_path)
 
 
@@ -408,10 +403,11 @@ class BackendSecurityAnalyzer:
         return issues
 
     def _run_vulture(self, app_path: Path) -> Tuple[List[BackendSecurityIssue], str]:
-        """Run Vulture to detect dead code."""
-        # Vulture needs path(s) to scan
-        command = [cmd_name("vulture"), str(app_path), "--min-confidence", "50"] # Scan path directly, set minimum confidence
-        return self._run_tool("Vulture", command, self._parse_vulture_output)
+        """Run Vulture to detect dead code as a module."""
+        # Use sys.executable to call the vulture module
+        # Vulture scans the directory passed as argument
+        command = [sys.executable, "-m", "vulture", ".", "--min-confidence", "50"] # Scan current dir '.'
+        return self._run_tool("Vulture", command, self._parse_vulture_output, working_directory=app_path)
 
 
     def run_security_analysis(
@@ -435,8 +431,10 @@ class BackendSecurityAnalyzer:
             - Dictionary mapping tool names to their raw output strings.
 
         Raises:
-            ValueError: If the target application path does not exist or contains no Python files.
+            ValueError: If the target application path does not exist or contains no Python files
+                      (unless only Safety is being run).
         """
+        # Construct path relative to the base path stored during initialization
         app_path = self.base_path / f"{model}/app{app_num}/backend"
         logger.info(f"Starting backend security analysis for: {app_path}")
 
@@ -444,15 +442,16 @@ class BackendSecurityAnalyzer:
              raise ValueError(f"Application backend path does not exist: {app_path}")
 
         has_files, _ = self._check_source_files(app_path)
-        if not has_files:
-             # Allow proceeding if only Safety check is needed (doesn't require .py files)
-             if not (self.all_tools if use_all_tools else self.default_tools) == ['safety']:
-                 raise ValueError(f"No Python source files found in {app_path}, cannot run most tools.")
-             else:
-                 logger.warning(f"No Python source files in {app_path}, only running Safety check.")
-
-
         tools_to_run = self.all_tools if use_all_tools else self.default_tools
+
+        # Check if source files are needed but missing
+        requires_py_files = any(tool for tool in tools_to_run if tool != "safety")
+        if requires_py_files and not has_files:
+            raise ValueError(f"No Python source files found in {app_path}, cannot run tools like Bandit, Pylint, Vulture.")
+        elif not has_files:
+            logger.warning(f"No Python source files in {app_path}, only running Safety check if selected.")
+
+
         all_issues = []
         tool_status = {}
         tool_outputs = {}
@@ -461,10 +460,22 @@ class BackendSecurityAnalyzer:
 
         # Use ThreadPoolExecutor for I/O bound tasks (running external processes)
         with concurrent.futures.ThreadPoolExecutor(max_workers=len(tools_to_run)) as executor:
-            future_to_tool = {
-                executor.submit(self.tool_runners[tool], app_path): tool
-                for tool in tools_to_run if tool in self.tool_runners
-            }
+            future_to_tool = {}
+            for tool in tools_to_run:
+                if tool == "safety" and "safety" not in self.tool_runners:
+                    logger.warning("Safety tool runner not configured, skipping.")
+                    tool_status[tool] = "❓ Not configured?"
+                    continue
+                if tool != "safety" and not has_files:
+                    logger.warning(f"Skipping tool {tool} as no Python files were found.")
+                    tool_status[tool] = "⚪ Skipped (no .py files)"
+                    continue
+                if tool in self.tool_runners:
+                    future_to_tool[executor.submit(self.tool_runners[tool], app_path)] = tool
+                else:
+                    logger.warning(f"Runner for tool '{tool}' not found.")
+                    tool_status[tool] = "❓ Not configured?"
+
 
             for future in concurrent.futures.as_completed(future_to_tool):
                 tool = future_to_tool[future]
@@ -472,12 +483,12 @@ class BackendSecurityAnalyzer:
                     issues, output = future.result()
                     all_issues.extend(issues)
                     tool_outputs[tool] = output
-                    if "error" in output.lower() or "failed" in output.lower() or "timed out" in output.lower() :
-                         # Basic check in raw output for error indication
-                         if not issues: # If error produced no issues, mark as error
-                              tool_status[tool] = f"⚠️ Error reported, check raw output."
-                         else: # If error but issues found, mark as warning
-                             tool_status[tool] = f"⚠️ Found {len(issues)} issues (errors reported)."
+                    # Check for explicit failure markers in output or lack of issues despite error indicators
+                    is_error = "error" in output.lower() or "failed" in output.lower() or "timed out" in output.lower() or "not found" in output.lower()
+                    if is_error and not issues:
+                         tool_status[tool] = f"❌ Error reported, check raw output."
+                    elif is_error and issues:
+                         tool_status[tool] = f"⚠️ Found {len(issues)} issues (errors reported)."
                     elif not issues:
                         tool_status[tool] = "✅ No issues found"
                     else:

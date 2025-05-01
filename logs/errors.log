@@ -131,3 +131,490 @@ Traceback (most recent call last):
   File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
     raise DockerException(
 docker.errors.DockerException: Error while fetching server API version: NpipeHTTPConnectionPool(host='localhost', port=None): Read timed out. (read timeout=10)
+2025-05-01 01:08:52 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Bandit command not found. Is it installed and in PATH? Command: bandit.cmd
+2025-05-01 01:08:52 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Bandit command not found. Is it installed and in PATH? Command: bandit.cmd
+2025-05-01 01:08:52 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Bandit command not found. Is it installed and in PATH? Command: bandit.cmd
+2025-05-01 01:46:12 [ERROR] [-] ajax.ajax.security_analysis.wrapped:228 - Error encountered in decorated function 'security_analysis'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1306, in security_analysis
+    return process_security_analysis(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: process_security_analysis() missing 1 required positional argument: 'full_scan'
+2025-05-01 01:46:27 [ERROR] [-] ajax.ajax.security_analysis.wrapped:228 - Error encountered in decorated function 'security_analysis'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1306, in security_analysis
+    return process_security_analysis(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: process_security_analysis() missing 1 required positional argument: 'full_scan'
+2025-05-01 01:52:55 [ERROR] [-] ajax.ajax.frontend_security_analysis.wrapped:228 - Error encountered in decorated function 'frontend_security_analysis'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 200, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 1334, in frontend_security_analysis
+    return process_security_analysis(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: process_security_analysis() missing 1 required positional argument: 'full_scan'
+2025-05-01 02:20:34 [CRITICAL] [-] main.main.<module>:413 - FATAL: Failed to start application: stop_zap_scanners() takes 0 positional arguments but 1 was given
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 355, in <module>
+    with app.app_context():
+         ^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\ctx.py", line 284, in __exit__
+    self.pop(exc_value)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\ctx.py", line 262, in pop
+    self.app.do_teardown_appcontext(exc)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1382, in do_teardown_appcontext
+    self.ensure_sync(func)(exc)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 234, in teardown
+    stop_zap_scanners(app.config["ZAP_SCANS"])
+TypeError: stop_zap_scanners() takes 0 positional arguments but 1 was given
+2025-05-01 02:35:29 [CRITICAL] [-] main.main.<module>:413 - FATAL: Failed to start application: stop_zap_scanners() takes 0 positional arguments but 1 was given
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 355, in <module>
+    with app.app_context():
+         ^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\ctx.py", line 284, in __exit__
+    self.pop(exc_value)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\ctx.py", line 262, in pop
+    self.app.do_teardown_appcontext(exc)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1382, in do_teardown_appcontext
+    self.ensure_sync(func)(exc)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 234, in teardown
+    stop_zap_scanners(app.config["ZAP_SCANS"])
+TypeError: stop_zap_scanners() takes 0 positional arguments but 1 was given
+2025-05-01 10:38:14 [ERROR] [-] docker.docker._create_docker_client:124 - Docker client creation or connection failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 118, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+2025-05-01 10:38:19 [ERROR] [-] docker.docker._create_docker_client:124 - Docker client creation or connection failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 118, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+2025-05-01 10:38:42 [ERROR] [-] docker.docker._create_docker_client:124 - Docker client creation or connection failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 118, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+2025-05-01 10:38:46 [ERROR] [-] docker.docker._create_docker_client:124 - Docker client creation or connection failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 118, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+2025-05-01 11:43:54 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Bandit command not found. Is it installed and in PATH? Command: bandit.cmd
+2025-05-01 11:43:54 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Pylint command not found. Is it installed and in PATH? Command: pylint.cmd
+2025-05-01 11:43:54 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Vulture command not found. Is it installed and in PATH? Command: vulture.cmd
+2025-05-01 11:43:54 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_safety:322 - Safety command not found. Is it installed and in PATH? Command: safety.cmd
+2025-05-01 11:43:57 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Vulture command not found. Is it installed and in PATH? Command: vulture.cmd
+2025-05-01 11:43:57 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Pylint command not found. Is it installed and in PATH? Command: pylint.cmd
+2025-05-01 11:43:57 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Bandit command not found. Is it installed and in PATH? Command: bandit.cmd
+2025-05-01 11:43:57 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_safety:322 - Safety command not found. Is it installed and in PATH? Command: safety.cmd
+2025-05-01 11:43:58 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Bandit command not found. Is it installed and in PATH? Command: bandit.cmd
+2025-05-01 11:43:58 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Pylint command not found. Is it installed and in PATH? Command: pylint.cmd
+2025-05-01 11:43:58 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Vulture command not found. Is it installed and in PATH? Command: vulture.cmd
+2025-05-01 11:43:58 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_safety:322 - Safety command not found. Is it installed and in PATH? Command: safety.cmd
+2025-05-01 12:13:42 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Bandit command not found. Is it installed and in PATH? Command: bandit.cmd
+2025-05-01 12:13:42 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Vulture command not found. Is it installed and in PATH? Command: vulture.cmd
+2025-05-01 12:13:42 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Pylint command not found. Is it installed and in PATH? Command: pylint.cmd
+2025-05-01 12:13:42 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_safety:322 - Safety command not found. Is it installed and in PATH? Command: safety.cmd
+2025-05-01 12:13:43 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Bandit command not found. Is it installed and in PATH? Command: bandit.cmd
+2025-05-01 12:13:43 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Pylint command not found. Is it installed and in PATH? Command: pylint.cmd
+2025-05-01 12:13:43 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Vulture command not found. Is it installed and in PATH? Command: vulture.cmd
+2025-05-01 12:13:43 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_safety:322 - Safety command not found. Is it installed and in PATH? Command: safety.cmd
+2025-05-01 12:13:43 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Vulture command not found. Is it installed and in PATH? Command: vulture.cmd
+2025-05-01 12:13:43 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Pylint command not found. Is it installed and in PATH? Command: pylint.cmd
+2025-05-01 12:13:43 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_tool:181 - Bandit command not found. Is it installed and in PATH? Command: bandit.cmd
+2025-05-01 12:13:43 [ERROR] [-] backend_security_analysis.backend_security_analysis._run_safety:322 - Safety command not found. Is it installed and in PATH? Command: safety.cmd
+2025-05-01 12:42:07 [ERROR] [-] batch_task.batch_task._wait_for_port:1304 - [batch_task_3_0-1751113909408][Job 3][Task Llama/app1/performance] Timeout waiting for localhost:5501 after 60 seconds.
+2025-05-01 12:42:07 [ERROR] [-] batch_task.batch_task.analysis_thread_target:1454 - [batch_task_3_0-1751113909408][Job 3][Task Llama/app1/performance] Exception in analysis thread: Target application Llama/app1 did not respond on localhost:5501 within 60s.
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1369, in analysis_thread_target
+    raise RuntimeError(f"Target application {model}/app{app_num} did not respond on {target_host}:{target_port} within 60s.")
+RuntimeError: Target application Llama/app1 did not respond on localhost:5501 within 60s.
+2025-05-01 12:42:07 [ERROR] [-] batch_task.batch_task._analyze_app_task:1594 - [batch_task_3_0-1751113909408][Job 3][Task Llama/app1/performance] Task failed internally: RuntimeError - Target application Llama/app1 did not respond on localhost:5501 within 60s.
+2025-05-01 12:42:07 [ERROR] [-] app.gpt4all.check_requirements:1127 - App directory not found: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app1
+2025-05-01 13:05:49 [CRITICAL] [-] main.main.<module>:413 - FATAL: Failed to start application: The name 'batch_analysis' is already registered for this blueprint. Use 'name=' to provide a unique name.
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 352, in <module>
+    app = create_app(config)
+          ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 320, in create_app
+    app.register_blueprint(batch_analysis_bp, url_prefix="/batch-analysis")
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\sansio\scaffold.py", line 47, in wrapper_func
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\sansio\app.py", line 595, in register_blueprint
+    blueprint.register(self, options)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\sansio\blueprints.py", line 310, in register
+    raise ValueError(
+ValueError: The name 'batch_analysis' is already registered for this blueprint. Use 'name=' to provide a unique name.
+2025-05-01 13:07:53 [ERROR] [-] batch_task.batch_task._wait_for_port:1304 - [batch_task_1_0-1490839430592][Job 1][Task Llama/app1/performance] Timeout waiting for localhost:5501 after 60 seconds.
+2025-05-01 13:07:53 [ERROR] [-] batch_task.batch_task.analysis_thread_target:1454 - [batch_task_1_0-1490839430592][Job 1][Task Llama/app1/performance] Exception in analysis thread: Target application Llama/app1 did not respond on localhost:5501 within 60s.
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1369, in analysis_thread_target
+    raise RuntimeError(f"Target application {model}/app{app_num} did not respond on {target_host}:{target_port} within 60s.")
+RuntimeError: Target application Llama/app1 did not respond on localhost:5501 within 60s.
+2025-05-01 13:07:53 [ERROR] [-] batch_task.batch_task._analyze_app_task:1594 - [batch_task_1_0-1490839430592][Job 1][Task Llama/app1/performance] Task failed internally: RuntimeError - Target application Llama/app1 did not respond on localhost:5501 within 60s.
+2025-05-01 13:07:53 [ERROR] [-] app.gpt4all.check_requirements:1127 - App directory not found: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app1
+2025-05-01 13:36:52 [ERROR] [-] batch_task.batch_task._analyze_app_task:1482 - [batch_task_1_1-1490839188352][Job 1][Task Llama/app1/zap] Task timed out after 1800 seconds waiting for analysis thread.
+2025-05-01 13:36:53 [ERROR] [-] app.gpt4all.check_requirements:1150 - No readable code files found in c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2
+2025-05-01 13:36:53 [ERROR] [-] batch_task.batch_task.analysis_thread_target:1435 - [batch_task_1_1-1490839188352][Job 1][Task Llama/app1/zap] ZAP scan Llama-1-1746097612 did not complete within max polls (120). Final status: None
+2025-05-01 13:36:53 [ERROR] [-] batch_task.batch_task.analysis_thread_target:1454 - [batch_task_1_1-1490839188352][Job 1][Task Llama/app1/zap] Exception in analysis thread: ZAP scan timed out after 120 polls (1786.1s)
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1436, in analysis_thread_target
+    raise TimeoutError(f"ZAP scan timed out after {max_polls} polls ({elapsed_time:.1f}s)")
+TimeoutError: ZAP scan timed out after 120 polls (1786.1s)
+2025-05-01 13:38:30 [ERROR] [-] batch_task.batch_task._analyze_app_task:1482 - [batch_task_1_0-1490839430592][Job 1][Task Llama/app2/zap] Task timed out after 1800 seconds waiting for analysis thread.
+2025-05-01 13:38:31 [ERROR] [-] batch_task.batch_task.analysis_thread_target:1435 - [batch_task_1_0-1490839430592][Job 1][Task Llama/app2/zap] ZAP scan Llama-2-1746097710 did not complete within max polls (120). Final status: None
+2025-05-01 13:38:31 [ERROR] [-] batch_task.batch_task.analysis_thread_target:1454 - [batch_task_1_0-1490839430592][Job 1][Task Llama/app2/zap] Exception in analysis thread: ZAP scan timed out after 120 polls (1786.0s)
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1436, in analysis_thread_target
+TimeoutError: ZAP scan timed out after 120 polls (1786.0s)
+2025-05-01 13:38:31 [ERROR] [-] app.gpt4all.check_requirements:1150 - No readable code files found in c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app3
+2025-05-01 13:38:31 [ERROR] [-] batch_task.batch_task.analysis_thread_target:1454 - [batch_task_1_0-1490839430592][Job 1][Task Llama/app3/frontend_security] Exception in analysis thread: cannot schedule new futures after interpreter shutdown
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1331, in analysis_thread_target
+    """
+        
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\frontend_security_analysis.py", line 838, in run_security_analysis
+    executor.submit(tool_map[tool], app_path): tool
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 172, in submit
+    raise RuntimeError('cannot schedule new futures after '
+RuntimeError: cannot schedule new futures after interpreter shutdown
+2025-05-01 13:38:31 [ERROR] [-] batch_task.batch_task._analyze_app_task:1594 - [batch_task_1_0-1490839430592][Job 1][Task Llama/app3/frontend_security] Task failed internally: RuntimeError - cannot schedule new futures after interpreter shutdown
+2025-05-01 13:38:31 [ERROR] [-] batch_task.batch_task.analysis_thread_target:1454 - [batch_task_1_0-1490839430592][Job 1][Task Llama/app3/backend_security] Exception in analysis thread: cannot schedule new futures after interpreter shutdown
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1341, in analysis_thread_target
+    service_logger.info(f"Request to start job")
+                                           ^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\backend_security_analysis.py", line 474, in run_security_analysis
+    future_to_tool[executor.submit(self.tool_runners[tool], app_path)] = tool
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\concurrent\futures\thread.py", line 172, in submit
+    raise RuntimeError('cannot schedule new futures after '
+RuntimeError: cannot schedule new futures after interpreter shutdown
+2025-05-01 13:38:31 [ERROR] [-] batch_task.batch_task._analyze_app_task:1594 - [batch_task_1_0-1490839430592][Job 1][Task Llama/app3/backend_security] Task failed internally: RuntimeError - cannot schedule new futures after interpreter shutdown
+2025-05-01 13:41:48 [ERROR] [-] batch_service.batch_service._run_job_wrapper:1504 - Unhandled exception in job wrapper: 'InMemoryJobStorage' object has no attribute 'get_analysis_options'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1501, in _run_job_wrapper
+    self._run_job_logic(job_id)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1639, in _run_job_logic
+    self._execute_tasks(job_id, valid_tasks, analyzers_services)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1792, in _execute_tasks
+    analysis_options = self.storage.get_analysis_options(job_id, model, app_num, analysis_type)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'InMemoryJobStorage' object has no attribute 'get_analysis_options'
+2025-05-01 13:41:48 [ERROR] [-] batch_service.batch_service._handle_thread_exit_error:2234 - Thread exited with error: Unhandled wrapper error: 'InMemoryJobStorage' object has no attribute 'get_analysis_options'
+2025-05-01 13:43:17 [ERROR] [-] batch_service.batch_service._run_job_wrapper:1504 - Unhandled exception in job wrapper: 'InMemoryJobStorage' object has no attribute 'get_analysis_options'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1501, in _run_job_wrapper
+    self._run_job_logic(job_id)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1639, in _run_job_logic
+    self._execute_tasks(job_id, valid_tasks, analyzers_services)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1792, in _execute_tasks
+    analysis_options = self.storage.get_analysis_options(job_id, model, app_num, analysis_type)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'InMemoryJobStorage' object has no attribute 'get_analysis_options'
+2025-05-01 13:43:17 [ERROR] [-] batch_service.batch_service._handle_thread_exit_error:2234 - Thread exited with error: Unhandled wrapper error: 'InMemoryJobStorage' object has no attribute 'get_analysis_options'
+2025-05-01 16:37:18 [CRITICAL] [-] main.main.<module>:413 - FATAL: Failed to start application: The name 'batch_analysis' is already registered for this blueprint. Use 'name=' to provide a unique name.
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 352, in <module>
+    app = create_app(config)
+          ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 320, in create_app
+    app.register_blueprint(batch_analysis_bp, url_prefix="/batch-analysis")
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\sansio\scaffold.py", line 47, in wrapper_func
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\sansio\app.py", line 595, in register_blueprint
+    blueprint.register(self, options)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\sansio\blueprints.py", line 310, in register
+    raise ValueError(
+ValueError: The name 'batch_analysis' is already registered for this blueprint. Use 'name=' to provide a unique name.
+2025-05-01 17:22:32 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 2] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:22:47 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 2] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:23:02 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 2] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:23:02 [ERROR] [-] app.gpt4all.check_requirements:1150 - No readable code files found in c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app2
+2025-05-01 17:23:11 [ERROR] [-] batch_analysis.batch_analysis.task.execute_frontend_security_task:1155 - [Task 4] Frontend security analysis failed: slice(None, 5000, None)
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1146, in execute_frontend_security_task
+    "raw_output_preview": raw_output[:5000] if raw_output else None
+                          ~~~~~~~~~~^^^^^^^
+KeyError: slice(None, 5000, None)
+2025-05-01 17:23:11 [ERROR] [-] batch_analysis.batch_analysis.task._task_execution_context:1034 - [Task 4] Llama/2/frontend_security - Failed: Frontend security analysis failed: slice(None, 5000, None)
+2025-05-01 17:23:17 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 2] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:23:17 [ERROR] [-] batch_analysis.batch_analysis.task.execute_backend_security_task:1207 - [Task 5] Backend security analysis failed: slice(None, 5000, None)
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1198, in execute_backend_security_task
+    "raw_output_preview": raw_output[:5000] if raw_output else None
+                          ~~~~~~~~~~^^^^^^^
+KeyError: slice(None, 5000, None)
+2025-05-01 17:23:17 [ERROR] [-] batch_analysis.batch_analysis.task._task_execution_context:1034 - [Task 5] Llama/2/backend_security - Failed: Backend security analysis failed: slice(None, 5000, None)
+2025-05-01 17:23:32 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 2] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:23:47 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 2] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:23:47 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 7] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:24:02 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 2] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:24:02 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 7] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:24:17 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 2] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:24:17 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 7] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:24:32 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 2] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:24:32 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 7] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:24:47 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 2] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:24:47 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 7] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:25:02 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 2] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:25:02 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 7] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:25:17 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 2] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'
+2025-05-01 17:25:17 [ERROR] [-] batch_analysis.batch_analysis.task.execute_zap_task:1556 - [Task 7] Error polling ZAP status: 'ScanManager' object has no attribute 'get_scan_status'

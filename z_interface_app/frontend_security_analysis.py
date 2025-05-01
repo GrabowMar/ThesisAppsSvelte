@@ -8,15 +8,18 @@ Provides security scanning for frontend code using multiple tools:
 - Snyk: Dependency vulnerability scanning.
 
 Features path detection, concurrent execution, logging, and error handling.
+
+FIX: Uses shutil.which() to find executable paths for better reliability.
 """
 
 import os
 import json
-import shutil
+import shutil # <-- Added import
 import subprocess
 import logging
 import concurrent.futures
 import platform
+import sys # <-- Added import (though not for -m, useful for path checks maybe later)
 from dataclasses import dataclass, asdict # Use asdict for simpler to_dict
 from datetime import datetime
 from pathlib import Path
@@ -48,12 +51,31 @@ DEFAULT_ORDER_VALUE = 99 # For sorting unknowns
 
 # --- Helper Functions ---
 
-def cmd_name(name: str) -> str:
+def get_executable_path(name: str) -> Optional[str]:
     """
-    Return the proper command name for Windows if needed.
-    Example: "npm" -> "npm.cmd" on Windows.
+    Find the full path to an executable using shutil.which().
+    Handles '.cmd' extension needed on Windows.
+
+    Args:
+        name: Base command name (e.g., "npm", "npx", "snyk").
+
+    Returns:
+        The full path to the executable if found, otherwise None.
     """
-    return f"{name}.cmd" if IS_WINDOWS else name
+    cmd = f"{name}.cmd" if IS_WINDOWS else name
+    path = shutil.which(cmd)
+    if path:
+        logger.debug(f"Found executable for '{name}' at: {path}")
+        return path
+    else:
+        # Try finding without .cmd suffix on Windows as a fallback
+        if IS_WINDOWS:
+            path = shutil.which(name)
+            if path:
+                logger.debug(f"Found executable for '{name}' (no .cmd) at: {path}")
+                return path
+        logger.warning(f"Executable '{cmd}' (or '{name}') not found in PATH.")
+        return None
 
 def safe_json_loads(data: str) -> Optional[Union[dict, list]]: # Allow list type
     """
@@ -65,7 +87,7 @@ def safe_json_loads(data: str) -> Optional[Union[dict, list]]: # Allow list type
         if data and data.startswith('\ufeff'):
             data = data.lstrip('\ufeff')
         if not data: # Handle empty string case
-             return None
+            return None
         return json.loads(data)
     except json.JSONDecodeError as exc:
         logger.error(f"Failed to parse JSON: {exc}")
@@ -73,8 +95,8 @@ def safe_json_loads(data: str) -> Optional[Union[dict, list]]: # Allow list type
         logger.debug(f"Raw JSON output snippet causing error: {data[:300]}...")
         return None
     except Exception as e:
-         logger.error(f"Unexpected error during JSON parsing: {e}")
-         return None
+        logger.error(f"Unexpected error during JSON parsing: {e}")
+        return None
 
 def normalize_path(path: Union[str, Path]) -> Path:
     """
@@ -125,53 +147,16 @@ class FrontendSecurityAnalyzer:
         # Update to reflect implemented tools (jshint, not retire.js)
         self.all_tools = ["npm-audit", "eslint", "jshint", "snyk"]
 
-        # Check availability of required tools
+        # Check availability of required tools using the new helper
         self.available_tools = {
-            "npm-audit": self._check_tool("npm"),
-            "eslint": self._check_tool("npx"), # Assumes eslint is run via npx
-            "jshint": self._check_tool("npx"), # Assumes jshint is run via npx
-            "snyk": self._check_tool("snyk")
+            "npm-audit": bool(get_executable_path("npm")),
+            "eslint": bool(get_executable_path("npx")), # Check if npx is available
+            "jshint": bool(get_executable_path("npx")), # Check if npx is available
+            "snyk": bool(get_executable_path("snyk"))
         }
         logger.info(f"Available tools check: {self.available_tools}")
 
-    def _check_tool(self, cmd: str) -> bool:
-        """
-        Check if a command exists and is executable in the system PATH.
-
-        Args:
-            cmd: Base command name (e.g., "npm", "npx", "snyk").
-
-        Returns:
-            True if the command seems available, False otherwise.
-        """
-        tool_cmd = cmd_name(cmd)
-        try:
-            # Use a command that typically works for checking existence/version
-            check_command = [tool_cmd, "--version"]
-            # Special handling for npx check
-            if cmd == "npx":
-                 # Check if npx itself exists and can execute a basic command like 'eslint --version'
-                 # This assumes eslint is likely installed if npx is used with it later
-                 check_command = [tool_cmd, "eslint", "--version"]
-
-            proc = subprocess.run(
-                check_command,
-                capture_output=True,
-                timeout=10, # Generous timeout for version check
-                text=True,
-                encoding='utf-8', errors='ignore' # Be robust about output encoding
-            )
-            # Check return code AND common "not found" messages in stderr
-            if proc.returncode != 0 and proc.stderr and \
-               ("not found" in proc.stderr.lower() or "not recognized" in proc.stderr.lower()):
-                logger.warning(f"Tool check failed for '{cmd}': Command likely not found.")
-                return False
-            # If return code is 0 OR the error wasn't 'not found', assume tool exists.
-            # (Some tools might have non-zero exit for --version, or npx might show errors from the executed command)
-            return True
-        except (subprocess.SubprocessError, FileNotFoundError, OSError) as e:
-            logger.warning(f"Tool check failed for '{cmd}' (using '{tool_cmd}'): {e}")
-            return False
+    # _check_tool is replaced by using get_executable_path directly
 
     def _find_application_path(self, model: str, app_num: int) -> Optional[Path]: # Return Optional Path
         """
@@ -199,7 +184,7 @@ class FrontendSecurityAnalyzer:
             candidate = (base_app_dir / rel_dir).resolve() # Resolve to handle "." correctly
             # Check if the directory exists and contains common frontend indicators
             if candidate.is_dir():
-                 # Look for package.json or common framework/build config files
+                # Look for package.json or common framework/build config files
                 if (candidate / "package.json").exists() or \
                    any((candidate / f).exists() for f in ["vite.config.js", "webpack.config.js", "angular.json", "svelte.config.js", "next.config.js"]):
                     logger.info(f"Identified frontend application directory: {candidate}")
@@ -246,15 +231,156 @@ class FrontendSecurityAnalyzer:
             logger.error(f"Error checking source files in {directory}: {e}")
             return False, []
 
+    def _run_frontend_tool(
+        self,
+        tool_name: str,
+        base_command: str, # e.g., "npm", "npx", "snyk"
+        args: List[str],
+        working_directory: Path,
+        parser: Optional[Callable[[str], List[SecurityIssue]]] = None, # Optional parser for tools outputting structured data
+        input_data: Optional[str] = None,
+        timeout: int = TOOL_TIMEOUT
+    ) -> Tuple[List[SecurityIssue], str]:
+        """
+        Generic helper to find and run a frontend tool using subprocess.
+
+        Args:
+            tool_name: User-friendly name of the tool (for logging).
+            base_command: The base command name to find (e.g., "npm").
+            args: List of arguments to pass to the command.
+            working_directory: The directory to run the command in.
+            parser: Optional function to parse stdout into SecurityIssue objects.
+            input_data: Optional string data to pass to stdin.
+            timeout: Timeout in seconds for the subprocess.
+
+        Returns:
+            Tuple: (List of found SecurityIssue objects, Raw stdout/stderr from the tool).
+        """
+        issues: List[SecurityIssue] = []
+        raw_output = f"{tool_name} execution failed."
+
+        executable_path = get_executable_path(base_command)
+        if not executable_path:
+            raw_output = f"{tool_name} command ('{base_command}') not found in PATH."
+            logger.error(raw_output)
+            return issues, raw_output # Return early if executable not found
+
+        command = [executable_path] + args
+        logger.info(f"[{tool_name}] Attempting to run: {' '.join(command)} in '{working_directory}'")
+
+        try:
+            proc = subprocess.run(
+                command,
+                cwd=str(working_directory),
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                check=False, # Don't raise exception on non-zero exit code
+                encoding='utf-8',
+                errors='replace',
+                input=input_data
+            )
+            logger.info(f"[{tool_name}] Subprocess finished with return code: {proc.returncode}")
+            raw_output = f"STDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}"
+
+            # Basic check for common execution errors based on stderr
+            if proc.returncode != 0 and proc.stderr:
+                 stderr_lower = proc.stderr.lower()
+                 if "command not found" in stderr_lower or "not recognized" in stderr_lower:
+                      logger.error(f"{tool_name} execution failed: Command likely not found or inner command failed. Stderr: {proc.stderr}")
+                      # Keep raw_output as is, which contains the error
+                 elif "authenticate" in stderr_lower or "auth token" in stderr_lower:
+                      logger.error(f"{tool_name} execution failed: Authentication required.")
+                      raw_output += "\nERROR_NOTE: Authentication required."
+                 else:
+                      # Log other non-zero exits as warnings, as some tools use them for finding issues
+                      logger.warning(f"{tool_name} exited with code {proc.returncode}. Stderr: {proc.stderr}")
+
+            # Attempt parsing only if a parser is provided and stdout exists
+            if parser and proc.stdout:
+                logger.debug(f"[{tool_name}] Attempting to parse stdout...")
+                try:
+                    issues = parser(proc.stdout)
+                    logger.info(f"{tool_name} found {len(issues)} issues via parser.")
+                except Exception as e:
+                    logger.error(f"Failed to parse {tool_name} output: {e}\nOutput:\n{proc.stdout[:500]}...")
+                    raw_output += f"\nPARSING_ERROR: {str(e)}"
+            elif proc.stdout:
+                 logger.debug(f"[{tool_name}] No parser provided or stdout empty, skipping parsing.")
+
+        except subprocess.TimeoutExpired:
+            logger.error(f"{tool_name} timed out after {timeout} seconds.")
+            raw_output = f"{tool_name} timed out after {timeout} seconds."
+        except FileNotFoundError:
+             # Should be caught by get_executable_path, but handle defensively
+             logger.error(f"{tool_name} executable '{executable_path}' not found during run (unexpected).")
+             raw_output = f"{tool_name} executable not found during run: {executable_path}"
+        except Exception as e:
+            logger.exception(f"An unexpected error occurred while running {tool_name}: {e}")
+            raw_output = f"Unexpected error running {tool_name}: {str(e)}"
+
+        return issues, raw_output
+
+
+    # --- Tool-Specific Runner Methods (using the helper) ---
+
+    def _parse_npm_audit(self, stdout: str) -> List[SecurityIssue]:
+        """Parses the JSON output of `npm audit`."""
+        issues: List[SecurityIssue] = []
+        audit_data = safe_json_loads(stdout.strip())
+        if not audit_data:
+            logger.warning("npm audit: Failed to parse JSON data or output was empty.")
+            return issues
+
+        vulnerabilities = {}
+        if isinstance(audit_data, dict): # Standard format
+             if "vulnerabilities" in audit_data: vulnerabilities = audit_data["vulnerabilities"]
+             elif "advisories" in audit_data: vulnerabilities = audit_data["advisories"] # Older format
+        # Note: npm audit doesn't typically return a list at the top level
+
+        if not vulnerabilities:
+             logger.info("npm audit: No vulnerabilities found in JSON.")
+             return issues
+
+        for key, vuln_info in vulnerabilities.items():
+            if not isinstance(vuln_info, dict): continue # Skip invalid entries
+
+            severity_str = vuln_info.get("severity", "info")
+            name = vuln_info.get("name", vuln_info.get("module_name", key))
+            version = vuln_info.get("range", vuln_info.get("vulnerable_versions", "N/A"))
+            title = vuln_info.get("title", "N/A")
+            fix_text = vuln_info.get("recommendation", "Review advisory")
+
+            # Try extracting better title/fix
+            if isinstance(vuln_info.get("via"), list) and vuln_info["via"]:
+                 if isinstance(vuln_info["via"][0], dict): title = vuln_info["via"][0].get("title", title)
+
+            fix_available = vuln_info.get("fixAvailable", None) # Can be bool or dict
+            if isinstance(fix_available, dict):
+                 fix_ver = fix_available.get("version")
+                 if fix_ver: fix_text = f"Update {name} to version {fix_ver}"
+            elif fix_available is False: fix_text = "No simple fix available via `npm audit fix`"
+            elif fix_available is True: fix_text = "Fix available via `npm audit fix`"
+
+
+            severity = SEVERITY_MAP.get(severity_str, "LOW")
+            issues.append(SecurityIssue(
+                filename="package-lock.json", line_number=0,
+                issue_text=f"{title} (Package: {name}, Version(s): {version})",
+                severity=severity, confidence="HIGH",
+                issue_type=f"dependency_vuln_{name}", line_range=[0],
+                code=f"{name}@{version}", tool="npm-audit", fix_suggestion=fix_text
+            ))
+        return issues
 
     def _run_npm_audit(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
         """
         Run `npm audit --json` to check for dependency vulnerabilities.
+        Handles package-lock generation attempt.
         """
         tool_name = "npm-audit"
-        issues: List[SecurityIssue] = []
-        status = {tool_name: "⚠️ Not run"} # Default status
-        raw_output = "" # Store combined output for context
+        status = {tool_name: "⚠️ Not run"}
+        raw_output_combined = ""
 
         package_json_path = app_path / "package.json"
         package_lock_path = app_path / "package-lock.json"
@@ -263,389 +389,279 @@ class FrontendSecurityAnalyzer:
             msg = f"No package.json found in {app_path}, skipping {tool_name}."
             logger.warning(msg)
             status[tool_name] = "❌ No package.json"
-            return issues, status, msg
+            return [], status, msg
 
-        # Attempt to ensure package-lock.json exists for accurate audit
+        # Attempt to ensure package-lock.json exists
         if not package_lock_path.exists():
             logger.info(f"No package-lock.json found in {app_path}, attempting `npm i --package-lock-only`...")
-            try:
-                # Use --no-audit during install to prevent audit running twice
-                init_cmd = [cmd_name("npm"), "install", "--package-lock-only", "--ignore-scripts", "--no-audit"]
-                # Give more time for potential installations
-                init_proc = subprocess.run(init_cmd, cwd=str(app_path), capture_output=True, text=True,
-                                           timeout=120, check=False, encoding='utf-8', errors='replace')
-                if init_proc.returncode != 0 or not package_lock_path.exists():
-                     logger.warning(f"Failed to generate package-lock.json (exit code {init_proc.returncode}). Audit may be inaccurate. Stderr: {init_proc.stderr[:500]}")
-                     # Do not return here; proceed with audit but be aware results might be partial
-            except Exception as exc:
-                logger.warning(f"Error generating package-lock.json: {exc}. Audit results may be incomplete.")
-                # Proceed with audit
-
-        # Now run npm audit
-        command = [cmd_name("npm"), "audit", "--json"]
-        logger.info(f"Running {tool_name} in {app_path}...")
-        try:
-            proc = subprocess.run(
-                command, cwd=str(app_path), capture_output=True, text=True,
-                timeout=TOOL_TIMEOUT, check=False, encoding='utf-8', errors='replace' # check=False because audit exits > 0 if vulns found
+            init_args = ["install", "--package-lock-only", "--ignore-scripts", "--no-audit"]
+            _, init_output = self._run_frontend_tool(
+                "npm-install", "npm", init_args, app_path, timeout=120
             )
-            raw_output = f"STDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}" # Combine outputs for context
+            raw_output_combined += f"--- npm install --package-lock-only ---\n{init_output}\n--- End npm install ---\n\n"
+            if not package_lock_path.exists():
+                 logger.warning(f"Failed to generate package-lock.json. Audit may be inaccurate.")
+                 raw_output_combined += "WARNING: Failed to generate package-lock.json.\n"
 
-            # npm audit exit codes: 0=no vulns, >0=vulns found or error. We need to parse JSON regardless.
-            stdout_data = proc.stdout.strip()
-            if not stdout_data and proc.returncode != 0:
-                # Handle cases where there's an error *other* than finding vulnerabilities
-                msg = f"{tool_name} exited with code {proc.returncode}. Stderr: {proc.stderr}"
-                logger.error(msg)
-                status[tool_name] = f"❌ Error (Code {proc.returncode})"
-                return issues, status, raw_output
+        # Run npm audit
+        audit_args = ["audit", "--json"]
+        issues, audit_output = self._run_frontend_tool(
+            tool_name, "npm", audit_args, app_path, parser=self._parse_npm_audit
+        )
+        raw_output_combined += audit_output
 
-            # Handle empty stdout (might indicate success or weird state)
-            if not stdout_data:
-                 stderr_lower = proc.stderr.lower() if proc.stderr else ""
-                 if "found 0 vulnerabilities" in stderr_lower:
-                     status[tool_name] = "✅ No issues found"
-                 else:
-                     status[tool_name] = "❌ Empty Output / Error"
-                     logger.warning(f"{tool_name} produced no stdout. Stderr: {proc.stderr}")
-                 return issues, status, raw_output
+        # Determine final status based on errors in output and issues found
+        output_lower = raw_output_combined.lower()
+        if "error" in output_lower or "failed" in output_lower:
+             if not issues and "found 0 vulnerabilities" not in output_lower: # Real error if no issues found despite error text
+                 status[tool_name] = "❌ Error Reported"
+             else: # Issues found OR "found 0" message present despite error text
+                 status[tool_name] = f"⚠️ Found {len(issues)} issues (Errors reported)"
+        elif issues:
+             status[tool_name] = f"⚠️ Found {len(issues)} issues"
+        else:
+             status[tool_name] = "✅ No issues found"
 
-
-            audit_data = safe_json_loads(stdout_data)
-            if not audit_data:
-                 # Check stdout/stderr text for clues if JSON parsing failed
-                 summary_text = (proc.stdout + proc.stderr).lower()
-                 if "found 0 vulnerabilities" in summary_text: status[tool_name] = "✅ No issues found (JSON parse failed)"
-                 elif "vulnerabilities" in summary_text: status[tool_name] = "⚠️ Issues found (JSON parse failed)"
-                 else: status[tool_name] = "❌ Invalid JSON output"
-                 logger.error(f"{tool_name} output was not valid JSON. Output snippet: {stdout_data[:500]}")
-                 return issues, status, raw_output
-
-            # Process JSON data (handles different npm versions within the logic)
-            vulnerabilities = {}
-            if "vulnerabilities" in audit_data: vulnerabilities = audit_data["vulnerabilities"]
-            elif "advisories" in audit_data: vulnerabilities = audit_data["advisories"]
-
-            if not vulnerabilities:
-                status[tool_name] = "✅ No issues found"
-            else:
-                 for key, vuln_info in vulnerabilities.items():
-                     # Normalize data access
-                     severity_str = vuln_info.get("severity", "info") # Default to lowest if missing
-                     name = vuln_info.get("name", vuln_info.get("module_name", key)) # Use key as fallback name
-                     version = vuln_info.get("range", vuln_info.get("vulnerable_versions", "N/A"))
-                     title = vuln_info.get("title", "N/A")
-                     fix_text = vuln_info.get("recommendation", "Review advisory") # Default fix text
-
-                     # Try extracting better title/fix from nested structures if possible
-                     if isinstance(vuln_info.get("via"), list) and vuln_info["via"]:
-                         if isinstance(vuln_info["via"][0], dict):
-                             title = vuln_info["via"][0].get("title", title)
-                     if isinstance(vuln_info.get("fixAvailable"), dict):
-                         fix_ver = vuln_info["fixAvailable"].get("version")
-                         if fix_ver: fix_text = f"Update {name} to version {fix_ver}"
-                     elif isinstance(vuln_info.get("fixAvailable"), bool) and vuln_info["fixAvailable"] is False:
-                          fix_text = "No simple fix available via `npm audit fix`"
-                     elif isinstance(vuln_info.get("fixAvailable"), bool) and vuln_info["fixAvailable"] is True:
-                          fix_text = "Fix available via `npm audit fix`"
+        # Handle specific case of auth failure mentioned in output
+        if "authenticate" in output_lower or "auth token" in output_lower:
+             status[tool_name] = "❌ Authentication required"
 
 
-                     severity = SEVERITY_MAP.get(severity_str, "LOW") # Map to standard HIGH/MEDIUM/LOW
-                     issues.append(SecurityIssue(
-                         filename="package-lock.json", # Issue is in a dependency listed here
-                         line_number=0, # Line number not applicable
-                         issue_text=f"{title} (Package: {name}, Version(s): {version})",
-                         severity=severity, confidence="HIGH", # Confidence is high for known vulns
-                         issue_type=f"dependency_vuln_{name}", line_range=[0],
-                         code=f"{name}@{version}", tool=tool_name, fix_suggestion=fix_text
-                     ))
-                 status[tool_name] = f"⚠️ Found {len(issues)} issues"
+        return issues, status, raw_output_combined
 
-        except subprocess.TimeoutExpired:
-            status[tool_name] = "❌ Timed out"
-            raw_output = f"{tool_name} timed out"
-        except Exception as exc:
-            status[tool_name] = f"❌ Failed: {exc}"
-            raw_output = f"{tool_name} execution failed: {exc}"
-            logger.exception(f"Error running {tool_name}: {exc}")
 
-        return issues, status, raw_output
+    def _parse_eslint(self, stdout: str) -> List[SecurityIssue]:
+        """Parses ESLint JSON output."""
+        issues: List[SecurityIssue] = []
+        parsed = safe_json_loads(stdout.strip())
+        if not isinstance(parsed, list):
+             logger.warning(f"ESLint: Expected a list from JSON output, got {type(parsed)}. Cannot parse.")
+             return issues
 
+        security_patterns = ["security", "inject", "prototype", "csrf", "xss", "sanitize", "escape", "auth", "unsafe", "exploit", "vuln"]
+        for file_result in parsed:
+            if not isinstance(file_result, dict): continue # Skip invalid entries
+            file_path = file_result.get("filePath", "unknown")
+            # Path should already be relative from ESLint, but normalize just in case
+            rel_path = os.path.normpath(file_path) # Basic normalization
+
+            for msg in file_result.get("messages", []):
+                if not isinstance(msg, dict): continue # Skip invalid messages
+
+                is_fatal = msg.get("fatal", False)
+                line_num = msg.get("line", 0)
+                severity_value = msg.get("severity", 1) # 1=warn, 2=error
+                rule_id = msg.get("ruleId", "parsing_error" if is_fatal else "unknown_rule")
+                message = msg.get("message", "Unknown issue")
+
+                severity = "HIGH" if severity_value >= 2 or is_fatal else "MEDIUM"
+                confidence = "HIGH" if is_fatal else "MEDIUM"
+                issue_type = rule_id
+
+                # Check for security keywords
+                rule_id_str = str(rule_id).lower() if rule_id else ""
+                message_str = str(message).lower()
+                if any(pattern in rule_id_str or pattern in message_str for pattern in security_patterns):
+                    if severity != "HIGH": severity = "HIGH" # Elevate
+
+                issues.append(SecurityIssue(
+                    filename=rel_path, line_number=line_num, issue_text=f"[{rule_id}] {message}",
+                    severity=severity, confidence=confidence, issue_type=issue_type,
+                    line_range=[line_num], code=msg.get("source", "N/A"),
+                    tool="eslint", fix_suggestion=msg.get("fix", {}).get("text")
+                ))
+        return issues
 
     def _run_eslint(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
-        """Run ESLint and parse JSON output."""
+        """Run ESLint using npx and parse JSON output."""
         tool_name = "eslint"
-        issues: List[SecurityIssue] = []
         status = {tool_name: "⚠️ Not run"}
         temp_dir = None
-        eslint_config_path = None # Track path to temporary config for deletion
-        raw_output = ""
+        eslint_config_path = None
+        raw_output_combined = ""
 
         has_files, _ = self._check_source_files(app_path)
         if not has_files:
             msg = f"No relevant frontend files found in {app_path}, skipping {tool_name}."
             status[tool_name] = "❌ No files to analyze"
-            return issues, status, msg
+            return [], status, msg
 
         scan_dir = "src" if (app_path / "src").is_dir() else "."
         logger.info(f"ESLint will scan '{scan_dir}' within {app_path}")
 
+        args = ["eslint", "--ext", ".js,.jsx,.ts,.tsx,.vue,.svelte", "--format", "json", "--quiet"]
+
         try:
-            # Check for existing ESLint config files
             project_config_exists = any((app_path / f).exists() for f in
                                         [".eslintrc.js", ".eslintrc.json", ".eslintrc.yaml", ".eslintrc.yml", "eslint.config.js"])
 
-            command = [cmd_name("npx"), "eslint", "--ext", ".js,.jsx,.ts,.tsx,.vue,.svelte", "--format", "json", "--quiet"]
-
             if project_config_exists:
                 logger.info(f"Using existing ESLint configuration found in {app_path}")
-                # No need to add --config if config is in project root
             else:
-                # Create a temporary basic config if none exists
                 logger.info("No project ESLint config found, creating temporary basic config.")
                 temp_dir = Path(tempfile.mkdtemp(prefix="eslint_config_"))
                 eslint_config_path = temp_dir / ".eslintrc.json"
                 eslint_config = {
-                    "root": True, # Prevent extending further up
-                    "env": {"browser": True, "es2021": True, "node": True},
-                    "extends": ["eslint:recommended"], # Basic recommended rules
+                    "root": True, "env": {"browser": True, "es2021": True, "node": True},
+                    "extends": ["eslint:recommended"],
                     "parserOptions": { "ecmaVersion": "latest", "sourceType": "module", "ecmaFeatures": {"jsx": True} },
-                    "rules": { "no-eval": "error", "no-implied-eval": "error", "no-alert": "warn" } # Basic security/bad practice rules
+                    "rules": { "no-eval": "error", "no-implied-eval": "error", "no-alert": "warn" }
                 }
                 with open(eslint_config_path, "w") as f: json.dump(eslint_config, f, indent=2)
-                # Explicitly pass the temporary config path
-                command.extend(["--config", str(eslint_config_path)])
+                args.extend(["--config", str(eslint_config_path)])
 
-            command.append(scan_dir) # Target directory/files
+            args.append(scan_dir)
 
-            logger.info(f"Running {tool_name} command: {' '.join(command)}")
-            proc = subprocess.run(
-                command, cwd=str(app_path), capture_output=True, text=True,
-                timeout=TOOL_TIMEOUT, check=False, encoding='utf-8', errors='replace'
+            issues, run_output = self._run_frontend_tool(
+                tool_name, "npx", args, app_path, parser=self._parse_eslint
             )
-            raw_output = f"STDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}"
+            raw_output_combined = run_output
 
-            # ESLint exits 1 if linting errors are found, 0 if none, 2 if config/fatal error
-            if proc.returncode == 2:
-                 msg = f"ESLint configuration or fatal error (exit code 2). Stderr: {proc.stderr}"
-                 logger.error(msg)
-                 status[tool_name] = "❌ Config/Fatal Error"
-                 return issues, status, raw_output
-            elif proc.returncode != 0 and proc.returncode != 1: # Handle unexpected exit codes
-                 msg = f"ESLint failed with unexpected exit code {proc.returncode}. Stderr: {proc.stderr}"
-                 logger.error(msg)
-                 status[tool_name] = f"❌ Error (Code {proc.returncode})"
-                 return issues, status, raw_output
+            # Determine status based on output and issues
+            output_lower = run_output.lower()
+            if "error" in output_lower or "failed" in output_lower:
+                 # Check for specific config/plugin errors
+                 if "plugin" in output_lower and "was conflicted" not in output_lower:
+                      status[tool_name] = "❌ Plugin/Config Issue"
+                 elif not issues: # If general error and no issues parsed
+                      status[tool_name] = "❌ Error Reported"
+                 else: # Issues found despite error messages
+                      status[tool_name] = f"⚠️ Found {len(issues)} issues (Errors reported)"
+            elif issues:
+                 status[tool_name] = f"⚠️ Found {len(issues)} issues"
+            else:
+                 status[tool_name] = "✅ No issues found"
 
-            # Process JSON output (present even if exit code is 1)
-            parsed = safe_json_loads(proc.stdout.strip())
-            if not isinstance(parsed, list):
-                # Check if stderr indicates a known issue like missing plugins
-                if proc.stderr and "plugin" in proc.stderr.lower() and "was conflicted" not in proc.stderr.lower():
-                     status[tool_name] = "❌ Plugin/Config Issue"
-                     logger.error(f"ESLint likely failed due to plugin/config issue: {proc.stderr}")
-                elif proc.returncode == 0 and not parsed: # No output, no errors
-                     status[tool_name] = "✅ No issues found"
-                else:
-                     status[tool_name] = "❌ Invalid JSON output"
-                     logger.error(f"ESLint output was not a valid JSON list. Output: {proc.stdout[:500]}")
-                return issues, status, raw_output
-
-            security_patterns = ["security", "inject", "prototype", "csrf", "xss", "sanitize", "escape", "auth", "unsafe", "exploit", "vuln"]
-            for file_result in parsed:
-                file_path = file_result.get("filePath", "unknown")
-                try: rel_path = os.path.relpath(file_path, str(app_path))
-                except ValueError: rel_path = file_path
-
-                for msg in file_result.get("messages", []):
-                    is_fatal = msg.get("fatal", False)
-                    line_num = msg.get("line", 0)
-                    severity_value = msg.get("severity", 1) # 1=warn, 2=error
-                    rule_id = msg.get("ruleId", "parsing_error" if is_fatal else "unknown_rule")
-                    message = msg.get("message", "Unknown issue")
-
-                    # Determine severity and type
-                    severity = "HIGH" if severity_value >= 2 or is_fatal else "MEDIUM"
-                    confidence = "HIGH" if is_fatal else "MEDIUM"
-                    issue_type = rule_id
-
-                    # Check for security keywords to potentially elevate severity
-                    rule_id_str = str(rule_id).lower() if rule_id else ""
-                    message_str = str(message).lower()
-                    if any(pattern in rule_id_str or pattern in message_str for pattern in security_patterns):
-                        if severity != "HIGH": severity = "HIGH" # Elevate potential security issues
-
-                    issues.append(SecurityIssue(
-                        filename=rel_path, line_number=line_num, issue_text=f"[{rule_id}] {message}",
-                        severity=severity, confidence=confidence, issue_type=issue_type,
-                        line_range=[line_num], code=msg.get("source", "N/A"), # ESLint JSON provides source line
-                        tool=tool_name, fix_suggestion=msg.get("fix", {}).get("text")
-                    ))
-
-            status[tool_name] = f"⚠️ Found {len(issues)} issues" if issues else "✅ No issues found"
-
-        except subprocess.TimeoutExpired:
-            status[tool_name] = "❌ Timed out"
-            raw_output = f"{tool_name} timed out"
-        except Exception as exc:
+        except Exception as exc: # Catch errors in this runner function itself
             status[tool_name] = f"❌ Failed: {exc}"
-            raw_output = f"{tool_name} failed: {exc}"
+            raw_output_combined = f"{tool_name} runner failed: {exc}"
             logger.exception(f"Error running {tool_name}: {exc}")
         finally:
-            # Clean up temporary config directory if it was created
             if eslint_config_path and temp_dir and temp_dir.exists():
                 try:
                     shutil.rmtree(temp_dir)
                 except Exception as e:
                     logger.warning(f"Failed to remove temporary ESLint config directory: {e}")
 
-        return issues, status, raw_output
+        return issues, status, raw_output_combined
 
+
+    def _parse_jshint(self, stdout: str) -> List[SecurityIssue]:
+        """Parses JSHint checkstyle XML output."""
+        issues: List[SecurityIssue] = []
+        try:
+            # import xml.etree.ElementTree as ET # Already imported
+            root = ET.fromstring(stdout.strip())
+            security_keywords = ["eval", "function(", "settimeout", "setinterval", "innerhtml", "document.write", "prototype", "constructor", "unsafe"]
+            security_codes = ["W054", "W061"]
+
+            for file_elem in root.findall("file"):
+                file_path = file_elem.get("name", "unknown")
+                rel_path = os.path.normpath(file_path) # Assume path is already relative
+
+                for error in file_elem.findall("error"): # JSHint checkstyle uses <error> tag
+                    line = int(error.get("line", 0))
+                    message = error.get("message", "Unknown JSHint issue")
+                    source_code = error.get("source", "") # e.g., jshint.W031
+
+                    is_security = source_code in security_codes or \
+                                  any(keyword.lower() in message.lower() for keyword in security_keywords)
+
+                    severity = "LOW"; confidence = "MEDIUM"
+                    issue_type = f"jshint_{source_code}" if source_code else "jshint_unknown"
+
+                    if source_code.startswith('E'): severity = "HIGH"; confidence = "HIGH"
+                    elif source_code.startswith('W'): severity = "MEDIUM"
+
+                    if is_security:
+                        severity = "HIGH"
+                        confidence = "HIGH" if source_code in security_codes else "MEDIUM"
+                        issue_type = f"jshint_security_{source_code}" if source_code else "jshint_security_concern"
+
+                    issues.append(SecurityIssue(
+                        filename=rel_path, line_number=line, issue_text=f"[{source_code}] {message}",
+                        severity=severity, confidence=confidence, issue_type=issue_type,
+                        line_range=[line], code="N/A (Check file)", tool="jshint",
+                        fix_suggestion="Review code."
+                    ))
+        except ET.ParseError as e_xml:
+            logger.error(f"JSHint: Failed to parse XML output: {e_xml}")
+        except Exception as e_proc:
+            logger.error(f"JSHint: Error processing XML output: {e_proc}")
+        return issues
 
     def _run_jshint(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
-        """
-        Run JSHint using checkstyle reporter and parse XML output for security issues.
-        Limits files scanned for performance.
-        """
+        """Run JSHint using npx and parse checkstyle XML output."""
         tool_name = "jshint"
-        issues: List[SecurityIssue] = []
         status = {tool_name: "⚠️ Not run"}
-        temp_dir = None # Track temp dir for cleanup
-        jshintrc_path_used = None # Track config path used for logging/cleanup
+        temp_dir = None
+        jshintrc_path_used = None
         temp_jshintrc_created = False
-        raw_output = "" # Initialize raw_output
+        raw_output_combined = ""
 
         has_files, source_files = self._check_source_files(app_path)
         if not has_files:
             msg = f"No frontend files found in {app_path}, skipping {tool_name}."
             status[tool_name] = "❌ No files to analyze"
-            return issues, status, msg
+            return [], status, msg
 
         js_files = [f for f in source_files if f.endswith(('.js', '.jsx'))]
         if not js_files:
             msg = f"No JavaScript/JSX files found in {app_path}, skipping {tool_name}."
             status[tool_name] = "❌ No JS files to analyze"
-            return issues, status, msg
+            return [], status, msg
 
-        # Limit files passed to JSHint command line for performance/stability
         max_jshint_files = 30
-        files_to_scan = js_files[:max_jshint_files]
+        files_to_scan_abs = js_files[:max_jshint_files]
+        # Convert absolute paths back to relative for the command line within app_path
+        files_to_scan_rel = [os.path.relpath(f, str(app_path)) for f in files_to_scan_abs]
+
         if len(js_files) > max_jshint_files:
-             logger.warning(f"JSHint analysis limited to the first {max_jshint_files} JS/JSX files found.")
+            logger.warning(f"JSHint analysis limited to the first {max_jshint_files} JS/JSX files found.")
+
+        args = ["jshint", "--reporter=checkstyle"]
 
         try:
-            # Use project's .jshintrc if it exists, otherwise create a temporary one
             project_jshintrc = app_path / ".jshintrc"
             if project_jshintrc.exists():
-                 jshintrc_path_used = str(project_jshintrc)
-                 logger.info(f"Using existing project JSHint config: {jshintrc_path_used}")
+                jshintrc_path_used = str(project_jshintrc)
+                logger.info(f"Using existing project JSHint config: {jshintrc_path_used}")
+                args.extend(["--config", jshintrc_path_used]) # Pass existing config explicitly
             else:
                 temp_dir = Path(tempfile.mkdtemp(prefix="jshint_config_"))
                 jshintrc_path_used = str(temp_dir / ".jshintrc")
-                # Security-focused config (enable warnings for eval, Function constructor)
                 jshint_config = {
                     "esversion": 9, "browser": True, "node": True,
                     "strict": "implied", "undef": True, "unused": "vars",
-                    "evil": True, "-W054": True, "-W061": True, "maxerr": 100 # Limit total errors reported
+                    "evil": True, "-W054": True, "-W061": True, "maxerr": 100
                 }
                 with open(jshintrc_path_used, "w") as f: json.dump(jshint_config, f, indent=2)
-                temp_jshintrc_created = True # Mark for cleanup
+                temp_jshintrc_created = True
                 logger.info(f"Created temporary JSHint config at {jshintrc_path_used}")
+                args.extend(["--config", jshintrc_path_used]) # Pass temporary config
 
-            command = [cmd_name("npx"), "jshint", "--reporter=checkstyle", "--config", jshintrc_path_used]
-            command.extend(files_to_scan)
+            args.extend(files_to_scan_rel) # Pass relative paths
 
-            logger.info(f"Running JSHint on {len(files_to_scan)} files...")
-            proc = subprocess.run(
-                command, cwd=str(app_path), capture_output=True, text=True,
-                timeout=TOOL_TIMEOUT, check=False, encoding='utf-8', errors='replace'
+            issues, run_output = self._run_frontend_tool(
+                tool_name, "npx", args, app_path, parser=self._parse_jshint
             )
-            raw_output = f"STDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}"
-            stdout_data = proc.stdout.strip()
+            raw_output_combined = run_output
 
-            # *** Corrected Logic: Check output validity *before* checking exit code for fatal errors ***
-            is_output_valid_xml = stdout_data and stdout_data.startswith("<?xml")
-
-            if not is_output_valid_xml and proc.returncode != 0:
-                # If output is NOT valid XML AND there was an error code -> True execution error
-                msg = f"JSHint execution failed (exit code {proc.returncode}) with invalid/empty output. Stderr: {proc.stderr}"
-                logger.error(msg)
-                status[tool_name] = f"❌ Error (Code {proc.returncode})"
-                return issues, status, raw_output
-            elif not is_output_valid_xml and proc.returncode == 0:
-                 # No output, no error code -> Likely no issues found or no files linted
+            # Determine status
+            output_lower = run_output.lower()
+            if "error" in output_lower or "failed" in output_lower:
+                 if not issues: status[tool_name] = "❌ Error Reported"
+                 else: status[tool_name] = f"⚠️ Found {len(issues)} issues (Errors reported)"
+            elif issues:
+                 status[tool_name] = f"⚠️ Found {len(issues)} issues"
+            else:
                  status[tool_name] = "✅ No issues found"
-                 logger.info(f"JSHint finished with no output and exit code 0.")
-                 return issues, status, raw_output
 
-            # --- If we reach here, output is likely valid XML, parse it ---
-            logger.info(f"JSHint finished with exit code {proc.returncode}. Parsing XML output...")
-            try:
-                # import xml.etree.ElementTree as ET # Already imported at module level
-                root = ET.fromstring(stdout_data)
-                security_keywords = ["eval", "function(", "settimeout", "setinterval", "innerhtml", "document.write", "prototype", "constructor", "unsafe"]
-                security_codes = ["W054", "W061"] # Specific JSHint codes
-
-                for file_elem in root.findall("file"):
-                    file_path = file_elem.get("name", "unknown")
-                    try: rel_path = os.path.relpath(file_path, str(app_path))
-                    except ValueError: rel_path = file_path
-
-                    for error in file_elem.findall("error"): # JSHint checkstyle uses <error> tag for warnings too
-                        line = int(error.get("line", 0))
-                        message = error.get("message", "Unknown JSHint issue")
-                        source_code = error.get("source", "") # e.g., jshint.W031
-
-                        # Check if security related
-                        # Corrected: use lower() for case-insensitive comparison
-                        is_security = source_code in security_codes or \
-                                      any(keyword.lower() in message.lower() for keyword in security_keywords)
-
-                        # *** Fix: Process ALL errors/warnings, but classify severity ***
-                        severity = "LOW" # Default assumption
-                        confidence = "MEDIUM"
-                        issue_type = f"jshint_{source_code}" if source_code else "jshint_unknown"
-
-                        if source_code.startswith('E'): # JSHint Error codes
-                            severity = "HIGH"
-                            confidence = "HIGH"
-                        elif source_code.startswith('W'): # JSHint Warning codes
-                            severity = "MEDIUM"
-                        # else severity remains LOW
-
-                        if is_security: # Elevate severity if security-related
-                            severity = "HIGH"
-                            confidence = "HIGH" if source_code in security_codes else "MEDIUM"
-                            issue_type = f"jshint_security_{source_code}" if source_code else "jshint_security_concern"
-
-
-                        code_snippet = "N/A (Check file)" # JSHint XML doesn't provide snippet
-
-                        issues.append(SecurityIssue(
-                            filename=rel_path, line_number=line, issue_text=f"[{source_code}] {message}",
-                            severity=severity, confidence=confidence, issue_type=issue_type,
-                            line_range=[line], code=code_snippet, tool=tool_name,
-                            fix_suggestion="Review code." # Generic suggestion
-                        ))
-                # *** Fix: Update status based on *any* issues found ***
-                status[tool_name] = f"⚠️ Found {len(issues)} issues" if issues else "✅ No issues found"
-
-            except ET.ParseError as e_xml:
-                logger.error(f"Failed to parse JSHint XML output: {e_xml}")
-                status[tool_name] = "❌ Invalid XML output"
-            except Exception as e_proc:
-                logger.error(f"Error processing JSHint output: {e_proc}")
-                status[tool_name] = "❌ Error processing output"
-
-        except subprocess.TimeoutExpired:
-            status[tool_name] = "❌ Timed out"
-            raw_output = "JSHint timed out"
         except Exception as exc:
             status[tool_name] = f"❌ Failed: {exc}"
-            raw_output = f"JSHint failed: {exc}"
+            raw_output_combined = f"{tool_name} runner failed: {exc}"
             logger.exception(f"Error running {tool_name}: {exc}")
         finally:
-            # Clean up temporary directory/config if created
             if temp_jshintrc_created and temp_dir and temp_dir.exists():
                 try:
                     shutil.rmtree(temp_dir)
@@ -653,128 +669,119 @@ class FrontendSecurityAnalyzer:
                 except Exception as e:
                     logger.warning(f"Failed to clean up temporary JSHint directory: {e}")
 
-        return issues, status, raw_output
+        return issues, status, raw_output_combined
 
+
+    def _parse_snyk(self, stdout: str) -> List[SecurityIssue]:
+        """Parses Snyk JSON output."""
+        # Note: Snyk JSON is usually written to file, this parser is for potential future use
+        # if stdout capture becomes viable or for processing the file content.
+        issues: List[SecurityIssue] = []
+        snyk_data = safe_json_loads(stdout.strip())
+        if not snyk_data:
+             logger.warning("Snyk: Failed to parse JSON data or output was empty.")
+             return issues
+
+        vulnerabilities = []
+        if isinstance(snyk_data, dict):
+            vulnerabilities = snyk_data.get("vulnerabilities", [])
+        elif isinstance(snyk_data, list): # Handle monorepo output
+            for project in snyk_data:
+                 if isinstance(project, dict): vulnerabilities.extend(project.get("vulnerabilities", []))
+
+        if not vulnerabilities:
+             logger.info("Snyk: No vulnerabilities found in JSON.")
+             return issues
+
+        for vuln in vulnerabilities:
+            if not isinstance(vuln, dict): continue
+            severity = SEVERITY_MAP.get(vuln.get("severity", "low"), "LOW")
+            from_chain = vuln.get("from", ["unknown_dependency"])
+            filename = from_chain[0] if from_chain else "dependency_tree"
+
+            fix_suggestion = "Review Snyk report for remediation details."
+            if vuln.get("isUpgradable", False):
+                 upgrade_path = vuln.get("upgradePath", [])
+                 if upgrade_path and isinstance(upgrade_path[0], str): fix_suggestion = f"Upgrade direct dependency: {upgrade_path[0]}"
+            elif vuln.get("isPatchable", False): fix_suggestion = "Patch available via `snyk wizard` or review Snyk report."
+
+            issues.append(SecurityIssue(
+                filename=filename, line_number=0,
+                issue_text=f"{vuln.get('title', 'N/A')} ({vuln.get('packageName', 'N/A')}@{vuln.get('version', 'N/A')}) - ID: {vuln.get('id', 'N/A')}",
+                severity=severity, confidence="HIGH", issue_type=f"snyk_vuln_{vuln.get('id', 'N/A')}",
+                line_range=[0], code=f"{vuln.get('packageName', 'N/A')}@{vuln.get('version', 'N/A')}",
+                tool="snyk", fix_suggestion=fix_suggestion
+            ))
+        return issues
 
     def _run_snyk(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
-        """Run Snyk test and parse JSON output."""
+        """Run Snyk test using --json-file-output and parse the file."""
         tool_name = "snyk"
-        issues: List[SecurityIssue] = []
         status = {tool_name: "⚠️ Not run"}
-        raw_output = "" # Store combined stdout/stderr for context
-        temp_json_file = None # Path object for the temp file
+        raw_output_combined = ""
+        temp_json_file = None
 
         if not (app_path / "package.json").exists():
             msg = f"No package.json found in {app_path}, skipping {tool_name}."
             logger.warning(msg)
             status[tool_name] = "❌ No package.json"
-            return issues, status, msg
+            return [], status, msg
 
+        issues: List[SecurityIssue] = []
         try:
-            # Use temp file for reliable JSON output capture
+            # Create a temporary file for JSON output
             with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix=".json", encoding='utf-8') as tmpfile:
                 temp_json_file = Path(tmpfile.name)
+            logger.debug(f"Snyk output will be written to temporary file: {temp_json_file}")
 
-            command = [cmd_name("snyk"), "test", f"--json-file-output={temp_json_file}"]
-            logger.info(f"Running {tool_name} in {app_path}...")
-            proc = subprocess.run(
-                command, cwd=str(app_path), capture_output=True, text=True,
-                timeout=90, check=False, encoding='utf-8', errors='replace' # Longer timeout
+            # Run snyk test using the generic helper, but without a parser (we parse the file)
+            args = ["test", f"--json-file-output={temp_json_file}"]
+            _, run_output = self._run_frontend_tool(
+                tool_name, "snyk", args, app_path, timeout=90 # Longer timeout for Snyk
             )
-            raw_output = f"STDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}"
+            raw_output_combined = run_output
 
-            # Check for common errors before attempting to read JSON file
-            combined_output = proc.stdout + proc.stderr
-            if "authenticate" in combined_output.lower() or "auth token" in combined_output.lower():
-                 msg = "Snyk authentication required. Run 'snyk auth'."
-                 logger.error(msg)
-                 status[tool_name] = "❌ Authentication required"
-                 return issues, status, raw_output # Return early on auth failure
-
-            snyk_data = None
-            if temp_json_file.exists() and temp_json_file.stat().st_size > 0:
+            # Check for common errors before parsing file
+            output_lower = run_output.lower()
+            if "authenticate" in output_lower or "auth token" in output_lower:
+                status[tool_name] = "❌ Authentication required"
+                # No need to parse file if auth failed
+            elif temp_json_file.exists() and temp_json_file.stat().st_size > 0:
+                 logger.debug(f"Attempting to parse Snyk JSON output file: {temp_json_file}")
                  try:
                      with open(temp_json_file, 'r', encoding='utf-8') as f:
-                          snyk_data = safe_json_loads(f.read())
+                         issues = self._parse_snyk(f.read()) # Use the parser here
+
+                     # Determine status based on parsed issues and errors during run
+                     if "error" in output_lower or "failed" in output_lower:
+                          if not issues: status[tool_name] = "❌ Error Reported"
+                          else: status[tool_name] = f"⚠️ Found {len(issues)} issues (Errors reported)"
+                     elif issues:
+                          status[tool_name] = f"⚠️ Found {len(issues)} issues"
+                     else:
+                          status[tool_name] = "✅ No issues found"
                  except Exception as e_read:
-                      logger.error(f"Failed to read Snyk JSON output file {temp_json_file}: {e_read}")
-
-            # Determine status based on exit code, JSON content, and summary text
-            vulnerabilities = []
-            parse_error = False
-            if isinstance(snyk_data, dict):
-                vulnerabilities = snyk_data.get("vulnerabilities", [])
-                if snyk_data.get("error"): # Check for error key in JSON
-                     logger.error(f"Snyk reported error in JSON: {snyk_data['error']}")
-                     status[tool_name] = "❌ Error Reported by Snyk"
-                     # Don't return yet, might still have partial results
-            elif isinstance(snyk_data, list): # Handle monorepo output
-                 for project in snyk_data:
-                     if isinstance(project, dict):
-                          vulnerabilities.extend(project.get("vulnerabilities", []))
-                          if project.get("error"):
-                               logger.error(f"Snyk reported error in multi-project JSON: {project['error']}")
-                               status[tool_name] = "❌ Error Reported by Snyk" # Mark error, but continue processing
-            else: # JSON load failed or was unexpected type
-                 parse_error = True
-                 logger.error("Failed to parse Snyk JSON output or unexpected format.")
+                     logger.error(f"Failed to read or parse Snyk JSON output file {temp_json_file}: {e_read}")
+                     status[tool_name] = "❌ Error Reading Output File"
+            elif "error" in output_lower or "failed" in output_lower: # Handle errors when JSON file is empty/missing
+                 status[tool_name] = "❌ Error Reported (No Output File)"
+            else: # No errors reported, no file content -> assume no issues
+                 status[tool_name] = "✅ No issues found (No Output File)"
 
 
-            if vulnerabilities:
-                 status[tool_name] = f"⚠️ Found {len(vulnerabilities)} issues"
-                 for vuln in vulnerabilities:
-                     severity = SEVERITY_MAP.get(vuln.get("severity", "low"), "LOW")
-                     from_chain = vuln.get("from", ["unknown_dependency"]) # Path from direct dep
-                     filename = from_chain[0] if from_chain else "dependency_tree" # File is less relevant here
-
-                     fix_suggestion = "Review Snyk report for remediation details."
-                     if vuln.get("isUpgradable", False):
-                          upgrade_path = vuln.get("upgradePath", [])
-                          # Check if upgradePath is a list of strings as expected
-                          if upgrade_path and isinstance(upgrade_path[0], str):
-                               fix_suggestion = f"Upgrade direct dependency: {upgrade_path[0]}"
-                     elif vuln.get("isPatchable", False):
-                           fix_suggestion = "Patch available via `snyk wizard` or review Snyk report."
-
-                     issues.append(SecurityIssue(
-                         filename=filename, line_number=0,
-                         issue_text=f"{vuln.get('title', 'N/A')} ({vuln.get('packageName', 'N/A')}@{vuln.get('version', 'N/A')}) - ID: {vuln.get('id', 'N/A')}",
-                         severity=severity, confidence="HIGH", issue_type=f"snyk_vuln_{vuln.get('id', 'N/A')}",
-                         line_range=[0], code=f"{vuln.get('packageName', 'N/A')}@{vuln.get('version', 'N/A')}",
-                         tool=tool_name, fix_suggestion=fix_suggestion
-                     ))
-            elif parse_error:
-                 # If JSON parsing failed, check stdout/stderr for summary text
-                 summary_text = (proc.stdout + proc.stderr).lower()
-                 if "tested" in summary_text and ("found 0 issues" in summary_text or "no vulnerable paths found" in summary_text):
-                      status[tool_name] = "✅ No issues found (Output Error)"
-                 else:
-                      status[tool_name] = "❌ Error (Invalid Output)"
-            else: # Parsed fine, no vulnerabilities
-                  status[tool_name] = "✅ No issues found"
-
-            # If Snyk reported an error earlier, ensure the status reflects that
-            # (This check might be redundant if we handle errors above, but keep for safety)
-            if status.get(tool_name,"").startswith("✅") and "error reported by snyk" in status.get(tool_name, "").lower():
-                 logger.warning("Snyk status was initially OK, but an error was reported in JSON. Keeping Error status.")
-                 pass # Keep the error status if previously set
-
-        except subprocess.TimeoutExpired:
-            status[tool_name] = "❌ Timed out"
-            raw_output = f"{tool_name} timed out"
         except Exception as exc:
             status[tool_name] = f"❌ Failed: {exc}"
-            raw_output = f"{tool_name} failed: {exc}"
+            raw_output_combined = f"{tool_name} runner failed: {exc}"
             logger.exception(f"Error running {tool_name}: {exc}")
         finally:
-            # Clean up temporary file
             if temp_json_file and temp_json_file.exists():
                 try:
                     temp_json_file.unlink()
+                    logger.debug(f"Removed temporary Snyk file: {temp_json_file}")
                 except OSError as e:
                     logger.warning(f"Failed to remove temporary Snyk output file: {e}")
 
-        return issues, status, raw_output
+        return issues, status, raw_output_combined
 
 
     def run_security_analysis(
@@ -801,15 +808,15 @@ class FrontendSecurityAnalyzer:
         runnable_tools = [t for t in tools_to_attempt if self.available_tools.get(t)]
 
         if not runnable_tools:
-             msg = f"No runnable tools selected or available for {target_desc}."
-             logger.warning(msg)
-             # Generate status for all potential tools listed in self.all_tools
-             final_status = {}
-             for tool in self.all_tools:
-                 if tool not in tools_to_attempt: final_status[tool] = "⚪ Skipped"
-                 elif not self.available_tools.get(tool): final_status[tool] = "❌ Not Available"
-                 else: final_status[tool] = "❓ Not Runnable" # Should not happen
-             return [], final_status, {t: msg for t in self.all_tools}
+            msg = f"No runnable tools selected or available for {target_desc}."
+            logger.warning(msg)
+            # Generate status for all potential tools listed in self.all_tools
+            final_status = {}
+            for tool in self.all_tools:
+                if tool not in tools_to_attempt: final_status[tool] = "⚪ Skipped"
+                elif not self.available_tools.get(tool): final_status[tool] = "❌ Not Available"
+                else: final_status[tool] = "❓ Not Runnable" # Should not happen
+            return [], final_status, {t: msg for t in self.all_tools}
 
         logger.info(f"Executing tools: {', '.join(runnable_tools)}")
 
@@ -856,8 +863,8 @@ class FrontendSecurityAnalyzer:
                     tool_status[tool] = "⚪ Skipped"
                     tool_outputs[tool] = f"{tool} was available but not selected for this run."
                 else: # Should not normally happen
-                     tool_status[tool] = "❓ Unknown State"
-                     tool_outputs[tool] = "Tool status was not recorded."
+                    tool_status[tool] = "❓ Unknown State"
+                    tool_outputs[tool] = "Tool status was not recorded."
 
 
         # Sort issues using module-level constants
@@ -919,30 +926,37 @@ if __name__ == '__main__':
 
     # Example: Analyze Llama app 2 using all tools
     model_name = "Llama" # Replace with actual model name if needed
-    app_number = 2      # Replace with actual app number
+    app_number = 2       # Replace with actual app number
 
     logger.info(f"Starting analysis for {model_name}/app{app_number}")
-    found_issues, statuses, outputs = analyzer.run_security_analysis(
-        model=model_name,
-        app_num=app_number,
-        use_all_tools=True # Run all available tools
-    )
+    try:
+        found_issues, statuses, outputs = analyzer.run_security_analysis(
+            model=model_name,
+            app_num=app_number,
+            use_all_tools=True # Run all available tools
+        )
 
-    logger.info("\n--- Analysis Summary ---")
-    summary = analyzer.get_analysis_summary(found_issues)
-    print(json.dumps(summary, indent=2))
+        logger.info("\n--- Analysis Summary ---")
+        summary = analyzer.get_analysis_summary(found_issues)
+        print(json.dumps(summary, indent=2))
 
-    logger.info("\n--- Tool Statuses ---")
-    print(json.dumps(statuses, indent=2))
+        logger.info("\n--- Tool Statuses ---")
+        print(json.dumps(statuses, indent=2))
 
-    # Optionally print found issues
-    if found_issues:
-        logger.info("\n--- Found Issues ---")
-        for issue in found_issues:
-             print(f"- {issue.tool}: {issue.severity} ({issue.filename}:{issue.line_number}) - {issue.issue_text}")
-    else:
-        logger.info("No issues found.")
+        # Optionally print found issues
+        if found_issues:
+            logger.info("\n--- Found Issues ---")
+            for issue in found_issues:
+                print(f"- {issue.tool}: {issue.severity} ({issue.filename}:{issue.line_number}) - {issue.issue_text}")
+        else:
+            logger.info("No issues found.")
 
-    # Optionally print raw outputs (can be very long)
-    # logger.info("\n--- Raw Outputs ---")
-    # print(json.dumps(outputs, indent=2))
+        # Optionally print raw outputs (can be very long)
+        # logger.info("\n--- Raw Outputs ---")
+        # print(json.dumps(outputs, indent=2))
+
+    except ValueError as e:
+         logger.error(f"Analysis failed for {model_name}/app{app_number}: {e}")
+    except Exception as e:
+         logger.exception(f"An unexpected error occurred during analysis for {model_name}/app{app_number}: {e}")
+

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+<!-- {% extends "base.html" %}
 
 {% block content %}
 <div class="space-y-4 max-w-4xl mx-auto">
@@ -74,17 +74,20 @@
             <div id="frontend_security_options" class="analysis-options-section hidden space-y-2 pl-4 border-l-2 border-gray-200">
                 <h4 class="text-xs font-medium text-gray-700">Frontend Security Options</h4>
                 <div class="flex items-center">
-                    <input type="checkbox" id="security_full_scan_fe" name="security_full_scan" class="mr-2 focus:ring-2 focus:ring-blue-500">
-                    <label for="security_full_scan_fe" class="text-xs text-gray-700">Full Scan (All Tools)</label>
+                    <input type="checkbox" id="frontend_full_scan" name="frontend_full_scan" class="mr-2 focus:ring-2 focus:ring-blue-500">
+                    <label for="frontend_full_scan" class="text-xs text-gray-700">Full Scan (All Tools)</label>
+                    <span class="ml-2 text-xs text-gray-500">(Quick scan only runs essential tools like ESLint)</span>
                 </div>
             </div>
+
             <div id="backend_security_options" class="analysis-options-section hidden space-y-2 pl-4 border-l-2 border-gray-200">
-                <h4 class="text-xs font-medium text-gray-700">Backend Security Options</h4>
-                <div class="flex items-center">
-                     <input type="checkbox" id="security_full_scan_be" name="security_full_scan" class="mr-2 focus:ring-2 focus:ring-blue-500">
-                    <label for="security_full_scan_be" class="text-xs text-gray-700">Full Scan (All Tools)</label>
-                </div>
-            </div>
+              <h4 class="text-xs font-medium text-gray-700">Backend Security Options</h4>
+              <div class="flex items-center">
+                   <input type="checkbox" id="backend_full_scan" name="backend_full_scan" class="mr-2 focus:ring-2 focus:ring-blue-500">
+                  <label for="backend_full_scan" class="text-xs text-gray-700">Full Scan (All Tools)</label>
+                  <span class="ml-2 text-xs text-gray-500">(Quick scan only runs essential tools like Bandit)</span>
+              </div>
+          </div>
 
             <div id="performance_options" class="analysis-options-section hidden space-y-2 pl-4 border-l-2 border-gray-200">
                 <h4 class="text-xs font-medium text-gray-700">Performance Test Options</h4>
@@ -108,8 +111,6 @@
             <div id="gpt4all_options" class="analysis-options-section hidden space-y-2 pl-4 border-l-2 border-gray-200">
                 <h4 class="text-xs font-medium text-gray-700">GPT4All Requirements Analysis Options</h4>
                 <p class="text-xs text-gray-500">Uses default requirements defined for each app. Custom requirements input not yet supported in batch mode.</p>
-                {# Placeholder for future custom requirements input #}
-                {# <textarea name="gpt4all_requirements" class="w-full h-20 p-2 text-xs border border-gray-300 rounded" placeholder="Enter custom requirements (one per line) - overrides defaults"></textarea> #}
             </div>
 
             <div id="zap_options" class="analysis-options-section hidden space-y-2 pl-4 border-l-2 border-gray-200">
@@ -119,6 +120,17 @@
                     <label for="zap_quick_scan" class="text-xs text-gray-700">Quick Scan (Reduced AJAX Spider)</label>
                 </div>
                 <p class="text-xs text-gray-500">Note: ZAP scans are triggered asynchronously. Monitor their status separately via the ZAP page.</p>
+            </div>
+
+            <div class="space-y-2 pl-4 border-l-2 border-gray-200">
+                <h4 class="text-xs font-medium text-gray-700">Advanced Options</h4>
+                 <div>
+                    <label for="task_timeout_override" class="block text-xs font-medium text-gray-600 mb-1">Task Timeout Override (seconds)</label>
+                    <input type="number" id="task_timeout_override" name="task_timeout_override" min="10" placeholder="Default: 1800"
+                           value=""
+                           class="w-1/2 h-8 px-2 text-xs border border-gray-300 rounded">
+                    <span class="ml-2 text-xs text-gray-500">Leave empty for default.</span>
+                </div>
             </div>
         </div>
 
@@ -152,10 +164,10 @@
                     <input type="text" id="app_range_{{ model_name }}" name="app_range_{{ model_name }}"
                           placeholder="e.g., 1-3,5,7-9 (empty for all)"
                           value="{% if model_name == model and app_num %}{{ app_num }}{% endif %}"
-                          pattern="^(\d+(-\d+)?)(,\d+(-\d+)?)*$"
                           class="w-full h-8 px-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                          {# Removed pattern validation, handled by JS #}
                   </div>
-                  <p class="app-range-error hidden text-xs text-red-600 mt-1">Invalid format. Use pattern like: 1-3,5,7-9</p>
+                  <p class="app-range-error hidden text-xs text-red-600 mt-1">Invalid format. Use numbers, commas, hyphens (e.g., 1-3, 5, 7-9). Ensure start <= end.</p>
                 </div>
               {% endfor %}
             </div>
@@ -204,17 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
           const controlsId = section.id; // e.g., "frontend_security_options"
           // Find the corresponding checkbox based on the data-controls attribute matching the section ID
           const controllingCheckbox = document.querySelector(`.analysis-type-checkbox[data-controls="${controlsId}"]`);
-
-          // Special handling for security options (shared checkbox)
-          if (controlsId === 'frontend_security_options' || controlsId === 'backend_security_options') {
-               const feCheckbox = document.getElementById('analysis_type_frontend_security');
-               const beCheckbox = document.getElementById('analysis_type_backend_security');
-               const showSecurityOptions = (feCheckbox && feCheckbox.checked) || (beCheckbox && beCheckbox.checked);
-               section.classList.toggle('hidden', !showSecurityOptions);
-          } else {
-               // Regular handling for other sections
-               section.classList.toggle('hidden', !(controllingCheckbox && controllingCheckbox.checked));
-          }
+          section.classList.toggle('hidden', !(controllingCheckbox && controllingCheckbox.checked));
       });
       validateAnalysisTypes(); // Re-validate analysis types
   }
@@ -293,37 +295,59 @@ document.addEventListener('DOMContentLoaded', function() {
       return hasSelectedTypes;
   }
 
+  // --- UPDATED App Range Validation ---
   function validateAppRanges() {
-    const visibleAppRanges = document.querySelectorAll('.app-range-field:not(.hidden) input');
-    let isValid = true;
+      const visibleAppRanges = document.querySelectorAll('.app-range-field:not(.hidden) input');
+      let overallIsValid = true;
 
-    visibleAppRanges.forEach(function(input) {
-      const value = input.value.trim();
-      const errorMsg = input.closest('.app-range-field')?.querySelector('.app-range-error'); // Find error within its field
+      visibleAppRanges.forEach(function(input) {
+        const value = input.value.trim();
+        const errorMsg = input.closest('.app-range-field')?.querySelector('.app-range-error');
+        let fieldIsValid = true;
 
-      // Regex for validating ranges like 1-3,5,7-9 (allows empty)
-      const validFormat = !value || /^(\d+(-\d+)?)(,\s*\d+(-\d+)?)*$/.test(value.replace(/\s/g, '')); // Allow spaces around commas, remove spaces for regex test
+        if (value) { // Only validate if not empty
+            // Split by comma, trim parts, and validate each part
+            const parts = value.split(',');
+            for (const part of parts) {
+                const trimmedPart = part.trim();
+                if (!trimmedPart) continue; // Skip empty parts resulting from multiple commas
 
-      if (errorMsg) {
-        errorMsg.classList.toggle('hidden', validFormat);
-      }
-      isValid = isValid && validFormat;
-    });
-    return isValid;
-  }
+                // Check if it's a single number or a range
+                if (trimmedPart.includes('-')) {
+                    // Range validation (e.g., "1-5")
+                    const rangeParts = trimmedPart.split('-');
+                    if (rangeParts.length !== 2) { fieldIsValid = false; break; } // Must have exactly one hyphen
+                    const startStr = rangeParts[0].trim();
+                    const endStr = rangeParts[1].trim();
+                    // Check if both parts are valid positive integers
+                    if (!/^\d+$/.test(startStr) || !/^\d+$/.test(endStr)) { fieldIsValid = false; break; }
+                    const start = parseInt(startStr, 10);
+                    const end = parseInt(endStr, 10);
+                    // Check if numbers are positive and start <= end
+                    if (start <= 0 || end <= 0 || start > end) { fieldIsValid = false; break; }
+                } else {
+                    // Single number validation (e.g., "7")
+                    // Check if it's a valid positive integer
+                    if (!/^\d+$/.test(trimmedPart) || parseInt(trimmedPart, 10) <= 0) { fieldIsValid = false; break; }
+                }
+            } // End loop through parts
+        } // End if(value)
+
+        // Toggle error message visibility based on field validity
+        if (errorMsg) { errorMsg.classList.toggle('hidden', fieldIsValid); }
+        // If this field is invalid, the overall validation fails
+        if (!fieldIsValid) { overallIsValid = false; }
+      }); // End loop through inputs
+
+      return overallIsValid;
+    }
+
 
   // Validate app ranges when inputs change
   appRangeFields.forEach(function(field) {
     const input = field.querySelector('input');
     if (input) {
-      input.addEventListener('input', function() {
-        const value = input.value.trim();
-        const errorMsg = input.closest('.app-range-field')?.querySelector('.app-range-error');
-        const validFormat = !value || /^(\d+(-\d+)?)(,\s*\d+(-\d+)?)*$/.test(value.replace(/\s/g, ''));
-        if (errorMsg) {
-          errorMsg.classList.toggle('hidden', validFormat);
-        }
-      });
+      input.addEventListener('input', validateAppRanges); // Re-validate all visible on input change
     }
   });
 
@@ -332,4 +356,4 @@ document.addEventListener('DOMContentLoaded', function() {
   updateAnalysisOptionsSections();
 });
 </script>
-{% endblock %}
+{% endblock %} -->

@@ -1,2036 +1,2764 @@
-# -*- coding: utf-8 -*-
 """
-Batch Analysis Module (Enhanced for Reliability v6 - Claude Structure + Fixes)
+Batch Analysis Module (Completely Rewritten for Reliability)
 
-Provides functionality for running batch analyses (security, performance, etc.)
-across multiple applications or models, including job management and reporting.
+Provides a comprehensive framework for running batch analyses (security, performance, etc.)
+across multiple applications or models with improved reliability and error handling.
 
-Enhanced with:
-- Task-level timeouts to prevent hangs.
-- More robust error handling and state management.
-- Improved cancellation logic visibility.
-- Detailed logging with consistent prefixes.
-- Fixes for previous known issues (AttributeError, Logging).
-- v4 Fix: Correctly handles ZAP scan results retrieval.
-- v5 Fix: Added pre-check for performance tasks; added logging advice.
-- v6: Refined structure, improved result serialization, enhanced comments.
+Features:
+- Explicit thread lifecycle management with guaranteed cleanup
+- Robust error handling with proper categorization
+- Consistent job and task status tracking
+- Enhanced dependency verification before execution
+- Thread-safe execution with proper locking
+- Task-level timeouts with configurable limits
+- Graceful cancellation that reliably stops tasks
+- Structured logging with consistent context
+- Memory-efficient operation for long-running services
+- Automatic health checks and dependency validation
 """
 
+# Standard Library Imports
 import json
 import os
 import re
 import shutil
-import socket # Added for performance task connection check
+import socket
+import sys
 import threading
 import time
 import traceback
-import queue # Added for task timeout mechanism
-from concurrent.futures import ThreadPoolExecutor, as_completed, Future, TimeoutError as FutureTimeoutError
+import queue  # For task timeout mechanism
+import concurrent.futures
+import contextlib
+import tempfile
+import urllib.parse
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone, timedelta
 from enum import Enum
 from functools import wraps
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any, Set, Union, Type
-from urllib.parse import urlparse # Added for performance task connection check
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Type, Union
 
-import flask
-from flask import (
-    Blueprint, current_app, jsonify, render_template, request, url_for,
-    redirect, flash
-)
-from werkzeug.exceptions import BadRequest, NotFound, InternalServerError
-
-# --- Logging Setup ---
-# ==============================================================================
-# CRITICAL NOTE on Logging PermissionError [WinError 32] on Windows:
-# This error occurs when multiple threads/processes using RotatingFileHandler
-# try to rotate the same log file concurrently.
-#
-# *** THE RECOMMENDED SOLUTION ***
-# Implement centralized logging in your main Flask application setup using:
-#   - `logging.handlers.QueueHandler`: All threads/processes put log records
-#     into a queue.
-#   - `logging.handlers.QueueListener`: A single, separate thread/process
-#     listens to the queue and handles writing to the actual file (including
-#     rotation), thus avoiding concurrency issues.
-#
-# This module's fallback logging uses basicConfig (StreamHandler), which avoids
-# the rotation error but might not meet production needs. Modifying handlers
-# *within* this module is unlikely to fix the root cause if the main app's
-# logging configuration is the source of the conflict.
-# ==============================================================================
+# Third-Party Imports
 try:
-    # Assume logging_service provides a configured logger instance
-    # If not available, basicConfig will be used as fallback below.
-    from logging_service import logger as root_logger # Assuming base logger is configured
-    # Create specific loggers for different parts of the module if needed
-    logger = root_logger.getChild('batch_analysis') # General module logs
-    storage_logger = root_logger.getChild('batch_storage') # Job/Result storage ops
-    service_logger = root_logger.getChild('batch_service') # Service logic, job lifecycle
-    route_logger = root_logger.getChild('batch_routes')   # Flask route handling
-    task_logger = root_logger.getChild('batch_task')     # Individual task execution
-    logger.info("Using logging service for batch analysis module.")
-except ImportError as log_imp_err:
-    # Fallback basic logging if logging_service is unavailable
-    import logging
-    # basicConfig typically uses StreamHandler, avoiding the rotation error
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(name)s: %(message)s')
-    logger = logging.getLogger('batch_analysis')
-    storage_logger = logging.getLogger('batch_storage')
-    service_logger = logging.getLogger('batch_service')
-    route_logger = logging.getLogger('batch_routes')
-    task_logger = logging.getLogger('batch_task')
-    logger.error(f"Failed to import logging_service: {log_imp_err}. Using basic fallback logging (StreamHandler).")
-    logger.warning("RECOMMENDATION: Implement QueueHandler/QueueListener in main app for robust file logging.")
-
-
-# --- Import Analyzers/Testers ---
-# Added logging for import failures and store classes/types for later checks
-ANALYZER_CLASSES = {}
-try:
-    # Assume SecurityIssue is the common base or specific type for frontend
-    from frontend_security_analysis import FrontendSecurityAnalyzer, SecurityIssue as FrontendSecurityIssue
-    ANALYZER_CLASSES['frontend_security'] = FrontendSecurityAnalyzer
-    logger.info("FrontendSecurityAnalyzer imported successfully.")
-except ImportError as e:
-    FrontendSecurityAnalyzer = None # Keep None for compatibility if used directly elsewhere
-    FrontendSecurityIssue = None # Define as None if import failed
-    logger.warning(f"FrontendSecurityAnalyzer not found. Frontend Security tasks will fail. Error: {e}")
-
-try:
-    # Assume BackendSecurityIssue is the specific type for backend
-    from backend_security_analysis import BackendSecurityAnalyzer, BackendSecurityIssue
-    ANALYZER_CLASSES['backend_security'] = BackendSecurityAnalyzer
-    logger.info("BackendSecurityAnalyzer imported successfully.")
-except ImportError as e:
-    BackendSecurityAnalyzer = None
-    BackendSecurityIssue = None # Define as None if import failed
-    logger.warning(f"BackendSecurityAnalyzer not found. Backend Security tasks will fail. Error: {e}")
-
-try:
-    from performance_analysis import LocustPerformanceTester, PerformanceResult
-    ANALYZER_CLASSES['performance'] = LocustPerformanceTester
-    logger.info("LocustPerformanceTester imported successfully.")
-except ImportError as e:
-    LocustPerformanceTester = None
-    PerformanceResult = None # Define as None if import failed
-    logger.warning(f"LocustPerformanceTester not found. Performance tasks will fail. Error: {e}")
-
-try:
-    from gpt4all_analysis import GPT4AllAnalyzer, RequirementCheck
-    ANALYZER_CLASSES['gpt4all'] = GPT4AllAnalyzer
-    logger.info("GPT4AllAnalyzer imported successfully.")
-except ImportError as e:
-    GPT4AllAnalyzer = None
-    RequirementCheck = None # Define as None if import failed
-    logger.warning(f"GPT4AllAnalyzer not found. GPT4All tasks will fail. Error: {e}")
-
-try:
-    # ZAP uses ScanManager, not a direct analyzer class here
-    from zap_scanner import ZAPScanner, ZapVulnerability # Import types for result processing
-    logger.info("ZAPScanner types imported (used via ScanManager).")
-except ImportError as e:
-    ZAPScanner = None # Keep None for compatibility
-    ZapVulnerability = None # Define as None if import failed
-    logger.warning(f"ZAPScanner types not found. Error: {e}")
-
-# Import ScanManager from services if available
-try:
-    # Assume ScanManager is responsible for ZAP interactions
-    # It should have methods like create_scan, get_scan_status, get_scan_results
-    from services import ScanManager
-    ANALYZER_CLASSES['zap'] = ScanManager # Map ZAP type to ScanManager
-    logger.info("ScanManager imported successfully (for ZAP).")
-except ImportError as e:
-    ScanManager = None
-    logger.warning(f"ScanManager not found in services. ZAP tasks will fail. Error: {e}")
-
-# Import PortManager if needed for performance tests
-try:
-    from services import PortManager
-    logger.info("PortManager imported successfully.")
-except ImportError as e:
-    PortManager = None # Class will be checked before running performance tasks
-    logger.warning(f"PortManager not found in services. Performance tasks will fail. Error: {e}")
-
-# Import utilities
-try:
-    from utils import get_model_index, get_apps_for_model, get_app_directory, AI_MODELS
-    logger.info("Utility functions (get_model_index, etc.) imported successfully.")
-except ImportError as e:
-    logger.error(f"Could not import key utility functions from utils. Error: {e}. Using dummy fallbacks.")
-    # Define dummy functions if needed for the script to load, log errors on use
-    def get_model_index(model_name: str) -> Optional[int]: logger.error("Dummy get_model_index called!"); return 0
-    def get_apps_for_model(model_name: str) -> List[Dict[str, Any]]: logger.error("Dummy get_apps_for_model called!"); return []
-    def get_app_directory(app_context: flask.Flask, model: str, app_num: int) -> Path:
-        logger.error(f"Dummy get_app_directory called for {model}/app{app_num}")
-        base = Path(app_context.config.get('APP_BASE_PATH', '.'))
-        p = base / model / f"app{app_num}"
-        if not p.is_dir(): raise FileNotFoundError(f"Dummy: Path not found: {p}")
-        return p
-    AI_MODELS = [] # Dummy empty list
-
-
-# --- Blueprint Definition ---
-batch_analysis_bp = Blueprint(
-    "batch_analysis",
-    __name__,
-    template_folder="templates",
-    url_prefix="/batch-analysis"
-)
-logger.debug("Batch Analysis Blueprint created.")
+    import flask
+    from flask import (
+        Blueprint, current_app, flash, jsonify, redirect,
+        render_template, request, url_for
+    )
+    from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
+except ImportError:
+    # Allow module to be imported even if Flask is not available
+    # Will raise errors when Flask-dependent functions are called
+    class Blueprint:
+        def __init__(self, *args, **kwargs):
+            pass
+    class FlaskNotInstalledError(Exception):
+        pass
 
 # =============================================================================
-# Data Models & Enums
+# Logging Setup
+# =============================================================================
+import logging
+
+# Central logger factory to support various logging configurations
+class LoggerFactory:
+    """Factory for creating consistently configured loggers."""
+    
+    @staticmethod
+    def create_logger(name, propagate=True):
+        """Create a logger with consistent configuration."""
+        logger = logging.getLogger(name)
+        
+        # Only set level and add handler if not already configured
+        if not logger.handlers and logger.level == logging.NOTSET:
+            logger.setLevel(logging.INFO)
+            
+            # Create console handler
+            console = logging.StreamHandler()
+            console.setLevel(logging.INFO)
+            
+            # Create formatter with contextual info
+            formatter = logging.Formatter(
+                '%(asctime)s [%(levelname)s] %(name)s - %(threadName)s: %(message)s',
+                datefmt='%Y-%m-%d %H:%M:%S'
+            )
+            console.setFormatter(formatter)
+            logger.addHandler(console)
+        
+        logger.propagate = propagate
+        return logger
+
+# Create loggers for different components
+module_logger = LoggerFactory.create_logger('batch_analysis')
+job_logger = LoggerFactory.create_logger('batch_analysis.job')
+task_logger = LoggerFactory.create_logger('batch_analysis.task')
+storage_logger = LoggerFactory.create_logger('batch_analysis.storage')
+api_logger = LoggerFactory.create_logger('batch_analysis.api')
+service_logger = LoggerFactory.create_logger('batch_analysis.service')
+
+# Log configuration at the module level
+module_logger.info("Batch Analysis module (rewritten version) initializing.")
+
+# =============================================================================
+# Data Models
 # =============================================================================
 
 class JobStatus(str, Enum):
-    """Enumeration for batch analysis job statuses."""
-    PENDING = "pending"
-    RUNNING = "running"
-    COMPLETED = "completed"
-    FAILED = "failed"
-    CANCELED = "canceled"
-    logger.debug("JobStatus Enum defined.")
+    """Enumeration of possible job statuses with clear lifecycle progression."""
+    PENDING = "pending"      # Job created but not started
+    QUEUED = "queued"        # Job waiting to run (when max concurrent reached)
+    INITIALIZING = "initializing"  # Job starting up, dependencies being checked
+    RUNNING = "running"      # Job actively executing tasks
+    CANCELLING = "cancelling"  # Job is in the process of being cancelled
+    CANCELLED = "cancelled"  # Job was cancelled by user request
+    COMPLETED = "completed"  # Job finished successfully
+    FAILED = "failed"        # Job encountered error during execution
+    ERROR = "error"          # Job couldn't start due to configuration/setup error
+
+class TaskStatus(str, Enum):
+    """Enumeration of possible task statuses."""
+    PENDING = "pending"      # Task ready to be executed 
+    RUNNING = "running"      # Task currently executing
+    COMPLETED = "completed"  # Task finished successfully
+    FAILED = "failed"        # Task execution failed
+    TIMED_OUT = "timed_out"  # Task exceeded time limit
+    CANCELLED = "cancelled"  # Task cancelled before or during execution
+    SKIPPED = "skipped"      # Task skipped due to dependency issues
 
 class AnalysisType(str, Enum):
-    """Enumeration for the specific type of analysis to perform."""
+    """Types of analysis that can be performed."""
     FRONTEND_SECURITY = "frontend_security"
     BACKEND_SECURITY = "backend_security"
     PERFORMANCE = "performance"
     GPT4ALL = "gpt4all"
     ZAP = "zap"
-    logger.debug("AnalysisType Enum defined.")
+
+class ErrorCategory(str, Enum):
+    """Categorization of errors for better handling and reporting."""
+    CONFIGURATION = "configuration"  # Missing/invalid configuration 
+    DEPENDENCY = "dependency"        # Missing/incompatible dependency
+    NETWORK = "network"              # Network connectivity issues
+    TIMEOUT = "timeout"              # Operation exceeded time limit
+    VALIDATION = "validation"        # Input validation failed
+    EXECUTION = "execution"          # Error during task execution
+    INTERNAL = "internal"            # Unexpected internal error
+    CANCELLED = "cancelled"          # Operation was cancelled
+    UNKNOWN = "unknown"              # Unclassified error
+
+@dataclass
+class JobError:
+    """Structured representation of an error with context."""
+    message: str
+    category: ErrorCategory
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    traceback: Optional[str] = None
+    task_id: Optional[str] = None
+    details: Dict[str, Any] = field(default_factory=dict)
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for serialization."""
+        result = {
+            "message": self.message,
+            "category": self.category.value,
+            "timestamp": self.timestamp.isoformat()
+        }
+        if self.traceback:
+            result["traceback"] = self.traceback
+        if self.task_id:
+            result["task_id"] = self.task_id
+        if self.details:
+            result["details"] = self.details
+        return result
 
 @dataclass
 class BatchAnalysisJob:
-    """Represents a batch analysis job configuration and status."""
+    """Job configuration, status, and results tracking."""
     id: int
     name: str
     description: str
     created_at: datetime
     status: JobStatus = JobStatus.PENDING
     models: List[str] = field(default_factory=list)
-    app_ranges: Dict[str, List[int]] = field(default_factory=dict) # model -> list of app nums (empty list means all)
+    app_ranges: Dict[str, List[int]] = field(default_factory=dict)
     analysis_types: List[AnalysisType] = field(default_factory=list)
-    analysis_options: Dict[str, Any] = field(default_factory=dict) # Stores options per AnalysisType.value
+    analysis_options: Dict[str, Any] = field(default_factory=dict)
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     total_tasks: int = 0
     completed_tasks: int = 0
-    results_summary: Dict[str, Any] = field(default_factory=dict) # Aggregated counts/stats
-    errors: List[str] = field(default_factory=list) # Job-level errors (setup, critical failures)
+    results_summary: Dict[str, Any] = field(default_factory=dict)
+    errors: List[JobError] = field(default_factory=list)
+    task_count_by_status: Dict[str, int] = field(default_factory=dict)
+    cancellation_requested: bool = False
 
     @property
     def created_at_formatted(self) -> str:
         """Returns created_at time formatted as YYYY-MM-DD HH:MM (local time)."""
-        if not self.created_at: return 'N/A'
+        if not self.created_at:
+            return 'N/A'
         local_dt = self.created_at.astimezone() if self.created_at.tzinfo else self.created_at
         return local_dt.strftime('%Y-%m-%d %H:%M')
 
-    def _format_datetime(self, dt: Optional[datetime]) -> Optional[str]:
-        """Safely formats datetime object to ISO 8601 string (UTC 'Z' format)."""
-        if isinstance(dt, datetime):
-            try:
-                # Ensure datetime is timezone-aware (assume UTC if not)
-                utc_dt = dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
-                # Format to ISO 8601 with 'Z' for UTC
-                return utc_dt.isoformat(timespec='seconds').replace('+00:00', 'Z')
-            except Exception as e:
-                logger.warning(f"[Job {self.id}] Could not format datetime {dt}: {e}")
-                return str(dt) # Fallback to string representation
-        return None
+    @property
+    def duration_seconds(self) -> Optional[int]:
+        """Calculate job duration in seconds."""
+        if not self.started_at:
+            return None
+        
+        end_time = self.completed_at or datetime.now(timezone.utc)
+        if not self.started_at.tzinfo:
+            # Ensure timezone-aware comparison
+            self.started_at = self.started_at.replace(tzinfo=timezone.utc)
+            
+        return int((end_time - self.started_at).total_seconds())
 
+    def add_error(self, message: str, category: ErrorCategory, traceback: Optional[str] = None,
+                 task_id: Optional[str] = None, details: Optional[Dict[str, Any]] = None) -> None:
+        """Add a structured error to the job with proper categorization."""
+        error = JobError(
+            message=message,
+            category=category,
+            traceback=traceback,
+            task_id=task_id,
+            details=details or {}
+        )
+        self.errors.append(error)
+        job_logger.error(f"[Job {self.id}] Error added: {message} (Category: {category.value})")
+
+    def update_task_status_count(self, status: TaskStatus, increment: int = 1) -> None:
+        """Update the task count for a specific status."""
+        current_count = self.task_count_by_status.get(status.value, 0)
+        self.task_count_by_status[status.value] = current_count + increment
+        
     def to_dict(self) -> Dict[str, Any]:
-        """Converts the job object to a dictionary suitable for JSON serialization."""
-        result_dict = asdict(self)
-        # Format datetime objects and enums for JSON
-        result_dict['created_at'] = self._format_datetime(self.created_at)
-        result_dict['started_at'] = self._format_datetime(self.started_at)
-        result_dict['completed_at'] = self._format_datetime(self.completed_at)
-        result_dict['status'] = self.status.value
-        result_dict['analysis_types'] = [at.value for at in self.analysis_types]
-        # Add formatted time for display purposes
-        result_dict['created_at_formatted'] = self.created_at_formatted
-        # Optionally truncate long errors list in dict representation for cleaner APIs
-        # max_errors_in_dict = 10
-        # if len(result_dict['errors']) > max_errors_in_dict:
-        #     result_dict['errors'] = result_dict['errors'][:max_errors_in_dict] + ["... (truncated)"]
-        return result_dict
-
+        """Convert job to dictionary for JSON serialization."""
+        result = {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "status": self.status.value,
+            "models": self.models,
+            "app_ranges": self.app_ranges,
+            "analysis_types": [at.value for at in self.analysis_types],
+            "analysis_options": self.analysis_options,
+            "total_tasks": self.total_tasks,
+            "completed_tasks": self.completed_tasks,
+            "results_summary": self.results_summary,
+            "task_count_by_status": self.task_count_by_status,
+            "created_at_formatted": self.created_at_formatted,
+            "cancellation_requested": self.cancellation_requested
+        }
+        
+        # Handle datetime fields
+        for dt_field in ["created_at", "started_at", "completed_at"]:
+            dt_value = getattr(self, dt_field)
+            if dt_value:
+                if not dt_value.tzinfo:
+                    dt_value = dt_value.replace(tzinfo=timezone.utc)
+                result[dt_field] = dt_value.isoformat()
+            else:
+                result[dt_field] = None
+        
+        # Convert errors to dictionaries
+        result["errors"] = [error.to_dict() for error in self.errors]
+        
+        # Calculate duration
+        result["duration_seconds"] = self.duration_seconds
+        
+        return result
 
 @dataclass
-class BatchAnalysisResult:
-    """Represents the result of a single analysis task within a batch job."""
+class BatchAnalysisTask:
+    """Individual analysis task with tracking and result storage."""
     id: int
     job_id: int
     model: str
     app_num: int
-    status: str # e.g., "completed", "failed", "skipped", "timed_out"
     analysis_type: AnalysisType
-    issues_count: int = 0 # Generic count (e.g., vulnerabilities, failed reqs, perf errors)
-    high_severity: int = 0 # Primarily for security scans
+    status: TaskStatus = TaskStatus.PENDING
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    timeout_seconds: int = 1800  # Default 30-minute timeout
+    error: Optional[JobError] = None
+    progress: int = 0  # 0-100 percentage
+    result_details: Dict[str, Any] = field(default_factory=dict)
+    
+    def get_task_key(self) -> str:
+        """Get a unique string key for this task."""
+        return f"{self.model}/{self.app_num}/{self.analysis_type.value}"
+    
+    def start(self) -> None:
+        """Mark task as started."""
+        self.status = TaskStatus.RUNNING
+        self.started_at = datetime.now(timezone.utc)
+    
+    def complete(self, result_details: Dict[str, Any]) -> None:
+        """Mark task as completed with results."""
+        self.status = TaskStatus.COMPLETED
+        self.completed_at = datetime.now(timezone.utc)
+        self.progress = 100
+        self.result_details = result_details
+    
+    def fail(self, message: str, category: ErrorCategory, traceback: Optional[str] = None,
+             details: Optional[Dict[str, Any]] = None) -> None:
+        """Mark task as failed with error information."""
+        self.status = TaskStatus.FAILED
+        self.completed_at = datetime.now(timezone.utc)
+        self.error = JobError(
+            message=message,
+            category=category,
+            traceback=traceback,
+            task_id=self.get_task_key(),
+            details=details or {}
+        )
+    
+    def cancel(self) -> None:
+        """Mark task as cancelled."""
+        self.status = TaskStatus.CANCELLED
+        self.completed_at = datetime.now(timezone.utc)
+    
+    def timeout(self) -> None:
+        """Mark task as timed out."""
+        self.status = TaskStatus.TIMED_OUT
+        self.completed_at = datetime.now(timezone.utc)
+        self.error = JobError(
+            message=f"Task exceeded timeout of {self.timeout_seconds} seconds",
+            category=ErrorCategory.TIMEOUT,
+            task_id=self.get_task_key()
+        )
+    
+    @property
+    def duration_seconds(self) -> Optional[int]:
+        """Calculate task duration in seconds."""
+        if not self.started_at:
+            return None
+        
+        end_time = self.completed_at or datetime.now(timezone.utc)
+        return int((end_time - self.started_at).total_seconds())
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert task to dictionary for JSON serialization."""
+        result = {
+            "id": self.id,
+            "job_id": self.job_id,
+            "model": self.model,
+            "app_num": self.app_num,
+            "analysis_type": self.analysis_type.value,
+            "status": self.status.value,
+            "timeout_seconds": self.timeout_seconds,
+            "progress": self.progress
+        }
+        
+        # Handle datetime fields
+        for dt_field in ["created_at", "started_at", "completed_at"]:
+            dt_value = getattr(self, dt_field)
+            if dt_value:
+                if not dt_value.tzinfo:
+                    dt_value = dt_value.replace(tzinfo=timezone.utc)
+                result[dt_field] = dt_value.isoformat()
+            else:
+                result[dt_field] = None
+        
+        # Include error if present
+        if self.error:
+            result["error"] = self.error.to_dict()
+        
+        # Include result details
+        result["result_details"] = self._sanitize_details(self.result_details)
+        
+        # Calculate duration
+        result["duration_seconds"] = self.duration_seconds
+        
+        return result
+    
+    def _sanitize_details(self, details: Dict[str, Any]) -> Dict[str, Any]:
+        """Sanitize details for JSON serialization."""
+        max_str_len = 1000
+        max_list_len = 50
+        
+        def sanitize_value(value):
+            if isinstance(value, str):
+                return value[:max_str_len] + ('...' if len(value) > max_str_len else '')
+            elif isinstance(value, list):
+                if len(value) > max_list_len:
+                    return [sanitize_value(item) for item in value[:max_list_len]] + ["... (truncated)"]
+                return [sanitize_value(item) for item in value]
+            elif isinstance(value, dict):
+                return {k: sanitize_value(v) for k, v in value.items()}
+            elif isinstance(value, (int, float, bool, type(None))):
+                return value
+            else:
+                try:
+                    json.dumps(value)  # Check if serializable
+                    return value
+                except (TypeError, OverflowError):
+                    return f"<Unserializable type: {type(value).__name__}>"
+        
+        return sanitize_value(details)
+
+@dataclass
+class BatchAnalysisResult:
+    """Result of a completed analysis task."""
+    id: int
+    job_id: int
+    task_id: int
+    model: str
+    app_num: int
+    analysis_type: AnalysisType
+    status: str  # Final status: "completed", "failed", "timed_out", "cancelled", "skipped"
+    issues_count: int = 0
+    high_severity: int = 0
     medium_severity: int = 0
     low_severity: int = 0
     scan_start_time: Optional[datetime] = None
     scan_end_time: Optional[datetime] = None
     duration_seconds: Optional[float] = None
-    # Stores detailed results specific to the analysis type (e.g., list of issues, perf metrics)
-    # Includes 'error' and 'traceback' keys on failure/timeout.
     details: Dict[str, Any] = field(default_factory=dict)
-
-    def _format_datetime(self, dt: Optional[datetime]) -> Optional[str]:
-        """Safely formats datetime object to ISO 8601 string (UTC 'Z' format)."""
-        if isinstance(dt, datetime):
-            try:
-                utc_dt = dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
-                return utc_dt.isoformat(timespec='seconds').replace('+00:00', 'Z')
-            except Exception as e:
-                # Use specific task logger if available, else module logger
-                (task_logger or logger).warning(f"[Job {self.job_id}/Res {self.id}] Could not format datetime {dt}: {e}")
-                return str(dt) # Fallback
-        return None
-
-    def _sanitize_details(self, details: Dict[str, Any]) -> Dict[str, Any]:
-        """Sanitizes the details dictionary for JSON serialization."""
-        sanitized = {}
-        max_str_len = 1000
-        max_list_len = 50 # Limit number of issues/items shown directly in JSON
-
-        for key, value in details.items():
-            if isinstance(value, str):
-                sanitized[key] = value[:max_str_len] + ('...' if len(value) > max_str_len else '')
-            elif isinstance(value, list):
-                # Handle lists, potentially truncating and ensuring items are serializable
-                if len(value) > max_list_len:
-                    sanitized[key] = [self._sanitize_item(item) for item in value[:max_list_len]] + ["... (truncated)"]
-                else:
-                    sanitized[key] = [self._sanitize_item(item) for item in value]
-            elif isinstance(value, dict):
-                 # Recursively sanitize nested dictionaries (limit depth if needed)
-                 sanitized[key] = self._sanitize_details(value) # Simple recursion for now
-            else:
-                 # Keep other JSON-serializable types as is
-                 try:
-                      json.dumps(value) # Quick check if serializable
-                      sanitized[key] = value
-                 except (TypeError, OverflowError):
-                      sanitized[key] = f"<Unserializable type: {type(value).__name__}>"
-        return sanitized
-
-    def _sanitize_item(self, item: Any) -> Any:
-        """Sanitizes a single item, often within a list."""
-        if isinstance(item, dict):
-            return self._sanitize_details(item) # Sanitize dicts within lists
-        elif isinstance(item, str):
-             max_str_len = 200 # Shorter limit for items in list
-             return item[:max_str_len] + ('...' if len(item) > max_str_len else '')
-        else:
-            # Try to keep other simple types, represent complex ones
-            try:
-                json.dumps(item)
-                return item
-            except (TypeError, OverflowError):
-                return f"<Unserializable item: {type(item).__name__}>"
-
+    
+    @classmethod
+    def from_task(cls, task: BatchAnalysisTask, result_id: int) -> 'BatchAnalysisResult':
+        """Create a result from a completed task."""
+        details = task.result_details.copy()
+        result = cls(
+            id=result_id,
+            job_id=task.job_id,
+            task_id=task.id,
+            model=task.model,
+            app_num=task.app_num,
+            analysis_type=task.analysis_type,
+            status=task.status.value,
+            scan_start_time=task.started_at,
+            scan_end_time=task.completed_at,
+            duration_seconds=task.duration_seconds,
+            details=details
+        )
+        
+        # Extract metrics from result details based on analysis type
+        if task.status == TaskStatus.COMPLETED:
+            if task.analysis_type in [AnalysisType.FRONTEND_SECURITY, AnalysisType.BACKEND_SECURITY]:
+                result.issues_count = len(details.get("issues", []))
+                result.high_severity = details.get("summary", {}).get("severity_counts", {}).get("HIGH", 0)
+                result.medium_severity = details.get("summary", {}).get("severity_counts", {}).get("MEDIUM", 0)
+                result.low_severity = details.get("summary", {}).get("severity_counts", {}).get("LOW", 0)
+            elif task.analysis_type == AnalysisType.PERFORMANCE:
+                result.issues_count = details.get("total_failures", 0)
+            elif task.analysis_type == AnalysisType.GPT4ALL:
+                result.issues_count = details.get("summary", {}).get("requirements_checked", 0) - details.get("summary", {}).get("met_count", 0)
+            elif task.analysis_type == AnalysisType.ZAP:
+                issues = details.get("issues", [])
+                result.issues_count = len(issues)
+                result.high_severity = sum(1 for issue in issues if issue.get("risk") == "High")
+                result.medium_severity = sum(1 for issue in issues if issue.get("risk") == "Medium")
+                result.low_severity = sum(1 for issue in issues if issue.get("risk") == "Low")
+        
+        return result
+    
     def to_dict(self) -> Dict[str, Any]:
-        """Converts the result object to a dictionary suitable for JSON serialization."""
-        result_dict = asdict(self)
-        result_dict['scan_start_time'] = self._format_datetime(self.scan_start_time)
-        result_dict['scan_end_time'] = self._format_datetime(self.scan_end_time)
-        result_dict['analysis_type'] = self.analysis_type.value
-        # Sanitize/Truncate potentially large details for cleaner JSON output
-        result_dict['details'] = self._sanitize_details(result_dict['details'])
-        return result_dict
+        """Convert result to dictionary for JSON serialization."""
+        result = {
+            "id": self.id,
+            "job_id": self.job_id,
+            "task_id": self.task_id,
+            "model": self.model,
+            "app_num": self.app_num,
+            "analysis_type": self.analysis_type.value,
+            "status": self.status,
+            "issues_count": self.issues_count,
+            "high_severity": self.high_severity,
+            "medium_severity": self.medium_severity,
+            "low_severity": self.low_severity,
+            "duration_seconds": self.duration_seconds
+        }
+        
+        # Handle datetime fields
+        for dt_field, dt_value in [("scan_start_time", self.scan_start_time), 
+                                  ("scan_end_time", self.scan_end_time)]:
+            if dt_value:
+                if not dt_value.tzinfo:
+                    dt_value = dt_value.replace(tzinfo=timezone.utc)
+                result[dt_field] = dt_value.isoformat()
+            else:
+                result[dt_field] = None
+        
+        # Sanitize and include details
+        sanitized_details = {}
+        for key, value in self.details.items():
+            if isinstance(value, (str, int, float, bool, type(None))):
+                sanitized_details[key] = value
+            elif isinstance(value, list) and key == "issues":
+                # Include only first 50 issues to avoid excessive data
+                sanitized_details[key] = value[:50]
+                if len(value) > 50:
+                    sanitized_details["issues_truncated"] = True
+                    sanitized_details["total_issues_count"] = len(value)
+            elif isinstance(value, dict):
+                sanitized_details[key] = value
+            else:
+                sanitized_details[key] = str(value)
+        
+        result["details"] = sanitized_details
+        
+        return result
 
 # =============================================================================
-# In-Memory Job Storage (Thread-Safe)
+# Storage Interface & Implementation
 # =============================================================================
 
 class JobStorage:
-    """Simple in-memory storage for batch analysis jobs and their results."""
+    """Thread-safe storage for batch analysis jobs, tasks, and results."""
+    
     def __init__(self):
+        """Initialize storage with empty collections and locks."""
         self.jobs: Dict[int, BatchAnalysisJob] = {}
-        self.results: Dict[int, List[BatchAnalysisResult]] = {} # job_id -> list of results
+        self.tasks: Dict[int, BatchAnalysisTask] = {}  # task_id -> task
+        self.job_tasks: Dict[int, List[int]] = {}  # job_id -> list of task_ids
+        self.results: Dict[int, BatchAnalysisResult] = {}  # result_id -> result
+        self.job_results: Dict[int, List[int]] = {}  # job_id -> list of result_ids
+        
         self.next_job_id = 1
+        self.next_task_id = 1
         self.next_result_id = 1
-        self._lock = threading.RLock() # Reentrant lock for safe nested calls if needed
-        storage_logger.info("JobStorage initialized.")
-
+        
+        self._lock = threading.RLock()  # Reentrant lock for nested calls
+        storage_logger.info("JobStorage initialized")
+    
     def _get_next_id(self, counter_attr: str) -> int:
-        """Safely increments and returns the next ID (Internal, requires lock)."""
+        """Get next sequential ID from a counter (thread-safe)."""
         # Assumes lock is already held when called
         current_id = getattr(self, counter_attr)
         setattr(self, counter_attr, current_id + 1)
         return current_id
-
-    def create_job(self, job_data: Dict[str, Any], app_context: flask.Flask) -> BatchAnalysisJob:
-        """Creates and stores a new batch analysis job."""
-        storage_logger.debug(f"Attempting to create job with data keys: {list(job_data.keys())}")
+    
+    def create_job(self, job_data: Dict[str, Any], app_context: Any) -> BatchAnalysisJob:
+        """Create a new job from provided data."""
         with self._lock:
             job_id = self._get_next_id('next_job_id')
             job_log_prefix = f"[Job {job_id}]"
-            storage_logger.info(f"{job_log_prefix} Assigning ID for new job.")
-
-            # --- Validate and Parse Input ---
+            storage_logger.info(f"{job_log_prefix} Creating new job")
+            
+            # Validate input data
             try:
+                # Parse analysis types
                 analysis_types_input = job_data.get('analysis_types', [])
-                valid_analysis_types = []
+                analysis_types = []
+                
                 if isinstance(analysis_types_input, list):
                     for at_input in analysis_types_input:
-                        if isinstance(at_input, AnalysisType): valid_analysis_types.append(at_input)
-                        elif isinstance(at_input, str): valid_analysis_types.append(AnalysisType(at_input))
-                        else: raise TypeError(f"Invalid type for analysis type: {type(at_input)}")
-                else: raise TypeError("'analysis_types' must be a list.")
-                if not valid_analysis_types: raise ValueError("No valid analysis types selected.")
-
-                models_input = job_data.get('models', [])
-                if not isinstance(models_input, list) or not all(isinstance(m, str) for m in models_input):
-                    raise ValueError("'models' must be a list of strings.")
-                if not models_input: raise ValueError("At least one model must be selected.")
-
-                app_ranges_input = job_data.get('app_ranges', {})
-                if not isinstance(app_ranges_input, dict): raise ValueError("'app_ranges' must be a dictionary.")
-                # Further validation of app_ranges content (list of ints) happens implicitly later
-
-            except (ValueError, TypeError) as validation_err:
-                storage_logger.error(f"Job creation validation failed: {validation_err}", exc_info=True)
-                raise validation_err # Re-raise to be caught by route handler
-
-            # --- Create Job Object ---
+                        if isinstance(at_input, AnalysisType):
+                            analysis_types.append(at_input)
+                        elif isinstance(at_input, str):
+                            analysis_types.append(AnalysisType(at_input))
+                        else:
+                            raise ValueError(f"Invalid analysis type: {at_input}")
+                else:
+                    raise ValueError("analysis_types must be a list")
+                
+                if not analysis_types:
+                    raise ValueError("At least one analysis type must be selected")
+                
+                # Validate models
+                models = job_data.get('models', [])
+                if not isinstance(models, list) or not models:
+                    raise ValueError("At least one model must be selected")
+                
+                # Validate app ranges
+                app_ranges = job_data.get('app_ranges', {})
+                if not isinstance(app_ranges, dict):
+                    raise ValueError("app_ranges must be a dictionary")
+                
+            except (ValueError, TypeError) as e:
+                storage_logger.error(f"{job_log_prefix} Validation error: {e}")
+                raise
+            
+            # Create job object
             job = BatchAnalysisJob(
                 id=job_id,
                 name=job_data.get('name', f'Batch Job {job_id}').strip(),
                 description=job_data.get('description', '').strip(),
                 created_at=datetime.now(timezone.utc),
-                models=models_input,
-                app_ranges=app_ranges_input,
-                analysis_types=valid_analysis_types,
-                analysis_options=job_data.get('analysis_options', {}),
+                models=models,
+                app_ranges=app_ranges,
+                analysis_types=analysis_types,
+                analysis_options=job_data.get('analysis_options', {})
             )
-            storage_logger.debug(f"{job_log_prefix} BatchAnalysisJob object created in memory.")
-
-            # --- Estimate Total Tasks ---
+            
+            # Calculate total tasks
             try:
-                # Pass the app context needed by the calculation method
                 job.total_tasks = self._calculate_total_tasks(job, app_context)
                 storage_logger.debug(f"{job_log_prefix} Estimated total tasks: {job.total_tasks}")
-            except Exception as calc_err:
-                storage_logger.warning(f"{job_log_prefix} Failed to calculate initial task count: {calc_err}. Setting to 0.", exc_info=False)
+            except Exception as e:
+                job.add_error(
+                    message=f"Failed to calculate task count: {str(e)}",
+                    category=ErrorCategory.CONFIGURATION
+                )
                 job.total_tasks = 0
-
-            # --- Store Job ---
+                storage_logger.warning(f"{job_log_prefix} Failed to calculate tasks: {e}")
+            
+            # Store job
             self.jobs[job_id] = job
-            self.results[job_id] = []
-            analysis_names = ', '.join([at.value for at in job.analysis_types])
-            storage_logger.info(f"{job_log_prefix} Created Job '{job.name}' (Types: {analysis_names}, Est Tasks: {job.total_tasks})")
-            storage_logger.debug(f"Current job IDs in storage: {list(self.jobs.keys())}")
+            self.job_tasks[job_id] = []
+            self.job_results[job_id] = []
+            
+            storage_logger.info(f"{job_log_prefix} Created job '{job.name}' with {len(job.analysis_types)} analysis types")
             return job
-
-    def _calculate_total_tasks(self, job: BatchAnalysisJob, app_context: flask.Flask) -> int:
-        """Calculates estimated total tasks. Requires Flask app context. (Internal)"""
+    
+    def _calculate_total_tasks(self, job: BatchAnalysisJob, app_context: Any) -> int:
+        """Calculate the total number of tasks for a job."""
         job_log_prefix = f"[Job {job.id}]"
-        storage_logger.debug(f"{job_log_prefix} Calculating total tasks...")
         total_tasks = 0
+        
+        if not hasattr(app_context, 'config'):
+            storage_logger.error(f"{job_log_prefix} App context missing config attribute")
+            return 0
+        
         base_path_str = app_context.config.get('APP_BASE_PATH')
         if not base_path_str:
-            storage_logger.error(f"{job_log_prefix} APP_BASE_PATH not found in Flask config. Cannot calculate tasks.")
+            storage_logger.error(f"{job_log_prefix} APP_BASE_PATH not found in config")
             return 0
+            
         base_path = Path(base_path_str)
-        storage_logger.debug(f"{job_log_prefix} Using base path: {base_path}")
-
-        if not job.analysis_types:
-            storage_logger.warning(f"{job_log_prefix} No analysis types defined, task count is 0.")
-            return 0
-
+        
         for model in job.models:
-            storage_logger.debug(f"{job_log_prefix} Processing model '{model}' for task calculation.")
             model_path = base_path / model
             if not model_path.is_dir():
-                storage_logger.warning(f"{job_log_prefix} Model directory not found: {model_path}. Skipping model.")
+                storage_logger.warning(f"{job_log_prefix} Model directory not found: {model_path}")
                 continue
-
+            
             # Determine target apps for this model
-            target_apps_nums = []
-            app_range_for_model = job.app_ranges.get(model) # Could be None or []
-            # Check if key exists and value is explicitly an empty list []
-            scan_all_apps = (model in job.app_ranges and isinstance(app_range_for_model, list) and not app_range_for_model)
-
+            target_app_nums = []
+            app_range = job.app_ranges.get(model, [])
+            scan_all_apps = model in job.app_ranges and isinstance(app_range, list) and not app_range
+            
             if scan_all_apps:
-                storage_logger.debug(f"{job_log_prefix} Model '{model}' set to scan all apps.")
+                # Find all app directories for this model
                 try:
-                    target_apps_nums = sorted([
+                    target_app_nums = sorted([
                         int(item.name[3:]) for item in model_path.iterdir()
                         if item.is_dir() and item.name.startswith('app') and item.name[3:].isdigit()
                     ])
-                    storage_logger.debug(f"{job_log_prefix} Dynamically found apps for '{model}': {target_apps_nums}")
                 except Exception as e:
-                    storage_logger.error(f"{job_log_prefix} Failed list apps for '{model}': {e}. Assuming 0 apps.")
-                    target_apps_nums = []
-            elif isinstance(app_range_for_model, list):
-                # Use specified list (already parsed into ints by route handler/parse_app_range)
-                target_apps_nums = sorted(list(set(app_range_for_model)))
-                storage_logger.debug(f"{job_log_prefix} Using specified apps for '{model}': {target_apps_nums}")
-            else:
-                 # Model key might be missing from app_ranges, or value is not a list -> treat as "scan none"
-                 storage_logger.debug(f"{job_log_prefix} No specific app range defined for '{model}', assuming 0 apps.")
-                 target_apps_nums = []
-
-
-            # Count valid apps that actually exist
+                    storage_logger.error(f"{job_log_prefix} Error listing apps for {model}: {e}")
+                    continue
+            elif isinstance(app_range, list):
+                target_app_nums = sorted(list(set(app_range)))
+            
+            # Count valid app directories
             valid_app_count = 0
-            for app_num in target_apps_nums:
-                try:
-                    # Use the utility function for consistency, requires app_context
-                    app_dir = get_app_directory(app_context, model, app_num)
-                    if app_dir.is_dir():
-                        valid_app_count += 1
-                    else:
-                        storage_logger.debug(f"{job_log_prefix} App directory {app_dir} not found during count.")
-                except FileNotFoundError:
-                    storage_logger.debug(f"{job_log_prefix} App dir not found via util for {model}/app{app_num} during count.")
-                except Exception as e:
-                    storage_logger.warning(f"{job_log_prefix} Error checking app {app_num} for '{model}': {e}")
-
+            for app_num in target_app_nums:
+                app_dir = model_path / f"app{app_num}"
+                if app_dir.is_dir():
+                    valid_app_count += 1
+            
+            # Total tasks for model = valid apps × analysis types
             model_tasks = valid_app_count * len(job.analysis_types)
             total_tasks += model_tasks
-            storage_logger.debug(f"{job_log_prefix} Model '{model}': {valid_app_count} valid apps * {len(job.analysis_types)} types = {model_tasks} tasks. Running total: {total_tasks}")
-
-        storage_logger.info(f"{job_log_prefix} Total estimated tasks calculated: {total_tasks}")
+            
         return total_tasks
-
+    
     def get_job(self, job_id: int) -> Optional[BatchAnalysisJob]:
-        """Retrieves a job by its ID."""
-        job_log_prefix = f"[Job {job_id}]"
-        storage_logger.debug(f"{job_log_prefix} Request retrieve job.")
+        """Get a job by ID."""
         with self._lock:
-            job = self.jobs.get(job_id)
-            if not job:
-                storage_logger.warning(f"{job_log_prefix} Job not found in storage.")
-            return job
-
+            return self.jobs.get(job_id)
+    
     def get_all_jobs(self) -> List[BatchAnalysisJob]:
-        """Returns a list of all stored jobs."""
-        storage_logger.debug("Request retrieve all jobs.")
+        """Get all jobs."""
         with self._lock:
-            all_jobs = list(self.jobs.values())
-            storage_logger.debug(f"Retrieved {len(all_jobs)} jobs.")
-            return all_jobs
-
+            return list(self.jobs.values())
+    
     def update_job(self, job_id: int, **kwargs) -> Optional[BatchAnalysisJob]:
-        """Updates attributes of an existing job. Thread-safe."""
-        job_log_prefix = f"[Job {job_id}]"
-        # Log keys being updated, avoid logging large values directly
-        log_kwargs_keys = list(kwargs.keys())
-        storage_logger.debug(f"{job_log_prefix} Request update job with keys: {log_kwargs_keys}")
-
+        """Update job attributes."""
         with self._lock:
             job = self.jobs.get(job_id)
             if not job:
-                storage_logger.warning(f"{job_log_prefix} Update failed: Job not found.")
+                storage_logger.warning(f"[Job {job_id}] Update failed: Job not found")
                 return None
-
-            updated_fields = []
+            
             for key, value in kwargs.items():
                 if not hasattr(job, key):
-                    storage_logger.warning(f"{job_log_prefix} Attempted to set unknown attribute '{key}'. Skipping.")
+                    storage_logger.warning(f"[Job {job_id}] Unknown attribute: {key}")
                     continue
-
-                current_value = getattr(job, key)
-                new_value = value
-
-                # --- Type Conversions/Validations ---
+                
+                # Type conversions/validations
                 try:
-                    if key == 'status' and isinstance(value, str): new_value = JobStatus(value)
-                    elif key == 'status' and isinstance(value, JobStatus): pass # Already correct type
+                    if key == 'status' and isinstance(value, str):
+                        value = JobStatus(value)
                     elif key in ['started_at', 'completed_at'] and isinstance(value, datetime):
-                        new_value = value if value.tzinfo else value.replace(tzinfo=timezone.utc)
-                    elif key == 'errors' and isinstance(value, list): new_value = [str(e) for e in value]
-                    elif key == 'results_summary' and isinstance(value, dict): pass
-                    elif key in ['total_tasks', 'completed_tasks'] and value is not None: new_value = int(value)
-                    # Add other type checks as needed
-                except (ValueError, TypeError) as conv_err:
-                    storage_logger.error(f"{job_log_prefix} Invalid value type for '{key}': {value}. Error: {conv_err}. Update skipped.")
+                        if not value.tzinfo:
+                            value = value.replace(tzinfo=timezone.utc)
+                    elif key in ['total_tasks', 'completed_tasks'] and value is not None:
+                        value = int(value)
+                except (ValueError, TypeError) as e:
+                    storage_logger.error(f"[Job {job_id}] Invalid value for {key}: {e}")
                     continue
-
-                # --- Update if Changed ---
-                if new_value != current_value:
-                    # Abbreviate log value representation for large items
-                    log_value_repr = repr(new_value)
-                    if isinstance(new_value, (dict, list)) and len(new_value) > 5: log_value_repr = f"<{type(new_value).__name__} len {len(new_value)}>"
-                    elif isinstance(new_value, str) and len(new_value) > 100: log_value_repr = repr(new_value[:100] + '...')
-
-                    storage_logger.info(f"{job_log_prefix} Updating '{key}': {repr(current_value)} -> {log_value_repr}")
-                    setattr(job, key, new_value)
-                    updated_fields.append(key)
-
-            if not updated_fields:
-                storage_logger.debug(f"{job_log_prefix} No fields needed update.")
-
+                
+                # Set the attribute
+                old_value = getattr(job, key)
+                if value != old_value:
+                    storage_logger.debug(f"[Job {job_id}] Updating {key}: {old_value} -> {value}")
+                    setattr(job, key, value)
+            
             return job
-
-    def add_result(self, job_id: int, result_data: Dict[str, Any]) -> Optional[BatchAnalysisResult]:
-        """Adds an analysis result, updates job progress/summary. Thread-safe."""
-        job_log_prefix = f"[Job {job_id}]"
-        task_info = f"{result_data.get('model', '?')}/app{result_data.get('app_num', '?')}/{result_data.get('analysis_type', '?')}"
-        storage_logger.debug(f"{job_log_prefix} Request add result for task: {task_info} (Status: {result_data.get('status')}).")
-
+    
+    def create_task(self, job_id: int, model: str, app_num: int, 
+                   analysis_type: AnalysisType, timeout_seconds: int = 1800) -> Optional[BatchAnalysisTask]:
+        """Create a new task for a job."""
         with self._lock:
             job = self.jobs.get(job_id)
             if not job:
-                storage_logger.warning(f"{job_log_prefix} Cannot add result: Job not found.")
+                storage_logger.warning(f"[Job {job_id}] Cannot create task: Job not found")
                 return None
-
-            # --- Generate Result ID ---
-            result_id = self._get_next_id('next_result_id')
-            res_log_prefix = f"{job_log_prefix}[Result {result_id}]"
-            storage_logger.info(f"{res_log_prefix} Assigning ID for new result (Task: {task_info})")
-
-            # --- Validate and Parse Result Data ---
-            try:
-                analysis_type_input = result_data.get('analysis_type')
-                if isinstance(analysis_type_input, AnalysisType): analysis_type = analysis_type_input
-                elif isinstance(analysis_type_input, str): analysis_type = AnalysisType(analysis_type_input)
-                else: raise TypeError(f"Invalid analysis_type: {analysis_type_input}")
-
-                status = result_data.get('status', 'failed') # Default to failed
-                # ZAP now uses 'completed' or 'failed' instead of 'triggered'
-                valid_statuses = ["completed", "failed", "skipped", "timed_out"]
-                if status not in valid_statuses:
-                    storage_logger.warning(f"{res_log_prefix} Result has unrecognized status '{status}'. Storing as is.")
-
-                start_time_in = result_data.get('scan_start_time')
-                end_time_in = result_data.get('scan_end_time', datetime.now(timezone.utc))
-
-                start_time = start_time_in if start_time_in and start_time_in.tzinfo else start_time_in.replace(tzinfo=timezone.utc) if start_time_in else None
-                end_time = end_time_in if end_time_in and end_time_in.tzinfo else end_time_in.replace(tzinfo=timezone.utc)
-
-                duration = None
-                if isinstance(start_time, datetime) and isinstance(end_time, datetime):
-                    duration = (end_time - start_time).total_seconds()
-                    if duration < 0:
-                        storage_logger.warning(f"{res_log_prefix} Calculated negative duration ({duration:.2f}s). Setting to None.")
-                        duration = None
-                    else:
-                        storage_logger.debug(f"{res_log_prefix} Duration calculated: {duration:.2f}s")
-
-            except (ValueError, TypeError) as validation_err:
-                storage_logger.error(f"{res_log_prefix} Result data validation failed: {validation_err}", exc_info=True)
-                # Add error to job itself
-                job_errors = job.errors + [f"Invalid result data received for task {task_info}: {validation_err}"]
-                self.update_job(job_id, errors=job_errors) # update_job handles lock
-                return None
-
-            # --- Create and Store Result Object ---
-            result = BatchAnalysisResult(
-                id=result_id,
+            
+            task_id = self._get_next_id('next_task_id')
+            task = BatchAnalysisTask(
+                id=task_id,
                 job_id=job_id,
-                model=result_data.get('model', 'UnknownModel'),
-                app_num=result_data.get('app_num', 0),
-                status=status,
+                model=model,
+                app_num=app_num,
                 analysis_type=analysis_type,
-                issues_count=result_data.get('issues_count', 0),
-                high_severity=result_data.get('high_severity', 0),
-                medium_severity=result_data.get('medium_severity', 0),
-                low_severity=result_data.get('low_severity', 0),
-                scan_start_time=start_time,
-                scan_end_time=end_time,
-                duration_seconds=duration,
-                details=result_data.get('details', {}) # Includes error/traceback
+                timeout_seconds=timeout_seconds
             )
-            storage_logger.debug(f"{res_log_prefix} BatchAnalysisResult object created.")
-
-            self.results.setdefault(job_id, []).append(result)
-            storage_logger.info(f"{res_log_prefix} Result added. Job '{job.name}' now has {len(self.results[job_id])} results.")
-
-            # --- Update Job Progress and Summary ---
-            storage_logger.debug(f"{job_log_prefix} Updating progress after result {result_id}.")
-            job.completed_tasks += 1 # Increment completion count atomically (under lock)
-            job_completed_tasks = job.completed_tasks
-            job_total_tasks = job.total_tasks
-            summary = job.results_summary.copy() # Work on a copy
-
-            # Increment overall and per-type task completion counts
-            summary['total_tasks_processed'] = summary.get('total_tasks_processed', 0) + 1
-            summary[f'{analysis_type.value}_tasks_processed'] = summary.get(f'{analysis_type.value}_tasks_processed', 0) + 1
-
-            # Aggregate based on status
-            summary[f'tasks_{status}'] = summary.get(f'tasks_{status}', 0) + 1
-            summary[f'{analysis_type.value}_tasks_{status}'] = summary.get(f'{analysis_type.value}_tasks_{status}', 0) + 1
-
-            # Aggregate counts only for 'completed' tasks that provide counts
-            if status == 'completed':
-                summary['issues_total'] = summary.get('issues_total', 0) + result.issues_count
-                # ZAP now also contributes to severity counts
-                if analysis_type in [AnalysisType.FRONTEND_SECURITY, AnalysisType.BACKEND_SECURITY, AnalysisType.ZAP]:
-                    summary['high_total'] = summary.get('high_total', 0) + result.high_severity
-                    summary['medium_total'] = summary.get('medium_total', 0) + result.medium_severity
-                    summary['low_total'] = summary.get('low_total', 0) + result.low_severity
-                # Track per-type issue counts
-                summary[f'{analysis_type.value}_issues_total'] = summary.get(f'{analysis_type.value}_issues_total', 0) + result.issues_count
-                # Add specific metric aggregation if needed (e.g., Performance/GPT4All)
-                if analysis_type == AnalysisType.PERFORMANCE and 'total_failures' in result.details:
-                     summary['performance_total_failures'] = summary.get('performance_total_failures', 0) + result.details['total_failures']
-                if analysis_type == AnalysisType.GPT4ALL and 'summary' in result.details:
-                     gpt_summary = result.details['summary']
-                     summary['gpt4all_reqs_checked_total'] = summary.get('gpt4all_reqs_checked_total', 0) + gpt_summary.get('requirements_checked', 0)
-                     summary['gpt4all_reqs_met_total'] = summary.get('gpt4all_reqs_met_total', 0) + gpt_summary.get('met_count', 0)
-
-            # --- Check if Job is Finished ---
-            # Use >= total_tasks in case total changes or overshoots slightly
-            # Ensure total_tasks > 0 to avoid finishing jobs with 0 tasks prematurely
-            is_finished = job.status == JobStatus.RUNNING and job_total_tasks > 0 and job_completed_tasks >= job_total_tasks
-            final_status_update = {}
-            if is_finished:
-                # Determine final status based on errors and task outcomes
-                has_job_errors = bool(job.errors)
-                has_failed_tasks = summary.get('tasks_failed', 0) > 0
-                has_timed_out_tasks = summary.get('tasks_timed_out', 0) > 0
-
-                final_status = JobStatus.FAILED if (has_job_errors or has_failed_tasks or has_timed_out_tasks) else JobStatus.COMPLETED
-                storage_logger.info(f"{job_log_prefix} Job finished processing tasks. Tasks: {job_completed_tasks}/{job_total_tasks}. JobErrors: {has_job_errors}, FailedTasks: {has_failed_tasks}, TimedOutTasks: {has_timed_out_tasks}. Final Status: {final_status.value}")
-                final_status_update = {
-                    "status": final_status,
-                    "completed_at": datetime.now(timezone.utc)
-                }
-
-            # --- Update Job State ---
-            # Always update completed tasks and summary, add final status if finished
-            update_data = {
-                "completed_tasks": job_completed_tasks,
-                "results_summary": summary,
-                **final_status_update
-            }
-            # Call update_job which handles the lock internally
-            update_success = self.update_job(job_id, **update_data)
-            if update_success:
-                storage_logger.debug(f"{job_log_prefix} Updated job state in storage.")
-            else:
-                # Should not happen if lock is held correctly unless job deleted concurrently
-                storage_logger.error(f"{job_log_prefix} CRITICAL: Failed to update job state after adding result {result_id}.")
-
-            return result # Return the created result object
-
-    def get_results(self, job_id: int) -> List[BatchAnalysisResult]:
-        """Retrieves all results associated with a job ID."""
-        job_log_prefix = f"[Job {job_id}]"
-        storage_logger.debug(f"{job_log_prefix} Request retrieve results.")
+            
+            self.tasks[task_id] = task
+            self.job_tasks[job_id].append(task_id)
+            
+            # Update job task count by status
+            job.update_task_status_count(TaskStatus.PENDING)
+            
+            task_key = task.get_task_key()
+            storage_logger.info(f"[Job {job_id}] Created task {task_id}: {task_key}")
+            return task
+    
+    def get_task(self, task_id: int) -> Optional[BatchAnalysisTask]:
+        """Get a task by ID."""
         with self._lock:
-            results_list = list(self.results.get(job_id, [])) # Return a copy
-            storage_logger.debug(f"{job_log_prefix} Found {len(results_list)} results.")
-            return results_list
-
+            return self.tasks.get(task_id)
+    
+    def get_job_tasks(self, job_id: int) -> List[BatchAnalysisTask]:
+        """Get all tasks for a job."""
+        with self._lock:
+            task_ids = self.job_tasks.get(job_id, [])
+            return [self.tasks.get(task_id) for task_id in task_ids if task_id in self.tasks]
+    
+    def update_task(self, task_id: int, **kwargs) -> Optional[BatchAnalysisTask]:
+        """Update task attributes."""
+        with self._lock:
+            task = self.tasks.get(task_id)
+            if not task:
+                storage_logger.warning(f"[Task {task_id}] Update failed: Task not found")
+                return None
+            
+            old_status = task.status
+            
+            for key, value in kwargs.items():
+                if not hasattr(task, key):
+                    storage_logger.warning(f"[Task {task_id}] Unknown attribute: {key}")
+                    continue
+                
+                # Type conversions/validations
+                try:
+                    if key == 'status' and isinstance(value, str):
+                        value = TaskStatus(value)
+                    elif key in ['created_at', 'started_at', 'completed_at'] and isinstance(value, datetime):
+                        if not value.tzinfo:
+                            value = value.replace(tzinfo=timezone.utc)
+                except (ValueError, TypeError) as e:
+                    storage_logger.error(f"[Task {task_id}] Invalid value for {key}: {e}")
+                    continue
+                
+                # Set the attribute
+                old_value = getattr(task, key)
+                if value != old_value:
+                    setattr(task, key, value)
+            
+            # Update job task count by status if status changed
+            new_status = task.status
+            if new_status != old_status:
+                job = self.jobs.get(task.job_id)
+                if job:
+                    # Decrement old status count
+                    old_count = job.task_count_by_status.get(old_status.value, 0)
+                    if old_count > 0:
+                        job.task_count_by_status[old_status.value] = old_count - 1
+                    
+                    # Increment new status count
+                    job.task_count_by_status[new_status.value] = job.task_count_by_status.get(new_status.value, 0) + 1
+                    
+                    # Update completed_tasks for terminal statuses
+                    if new_status in [TaskStatus.COMPLETED, TaskStatus.FAILED, 
+                                     TaskStatus.CANCELLED, TaskStatus.TIMED_OUT, 
+                                     TaskStatus.SKIPPED]:
+                        job.completed_tasks += 1
+                        
+                        # Check if job is complete
+                        if job.completed_tasks >= job.total_tasks and job.status == JobStatus.RUNNING:
+                            # Determine final status based on task results
+                            has_failed = job.task_count_by_status.get(TaskStatus.FAILED.value, 0) > 0
+                            has_timed_out = job.task_count_by_status.get(TaskStatus.TIMED_OUT.value, 0) > 0
+                            has_cancelled = job.task_count_by_status.get(TaskStatus.CANCELLED.value, 0) > 0
+                            has_skipped = job.task_count_by_status.get(TaskStatus.SKIPPED.value, 0) > 0
+                            
+                            if has_failed or has_timed_out or has_cancelled or has_skipped:
+                                job.status = JobStatus.FAILED
+                            else:
+                                job.status = JobStatus.COMPLETED
+                            
+                            job.completed_at = datetime.now(timezone.utc)
+                
+                task_key = task.get_task_key()
+                storage_logger.info(f"[Job {task.job_id}] Task {task_id} ({task_key}) status changed: {old_status.value} -> {new_status.value}")
+            
+            return task
+    
+    def add_result(self, task: BatchAnalysisTask) -> Optional[BatchAnalysisResult]:
+        """Create result from a completed task."""
+        with self._lock:
+            job = self.jobs.get(task.job_id)
+            if not job:
+                storage_logger.warning(f"[Task {task.id}] Cannot add result: Job {task.job_id} not found")
+                return None
+            
+            result_id = self._get_next_id('next_result_id')
+            result = BatchAnalysisResult.from_task(task, result_id)
+            
+            self.results[result_id] = result
+            self.job_results[task.job_id].append(result_id)
+            
+            # Update job summary with result data
+            self._update_job_summary(job, result)
+            
+            storage_logger.info(f"[Job {task.job_id}] Added result {result_id} for task {task.id}: {result.status}")
+            return result
+    
+    def _update_job_summary(self, job: BatchAnalysisJob, result: BatchAnalysisResult) -> None:
+        """Update job results summary with a new result."""
+        summary = job.results_summary.copy()
+        
+        # Track total counters
+        summary['total_tasks_processed'] = summary.get('total_tasks_processed', 0) + 1
+        
+        # Track by analysis type
+        type_key = f"{result.analysis_type.value}_tasks_processed" 
+        summary[type_key] = summary.get(type_key, 0) + 1
+        
+        # Track by status
+        status_key = f"tasks_{result.status}"
+        summary[status_key] = summary.get(status_key, 0) + 1
+        
+        # Track by analysis type and status
+        type_status_key = f"{result.analysis_type.value}_tasks_{result.status}"
+        summary[type_status_key] = summary.get(type_status_key, 0) + 1
+        
+        # Track issue counts for completed tasks
+        if result.status == "completed":
+            summary['issues_total'] = summary.get('issues_total', 0) + result.issues_count
+            
+            # Security-related metrics
+            if result.analysis_type in [AnalysisType.FRONTEND_SECURITY, AnalysisType.BACKEND_SECURITY, AnalysisType.ZAP]:
+                summary['high_total'] = summary.get('high_total', 0) + result.high_severity
+                summary['medium_total'] = summary.get('medium_total', 0) + result.medium_severity
+                summary['low_total'] = summary.get('low_total', 0) + result.low_severity
+            
+            # Analysis type specific metrics
+            type_issues_key = f"{result.analysis_type.value}_issues_total"
+            summary[type_issues_key] = summary.get(type_issues_key, 0) + result.issues_count
+            
+            # Performance-specific metrics
+            if result.analysis_type == AnalysisType.PERFORMANCE and 'total_failures' in result.details:
+                summary['performance_total_failures'] = summary.get('performance_total_failures', 0) + result.details['total_failures']
+            
+            # GPT4All-specific metrics
+            if result.analysis_type == AnalysisType.GPT4ALL and 'summary' in result.details:
+                gpt_summary = result.details['summary']
+                summary['gpt4all_reqs_checked_total'] = summary.get('gpt4all_reqs_checked_total', 0) + gpt_summary.get('requirements_checked', 0)
+                summary['gpt4all_reqs_met_total'] = summary.get('gpt4all_reqs_met_total', 0) + gpt_summary.get('met_count', 0)
+        
+        job.results_summary = summary
+    
     def get_result(self, result_id: int) -> Optional[BatchAnalysisResult]:
-        """Retrieves a specific result by its unique ID."""
-        res_log_prefix = f"[Result {result_id}]"
-        storage_logger.debug(f"{res_log_prefix} Request retrieve result.")
+        """Get a result by ID."""
         with self._lock:
-            for job_id_key, results_list in self.results.items():
-                for result in results_list:
-                    if result.id == result_id:
-                        storage_logger.debug(f"{res_log_prefix} Found in Job {job_id_key}.")
-                        return result
-        storage_logger.warning(f"{res_log_prefix} Result not found in any job.")
-        return None
-
+            return self.results.get(result_id)
+    
+    def get_results(self, job_id: int) -> List[BatchAnalysisResult]:
+        """Get all results for a job."""
+        with self._lock:
+            result_ids = self.job_results.get(job_id, [])
+            return [self.results.get(result_id) for result_id in result_ids if result_id in self.results]
+    
     def delete_job(self, job_id: int) -> bool:
-        """Deletes a job and all its associated results."""
-        job_log_prefix = f"[Job {job_id}]"
-        storage_logger.info(f"{job_log_prefix} Request delete job.")
+        """Delete a job and all associated tasks and results."""
         with self._lock:
             job = self.jobs.get(job_id)
             if not job:
-                storage_logger.warning(f"{job_log_prefix} Delete failed: Job not found.")
+                storage_logger.warning(f"[Job {job_id}] Delete failed: Job not found")
                 return False
-
-            if job.status == JobStatus.RUNNING:
-                storage_logger.error(f"{job_log_prefix} Cannot delete job: Job is currently RUNNING. Cancel it first.")
-                return False # Prevent deletion of running jobs
-
-            # Proceed with deletion
+            
+            if job.status in [JobStatus.RUNNING, JobStatus.INITIALIZING, JobStatus.CANCELLING]:
+                storage_logger.error(f"[Job {job_id}] Cannot delete job: Job is currently {job.status.value}")
+                return False
+            
+            # Delete tasks
+            task_ids = self.job_tasks.get(job_id, [])
+            for task_id in task_ids:
+                if task_id in self.tasks:
+                    del self.tasks[task_id]
+            
+            # Delete results
+            result_ids = self.job_results.get(job_id, [])
+            for result_id in result_ids:
+                if result_id in self.results:
+                    del self.results[result_id]
+            
+            # Delete job and references
             del self.jobs[job_id]
-            deleted_results_count = 0
-            if job_id in self.results:
-                deleted_results_count = len(self.results[job_id])
-                del self.results[job_id]
-
-            storage_logger.info(f"{job_log_prefix} Deleted job '{job.name}' and {deleted_results_count} associated results.")
-            storage_logger.debug(f"Remaining job IDs: {list(self.jobs.keys())}")
+            if job_id in self.job_tasks:
+                del self.job_tasks[job_id]
+            if job_id in self.job_results:
+                del self.job_results[job_id]
+            
+            storage_logger.info(f"[Job {job_id}] Deleted job '{job.name}' with {len(task_ids)} tasks and {len(result_ids)} results")
             return True
 
-# Global instance of the job storage
+# Global instance of job storage
 job_storage = JobStorage()
-logger.debug("Global job_storage instance created.")
-
 
 # =============================================================================
-# Batch Analysis Execution Service (Handles Job Lifecycle)
+# Task Executor Service
 # =============================================================================
-class BatchAnalysisService:
-    """Manages the execution lifecycle of batch analysis jobs."""
 
+class TaskExecutionError(Exception):
+    """Error during task execution with category and context."""
+    def __init__(self, message: str, category: ErrorCategory, details: Optional[Dict[str, Any]] = None):
+        self.message = message
+        self.category = category
+        self.details = details or {}
+        super().__init__(message)
+
+class TaskExecutor:
+    """
+    Handles the execution of individual analysis tasks with robust error handling,
+    timeouts, and resource cleanup.
+    """
+    
     def __init__(self, storage: JobStorage):
+        """Initialize the executor."""
         self.storage = storage
-        self._running_jobs: Dict[int, threading.Thread] = {} # job_id -> Thread object
-        self._cancel_flags: Set[int] = set() # Stores IDs of jobs marked for cancellation
-        # Read config from environment or defaults
-        self.max_concurrent_jobs = max(1, int(os.environ.get("BATCH_MAX_JOBS", 2)))
-        self.max_concurrent_tasks = max(1, int(os.environ.get("BATCH_MAX_TASKS", 4)))
-        # Increased default timeout to accommodate potentially longer ZAP scans
-        self.default_task_timeout = int(os.environ.get("BATCH_TASK_TIMEOUT_SECONDS", 1800)) # Default 30 mins
-        self.app: Optional[flask.Flask] = None # Set via set_app
-        service_logger.info(f"Initialized BatchAnalysisService (MaxJobs:{self.max_concurrent_jobs}, MaxTasks:{self.max_concurrent_tasks}, TaskTimeout:{self.default_task_timeout}s)")
-
-    def set_app(self, app: flask.Flask):
-        """Stores the Flask application instance for accessing context."""
-        self.app = app
-        # Update config from Flask app if set there
-        self.max_concurrent_jobs = max(1, app.config.get("BATCH_MAX_JOBS", self.max_concurrent_jobs))
-        self.max_concurrent_tasks = max(1, app.config.get("BATCH_MAX_TASKS", self.max_concurrent_tasks))
-        self.default_task_timeout = app.config.get("BATCH_TASK_TIMEOUT_SECONDS", self.default_task_timeout)
-        service_logger.info(f"Flask app '{app.name}' registered. Effective config: MaxJobs:{self.max_concurrent_jobs}, MaxTasks:{self.max_concurrent_tasks}, TaskTimeout:{self.default_task_timeout}s")
-
-    def start_job(self, job_id: int) -> bool:
-        """Starts a job execution in a background thread after checks and cleanup."""
-        job_log_prefix = f"[Job {job_id}]"
-        service_logger.info(f"{job_log_prefix} Request to start job.")
-        job = self.storage.get_job(job_id)
-
-        # --- Initial Checks ---
-        if not job: service_logger.error(f"{job_log_prefix} Start failed: Job not found."); return False
-        service_logger.debug(f"{job_log_prefix} Found job '{job.name}', Status: {job.status.value}")
-        if job.status == JobStatus.RUNNING: service_logger.warning(f"{job_log_prefix} Start failed: Job already running."); return False
-        if job.status in [JobStatus.COMPLETED, JobStatus.FAILED, JobStatus.CANCELED]: service_logger.info(f"{job_log_prefix} Job finished ({job.status.value}). Attempting restart.")
-        if not self.app:
-            service_logger.error(f"{job_log_prefix} Start failed: Service missing Flask app context.")
-            self.storage.update_job(job_id, status=JobStatus.FAILED, errors=["Service missing Flask app context"])
-            return False
-
-        # --- Pre-start Checks & Cleanup (within request context) ---
-        new_total_tasks = 0
+        task_logger.info("TaskExecutor initialized")
+    
+    @contextlib.contextmanager
+    def _task_execution_context(self, task_id: int):
+        """Context manager for task execution with proper lifecycle management."""
+        task = self.storage.get_task(task_id)
+        if not task:
+            task_logger.error(f"[Task {task_id}] Task not found")
+            raise TaskExecutionError(
+                message=f"Task {task_id} not found",
+                category=ErrorCategory.INTERNAL
+            )
+        
+        task_key = task.get_task_key()
+        job = self.storage.get_job(task.job_id)
+        if not job:
+            task_logger.error(f"[Task {task_id}] Parent job {task.job_id} not found")
+            raise TaskExecutionError(
+                message=f"Parent job {task.job_id} not found",
+                category=ErrorCategory.INTERNAL
+            )
+        
+        # Check for cancellation before starting
+        if job.cancellation_requested:
+            task_logger.info(f"[Task {task_id}] {task_key} - Cancelled before execution started")
+            task.cancel()
+            self.storage.update_task(task.id, status=TaskStatus.CANCELLED)
+            raise TaskExecutionError(
+                message="Task cancelled before execution started",
+                category=ErrorCategory.CANCELLED
+            )
+        
+        # Mark task as running
+        task.start()
+        self.storage.update_task(task.id, status=TaskStatus.RUNNING, started_at=task.started_at)
+        
+        task_logger.info(f"[Task {task_id}] {task_key} - Execution started")
+        
         try:
-            current_flask_app = current_app._get_current_object() # Get context from triggering request
-            with current_flask_app.app_context():
-                service_logger.info(f"{job_log_prefix} Starting pre-run checks and cleanup...")
-
-                # 1. Pre-run Cleanup (Clear results, temp files, etc.)
-                service_logger.debug(f"{job_log_prefix} Performing cleanup...")
+            # Set up timeout mechanism using queue
+            result_queue = queue.Queue()
+            timeout_seconds = task.timeout_seconds
+            
+            # Create task context to be passed to execution function
+            context = {
+                "task": task,
+                "job": job,
+                "result_queue": result_queue,
+                "app_context": None,  # Will be set by service layer
+                "services": {},       # Will be filled with required services
+                "progress_callback": lambda p: self._update_progress(task.id, p)
+            }
+            
+            # Yield context to the caller
+            yield context
+            
+            # After execution, wait for result or timeout
+            try:
+                task_logger.info(f"[Task {task_id}] {task_key} - Waiting for result (timeout: {timeout_seconds}s)")
+                result = result_queue.get(timeout=timeout_seconds)
+                
+                if result.get("status") == "cancelled":
+                    task_logger.info(f"[Task {task_id}] {task_key} - Cancelled during execution")
+                    task.cancel()
+                    self.storage.update_task(task.id, status=TaskStatus.CANCELLED, completed_at=task.completed_at)
+                    
+                elif result.get("status") == "completed":
+                    task_logger.info(f"[Task {task_id}] {task_key} - Completed successfully")
+                    task.complete(result.get("details", {}))
+                    self.storage.update_task(
+                        task.id, 
+                        status=TaskStatus.COMPLETED, 
+                        completed_at=task.completed_at,
+                        result_details=task.result_details,
+                        progress=100
+                    )
+                    
+                    # Create result record
+                    self.storage.add_result(task)
+                    
+                elif result.get("status") == "failed":
+                    error_msg = result.get("error", "Unknown error")
+                    error_category = result.get("category", ErrorCategory.EXECUTION)
+                    error_details = result.get("details", {})
+                    error_traceback = result.get("traceback")
+                    
+                    task_logger.error(f"[Task {task_id}] {task_key} - Failed: {error_msg}")
+                    task.fail(error_msg, error_category, error_traceback, error_details)
+                    self.storage.update_task(
+                        task.id, 
+                        status=TaskStatus.FAILED, 
+                        completed_at=task.completed_at,
+                        error=task.error
+                    )
+                    
+                    # Create result record for failed task
+                    self.storage.add_result(task)
+                    
+                elif result.get("status") == "skipped":
+                    skip_reason = result.get("reason", "Unknown reason")
+                    task_logger.warning(f"[Task {task_id}] {task_key} - Skipped: {skip_reason}")
+                    task.status = TaskStatus.SKIPPED
+                    task.completed_at = datetime.now(timezone.utc)
+                    task.result_details = {"skip_reason": skip_reason}
+                    self.storage.update_task(
+                        task.id, 
+                        status=TaskStatus.SKIPPED, 
+                        completed_at=task.completed_at,
+                        result_details=task.result_details
+                    )
+                    
+                    # Create result record for skipped task
+                    self.storage.add_result(task)
+                
+            except queue.Empty:
+                # Task timed out
+                task_logger.error(f"[Task {task_id}] {task_key} - Timed out after {timeout_seconds} seconds")
+                task.timeout()
+                self.storage.update_task(
+                    task.id, 
+                    status=TaskStatus.TIMED_OUT, 
+                    completed_at=task.completed_at,
+                    error=task.error
+                )
+                
+                # Create result record for timed-out task
+                self.storage.add_result(task)
+        
+        except TaskExecutionError as e:
+            # Pass through TaskExecutionError
+            raise
+        except Exception as e:
+            # Handle unexpected errors
+            error_msg = f"Unexpected error in task execution context: {str(e)}"
+            task_logger.exception(f"[Task {task_id}] {task_key} - {error_msg}")
+            
+            task.fail(
+                message=error_msg,
+                category=ErrorCategory.INTERNAL,
+                traceback=traceback.format_exc()
+            )
+            self.storage.update_task(
+                task.id, 
+                status=TaskStatus.FAILED, 
+                completed_at=task.completed_at,
+                error=task.error
+            )
+            
+            # Create result record for failed task
+            self.storage.add_result(task)
+            
+            raise TaskExecutionError(
+                message=error_msg,
+                category=ErrorCategory.INTERNAL,
+                details={"original_error": str(e), "traceback": traceback.format_exc()}
+            )
+        finally:
+            task_logger.info(f"[Task {task_id}] {task_key} - Execution context completed")
+    
+    def _update_progress(self, task_id: int, progress: int) -> None:
+        """Update task progress."""
+        progress = max(0, min(100, progress))  # Ensure 0-100 range
+        self.storage.update_task(task_id, progress=progress)
+    
+    def execute_frontend_security_task(self, context: Dict[str, Any]) -> None:
+        """Execute frontend security analysis."""
+        task = context["task"]
+        job = context["job"]
+        result_queue = context["result_queue"]
+        analyzer = context["services"].get("frontend_security_analyzer")
+        
+        if not analyzer:
+            result_queue.put({
+                "status": "skipped",
+                "reason": "Frontend security analyzer not available"
+            })
+            return
+        
+        try:
+            task_logger.info(f"[Task {task.id}] Running frontend security analysis for {task.model}/app{task.app_num}")
+            
+            # Get analysis options
+            options = job.analysis_options.get(AnalysisType.FRONTEND_SECURITY.value, {})
+            full_scan = options.get("full_scan", False)
+            
+            # Execute analysis
+            issues, tool_status, raw_output = analyzer.run_security_analysis(
+                task.model, task.app_num, use_all_tools=full_scan
+            )
+            
+            # Get summary
+            summary = analyzer.get_analysis_summary(issues)
+            
+            # Prepare result
+            result_details = {
+                "issues": issues,
+                "summary": summary,
+                "tool_status": tool_status,
+                "raw_output_preview": raw_output[:5000] if raw_output else None
+            }
+            
+            result_queue.put({
+                "status": "completed",
+                "details": result_details
+            })
+            
+        except Exception as e:
+            task_logger.exception(f"[Task {task.id}] Frontend security analysis failed: {e}")
+            result_queue.put({
+                "status": "failed",
+                "error": f"Frontend security analysis failed: {str(e)}",
+                "category": ErrorCategory.EXECUTION,
+                "traceback": traceback.format_exc(),
+                "details": {"error_type": type(e).__name__}
+            })
+    
+    def execute_backend_security_task(self, context: Dict[str, Any]) -> None:
+        """Execute backend security analysis."""
+        task = context["task"]
+        job = context["job"]
+        result_queue = context["result_queue"]
+        analyzer = context["services"].get("backend_security_analyzer")
+        
+        if not analyzer:
+            result_queue.put({
+                "status": "skipped",
+                "reason": "Backend security analyzer not available"
+            })
+            return
+        
+        try:
+            task_logger.info(f"[Task {task.id}] Running backend security analysis for {task.model}/app{task.app_num}")
+            
+            # Get analysis options
+            options = job.analysis_options.get(AnalysisType.BACKEND_SECURITY.value, {})
+            full_scan = options.get("full_scan", False)
+            
+            # Execute analysis
+            issues, tool_status, raw_output = analyzer.run_security_analysis(
+                task.model, task.app_num, use_all_tools=full_scan
+            )
+            
+            # Get summary
+            summary = analyzer.get_analysis_summary(issues)
+            
+            # Prepare result
+            result_details = {
+                "issues": issues,
+                "summary": summary,
+                "tool_status": tool_status,
+                "raw_output_preview": raw_output[:5000] if raw_output else None
+            }
+            
+            result_queue.put({
+                "status": "completed",
+                "details": result_details
+            })
+            
+        except Exception as e:
+            task_logger.exception(f"[Task {task.id}] Backend security analysis failed: {e}")
+            result_queue.put({
+                "status": "failed",
+                "error": f"Backend security analysis failed: {str(e)}",
+                "category": ErrorCategory.EXECUTION,
+                "traceback": traceback.format_exc(),
+                "details": {"error_type": type(e).__name__}
+            })
+    
+    def execute_performance_task(self, context: Dict[str, Any]) -> None:
+        """Execute performance testing."""
+        task = context["task"]
+        job = context["job"]
+        result_queue = context["result_queue"]
+        tester = context["services"].get("performance_tester")
+        port_manager = context["services"].get("port_manager")
+        
+        if not tester:
+            result_queue.put({
+                "status": "skipped",
+                "reason": "Performance tester not available"
+            })
+            return
+        
+        if not port_manager:
+            result_queue.put({
+                "status": "skipped",
+                "reason": "Port manager not available"
+            })
+            return
+        
+        try:
+            task_logger.info(f"[Task {task.id}] Running performance test for {task.model}/app{task.app_num}")
+            
+            # Get analysis options
+            options = job.analysis_options.get(AnalysisType.PERFORMANCE.value, {})
+            users = int(options.get("users", 10))
+            duration = int(options.get("duration", 30))
+            spawn_rate = int(options.get("spawn_rate", 1))
+            endpoints = options.get("endpoints", [{"path": "/", "method": "GET"}])
+            
+            # Validate parameters
+            if not (users > 0 and duration > 0 and spawn_rate > 0):
+                raise ValueError("Performance parameters must be positive")
+            
+            # Get port information
+            # Function to get model index
+            try:
+                if hasattr(context["app_context"], "get_model_index"):
+                    model_idx = context["app_context"].get_model_index(task.model)
+                else:
+                    # Try to import from utils
+                    get_model_index = context["services"].get("get_model_index")
+                    if get_model_index:
+                        model_idx = get_model_index(task.model)
+                    else:
+                        raise ValueError(f"Cannot determine model index for {task.model}")
+                
+                ports = port_manager.get_app_ports(model_idx, task.app_num)
+                
+                if not ports or 'frontend' not in ports:
+                    raise ValueError(f"Frontend port not found for {task.model}/app{task.app_num}")
+                
+                target_host = "localhost"
+                target_port = ports['frontend']
+                host_url = f"http://{target_host}:{target_port}"
+                
+                # Check if target app is available
+                task_logger.info(f"[Task {task.id}] Checking if target app is available at {host_url}")
+                
+                # Function to check if port is open
+                def is_port_open(host, port, timeout=5):
+                    try:
+                        with socket.create_connection((host, port), timeout=timeout):
+                            return True
+                    except (socket.timeout, ConnectionRefusedError, OSError):
+                        return False
+                
+                # Wait for port to be available with timeout and progress updates
+                port_check_timeout = 60  # seconds
+                port_check_interval = 2   # seconds
+                port_check_start = time.time()
+                
+                while time.time() - port_check_start < port_check_timeout:
+                    # Check for cancellation
+                    if job.cancellation_requested:
+                        result_queue.put({
+                            "status": "cancelled",
+                            "reason": "Job cancellation requested during port check"
+                        })
+                        return
+                    
+                    if is_port_open(target_host, target_port):
+                        break
+                    
+                    # Update progress
+                    elapsed = time.time() - port_check_start
+                    progress = min(30, int((elapsed / port_check_timeout) * 30))  # Max 30% progress during port check
+                    context["progress_callback"](progress)
+                    
+                    time.sleep(port_check_interval)
+                else:
+                    # Port check timed out
+                    raise TimeoutError(f"Target application did not respond on {target_host}:{target_port} within {port_check_timeout}s")
+                
+                # Execute performance test
+                task_logger.info(f"[Task {task.id}] Starting performance test with {users} users for {duration}s")
+                
+                # Update progress to indicate test is starting
+                context["progress_callback"](40)
+                
+                perf_result = tester.run_test_library(
+                    test_name=f"batch_{job.id}_{task.model}_{task.app_num}",
+                    host=host_url,
+                    endpoints=endpoints,
+                    user_count=users,
+                    spawn_rate=spawn_rate,
+                    run_time=duration,
+                    generate_graphs=True,
+                    model=task.model,
+                    app_num=task.app_num
+                )
+                
+                if not perf_result:
+                    raise RuntimeError("Performance test returned no result")
+                
+                # Convert to dictionary
+                if hasattr(perf_result, 'to_dict') and callable(perf_result.to_dict):
+                    result_details = perf_result.to_dict()
+                elif hasattr(perf_result, '__dataclass_fields__'):
+                    result_details = asdict(perf_result)
+                else:
+                    # Manual conversion as fallback
+                    result_details = {
+                        "total_requests": getattr(perf_result, "total_requests", 0),
+                        "total_failures": getattr(perf_result, "total_failures", 0),
+                        "requests_per_sec": getattr(perf_result, "requests_per_sec", 0),
+                        "avg_response_time": getattr(perf_result, "avg_response_time", 0),
+                        "median_response_time": getattr(perf_result, "median_response_time", 0),
+                        "percentile_95": getattr(perf_result, "percentile_95", 0),
+                        "percentile_99": getattr(perf_result, "percentile_99", 0),
+                    }
+                
+                # Update progress to indicate completion
+                context["progress_callback"](100)
+                
+                result_queue.put({
+                    "status": "completed",
+                    "details": result_details
+                })
+                
+            except (ValueError, AttributeError) as e:
+                task_logger.error(f"[Task {task.id}] Configuration error: {e}")
+                result_queue.put({
+                    "status": "failed",
+                    "error": str(e),
+                    "category": ErrorCategory.CONFIGURATION,
+                    "traceback": traceback.format_exc(),
+                    "details": {"error_type": type(e).__name__}
+                })
+            except TimeoutError as e:
+                task_logger.error(f"[Task {task.id}] Timeout error: {e}")
+                result_queue.put({
+                    "status": "failed",
+                    "error": str(e),
+                    "category": ErrorCategory.TIMEOUT,
+                    "traceback": traceback.format_exc(),
+                    "details": {"error_type": "TimeoutError"}
+                })
+            
+        except Exception as e:
+            task_logger.exception(f"[Task {task.id}] Performance test failed: {e}")
+            result_queue.put({
+                "status": "failed",
+                "error": f"Performance test failed: {str(e)}",
+                "category": ErrorCategory.EXECUTION,
+                "traceback": traceback.format_exc(),
+                "details": {"error_type": type(e).__name__}
+            })
+    
+    def execute_gpt4all_task(self, context: Dict[str, Any]) -> None:
+        """Execute GPT4All analysis."""
+        task = context["task"]
+        job = context["job"]
+        result_queue = context["result_queue"]
+        analyzer = context["services"].get("gpt4all_analyzer")
+        
+        if not analyzer:
+            result_queue.put({
+                "status": "skipped",
+                "reason": "GPT4All analyzer not available"
+            })
+            return
+        
+        try:
+            task_logger.info(f"[Task {task.id}] Running GPT4All analysis for {task.model}/app{task.app_num}")
+            
+            # Get analysis options
+            options = job.analysis_options.get(AnalysisType.GPT4ALL.value, {})
+            requirements = options.get("requirements")
+            
+            # Get requirements if not provided
+            if not requirements:
                 try:
-                    with self.storage._lock: # Lock needed for modifying storage state
-                        if job_id in self.storage.results and self.storage.results[job_id]:
-                            count = len(self.storage.results[job_id])
-                            self.storage.results[job_id] = []
-                            service_logger.info(f"{job_log_prefix} Cleared {count} previous results.")
-                    # Add other cleanup logic (temp files, external services) here if needed
-                    # Example: temp_dir = Path(current_flask_app.config.get("TEMP_DIR", "/tmp")) / f"batch_{job_id}" ... shutil.rmtree(...)
-                    service_logger.info(f"{job_log_prefix} Pre-run cleanup finished.")
-                except Exception as cleanup_err:
-                    service_logger.exception(f"{job_log_prefix} Error during pre-run cleanup: {cleanup_err}. Proceeding cautiously.")
-                    # Optionally fail the job here if cleanup is critical
+                    requirements, template_name = analyzer.get_requirements_for_app(task.app_num)
+                    task_logger.info(f"[Task {task.id}] Loaded {len(requirements)} requirements from '{template_name}'")
+                except Exception as e:
+                    task_logger.error(f"[Task {task.id}] Failed to load requirements: {e}")
+                    result_queue.put({
+                        "status": "failed",
+                        "error": f"Failed to load requirements: {str(e)}",
+                        "category": ErrorCategory.CONFIGURATION,
+                        "traceback": traceback.format_exc(),
+                        "details": {"error_type": type(e).__name__}
+                    })
+                    return
+            
+            if not requirements:
+                result_queue.put({
+                    "status": "skipped",
+                    "reason": "No requirements found or provided"
+                })
+                return
+            
+            # Execute analysis
+            context["progress_callback"](10)
+            
+            gpt_results = analyzer.check_requirements(task.model, task.app_num, requirements)
+            
+            context["progress_callback"](90)
+            
+            # Process results
+            result_details = {
+                "requirements": requirements,
+                "results": []
+            }
+            
+            met_count = 0
+            for check in gpt_results:
+                if hasattr(check, 'to_dict') and callable(check.to_dict):
+                    check_dict = check.to_dict()
+                elif hasattr(check, '__dataclass_fields__'):
+                    check_dict = asdict(check)
+                else:
+                    check_dict = {"requirement": str(check)}
+                
+                result_details["results"].append(check_dict)
+                
+                # Count met requirements
+                if check_dict.get("result", {}).get("met", False):
+                    met_count += 1
+            
+            # Add summary
+            result_details["summary"] = {
+                "requirements_checked": len(requirements),
+                "met_count": met_count
+            }
+            
+            context["progress_callback"](100)
+            
+            result_queue.put({
+                "status": "completed",
+                "details": result_details
+            })
+            
+        except Exception as e:
+            task_logger.exception(f"[Task {task.id}] GPT4All analysis failed: {e}")
+            result_queue.put({
+                "status": "failed",
+                "error": f"GPT4All analysis failed: {str(e)}",
+                "category": ErrorCategory.EXECUTION,
+                "traceback": traceback.format_exc(),
+                "details": {"error_type": type(e).__name__}
+            })
+    
+    def execute_zap_task(self, context: Dict[str, Any]) -> None:
+        """Execute ZAP security scanning."""
+        task = context["task"]
+        job = context["job"]
+        result_queue = context["result_queue"]
+        scan_manager = context["services"].get("scan_manager")
+        
+        if not scan_manager:
+            result_queue.put({
+                "status": "skipped",
+                "reason": "ZAP scan manager not available"
+            })
+            return
+        
+        try:
+            task_logger.info(f"[Task {task.id}] Running ZAP scan for {task.model}/app{task.app_num}")
+            
+            # Get analysis options
+            options = job.analysis_options.get(AnalysisType.ZAP.value, {})
+            
+            # Trigger scan
+            scan_id = scan_manager.create_scan(task.model, task.app_num, options)
+            
+            if not scan_id:
+                raise RuntimeError("Failed to create ZAP scan (no scan ID returned)")
+            
+            task_logger.info(f"[Task {task.id}] ZAP scan created with ID: {scan_id}")
+            
+            # Poll for completion with progress updates
+            poll_interval = 15  # seconds
+            max_polls = max(task.timeout_seconds // poll_interval, 1)
+            
+            for poll_num in range(max_polls):
+                # Check for cancellation
+                if job.cancellation_requested:
+                    # Try to stop the ZAP scan
+                    try:
+                        scan_manager.stop_scan(task.model, task.app_num)
+                        task_logger.info(f"[Task {task.id}] ZAP scan {scan_id} cancelled")
+                    except Exception as stop_err:
+                        task_logger.error(f"[Task {task.id}] Error stopping ZAP scan: {stop_err}")
+                    
+                    result_queue.put({
+                        "status": "cancelled",
+                        "reason": "Job cancellation requested during ZAP scan"
+                    })
+                    return
+                
+                # Get scan status
+                try:
+                    zap_status = scan_manager.get_scan_status(scan_id)
+                    status = zap_status.get('status')
+                    progress = zap_status.get('progress', 0)
+                    
+                    # Update task progress
+                    context["progress_callback"](progress)
+                    
+                    if status == 'completed':
+                        task_logger.info(f"[Task {task.id}] ZAP scan {scan_id} completed")
+                        break
+                    elif status == 'failed':
+                        error_msg = zap_status.get('error', 'Unknown ZAP failure')
+                        task_logger.error(f"[Task {task.id}] ZAP scan {scan_id} failed: {error_msg}")
+                        result_queue.put({
+                            "status": "failed",
+                            "error": f"ZAP scan failed: {error_msg}",
+                            "category": ErrorCategory.EXECUTION,
+                            "details": {"scan_id": scan_id, "zap_status": zap_status}
+                        })
+                        return
+                    
+                    task_logger.info(f"[Task {task.id}] ZAP scan {scan_id} in progress: {progress}% ({poll_num+1}/{max_polls})")
+                    
+                except Exception as poll_err:
+                    task_logger.error(f"[Task {task.id}] Error polling ZAP status: {poll_err}")
+                    # Continue polling despite errors
+                
+                # Sleep before next poll
+                time.sleep(poll_interval)
+            else:
+                # Loop completed without break (max polls reached)
+                task_logger.error(f"[Task {task.id}] ZAP scan {scan_id} timed out after {max_polls} polls")
+                result_queue.put({
+                    "status": "failed",
+                    "error": f"ZAP scan timed out after {max_polls * poll_interval} seconds",
+                    "category": ErrorCategory.TIMEOUT,
+                    "details": {"scan_id": scan_id}
+                })
+                return
+            
+            # Retrieve results
+            try:
+                zap_results = scan_manager.get_scan_results(scan_id)
+                
+                if zap_results is None:
+                    raise RuntimeError("Failed to retrieve ZAP results after scan completion")
+                
+                task_logger.info(f"[Task {task.id}] Retrieved {len(zap_results)} ZAP alerts")
+                
+                # Process results
+                result_details = {
+                    "scan_id": scan_id,
+                    "issues": [],
+                    "zap_status": zap_status
+                }
+                
+                # Convert ZAP vulnerabilities to dictionaries
+                for alert in zap_results:
+                    if hasattr(alert, 'to_dict') and callable(alert.to_dict):
+                        alert_dict = alert.to_dict()
+                    elif hasattr(alert, '__dataclass_fields__'):
+                        alert_dict = asdict(alert)
+                    elif isinstance(alert, dict):
+                        alert_dict = alert
+                    else:
+                        alert_dict = {"description": str(alert)}
+                    
+                    result_details["issues"].append(alert_dict)
+                
+                result_queue.put({
+                    "status": "completed",
+                    "details": result_details
+                })
+                
+            except Exception as result_err:
+                task_logger.exception(f"[Task {task.id}] Error retrieving ZAP results: {result_err}")
+                result_queue.put({
+                    "status": "failed",
+                    "error": f"Failed to retrieve ZAP results: {str(result_err)}",
+                    "category": ErrorCategory.EXECUTION,
+                    "traceback": traceback.format_exc(),
+                    "details": {"scan_id": scan_id, "error_type": type(result_err).__name__}
+                })
+            
+        except Exception as e:
+            task_logger.exception(f"[Task {task.id}] ZAP scan failed: {e}")
+            result_queue.put({
+                "status": "failed",
+                "error": f"ZAP scan failed: {str(e)}",
+                "category": ErrorCategory.EXECUTION,
+                "traceback": traceback.format_exc(),
+                "details": {"error_type": type(e).__name__}
+            })
 
-                # 2. Recalculate tasks and check if runnable
-                service_logger.debug(f"{job_log_prefix} Recalculating total tasks...")
-                new_total_tasks = self.storage._calculate_total_tasks(job, current_flask_app)
-                if new_total_tasks == 0:
-                    fail_msg = "Job configuration resulted in 0 tasks (check model/app paths and ranges)."
-                    if not job.analysis_types: fail_msg = "No analysis types selected."
-                    service_logger.error(f"{job_log_prefix} Start failed: {fail_msg}")
-                    self.storage.update_job(job_id, status=JobStatus.FAILED, errors=[fail_msg])
-                    return False
+# =============================================================================
+# Batch Analysis Service
+# =============================================================================
 
-        except Exception as pre_start_err:
-            service_logger.exception(f"{job_log_prefix} Error during pre-start checks: {pre_start_err}.")
-            self.storage.update_job(job_id, status=JobStatus.FAILED, errors=[f"Error during pre-start: {pre_start_err}"])
+class BatchAnalysisService:
+    """
+    Service for managing batch analysis jobs with robust task execution,
+    error handling, and resource management.
+    """
+    
+    def __init__(self, storage: JobStorage):
+        """Initialize the service."""
+        self.storage = storage
+        self.executor = TaskExecutor(storage)
+        self._running_jobs: Dict[int, threading.Thread] = {}
+        self._app: Optional[Any] = None
+        
+        # Configuration with defaults
+        self.max_concurrent_jobs = int(os.environ.get("BATCH_MAX_JOBS", 2))
+        self.max_concurrent_tasks = int(os.environ.get("BATCH_MAX_TASKS", 2))
+        self.default_task_timeout = int(os.environ.get("BATCH_TASK_TIMEOUT_SECONDS", 1800))
+        
+        service_logger.info(f"BatchAnalysisService initialized (MaxJobs:{self.max_concurrent_jobs}, MaxTasks:{self.max_concurrent_tasks}, DefaultTimeout:{self.default_task_timeout}s)")
+    
+    def set_app(self, app: Any) -> None:
+        """Set the Flask application instance."""
+        self.app = app
+        
+        # Update configuration from app config if available
+        if hasattr(app, 'config'):
+            self.max_concurrent_jobs = max(1, app.config.get("BATCH_MAX_JOBS", self.max_concurrent_jobs))
+            self.max_concurrent_tasks = max(1, app.config.get("BATCH_MAX_TASKS", self.max_concurrent_tasks))
+            self.default_task_timeout = app.config.get("BATCH_TASK_TIMEOUT_SECONDS", self.default_task_timeout)
+        
+        service_logger.info(f"App registered with BatchAnalysisService. Config: MaxJobs:{self.max_concurrent_jobs}, MaxTasks:{self.max_concurrent_tasks}, DefaultTimeout:{self.default_task_timeout}s")
+    
+    def start_job(self, job_id: int) -> bool:
+        """Start a job execution in a background thread."""
+        job_log_prefix = f"[Job {job_id}]"
+        service_logger.info(f"{job_log_prefix} Request to start job")
+        
+        job = self.storage.get_job(job_id)
+        
+        # Initial checks
+        if not job:
+            service_logger.error(f"{job_log_prefix} Start failed: Job not found")
             return False
-
-        # --- Acquire Lock and Start Thread ---
-        with self.storage._lock:
-            service_logger.debug(f"{job_log_prefix} Acquired storage lock. Checking concurrent job limit ({len(self._running_jobs)}/{self.max_concurrent_jobs}).")
+        
+        if job.status == JobStatus.RUNNING:
+            service_logger.warning(f"{job_log_prefix} Start failed: Job already running")
+            return False
+        
+        if not self.app:
+            error_msg = "Flask app not registered with service"
+            service_logger.error(f"{job_log_prefix} Start failed: {error_msg}")
+            job.add_error(error_msg, ErrorCategory.CONFIGURATION)
+            self.storage.update_job(job_id, status=JobStatus.ERROR, errors=job.errors)
+            return False
+        
+        # Check concurrent job limit
+        with threading.Lock():
             if len(self._running_jobs) >= self.max_concurrent_jobs:
-                service_logger.warning(f"{job_log_prefix} Start failed: Max concurrent jobs ({self.max_concurrent_jobs}) reached.")
-                # TODO: Implement queuing mechanism here if desired (set status to QUEUED)
-                flash(f"Job {job_id} cannot start: maximum concurrent jobs reached.", "warning")
-                return False # Cannot start now
-
-            # --- Reset Job State for Run ---
-            service_logger.info(f"{job_log_prefix} Resetting job state for start (Tasks: {new_total_tasks}).")
-            start_time_utc = datetime.now(timezone.utc)
-            update_success = self.storage.update_job(
+                service_logger.warning(f"{job_log_prefix} Cannot start: Maximum concurrent jobs ({self.max_concurrent_jobs}) reached")
+                self.storage.update_job(job_id, status=JobStatus.QUEUED)
+                return False
+            
+            # Reset job state for new run
+            self.storage.update_job(
                 job_id,
-                status=JobStatus.RUNNING,
-                started_at=start_time_utc,
+                status=JobStatus.INITIALIZING,
+                started_at=datetime.now(timezone.utc),
                 completed_at=None,
                 completed_tasks=0,
                 errors=[],
                 results_summary={},
-                total_tasks=new_total_tasks # Use recalculated count
+                task_count_by_status={},
+                cancellation_requested=False
             )
-            if not update_success: # Should not happen if job existed before lock
-                service_logger.error(f"{job_log_prefix} Failed to update job state during reset. Aborting start.")
-                return False
-
-            job = self.storage.get_job(job_id) # Fetch updated job object
-            if not job: # Paranoid check
-                service_logger.error(f"{job_log_prefix} Job disappeared after state reset. Aborting start.")
-                return False
-
-            # --- Start Background Thread ---
+            
+            # Create background thread
             thread_name = f"batch-job-{job_id}"
-            service_logger.debug(f"{job_log_prefix} Creating background thread '{thread_name}'.")
             thread = threading.Thread(
-                target=self._run_job_wrapper,
+                target=self._run_job,
                 args=(job_id,),
-                daemon=True, # Allows app to exit even if thread is running
+                daemon=True,
                 name=thread_name
             )
-            self._running_jobs[job_id] = thread # Add before starting thread
+            
+            # Register thread and start
+            self._running_jobs[job_id] = thread
             thread.start()
-            service_logger.info(f"{job_log_prefix} Successfully started job '{job.name}' in background thread '{thread_name}'. Tasks: {job.total_tasks}")
-
-        return True
-
-    def _run_job_wrapper(self, job_id: int) -> None:
-        """Wrapper to run the job logic within the Flask app context."""
+            
+            service_logger.info(f"{job_log_prefix} Started in background thread '{thread_name}'")
+            return True
+    
+    def _run_job(self, job_id: int) -> None:
+        """Job execution logic in a background thread."""
+        job_log_prefix = f"[Job {job_id}]"
         thread_name = threading.current_thread().name
-        job_log_prefix = f"[{thread_name}]" # Use thread name as prefix
-        service_logger.info(f"{job_log_prefix} Job wrapper thread started for Job {job_id}.")
-
-        if not self.app:
-            service_logger.error(f"{job_log_prefix} CRITICAL: Cannot run job {job_id}: Flask app context unavailable.")
-            self._handle_thread_exit_error(job_id, "Flask app context unavailable at runtime")
-            return # Cleanup handled in finally
-
-        current_flask_app = self.app
-        service_logger.debug(f"{job_log_prefix} Entering app context for job {job_id} using app '{current_flask_app.name}'.")
+        service_logger.info(f"{job_log_prefix} Job thread '{thread_name}' started")
+        
         try:
-            with current_flask_app.app_context():
-                service_logger.info(f"{job_log_prefix} App context acquired for job {job_id}.")
-                self._run_job_logic(job_id) # Execute main logic
-            service_logger.info(f"{job_log_prefix} App context released for job {job_id}.")
-        except Exception as wrapper_exc:
-            service_logger.exception(f"{job_log_prefix} Unhandled exception in job wrapper for job {job_id}: {wrapper_exc}")
-            self._handle_thread_exit_error(job_id, f"Unhandled wrapper error: {wrapper_exc}")
-        finally:
-            # --- CRITICAL: Ensure cleanup runs regardless of exceptions ---
-            self._cleanup_after_job_thread(job_id)
-            service_logger.info(f"{job_log_prefix} Job wrapper thread finished for Job {job_id}.")
-
-
-    def _run_job_logic(self, job_id: int) -> None:
-        """Core logic for executing tasks. Runs within app context."""
-        job_log_prefix = f"[{threading.current_thread().name}][Job {job_id}]"
-        service_logger.info(f"{job_log_prefix} Starting core execution logic.")
-
-        # --- Re-fetch Job and Validate Status ---
-        job = self.storage.get_job(job_id)
-        if not job: service_logger.error(f"{job_log_prefix} Aborting: Job not found."); return
-        if job.status != JobStatus.RUNNING: service_logger.warning(f"{job_log_prefix} Aborting: Expected RUNNING, found '{job.status.value}'."); return
-
-        # --- Fetch Required Services (within context) ---
-        service_logger.debug(f"{job_log_prefix} Fetching required analyzers/services...")
-        analyzers_services = {}
-        fetch_errors = []
-        # Map AnalysisType enum to expected attribute name on current_app or imported class
-        required_map = {
-            AnalysisType.FRONTEND_SECURITY: ('frontend_security_analyzer', ANALYZER_CLASSES.get('frontend_security')),
-            AnalysisType.BACKEND_SECURITY: ('backend_security_analyzer', ANALYZER_CLASSES.get('backend_security')),
-            AnalysisType.PERFORMANCE: ('performance_tester', ANALYZER_CLASSES.get('performance')),
-            AnalysisType.GPT4ALL: ('gpt4all_analyzer', ANALYZER_CLASSES.get('gpt4all')),
-            AnalysisType.ZAP: ('scan_manager', ANALYZER_CLASSES.get('zap')), # Use ScanManager
-        }
-        port_manager_available = PortManager is not None # Check if class was imported
-
-        for analysis_type in job.analysis_types:
-            if analysis_type in required_map:
-                attr_name, expected_class = required_map[analysis_type]
-                service_instance = getattr(current_app, attr_name, None)
-
-                if service_instance is None:
-                    error_msg = f"Required service '{attr_name}' for '{analysis_type.value}' not found on Flask app."
-                    fetch_errors.append(error_msg); service_logger.error(f"{job_log_prefix} {error_msg}")
-                elif expected_class and not isinstance(service_instance, expected_class):
-                    # Check type if expected class is known
-                    error_msg = f"Service '{attr_name}' for '{analysis_type.value}' has wrong type: Found {type(service_instance).__name__}, expected {expected_class.__name__}."
-                    fetch_errors.append(error_msg); service_logger.error(f"{job_log_prefix} {error_msg}")
-                else:
-                    analyzers_services[analysis_type] = service_instance
-                    service_logger.debug(f"{job_log_prefix} Fetched service '{attr_name}': {type(service_instance).__name__}")
-            # Special check for performance task dependency
-            if analysis_type == AnalysisType.PERFORMANCE and not port_manager_available:
-                 error_msg = f"PortManager class unavailable, required for '{analysis_type.value}' tasks."
-                 if error_msg not in fetch_errors: # Avoid duplicates if already added by main check
-                     fetch_errors.append(error_msg); service_logger.error(f"{job_log_prefix} {error_msg}")
-
-
-        if fetch_errors:
-            service_logger.error(f"{job_log_prefix} Aborting execution due to missing/invalid services.")
-            self.storage.update_job(job_id, status=JobStatus.FAILED, errors=fetch_errors, completed_at=datetime.now(timezone.utc))
-            return # Cleanup handled by wrapper's finally
-
-        # --- Task Generation (within context) ---
-        try:
-            service_logger.info(f"{job_log_prefix} Generating task list for '{job.name}'.")
-            tasks = self._generate_task_list(job) # Requires app context
-            service_logger.info(f"{job_log_prefix} Generated {len(tasks)} tasks.")
-
-            # Update total tasks if different from estimate/reset value
-            if len(tasks) != job.total_tasks:
-                service_logger.info(f"{job_log_prefix} Task count changed {job.total_tasks}->{len(tasks)}. Updating job.")
-                self.storage.update_job(job_id, total_tasks=len(tasks))
-                job.total_tasks = len(tasks) # Update local copy
-
-            if not tasks:
-                service_logger.warning(f"{job_log_prefix} Job has no tasks to execute. Marking as COMPLETED.")
-                self.storage.update_job(job_id, status=JobStatus.COMPLETED, completed_at=datetime.now(timezone.utc))
-                return
-
-        except Exception as task_gen_err:
-            service_logger.exception(f"{job_log_prefix} Error generating task list: {task_gen_err}")
-            self.storage.update_job(job_id, status=JobStatus.FAILED, errors=[f"Error generating tasks: {task_gen_err}"], completed_at=datetime.now(timezone.utc))
-            return
-
-
-        # --- Task Execution using ThreadPoolExecutor ---
-        active_futures: Dict[Future, Tuple[str, int, AnalysisType]] = {} # future -> (model, app_num, analysis_type)
-        cancelled_by_flag = False
-        try:
-            service_logger.info(f"{job_log_prefix} Starting ThreadPoolExecutor (workers={self.max_concurrent_tasks}).")
-            with ThreadPoolExecutor(max_workers=self.max_concurrent_tasks, thread_name_prefix=f"batch_task_{job_id}") as executor:
-                service_logger.debug(f"{job_log_prefix} Submitting {len(tasks)} tasks.")
-                for model, app_num, analysis_type in tasks:
-                    task_desc = f"{model}/app{app_num}/{analysis_type.value}"
-                    required_service = analyzers_services.get(analysis_type) # Fetch instance
-
-                    # Check dependencies again before submitting (service instance, PortManager class)
-                    skip_task = False; error_detail = None
-                    if required_service is None and analysis_type in required_map: # Check if service instance exists
-                        error_detail = f"Required service instance for {analysis_type.value} not available."
-                        skip_task = True
-                    elif analysis_type == AnalysisType.PERFORMANCE and not port_manager_available:
-                        error_detail = "PortManager class is not available for Performance task."
-                        skip_task = True
-
-                    if skip_task:
-                        service_logger.error(f"{job_log_prefix} Cannot submit task {task_desc}: {error_detail}")
-                        # Record a failed result directly immediately
-                        self.storage.add_result(job_id, {
-                            "model": model, "app_num": app_num, "analysis_type": analysis_type,
-                            "status": "failed", "scan_start_time": datetime.now(timezone.utc),
-                            "details": {"error": error_detail}
-                        })
-                        continue # Skip submitting this task
-
-                    # Submit the task
-                    service_logger.debug(f"{job_log_prefix} Submitting task: {task_desc}")
-                    future = executor.submit(
-                        self._analyze_app_task, # Target function
-                        job_id, model, app_num, analysis_type, # Task details
-                        job.analysis_options, # Job-level options
-                        required_service,     # Specific service instance
-                        PortManager           # Pass PortManager class (or None)
-                    )
-                    active_futures[future] = (model, app_num, analysis_type)
-
-                service_logger.info(f"{job_log_prefix} All {len(active_futures)} valid tasks submitted. Waiting for completion...")
-                # --- Process Completed Tasks ---
-                completed_count = 0
-                for future in as_completed(active_futures):
-                    completed_count += 1
-                    model, app_num, analysis_type = active_futures[future]
-                    task_desc = f"{model}/app{app_num}/{analysis_type.value}"
-                    service_logger.debug(f"{job_log_prefix} Future completed for task: {task_desc} ({completed_count}/{len(active_futures)})")
-
-                    # --- Check for Cancellation Flag ---
-                    with self.storage._lock: cancelled = job_id in self._cancel_flags
-                    if cancelled:
-                        service_logger.info(f"{job_log_prefix} Cancellation detected processing task {task_desc}. Breaking loop.")
-                        cancelled_by_flag = True; break # Break loop, handle cleanup below
-
-                    # --- Process Task Result/Exception ---
-                    try:
-                        # Check for exceptions raised by the task function itself.
-                        # The task function (_analyze_app_task) should handle its internal errors
-                        # and report them via storage.add_result. This catches unexpected errors
-                        # in the task wrapper or future execution.
-                        future.result(timeout=0.1) # Small timeout just to check for immediate exceptions
-                        service_logger.debug(f"{job_log_prefix} Task {task_desc} future completed without immediate exception.")
-                    except FutureTimeoutError:
-                         # Expected if task is still running, result processed via storage.add_result
-                         pass
-                    except Exception as task_exc:
-                        # This catches unexpected errors *outside* the _analyze_app_task's main try/except
-                        error_msg = f"Task Error ({task_desc}): Unhandled exception during future processing: {type(task_exc).__name__} - {str(task_exc)}"
-                        detailed_traceback = traceback.format_exc()
-                        service_logger.error(f"{job_log_prefix} {error_msg}", exc_info=False)
-                        service_logger.debug(f"{job_log_prefix} Unhandled task exception details for {task_desc}:\n{detailed_traceback}")
-
-                        # Record a specific "failed" result for this unhandled exception
-                        self.storage.add_result(job_id, {
-                            "model": model, "app_num": app_num, "analysis_type": analysis_type,
-                            "status": "failed", "scan_start_time": datetime.now(timezone.utc), # Approx time
-                            "details": {"error": error_msg, "traceback": detailed_traceback}
-                        })
-                        # Add error to the main job object
-                        with self.storage._lock:
-                            current_job = self.storage.get_job(job_id)
-                            current_job_errors = current_job.errors if current_job else []
-                        self.storage.update_job(job_id, errors=current_job_errors + [error_msg])
-
-            # --- End of ThreadPoolExecutor Context Manager ---
-            service_logger.info(f"{job_log_prefix} ThreadPoolExecutor finished processing submitted tasks.")
-
-            # --- Handle Cancellation Cleanup (After Loop) ---
-            if cancelled_by_flag:
-                remaining_futures_count = len(active_futures) - completed_count
-                service_logger.info(f"{job_log_prefix} Attempting to cancel {remaining_futures_count} remaining futures due to cancellation flag.")
-                cancelled_count = 0
-                for f, t_info in active_futures.items():
-                    if not f.done():
-                        if f.cancel(): # Attempt to cancel
-                            cancelled_count += 1
-                            service_logger.debug(f"{job_log_prefix} Submitted cancellation for future task: {t_info[0]}/app{t_info[1]}/{t_info[2].value}")
-                if cancelled_count > 0: service_logger.info(f"{job_log_prefix} Submitted cancellation request for {cancelled_count} futures.")
-                # Set final status to CANCELED
-                service_logger.info(f"{job_log_prefix} Updating final status to CANCELED.")
-                cancel_msg = "Job canceled by user."
-                with self.storage._lock: # Add error message safely
-                     current_job = self.storage.get_job(job_id)
-                     current_errors = current_job.errors if current_job else []
-                     if cancel_msg not in current_errors: current_errors.append(cancel_msg)
-                self.storage.update_job(job_id, status=JobStatus.CANCELED, errors=current_errors, completed_at=datetime.now(timezone.utc))
-
-
-            # --- Final Status Update (if not cancelled) ---
-            # Re-fetch job state after all tasks processed or loop broken
-            job = self.storage.get_job(job_id)
-            if not job: service_logger.error(f"{job_log_prefix} Job object missing after task execution!"); return
-
-            # If the job finished normally (all tasks processed) and wasn't cancelled,
-            # its status should have been updated by the last call to add_result.
-            # If it's still RUNNING here, it means something went wrong or tasks didn't complete.
-            if job.status == JobStatus.RUNNING and not cancelled_by_flag:
-                 final_status = JobStatus.FAILED # Assume failure if still running after loop
-                 final_errors = list(job.errors)
-                 error_msg = f"Job ended unexpectedly while still in RUNNING state. Completed {job.completed_tasks}/{job.total_tasks} tasks."
-                 service_logger.error(f"{job_log_prefix} {error_msg}")
-                 if error_msg not in final_errors: final_errors.append(error_msg)
-                 self.storage.update_job(job_id, status=final_status, errors=final_errors, completed_at=datetime.now(timezone.utc))
-                 service_logger.info(f"{job_log_prefix} Core logic finished. Final status forced to: {final_status.value}")
-            elif not cancelled_by_flag:
-                 # Job status is already COMPLETED or FAILED (set by add_result)
-                 service_logger.info(f"{job_log_prefix} Core logic execution finished. Final status already set: {job.status.value}")
-
-
+            with self.app.app_context():
+                service_logger.info(f"{job_log_prefix} Flask app context acquired")
+                self._execute_job_workflow(job_id)
+                service_logger.info(f"{job_log_prefix} Job workflow completed")
         except Exception as e:
-            # Catch critical errors during the execution logic itself
-            service_logger.exception(f"{job_log_prefix} CRITICAL error during job execution logic: {e}")
-            self._handle_thread_exit_error(job_id, f"Critical job logic error: {e}")
-            # Cleanup handled by wrapper's finally
-
-
-    def _generate_task_list(self, job: BatchAnalysisJob) -> List[Tuple[str, int, AnalysisType]]:
-        """Generates list of (model, app_num, analysis_type) tasks. Runs within app context."""
-        job_log_prefix = f"[{threading.current_thread().name}][Job {job.id}]"
-        service_logger.info(f"{job_log_prefix} Generating task list...")
-        tasks = []
-        if not self.app: service_logger.error(f"{job_log_prefix} Cannot generate task list: Flask app context unavailable."); return []
-        base_path_str = current_app.config.get('APP_BASE_PATH')
-        if not base_path_str: service_logger.error(f"{job_log_prefix} APP_BASE_PATH not found."); return []
-        base_path = Path(base_path_str); service_logger.debug(f"{job_log_prefix} Using base path '{base_path}'.")
-
-        for model in job.models:
-            service_logger.debug(f"{job_log_prefix} Processing model '{model}'.")
-            model_path = base_path / model
-            if not model_path.is_dir(): service_logger.warning(f"{job_log_prefix} Model directory '{model_path}' not found. Skipping."); continue
-
-            # Determine target app numbers (logic duplicated from _calculate_total_tasks, could refactor)
-            apps_to_scan_nums = []
-            app_range_for_model = job.app_ranges.get(model)
-            scan_all_apps = (model in job.app_ranges and isinstance(app_range_for_model, list) and not app_range_for_model)
-
-            if scan_all_apps:
-                service_logger.debug(f"{job_log_prefix} Scanning '{model_path}' for all apps.")
-                try: apps_to_scan_nums = sorted([int(item.name[3:]) for item in model_path.iterdir() if item.is_dir() and item.name.startswith('app') and item.name[3:].isdigit()])
-                except Exception as e: service_logger.error(f"{job_log_prefix} Failed list apps for '{model}': {e}")
-                if not apps_to_scan_nums: service_logger.warning(f"{job_log_prefix} No app directories found in '{model_path}'.")
-                else: service_logger.debug(f"{job_log_prefix} Found apps: {apps_to_scan_nums}")
-            elif isinstance(app_range_for_model, list):
-                 apps_to_scan_nums = sorted(list(set(app_range_for_model)))
-                 service_logger.debug(f"{job_log_prefix} Using specified apps: {apps_to_scan_nums}")
-            else:
-                 service_logger.debug(f"{job_log_prefix} No specific app range for '{model}', skipping.")
-                 apps_to_scan_nums = []
-
-
-            # Create tasks, verifying app subdirectories exist
-            for app_num in apps_to_scan_nums:
-                try:
-                    app_dir = get_app_directory(current_app, model, app_num); # Use utility
-                    if not app_dir.is_dir(): service_logger.warning(f"{job_log_prefix} App dir missing: {app_dir}. Skipping tasks for this app."); continue
-                    # Add tasks for each selected analysis type
-                    for analysis_type in job.analysis_types:
-                        task_tuple = (model, app_num, analysis_type); tasks.append(task_tuple)
-                        service_logger.debug(f"{job_log_prefix} Added task: {(model, app_num, analysis_type.value)}")
-                except FileNotFoundError: service_logger.warning(f"{job_log_prefix} App dir not found via util for {model}/app{app_num}. Skipping.")
-                except Exception as e: service_logger.error(f"{job_log_prefix} Error processing {model}/app{app_num}: {e}")
-
-        service_logger.info(f"{job_log_prefix} Generated {len(tasks)} tasks.")
-        return tasks
-
-
-    def _analyze_app_task(
-        self, job_id: int, model: str, app_num: int, analysis_type: AnalysisType,
-        analysis_options: Dict[str, Any], analyzer_service: Any, port_manager_class: Optional[Type[PortManager]]
-    ) -> None:
-        """
-        Performs analysis for a single app/type. Runs in Executor thread.
-        Handles internal errors, timeouts, and updates storage.
-        **v5:** Added pre-connection check for performance tasks.
-        """
-        # --- Setup ---
-        task_thread_name = threading.current_thread().name
-        log_prefix = f"[{task_thread_name}][Job {job_id}][Task {model}/app{app_num}/{analysis_type.value}]"
-        task_logger.info(f"{log_prefix} Starting task execution.")
-
-        # --- Cancellation Check ---
-        if job_id in self._cancel_flags:
-            task_logger.info(f"{log_prefix} Task cancelled before execution started.")
-            # Do not add result for cancelled tasks. Job status updated by main loop.
-            return
-
-        start_time = datetime.now(timezone.utc)
-        status = "failed" # Default status
-        result_details = {"error": None, "traceback": None}
-        issues_count, high_sev, med_sev, low_sev = 0, 0, 0, 0
-        raw_output_preview = None
-        task_timed_out = False
-
-        # --- Get Task-Specific Timeout ---
-        # Allow overriding default timeout via analysis_options
-        type_options = analysis_options.get(analysis_type.value, {})
-        task_timeout_seconds = type_options.get("timeout_seconds", self.default_task_timeout)
-        task_logger.debug(f"{log_prefix} Using task timeout: {task_timeout_seconds} seconds.")
-
-        # --- Main Execution Block with Timeout ---
-        analysis_q = queue.Queue() # Queue to get results back from thread
-
-        def _wait_for_port(host: str, port: int, timeout: int = 30) -> bool:
-            """Checks if a port is open and listening."""
-            start_wait = time.monotonic()
-            while time.monotonic() - start_wait < timeout:
-                try:
-                    with socket.create_connection((host, port), timeout=1):
-                        task_logger.info(f"{log_prefix} Successfully connected to {host}:{port}.")
-                        return True
-                except (socket.timeout, ConnectionRefusedError, OSError):
-                    task_logger.debug(f"{log_prefix} Waiting for {host}:{port} to become available...")
-                    time.sleep(2) # Wait before retrying
-            task_logger.error(f"{log_prefix} Timeout waiting for {host}:{port} after {timeout} seconds.")
-            return False
-
-        def analysis_thread_target():
-            """Wrapper function to run the actual analysis logic."""
-            try:
-                # --- Select and Run Analyzer/Tester ---
-                task_logger.debug(f"{log_prefix} Analysis Type: {analysis_type.value}")
-                task_logger.debug(f"{log_prefix} Using options: {type_options}")
-
-                # Check service instance (already checked before submit, but double-check)
-                if analyzer_service is None and analysis_type not in [AnalysisType.PERFORMANCE]:
-                     raise RuntimeError(f"Required analyzer/service instance missing.")
-                if analysis_type == AnalysisType.PERFORMANCE and port_manager_class is None:
-                     raise RuntimeError(f"PortManager class missing for Performance task.")
-
-                # --- Frontend Security ---
-                if analysis_type == AnalysisType.FRONTEND_SECURITY:
-                    if not isinstance(analyzer_service, ANALYZER_CLASSES.get('frontend_security')): raise TypeError("Incorrect analyzer: FE Security")
-                    full_scan = type_options.get("full_scan", False)
-                    task_logger.info(f"{log_prefix} Running frontend security (full_scan={full_scan}).")
-                    issues, tool_status, raw_out = analyzer_service.run_security_analysis(model, app_num, use_all_tools=full_scan)
-                    analysis_q.put(("success", (issues, tool_status, raw_out)))
-
-                # --- Backend Security ---
-                elif analysis_type == AnalysisType.BACKEND_SECURITY:
-                    if not isinstance(analyzer_service, ANALYZER_CLASSES.get('backend_security')): raise TypeError("Incorrect analyzer: BE Security")
-                    full_scan = type_options.get("full_scan", False)
-                    task_logger.info(f"{log_prefix} Running backend security (full_scan={full_scan}).")
-                    issues, tool_status, raw_out = analyzer_service.run_security_analysis(model, app_num, use_all_tools=full_scan)
-                    analysis_q.put(("success", (issues, tool_status, raw_out)))
-
-                # --- Performance ---
-                elif analysis_type == AnalysisType.PERFORMANCE:
-                    if not isinstance(analyzer_service, ANALYZER_CLASSES.get('performance')): raise TypeError("Incorrect tester: Performance")
-                    users=int(type_options.get('users',10)); duration=int(type_options.get('duration',30)); spawn_rate=int(type_options.get('spawn_rate',1)); endpoints=type_options.get('endpoints', [{"path":"/","method":"GET"}])
-                    if not (users > 0 and duration > 0 and spawn_rate > 0): raise ValueError("Performance params must be positive.")
-                    task_logger.info(f"{log_prefix} Running performance test: U={users}, D={duration}s, R={spawn_rate}.")
-                    # Get Port
-                    try:
-                        model_idx = get_model_index(model) # Requires utils import
-                        if model_idx is None: raise ValueError(f"Model index not found for {model}")
-                        ports = port_manager_class.get_app_ports(model_idx, app_num) # Static call
-                        if not ports or 'frontend' not in ports: raise ValueError(f"FE port not found for {model}/app{app_num}")
-                        # Assuming target is localhost based on previous errors
-                        target_host = "localhost"
-                        target_port = ports['frontend']
-                        host_url = f"http://{target_host}:{target_port}"
-                        task_logger.info(f"{log_prefix} Target host URL: {host_url}")
-                    except Exception as port_err: raise RuntimeError(f"Port determination failed: {port_err}") from port_err
-
-                    # --- Wait for target app to be available ---
-                    task_logger.info(f"{log_prefix} Checking if target app is available at {target_host}:{target_port}...")
-                    if not _wait_for_port(target_host, target_port, timeout=30):
-                         raise RuntimeError(f"Target application {model}/app{app_num} did not respond on {target_host}:{target_port} within 30s.")
-                    task_logger.info(f"{log_prefix} Target app responded. Starting Locust test...")
-
-                    # Run Test
-                    perf_result = analyzer_service.run_test_library(
-                        test_name=f"batch_{job_id}_{model}_{app_num}", host=host_url, endpoints=endpoints,
-                        user_count=users, spawn_rate=spawn_rate, run_time=duration, generate_graphs=True,
-                        model=model, app_num=app_num
-                    )
-                    if perf_result is None: raise RuntimeError("Performance test run_test_library returned None.")
-                    analysis_q.put(("success", perf_result)) # Pass result object
-
-                # --- GPT4All ---
-                elif analysis_type == AnalysisType.GPT4ALL:
-                    if not isinstance(analyzer_service, ANALYZER_CLASSES.get('gpt4all')): raise TypeError("Incorrect analyzer: GPT4All")
-                    requirements = type_options.get('requirements')
-                    if not requirements: # Load defaults if none provided
-                        try:
-                            # Assuming get_requirements_for_app works without direct context if paths are resolvable
-                            requirements, template_name = analyzer_service.get_requirements_for_app(app_num)
-                            task_logger.info(f"{log_prefix} Loaded {len(requirements)} default requirements from '{template_name}'.")
-                        except Exception as req_err: raise RuntimeError(f"Could not load requirements: {req_err}") from req_err
-                    if not requirements:
-                         task_logger.warning(f"{log_prefix} No requirements found, skipping analysis.")
-                         analysis_q.put(("skipped", "No requirements provided or found."))
-                    else:
-                        task_logger.info(f"{log_prefix} Running GPT4All analysis with {len(requirements)} requirements.")
-                        gpt_results = analyzer_service.check_requirements(model, app_num, requirements)
-                        analysis_q.put(("success", gpt_results)) # Pass list of RequirementCheck objects
-
-                # --- ZAP ---
-                elif analysis_type == AnalysisType.ZAP:
-                    if not isinstance(analyzer_service, ANALYZER_CLASSES.get('zap')): raise TypeError("ScanManager instance expected for ZAP")
-                    task_logger.info(f"{log_prefix} Triggering ZAP scan via ScanManager.")
-                    # Trigger scan
-                    scan_id = analyzer_service.create_scan(model, app_num, type_options)
-                    if not scan_id: raise RuntimeError("ScanManager failed to return a scan ID.")
-                    task_logger.info(f"{log_prefix} ZAP scan triggered. Scan ID: {scan_id}. Waiting for completion...")
-
-                    # Poll for completion
-                    poll_interval = 15 # seconds
-                    max_polls = int(task_timeout_seconds / poll_interval) # Calculate max polls based on overall task timeout
-                    zap_status = None
-                    for poll_num in range(max_polls):
-                         # Check cancellation flag during polling
-                         if job_id in self._cancel_flags:
-                              task_logger.info(f"{log_prefix} ZAP task cancelled during polling.")
-                              raise InterruptedError("ZAP task cancelled") # Raise specific error
-
-                         time.sleep(poll_interval)
-                         try:
-                              zap_status = analyzer_service.get_scan_status(scan_id)
-                              task_logger.debug(f"{log_prefix} ZAP poll {poll_num+1}/{max_polls}: Status={zap_status.get('status', 'unknown')}, Progress={zap_status.get('progress', '?')}%")
-                              if zap_status.get('status') == 'completed':
-                                   task_logger.info(f"{log_prefix} ZAP scan {scan_id} completed.")
-                                   break
-                              elif zap_status.get('status') == 'failed':
-                                   error_msg = zap_status.get('error', 'Unknown ZAP failure')
-                                   task_logger.error(f"{log_prefix} ZAP scan {scan_id} failed: {error_msg}")
-                                   raise RuntimeError(f"ZAP scan failed: {error_msg}")
-                         except Exception as poll_err:
-                              task_logger.warning(f"{log_prefix} Error polling ZAP status for scan {scan_id}: {poll_err}. Continuing poll.")
-                    else: # Loop finished without break (i.e., timeout)
-                         task_logger.error(f"{log_prefix} ZAP scan {scan_id} did not complete within task timeout ({task_timeout_seconds}s).")
-                         raise TimeoutError(f"ZAP scan timed out after {task_timeout_seconds}s")
-
-                    # Retrieve results
-                    task_logger.info(f"{log_prefix} Retrieving ZAP results for scan {scan_id}...")
-                    zap_results = analyzer_service.get_scan_results(scan_id) # Assume this returns List[ZapVulnerability] or similar
-                    if zap_results is None: # Handle case where results retrieval fails
-                         raise RuntimeError("Failed to retrieve ZAP results after scan completion.")
-
-                    task_logger.info(f"{log_prefix} Retrieved {len(zap_results)} ZAP alerts.")
-                    # Pass results to the main thread via queue
-                    # Include scan_id and status in payload for context
-                    analysis_q.put(("success", (zap_results, zap_status)))
-
-                # --- Unknown Type ---
-                else:
-                    raise ValueError(f"Unsupported analysis type: {analysis_type.value}")
-
-            except InterruptedError as cancel_err:
-                 # Catch cancellation specifically
-                 analysis_q.put(("cancelled", str(cancel_err)))
-            except Exception as thread_err:
-                # Catch errors from within the analysis logic
-                analysis_q.put(("error", thread_err, traceback.format_exc()))
-
-        # Start the analysis in a separate thread
-        analysis_thread = threading.Thread(target=analysis_thread_target, daemon=True)
-        analysis_thread.start()
-
-        # Wait for the result or timeout
-        try:
-            q_status, q_payload, *q_tb = analysis_q.get(timeout=task_timeout_seconds)
-            task_logger.debug(f"{log_prefix} Analysis thread completed with status: {q_status}")
-
-            if q_status == "success":
-                status = "completed" # Mark as completed now
-                # Process successful result based on analysis type
-                if analysis_type in [AnalysisType.FRONTEND_SECURITY, AnalysisType.BACKEND_SECURITY]:
-                    issues, tool_status, raw_output = q_payload
-                    analyzer_instance = analyzer_service # Use passed instance
-                    summary = analyzer_instance.get_analysis_summary(issues)
-                    issues_count = len(issues); high_sev=summary.get("severity_counts",{}).get("HIGH",0); med_sev=summary.get("severity_counts",{}).get("MEDIUM",0); low_sev=summary.get("severity_counts",{}).get("LOW",0)
-                    # FIX: Properly serialize issues using correct method for each analyzer type
-                    serializable_issues = []
-                    for issue in issues:
-                         if hasattr(issue, 'to_dict') and callable(issue.to_dict):
-                             # Use to_dict method if available (better than asdict for custom serialization)
-                             serializable_issues.append(issue.to_dict())
-                         elif hasattr(issue, '__dataclass_fields__'):
-                             # Fallback to asdict for standard dataclasses
-                             serializable_issues.append(asdict(issue))
-                         else:
-                             # Last resort: try to convert to dict directly, logging a warning
-                             task_logger.warning(f"{log_prefix} Issue of type {type(issue)} has no to_dict method or is not a dataclass")
-                             try:
-                                 serializable_issues.append(dict(issue))
-                             except Exception as err:
-                                 task_logger.error(f"{log_prefix} Could not serialize issue: {err}")
-                                 # Include a minimal representation to avoid losing the issue
-                                 serializable_issues.append({"issue_text": str(issue), "severity": "UNKNOWN"})
-
-                    result_details.update({
-                        "issues": serializable_issues,
-                        "summary": summary,
-                        "tool_status": tool_status
-                    })
-                    raw_output_preview = str(raw_output) if raw_output else None
-
-                elif analysis_type == AnalysisType.PERFORMANCE:
-                    perf_result = q_payload # PerformanceResult object
-                    perf_dict = perf_result.to_dict()
-                    issues_count = perf_dict.get('total_failures', 0)
-                    result_details.update(perf_dict)
-                    try: raw_output_preview = json.dumps(perf_dict, indent=2)
-                    except Exception: raw_output_preview = str(perf_dict)
-
-                elif analysis_type == AnalysisType.GPT4ALL:
-                    gpt_results = q_payload # List of RequirementCheck objects
-                    # FIX: Properly serialize GPT4All results
-                    issues_list = []
-                    for res in gpt_results:
-                        if hasattr(res, 'to_dict') and callable(res.to_dict):
-                            issues_list.append(res.to_dict())
-                        else:
-                            # Fallback
-                            if hasattr(res, '__dataclass_fields__'):
-                                issues_list.append(asdict(res))
-                            else:
-                                issues_list.append({"requirement": str(res)})
-
-                    met_count = sum(1 for r in issues_list if r.get('result', {}).get('met', False))
-                    summary = {"requirements_checked": len(issues_list), "met_count": met_count}
-                    task_logger.debug(f"{log_prefix} GPT4All Summary: {summary}")
-                    result_details.update({"issues": issues_list, "summary": summary})
-                    issues_count = len(issues_list)
-                    try: raw_output_preview = json.dumps(issues_list, indent=2)
-                    except Exception: raw_output_preview = str(issues_list)
-
-                elif analysis_type == AnalysisType.ZAP:
-                    zap_alerts, zap_status_info = q_payload # Get alerts and final status
-                    # Convert ZapVulnerability objects (or dicts) to serializable dicts
-                    serializable_alerts = []
-                    if ZapVulnerability: # Check if class was imported
-                         severity_map = {"High": 0, "Medium": 1, "Low": 2, "Informational": 3}
-                         for alert in zap_alerts:
-                              if isinstance(alert, ZapVulnerability):
-                                   alert_dict = asdict(alert)
-                                   # Convert CodeContext if present
-                                   if alert.affected_code and hasattr(alert.affected_code, '__dataclass_fields__'):
-                                        alert_dict['affected_code'] = asdict(alert.affected_code)
-                                   serializable_alerts.append(alert_dict)
-                                   # Count severity
-                                   risk = alert.risk
-                                   if risk == "High": high_sev += 1
-                                   elif risk == "Medium": med_sev += 1
-                                   elif risk == "Low": low_sev += 1
-                              elif isinstance(alert, dict): # Handle if results are already dicts
-                                   serializable_alerts.append(alert)
-                                   risk = alert.get("risk")
-                                   if risk == "High": high_sev += 1
-                                   elif risk == "Medium": med_sev += 1
-                                   elif risk == "Low": low_sev += 1
-
-                    issues_count = len(serializable_alerts)
-                    result_details.update({"issues": serializable_alerts, "zap_status": zap_status_info})
-                    raw_output_preview = f"ZAP scan completed. Found {issues_count} alerts. High: {high_sev}, Medium: {med_sev}, Low: {low_sev}."
-                    task_logger.info(f"{log_prefix} ZAP results processed.")
-
-
-            elif q_status == "skipped":
-                status = "skipped"
-                result_details["error"] = str(q_payload)
-                task_logger.info(f"{log_prefix} Task skipped: {q_payload}")
-            elif q_status == "cancelled":
-                 # Handle cancellation detected within the thread
-                 status = "failed" # Treat cancellation as failure for reporting
-                 error_message = f"Task cancelled during execution: {q_payload}"
-                 task_logger.info(f"{log_prefix} {error_message}")
-                 result_details["error"] = error_message
-                 result_details["traceback"] = "Task cancelled by user request."
-            elif q_status == "error":
-                # Error occurred within the analysis thread
-                task_err = q_payload
-                detailed_traceback = q_tb[0] if q_tb else ""
-                error_message = f"Task failed internally: {type(task_err).__name__} - {str(task_err)}"
-                task_logger.error(f"{log_prefix} {error_message}", exc_info=False)
-                task_logger.debug(f"{log_prefix} Internal task traceback:\n{detailed_traceback}")
-                status = "failed"
-                result_details["error"] = error_message
-                result_details["traceback"] = detailed_traceback
-
-        except queue.Empty:
-            # Timeout occurred waiting for queue result
-            task_timed_out = True
-            status = "timed_out"
-            error_message = f"Task timed out after {task_timeout_seconds} seconds."
-            task_logger.error(f"{log_prefix} {error_message}")
-            result_details["error"] = error_message
-            # Optionally try to interrupt the thread (may not work for all blocking calls)
-            # Note: Interrupting threads forcefully is generally unsafe in Python.
-            # Rely on the timeout mechanism and reporting.
-
-        except Exception as e:
-            # Catch unexpected errors in the result processing logic itself
-            error_message = f"Result processing failed: {type(e).__name__} - {str(e)}"
-            detailed_traceback = traceback.format_exc()
-            task_logger.exception(f"{log_prefix} Error processing task result: {e}")
-            status = "failed" # Ensure status is failed
-            result_details["error"] = error_message
-            result_details["traceback"] = detailed_traceback
-
-        # --- Record Result (Finally Block) ---
-        finally:
-            task_logger.debug(f"{log_prefix} Entering finally block for task result recording.")
-            # Check cancellation flag *again* right before adding result
-            if job_id in self._cancel_flags:
-                task_logger.info(f"{log_prefix} Skipped adding result to storage due to cancellation flag.")
-            else:
-                end_time = datetime.now(timezone.utc)
-                # Add raw output preview if available
-                if raw_output_preview:
-                    preview = raw_output_preview[:1500] # Truncate
-                    if len(raw_output_preview) > 1500: preview += "\n...(truncated)"
-                    result_details["raw_output_preview"] = preview
-                else:
-                    result_details["raw_output_preview"] = None
-
-                # Prepare final result payload
-                result_payload = {
-                    "model": model, "app_num": app_num, "analysis_type": analysis_type,
-                    "status": status, # Final determined status
-                    "issues_count": issues_count, "high_severity": high_sev,
-                    "medium_severity": med_sev, "low_severity": low_sev,
-                    "scan_start_time": start_time, "scan_end_time": end_time,
-                    "details": result_details # Includes error/traceback/preview
-                }
-                task_logger.info(f"{log_prefix} Adding result to storage (Status: {status}).")
-                try:
-                    # Call storage to add result and update job progress/summary
-                    add_success = self.storage.add_result(job_id, result_payload)
-                    if add_success: task_logger.debug(f"{log_prefix} Result storage successful.")
-                    else: task_logger.error(f"{log_prefix} Failed to add result to storage (storage.add_result returned None/False).")
-                except Exception as storage_err:
-                    task_logger.exception(f"{log_prefix} CRITICAL: Exception occurred while adding result to storage: {storage_err}")
-
-            # Log task finish regardless of result storage outcome
-            task_logger.info(f"{log_prefix} Task execution thread finished.")
-
-
-    def cancel_job(self, job_id: int) -> bool:
-        """Marks a running job for cancellation. Thread-safe."""
-        job_log_prefix = f"[Job {job_id}]"
-        service_logger.info(f"{job_log_prefix} Received request to cancel job.")
-        with self.storage._lock:
+            service_logger.exception(f"{job_log_prefix} Unhandled exception in job thread: {e}")
+            
+            # Update job status to failed
             job = self.storage.get_job(job_id)
-            if not job: service_logger.error(f"{job_log_prefix} Cannot cancel: Job not found."); return False
-            if job.status != JobStatus.RUNNING: service_logger.warning(f"{job_log_prefix} Cannot cancel: Not running (Status: {job.status.value})."); return False
-            if job_id in self._cancel_flags: service_logger.info(f"{job_log_prefix} Job already marked for cancellation."); return True
-
-            service_logger.debug(f"{job_log_prefix} Adding job to cancel flags set: {self._cancel_flags}")
-            self._cancel_flags.add(job_id)
-            service_logger.info(f"{job_log_prefix} Job successfully marked for cancellation. Runner thread will handle status update.")
-            # The runner thread (_run_job_logic) is responsible for detecting the flag,
-            # attempting to stop tasks (via future.cancel), and setting the final CANCELED status.
-        return True
-
-    def get_job_status(self, job_id: int) -> Dict[str, Any]:
-        """Retrieves detailed status information for a specific job."""
+            if job:
+                job.add_error(
+                    message=f"Unhandled exception in job thread: {str(e)}",
+                    category=ErrorCategory.INTERNAL,
+                    traceback=traceback.format_exc()
+                )
+                self.storage.update_job(job_id, status=JobStatus.FAILED, errors=job.errors, completed_at=datetime.now(timezone.utc))
+        finally:
+            self._cleanup_job_thread(job_id)
+            service_logger.info(f"{job_log_prefix} Job thread '{thread_name}' finished")
+    
+    def _cleanup_job_thread(self, job_id: int) -> None:
+        """Clean up after job thread completion."""
+        with threading.Lock():
+            if job_id in self._running_jobs:
+                del self._running_jobs[job_id]
+                service_logger.debug(f"[Job {job_id}] Removed from running jobs. Remaining: {list(self._running_jobs.keys())}")
+            
+            # Check if there are queued jobs that can be started
+            queued_jobs = [j for j in self.storage.get_all_jobs() if j.status == JobStatus.QUEUED]
+            if queued_jobs and len(self._running_jobs) < self.max_concurrent_jobs:
+                next_job = queued_jobs[0]
+                service_logger.info(f"[Job {next_job.id}] Starting queued job from cleanup")
+                # Start on a new thread to avoid recursion/locking issues
+                start_thread = threading.Thread(
+                    target=self.start_job,
+                    args=(next_job.id,),
+                    daemon=True,
+                    name=f"start-queued-job-{next_job.id}"
+                )
+                start_thread.start()
+    
+    def _execute_job_workflow(self, job_id: int) -> None:
+        """Main job execution workflow with proper error handling."""
         job_log_prefix = f"[Job {job_id}]"
-        service_logger.debug(f"{job_log_prefix} Request get job status.")
+        
+        # Fetch job and verify status
         job = self.storage.get_job(job_id)
         if not job:
-            service_logger.warning(f"{job_log_prefix} Get status failed: Job not found.")
+            service_logger.error(f"{job_log_prefix} Job disappeared during execution")
+            return
+        
+        if job.status != JobStatus.INITIALIZING:
+            service_logger.warning(f"{job_log_prefix} Unexpected job status: {job.status.value}")
+            return
+        
+        # Check and fetch required services
+        service_logger.info(f"{job_log_prefix} Verifying required services")
+        services, dependency_errors = self._check_required_services(job)
+        
+        if dependency_errors:
+            for error in dependency_errors:
+                job.add_error(
+                    message=error,
+                    category=ErrorCategory.DEPENDENCY
+                )
+            
+            service_logger.error(f"{job_log_prefix} Job failed due to missing dependencies: {dependency_errors}")
+            self.storage.update_job(job_id, status=JobStatus.FAILED, errors=job.errors, completed_at=datetime.now(timezone.utc))
+            return
+        
+        # Set job to RUNNING state
+        self.storage.update_job(job_id, status=JobStatus.RUNNING)
+        
+        # Generate task list
+        service_logger.info(f"{job_log_prefix} Generating task list")
+        tasks = self._generate_task_list(job)
+        
+        if not tasks:
+            service_logger.warning(f"{job_log_prefix} No tasks generated")
+            self.storage.update_job(job_id, status=JobStatus.COMPLETED, completed_at=datetime.now(timezone.utc))
+            return
+        
+        # Update total task count if different from estimate
+        if len(tasks) != job.total_tasks:
+            self.storage.update_job(job_id, total_tasks=len(tasks))
+        
+        service_logger.info(f"{job_log_prefix} Generated {len(tasks)} tasks")
+        
+        # Create tasks in storage
+        stored_tasks = []
+        for model, app_num, analysis_type in tasks:
+            # Get timeout for task from options or default
+            options = job.analysis_options.get(analysis_type.value, {})
+            timeout = options.get("timeout_seconds", self.default_task_timeout)
+            
+            task = self.storage.create_task(
+                job_id=job_id,
+                model=model,
+                app_num=app_num,
+                analysis_type=analysis_type,
+                timeout_seconds=timeout
+            )
+            
+            if task:
+                stored_tasks.append(task)
+        
+        # Execute tasks with thread pool (limiting concurrent tasks)
+        service_logger.info(f"{job_log_prefix} Starting execution of {len(stored_tasks)} tasks using ThreadPoolExecutor (max_workers={self.max_concurrent_tasks})")
+        
+        try:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_concurrent_tasks, thread_name_prefix=f"task-{job_id}") as executor:
+                # Submit initial batch of tasks (up to max_concurrent_tasks)
+                task_queue = list(stored_tasks)
+                futures = {}
+                
+                # Process tasks until all are done or job is cancelled
+                while task_queue or futures:
+                    # Check for cancellation
+                    job = self.storage.get_job(job_id)
+                    if job and job.cancellation_requested:
+                        service_logger.info(f"{job_log_prefix} Cancellation detected during task submission")
+                        self.storage.update_job(job_id, status=JobStatus.CANCELLING)
+                        
+                        # Mark unprocessed tasks as cancelled
+                        for waiting_task in task_queue:
+                            waiting_task.cancel()
+                            self.storage.update_task(waiting_task.id, status=TaskStatus.CANCELLED, completed_at=datetime.now(timezone.utc))
+                        
+                        # Cancel futures if possible
+                        for future in list(futures.keys()):
+                            future.cancel()
+                        
+                        break
+                    
+                    # Submit new tasks as space becomes available
+                    while task_queue and len(futures) < self.max_concurrent_tasks:
+                        next_task = task_queue.pop(0)
+                        
+                        # Skip already cancelled tasks
+                        if next_task.status == TaskStatus.CANCELLED:
+                            continue
+                        
+                        # Create service context for the execution
+                        analysis_type = next_task.analysis_type
+                        
+                        # Submit appropriate task based on analysis type
+                        if analysis_type == AnalysisType.FRONTEND_SECURITY:
+                            future = executor.submit(
+                                self._execute_task_with_context,
+                                next_task.id,
+                                self.executor.execute_frontend_security_task,
+                                services
+                            )
+                        elif analysis_type == AnalysisType.BACKEND_SECURITY:
+                            future = executor.submit(
+                                self._execute_task_with_context,
+                                next_task.id,
+                                self.executor.execute_backend_security_task,
+                                services
+                            )
+                        elif analysis_type == AnalysisType.PERFORMANCE:
+                            future = executor.submit(
+                                self._execute_task_with_context,
+                                next_task.id,
+                                self.executor.execute_performance_task,
+                                services
+                            )
+                        elif analysis_type == AnalysisType.GPT4ALL:
+                            future = executor.submit(
+                                self._execute_task_with_context,
+                                next_task.id,
+                                self.executor.execute_gpt4all_task,
+                                services
+                            )
+                        elif analysis_type == AnalysisType.ZAP:
+                            future = executor.submit(
+                                self._execute_task_with_context,
+                                next_task.id,
+                                self.executor.execute_zap_task,
+                                services
+                            )
+                        else:
+                            service_logger.error(f"{job_log_prefix} Unknown analysis type: {analysis_type}")
+                            continue
+                        
+                        futures[future] = next_task
+                    
+                    # Wait for at least one future to complete
+                    if futures:
+                        wait_time = 2.0  # seconds
+                        done, not_done = concurrent.futures.wait(
+                            futures.keys(),
+                            timeout=wait_time,
+                            return_when=concurrent.futures.FIRST_COMPLETED
+                        )
+                        
+                        # Process completed futures
+                        for future in done:
+                            task = futures.pop(future)
+                            try:
+                                # Retrieve result to get exceptions
+                                future.result()
+                                service_logger.debug(f"{job_log_prefix} Task {task.id} completed via future")
+                            except Exception as e:
+                                # Most exceptions should be handled inside the task execution
+                                # This is for uncaught exceptions that escaped the task context
+                                service_logger.exception(f"{job_log_prefix} Unhandled exception in task {task.id}: {e}")
+                    else:
+                        # No futures to wait on but tasks in queue - should not happen
+                        if task_queue:
+                            service_logger.warning(f"{job_log_prefix} No active futures but {len(task_queue)} tasks in queue. This is unusual.")
+                        time.sleep(0.1)  # Brief pause to avoid CPU spinning
+                
+                # Wait for remaining futures
+                if futures:
+                    service_logger.info(f"{job_log_prefix} Waiting for {len(futures)} remaining tasks to complete")
+                    # Wait with a timeout
+                    _, not_done = concurrent.futures.wait(
+                        futures.keys(),
+                        timeout=60,  # 1 minute max wait
+                        return_when=concurrent.futures.ALL_COMPLETED
+                    )
+                    
+                    if not_done:
+                        service_logger.warning(f"{job_log_prefix} {len(not_done)} tasks did not complete within final wait period")
+        
+        except Exception as e:
+            service_logger.exception(f"{job_log_prefix} Error during task execution: {e}")
+            job = self.storage.get_job(job_id)
+            if job:
+                job.add_error(
+                    message=f"Error during task execution: {str(e)}",
+                    category=ErrorCategory.EXECUTION,
+                    traceback=traceback.format_exc()
+                )
+                if job.status not in [JobStatus.COMPLETED, JobStatus.FAILED, JobStatus.CANCELLED]:
+                    self.storage.update_job(job_id, status=JobStatus.FAILED, errors=job.errors, completed_at=datetime.now(timezone.utc))
+        
+        # Ensure final status is set correctly
+        job = self.storage.get_job(job_id)
+        if job:
+            if job.cancellation_requested and job.status != JobStatus.CANCELLED:
+                self.storage.update_job(job_id, status=JobStatus.CANCELLED, completed_at=datetime.now(timezone.utc))
+            elif job.status == JobStatus.RUNNING:
+                # Determine final status based on tasks
+                has_failed = job.task_count_by_status.get(TaskStatus.FAILED.value, 0) > 0
+                has_timed_out = job.task_count_by_status.get(TaskStatus.TIMED_OUT.value, 0) > 0
+                has_skipped = job.task_count_by_status.get(TaskStatus.SKIPPED.value, 0) > 0
+                
+                if has_failed or has_timed_out or has_skipped:
+                    final_status = JobStatus.FAILED
+                else:
+                    final_status = JobStatus.COMPLETED
+                
+                self.storage.update_job(job_id, status=final_status, completed_at=datetime.now(timezone.utc))
+        
+        service_logger.info(f"{job_log_prefix} Job execution workflow completed")
+    
+    def _execute_task_with_context(self, task_id: int, executor_func: Callable, services: Dict[str, Any]) -> None:
+        """Execute a task with the appropriate context and execution function."""
+        with self.executor._task_execution_context(task_id) as context:
+            # Add services and app context to the task context
+            context["services"] = services
+            context["app_context"] = self.app
+            
+            # Execute the task
+            executor_func(context)
+    
+    def _check_required_services(self, job: BatchAnalysisJob) -> Tuple[Dict[str, Any], List[str]]:
+        """Check and gather required services for job execution."""
+        services = {}
+        errors = []
+        
+        # Define the required services for each analysis type
+        required_services = {
+            AnalysisType.FRONTEND_SECURITY: [
+                ("frontend_security_analyzer", "FrontendSecurityAnalyzer", "frontend_security_analyzer")
+            ],
+            AnalysisType.BACKEND_SECURITY: [
+                ("backend_security_analyzer", "BackendSecurityAnalyzer", "backend_security_analyzer")
+            ],
+            AnalysisType.PERFORMANCE: [
+                ("performance_tester", "LocustPerformanceTester", "performance_tester"),
+                ("port_manager", "PortManager", "port_manager")
+            ],
+            AnalysisType.GPT4ALL: [
+                ("gpt4all_analyzer", "GPT4AllAnalyzer", "gpt4all_analyzer")
+            ],
+            AnalysisType.ZAP: [
+                ("scan_manager", "ScanManager", "scan_manager")
+            ]
+        }
+        
+        # Check for each required service based on job's analysis types
+        for analysis_type in job.analysis_types:
+            if analysis_type not in required_services:
+                errors.append(f"Unknown analysis type: {analysis_type.value}")
+                continue
+            
+            for attr_name, expected_class_name, service_key in required_services[analysis_type]:
+                # Try to get service from Flask app
+                service = getattr(self.app, attr_name, None)
+                
+                if not service:
+                    errors.append(f"Required service '{attr_name}' for {analysis_type.value} not found on Flask app")
+                    continue
+                
+                # Optional class name check
+                if expected_class_name:
+                    service_class_name = service.__class__.__name__
+                    if service_class_name != expected_class_name:
+                        service_logger.warning(f"[Job {job.id}] Service '{attr_name}' has unexpected class: {service_class_name} (expected {expected_class_name})")
+                        # Don't mark as error, just warn
+                
+                # Store service for task execution
+                services[service_key] = service
+                service_logger.debug(f"[Job {job.id}] Found required service '{service_key}'")
+            
+        # Add utility functions if needed
+        for util_func_name in ["get_model_index", "get_apps_for_model", "get_app_directory"]:
+            # Try to get from Flask app
+            if hasattr(self.app, util_func_name):
+                services[util_func_name] = getattr(self.app, util_func_name)
+            # Try to get from utils module
+            else:
+                try:
+                    module_name = "utils"
+                    if module_name in sys.modules:
+                        util_func = getattr(sys.modules[module_name], util_func_name, None)
+                        if util_func:
+                            services[util_func_name] = util_func
+                except Exception as e:
+                    service_logger.debug(f"[Job {job.id}] Error finding utility function {util_func_name}: {e}")
+        
+        return services, errors
+    
+    def _generate_task_list(self, job: BatchAnalysisJob) -> List[Tuple[str, int, AnalysisType]]:
+        """Generate list of tasks to be executed."""
+        job_log_prefix = f"[Job {job.id}]"
+        service_logger.info(f"{job_log_prefix} Generating tasks list")
+        
+        tasks = []
+        
+        base_path_str = self.app.config.get('APP_BASE_PATH')
+        if not base_path_str:
+            service_logger.error(f"{job_log_prefix} APP_BASE_PATH not found in Flask config")
+            job.add_error(
+                message="APP_BASE_PATH not found in Flask config",
+                category=ErrorCategory.CONFIGURATION
+            )
+            return []
+        
+        base_path = Path(base_path_str)
+        
+        for model in job.models:
+            service_logger.debug(f"{job_log_prefix} Processing model '{model}'")
+            model_path = base_path / model
+            
+            if not model_path.is_dir():
+                service_logger.warning(f"{job_log_prefix} Model directory not found: {model_path}")
+                job.add_error(
+                    message=f"Model directory not found: {model_path}",
+                    category=ErrorCategory.CONFIGURATION
+                )
+                continue
+            
+            # Determine target apps for this model
+            app_nums = []
+            app_range = job.app_ranges.get(model, [])
+            scan_all_apps = model in job.app_ranges and isinstance(app_range, list) and not app_range
+            
+            if scan_all_apps:
+                # Find all app directories
+                try:
+                    app_nums = sorted([
+                        int(item.name[3:]) for item in model_path.iterdir()
+                        if item.is_dir() and item.name.startswith('app') and item.name[3:].isdigit()
+                    ])
+                    service_logger.debug(f"{job_log_prefix} Found apps for '{model}': {app_nums}")
+                except Exception as e:
+                    service_logger.error(f"{job_log_prefix} Error listing apps for '{model}': {e}")
+                    job.add_error(
+                        message=f"Error listing apps for '{model}': {str(e)}",
+                        category=ErrorCategory.CONFIGURATION
+                    )
+            elif isinstance(app_range, list):
+                app_nums = sorted(list(set(app_range)))
+                service_logger.debug(f"{job_log_prefix} Using specified apps for '{model}': {app_nums}")
+            
+            # Create tasks for each app and analysis type
+            for app_num in app_nums:
+                app_dir = model_path / f"app{app_num}"
+                if not app_dir.is_dir():
+                    service_logger.warning(f"{job_log_prefix} App directory not found: {app_dir}")
+                    continue
+                
+                for analysis_type in job.analysis_types:
+                    task = (model, app_num, analysis_type)
+                    tasks.append(task)
+                    service_logger.debug(f"{job_log_prefix} Added task: {model}/app{app_num}/{analysis_type.value}")
+        
+        service_logger.info(f"{job_log_prefix} Generated {len(tasks)} tasks")
+        return tasks
+    
+    def cancel_job(self, job_id: int) -> bool:
+        """Mark a job for cancellation."""
+        job_log_prefix = f"[Job {job_id}]"
+        service_logger.info(f"{job_log_prefix} Request to cancel job")
+        
+        job = self.storage.get_job(job_id)
+        if not job:
+            service_logger.error(f"{job_log_prefix} Cancel failed: Job not found")
+            return False
+        
+        if job.status not in [JobStatus.INITIALIZING, JobStatus.RUNNING, JobStatus.QUEUED]:
+            service_logger.warning(f"{job_log_prefix} Cannot cancel job with status: {job.status.value}")
+            return False
+        
+        # Mark job for cancellation
+        self.storage.update_job(
+            job_id, 
+            cancellation_requested=True,
+            status=JobStatus.CANCELLING if job.status == JobStatus.RUNNING else job.status
+        )
+        
+        service_logger.info(f"{job_log_prefix} Job marked for cancellation")
+        return True
+    
+    def get_job_status(self, job_id: int) -> Dict[str, Any]:
+        """Get detailed job status information."""
+        job_log_prefix = f"[Job {job_id}]"
+        service_logger.debug(f"{job_log_prefix} Request for job status")
+        
+        job = self.storage.get_job(job_id)
+        if not job:
+            service_logger.warning(f"{job_log_prefix} Get status failed: Job not found")
             return {"error": f"Job {job_id} not found"}
-
+        
         # Calculate progress
         progress_percent = 0
         if job.total_tasks > 0:
-            completed = min(job.completed_tasks, job.total_tasks) # Cap completed at total
-            progress_percent = int((completed / job.total_tasks) * 100)
-        elif job.status in [JobStatus.COMPLETED, JobStatus.CANCELED]: # Show 100 if finished/cancelled
-             progress_percent = 100
-        elif job.status == JobStatus.FAILED and job.total_tasks == 0: # Show 0 if failed due to 0 tasks
-             progress_percent = 0
-
-        service_logger.debug(f"{job_log_prefix} Progress: {job.completed_tasks}/{job.total_tasks} ({progress_percent}%)")
-        results_summary = job.results_summary
-        service_logger.debug(f"{job_log_prefix} Results summary keys: {list(results_summary.keys())}")
-
-        # Prepare response using job's serializer
+            progress_percent = min(100, int((job.completed_tasks / job.total_tasks) * 100))
+        elif job.status in [JobStatus.COMPLETED, JobStatus.CANCELLED, JobStatus.FAILED]:
+            progress_percent = 100
+        
+        # Prepare response
         job_dict = job.to_dict()
+        
         status_response = {
             "job": job_dict,
             "progress": {
                 "total": job.total_tasks,
-                "completed": job.completed_tasks, # Use actual completed count here
-                "percent": progress_percent
+                "completed": job.completed_tasks,
+                "percent": progress_percent,
+                "by_status": job.task_count_by_status
             },
-            "results_summary": results_summary,
+            "results_summary": job.results_summary,
+            "active_tasks_count": len([t for t in self.storage.get_job_tasks(job_id) if t.status == TaskStatus.RUNNING])
         }
-        service_logger.debug(f"{job_log_prefix} Returning status response.")
+        
         return status_response
-
-    # --- Private Helper Methods for Thread Management ---
-    def _handle_thread_exit_error(self, job_id: int, error_message: str):
-        """Handles job failure when the execution thread exits unexpectedly."""
-        job_log_prefix = f"[Job {job_id}]"
-        service_logger.error(f"{job_log_prefix} Thread exited with error: {error_message}")
-        try:
-            with self.storage._lock:
-                job = self.storage.get_job(job_id)
-                current_errors = job.errors if job else []
-                full_error_msg = f"Job thread error: {error_message}"
-                if full_error_msg not in current_errors: current_errors.append(full_error_msg)
-                # Update job status regardless of whether job object was retrieved
-                self.storage.update_job(job_id,
-                                        status=JobStatus.FAILED,
-                                        errors=current_errors,
-                                        completed_at=datetime.now(timezone.utc))
-                service_logger.info(f"{job_log_prefix} Updated job status to FAILED due to thread error.")
-        except Exception as update_err:
-            service_logger.exception(f"{job_log_prefix} CRITICAL: Failed to update job status after thread error: {update_err}")
-
-    def _cleanup_after_job_thread(self, job_id: int):
-        """Removes job ID from running jobs dict and cancel flags. Thread-safe."""
-        job_log_prefix = f"[Job {job_id}]"
-        service_logger.debug(f"{job_log_prefix} Performing post-thread cleanup.")
-        with self.storage._lock:
-            if job_id in self._running_jobs:
-                del self._running_jobs[job_id]
-                service_logger.debug(f"{job_log_prefix} Removed job from running jobs list. Remaining: {list(self._running_jobs.keys())}")
-            if job_id in self._cancel_flags:
-                self._cancel_flags.remove(job_id)
-                service_logger.debug(f"{job_log_prefix} Removed cancel flag for job. Current flags: {self._cancel_flags}")
-        service_logger.debug(f"{job_log_prefix} Post-thread cleanup finished.")
-
 
 # Global instance of the service
 batch_service = BatchAnalysisService(job_storage)
-logger.debug("Global batch_service instance created.")
 
+# =============================================================================
+# Flask Blueprint Routes
+# =============================================================================
+
+batch_analysis_bp = Blueprint(
+    "batch_analysis",
+    __name__,
+    template_folder="templates",
+    url_prefix="/batch-analysis"
+)
+api_logger.debug("Batch Analysis Blueprint created")
 
 # =============================================================================
 # Route Helper Functions & Decorators
 # =============================================================================
+
 def error_handler(f):
     """Decorator for handling common exceptions in Flask routes."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        err_logger = route_logger
-        route_name = f.__name__; path = request.path
-        err_logger.debug(f"Route '{route_name}' ({path}): Entering error handler.")
+        route_name = f.__name__
+        path = request.path if request else "unknown"
+        api_logger.debug(f"Route '{route_name}' ({path}): Entering error handler")
+        
         try:
-            err_logger.debug(f"Route '{route_name}': Executing function.")
+            api_logger.debug(f"Route '{route_name}': Executing function")
             result = f(*args, **kwargs)
-            err_logger.debug(f"Route '{route_name}': Function executed successfully.")
+            api_logger.debug(f"Route '{route_name}': Function executed successfully")
             return result
         except (BadRequest, NotFound) as client_err:
-            err_logger.warning(f"Route '{route_name}': Client Error {client_err.code} - {client_err.description}")
-            # For API routes (JSON response), handle explicitly or let Flask handle for HTML
+            api_logger.warning(f"Route '{route_name}': Client Error {client_err.code} - {client_err.description}")
+            
+            # For API routes (JSON response)
             if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
-                 return jsonify(error=client_err.description, code=client_err.code), client_err.code
-            else:
-                 flash(f"{client_err.code}: {client_err.description}", "error")
-                 # Redirect to a safe page or re-raise for Flask's default handler
-                 if client_err.code == 404: return redirect(url_for("batch_analysis.batch_dashboard"))
-                 raise client_err # Let Flask handle other client errors for HTML
+                return jsonify(error=client_err.description, code=client_err.code), client_err.code
+            
+            # For HTML routes
+            flash(f"{client_err.code}: {client_err.description}", "error")
+            if client_err.code == 404:
+                return redirect(url_for("batch_analysis.batch_dashboard"))
+            raise client_err  # Let Flask handle other client errors
+            
         except InternalServerError as server_err:
-            err_logger.error(f"Route '{route_name}': Internal Server Error {server_err.code} - {server_err.description}", exc_info=True)
+            api_logger.error(f"Route '{route_name}': Internal Server Error {server_err.code} - {server_err.description}", exc_info=True)
+            
+            # For API routes
             if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
-                 return jsonify(error="An internal server error occurred.", code=500), 500
-            else:
-                 flash("An internal server error occurred. Please check logs.", "error")
-                 return redirect(url_for("batch_analysis.batch_dashboard")) # Redirect to dashboard
+                return jsonify(error="An internal server error occurred", code=500), 500
+            
+            # For HTML routes
+            flash("An internal server error occurred. Please check logs.", "error")
+            return redirect(url_for("batch_analysis.batch_dashboard"))
+            
         except Exception as e:
-            err_logger.exception(f"Route '{route_name}': Unhandled exception caught: {type(e).__name__} - {e}")
+            api_logger.exception(f"Route '{route_name}': Unhandled exception: {e}")
+            
+            # For API routes
             if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
-                 return jsonify(error=f"An unexpected error occurred: {type(e).__name__}", code=500), 500
-            else:
-                 flash(f"An unexpected error occurred: {type(e).__name__}. Please check logs.", "error")
-                 return redirect(url_for("batch_analysis.batch_dashboard"))
+                return jsonify(error=f"An unexpected error occurred: {type(e).__name__}", code=500), 500
+            
+            # For HTML routes
+            flash(f"An unexpected error occurred: {type(e).__name__}. Please check logs.", "error")
+            return redirect(url_for("batch_analysis.batch_dashboard"))
+            
     return decorated_function
 
 def get_available_models() -> List[str]:
-    """Retrieves the list of available AI models."""
-    logger.debug("Attempting to get available models list.")
+    """Get list of available AI models."""
+    api_logger.debug("Getting available models")
+    
     try:
-        # Try loading from utils.AI_MODELS first (assumed to be list of strings or objects with .name)
-        if isinstance(AI_MODELS, list) and AI_MODELS:
-            if isinstance(AI_MODELS[0], str): model_names = sorted(AI_MODELS)
-            elif hasattr(AI_MODELS[0], 'name'): model_names = sorted([m.name for m in AI_MODELS])
-            else: raise TypeError("Unsupported AI_MODELS structure in utils.py")
-            logger.info(f"Loaded {len(model_names)} models from utils.AI_MODELS.")
-            return model_names
-        else:
-            logger.warning("utils.AI_MODELS found but is empty or invalid. Falling back to dir scan.")
-    except (NameError, AttributeError, TypeError, Exception) as e:
-        logger.warning(f"Could not load AI_MODELS from utils ({type(e).__name__}: {e}). Falling back.")
-
-    # Fallback: Scan APP_BASE_PATH directory
-    try:
-        flask_app = current_app._get_current_object()
-        if not flask_app: raise RuntimeError("Flask app context unavailable for dir scan.")
-        base_path_str = flask_app.config.get('APP_BASE_PATH')
-        if not base_path_str: raise ValueError("APP_BASE_PATH not in config.")
+        # Try to get from AI_MODELS global
+        if 'AI_MODELS' in globals():
+            models = globals()['AI_MODELS']
+            if isinstance(models, list):
+                if models and isinstance(models[0], str):
+                    return sorted(models)
+                elif models and hasattr(models[0], 'name'):
+                    return sorted([m.name for m in models])
+        
+        # Try to import from utils
+        try:
+            from utils import AI_MODELS
+            if isinstance(AI_MODELS, list):
+                if AI_MODELS and isinstance(AI_MODELS[0], str):
+                    return sorted(AI_MODELS)
+                elif AI_MODELS and hasattr(AI_MODELS[0], 'name'):
+                    return sorted([m.name for m in AI_MODELS])
+        except ImportError:
+            pass
+        
+        # Fall back to directory scanning
+        app = current_app._get_current_object()
+        base_path_str = app.config.get('APP_BASE_PATH')
+        if not base_path_str:
+            raise ValueError("APP_BASE_PATH not found in config")
+            
         base_path = Path(base_path_str)
-        if not base_path.is_dir(): raise FileNotFoundError(f"APP_BASE_PATH '{base_path}' invalid.")
-
-        model_names = sorted([item.name for item in base_path.iterdir() if item.is_dir() and not item.name.startswith('.') and not item.name.startswith('_')])
-        logger.info(f"Found {len(model_names)} models by scanning {base_path}.")
+        if not base_path.is_dir():
+            raise FileNotFoundError(f"APP_BASE_PATH directory not found: {base_path}")
+            
+        model_names = sorted([
+            item.name for item in base_path.iterdir()
+            if item.is_dir() and not item.name.startswith('.') and not item.name.startswith('_')
+        ])
+        
         return model_names
-    except (RuntimeError, ValueError, FileNotFoundError, Exception) as e:
-        logger.error(f"Failed to list models from directory scan: {e}", exc_info=True)
+        
+    except Exception as e:
+        api_logger.error(f"Error getting available models: {e}", exc_info=True)
         return []
 
 def parse_app_range(range_str: str) -> List[int]:
-    """Parses comma-separated numbers/ranges (e.g., "1-3,5,8") into list[int]."""
-    logger.debug(f"Parsing app range string: '{range_str}'")
-    app_nums: Set[int] = set()
-    if not range_str or not range_str.strip(): return [] # Return empty list for empty input
-
+    """Parse app range string (e.g., "1-3,5,8") into list of integers."""
+    if not range_str or not range_str.strip():
+        return []
+        
+    app_nums = set()
     parts = range_str.split(',')
+    
     for part in parts:
         part = part.strip()
-        if not part: continue
-        if '-' in part: # Handle ranges "1-5"
+        if not part:
+            continue
+            
+        if '-' in part:
+            # Handle ranges like "1-5"
             try:
                 start_str, end_str = part.split('-', 1)
-                start = int(start_str.strip()); end = int(end_str.strip())
-                if start <= end and start > 0: # Ensure positive range
+                start = int(start_str.strip())
+                end = int(end_str.strip())
+                
+                if start <= end and start > 0:
                     app_nums.update(range(start, end + 1))
-                else: logger.warning(f"Invalid range '{part}', start/end must be positive, start <= end. Skipping.")
-            except ValueError: logger.warning(f"Invalid range format '{part}'. Skipping.")
-            except Exception as e: logger.warning(f"Error parsing range part '{part}': {e}")
-        else: # Handle single numbers
+                else:
+                    api_logger.warning(f"Invalid range '{part}': start/end must be positive, start <= end")
+            except ValueError:
+                api_logger.warning(f"Invalid range format: '{part}'")
+                
+        else:
+            # Handle single numbers
             try:
                 num = int(part)
-                if num > 0: app_nums.add(num) # Ensure positive app number
-                else: logger.warning(f"Invalid app number '{part}', must be positive. Skipping.")
-            except ValueError: logger.warning(f"Invalid app number '{part}'. Skipping.")
-            except Exception as e: logger.warning(f"Error parsing single number part '{part}': {e}")
+                if num > 0:
+                    app_nums.add(num)
+                else:
+                    api_logger.warning(f"Invalid app number '{part}': must be positive")
+            except ValueError:
+                api_logger.warning(f"Invalid app number: '{part}'")
+    
+    return sorted(list(app_nums))
 
-    sorted_list = sorted(list(app_nums))
-    logger.debug(f"Final parsed app numbers for '{range_str}': {sorted_list}")
-    return sorted_list
+def humanize_duration(seconds: Optional[Union[int, float]]) -> str:
+    """Convert seconds to human-readable duration string."""
+    if seconds is None or not isinstance(seconds, (int, float)) or seconds < 0:
+        return "N/A"
+        
+    try:
+        delta = timedelta(seconds=int(seconds))
+        
+        if delta < timedelta(minutes=1):
+            return f"{delta.seconds}s"
+        elif delta < timedelta(hours=1):
+            m, s = divmod(delta.seconds, 60)
+            return f"{m}m {s}s"
+        else:
+            h, remainder = divmod(delta.seconds, 3600)
+            m, s = divmod(remainder, 60)
+            return f"{h}h {m}m"
+            
+    except (ValueError, TypeError):
+        api_logger.warning(f"Could not humanize duration: {seconds}")
+        return "Invalid"
 
 # =============================================================================
-# Flask Routes
+# Route Handlers
 # =============================================================================
+
 @batch_analysis_bp.route("/")
 @error_handler
 def batch_dashboard():
-    """Displays the main dashboard for batch analysis jobs."""
-    route_logger.info(f"Request received for Batch Dashboard ({request.path})")
+    """Display the batch analysis dashboard."""
+    api_logger.info(f"Request for Batch Dashboard ({request.path})")
+    
     jobs_list = sorted(job_storage.get_all_jobs(), key=lambda j: j.created_at, reverse=True)
-    jobs_dict_list = [job.to_dict() for job in jobs_list] # Convert for template
+    jobs_dict_list = [job.to_dict() for job in jobs_list]
+    
     all_models = get_available_models()
+    
+    # Calculate status statistics
     stats = {status.value: 0 for status in JobStatus}
-    for job in jobs_list: stats[job.status.value] = stats.get(job.status.value, 0) + 1
-    route_logger.info("Rendering batch_dashboard.html template.")
-    return render_template("batch_dashboard.html", jobs=jobs_dict_list, all_models=all_models,
-                           stats=stats, JobStatus=JobStatus, AnalysisType=AnalysisType)
+    for job in jobs_list:
+        stats[job.status.value] = stats.get(job.status.value, 0) + 1
+    
+    api_logger.info("Rendering batch_dashboard.html template")
+    return render_template(
+        "batch_dashboard.html",
+        jobs=jobs_dict_list,
+        all_models=all_models,
+        stats=stats,
+        JobStatus=JobStatus,
+        AnalysisType=AnalysisType
+    )
 
 @batch_analysis_bp.route("/create", methods=["GET", "POST"])
 @error_handler
 def create_batch_job():
-    """Handles creation of a new batch analysis job."""
-    route_logger.info(f"Request: Create Batch Job ({request.path}, Method: {request.method})")
+    """Handle creation of a new batch analysis job."""
+    api_logger.info(f"Request: Create Batch Job ({request.path}, Method: {request.method})")
     all_models = get_available_models()
     analysis_types_available = list(AnalysisType)
-
+    
     if request.method == "POST":
-        route_logger.info("Processing POST request to create batch job.")
-        route_logger.debug(f"Form data: {request.form.to_dict(flat=False)}")
-
+        api_logger.info("Processing POST request to create batch job")
+        api_logger.debug(f"Form data: {request.form.to_dict(flat=False)}")
+        
         try:
+            # Validate models
             selected_models = request.form.getlist("models")
-            if not selected_models: raise BadRequest("Please select at least one model.")
-
+            if not selected_models:
+                raise BadRequest("Please select at least one model")
+                
+            # Validate analysis types
             selected_analysis_types_str = request.form.getlist("analysis_types")
             selected_analysis_types = [AnalysisType(s) for s in selected_analysis_types_str]
-            if not selected_analysis_types: raise BadRequest("Please select at least one analysis type.")
-
-            # Parse app ranges for selected models only
+            if not selected_analysis_types:
+                raise BadRequest("Please select at least one analysis type")
+                
+            # Parse app ranges
             app_ranges_parsed = {}
             for m in selected_models:
-                 range_str = request.form.get(f"app_range_{m}", "").strip()
-                 # Empty string means scan all apps for this model -> store empty list
-                 app_ranges_parsed[m] = parse_app_range(range_str) if range_str else []
-
-
-            # Collect all possible options, validate types/values
+                range_str = request.form.get(f"app_range_{m}", "").strip()
+                app_ranges_parsed[m] = parse_app_range(range_str) if range_str else []
+                
+            # Parse analysis options
             all_options = {}
+            
+            # Frontend security options
+            frontend_full_scan = request.form.get("frontend_full_scan") == "on"
+            all_options[AnalysisType.FRONTEND_SECURITY.value] = {"full_scan": frontend_full_scan}
+            
+            # Backend security options
+            backend_full_scan = request.form.get("backend_full_scan") == "on"
+            all_options[AnalysisType.BACKEND_SECURITY.value] = {"full_scan": backend_full_scan}
+            
+            # Performance options
             try:
-                sec_scan = request.form.get("security_full_scan") == "on"
-                all_options[AnalysisType.FRONTEND_SECURITY.value] = {"full_scan": sec_scan}
-                all_options[AnalysisType.BACKEND_SECURITY.value] = {"full_scan": sec_scan}
-
-                perf_u=int(request.form.get("perf_users",10)); perf_d=int(request.form.get("perf_duration",30)); perf_sr=int(request.form.get("perf_spawn_rate",1))
-                if not (perf_u > 0 and perf_d > 0 and perf_sr > 0): raise ValueError("Perf params must be > 0.")
-                all_options[AnalysisType.PERFORMANCE.value]={"users":perf_u,"duration":perf_d,"spawn_rate":perf_sr,"endpoints":[{"path":"/","method":"GET"}]} # Add more endpoint config later if needed
-
-                # GPT4All options (e.g., requirements file path or content) could be added here
-                all_options[AnalysisType.GPT4ALL.value] = {"requirements": None} # Placeholder
-
-                zap_qs = request.form.get("zap_quick_scan") == "on"
-                all_options[AnalysisType.ZAP.value] = {"quick_scan": zap_qs}
-
-                # Add timeout override option
-                timeout_override = request.form.get("task_timeout_override", "").strip()
-                if timeout_override:
+                perf_u = int(request.form.get("perf_users", 10))
+                perf_d = int(request.form.get("perf_duration", 30))
+                perf_sr = int(request.form.get("perf_spawn_rate", 1))
+                
+                if not (perf_u > 0 and perf_d > 0 and perf_sr > 0):
+                    raise ValueError("Performance parameters must be positive")
+                    
+                all_options[AnalysisType.PERFORMANCE.value] = {
+                    "users": perf_u,
+                    "duration": perf_d,
+                    "spawn_rate": perf_sr,
+                    "endpoints": [{"path": "/", "method": "GET"}]
+                }
+            except ValueError as e:
+                raise BadRequest(f"Invalid performance option: {e}")
+                
+            # GPT4All options
+            all_options[AnalysisType.GPT4ALL.value] = {"requirements": None}
+            
+            # ZAP options
+            zap_qs = request.form.get("zap_quick_scan") == "on"
+            all_options[AnalysisType.ZAP.value] = {"quick_scan": zap_qs}
+            
+            # Process timeout override
+            timeout_override = request.form.get("task_timeout_override", "").strip()
+            if timeout_override:
+                try:
                     timeout_sec = int(timeout_override)
-                    if timeout_sec <= 0: raise ValueError("Timeout override must be > 0.")
-                    # Add timeout to options for *all* selected types if provided
-                    for atype_enum in selected_analysis_types:
-                         if atype_enum.value in all_options:
-                              all_options[atype_enum.value]["timeout_seconds"] = timeout_sec
-                         else: # Handle case where type might not have other options (like GPT4All)
-                              all_options[atype_enum.value] = {"timeout_seconds": timeout_sec}
-                    route_logger.info(f"Applying task timeout override: {timeout_sec}s")
-
-            except ValueError as opt_val_err: raise BadRequest(f"Invalid analysis option value: {opt_val_err}")
-
-            # Filter options based on *selected* analysis types (FIXED from v2)
+                    if timeout_sec <= 0:
+                        raise ValueError("Timeout override must be positive")
+                        
+                    # Add timeout to all selected analysis types
+                    for atype in selected_analysis_types:
+                        if atype.value not in all_options:
+                            all_options[atype.value] = {}
+                        all_options[atype.value]["timeout_seconds"] = timeout_sec
+                        
+                    api_logger.info(f"Applied task timeout override: {timeout_sec}s")
+                except ValueError as e:
+                    raise BadRequest(f"Invalid timeout value: {e}")
+            
+            # Filter options based on selected analysis types
             final_analysis_options = {
                 atype.value: all_options[atype.value]
                 for atype in selected_analysis_types if atype.value in all_options
             }
-            route_logger.debug(f"Final analysis options for job: {final_analysis_options}")
-
+            
+            api_logger.debug(f"Final analysis options: {final_analysis_options}")
+            
+            # Prepare job data
             job_data = {
-                "name": request.form.get("name", "").strip() or f"Batch Scan - {datetime.now():%F %T}",
+                "name": request.form.get("name", "").strip() or f"Batch Scan - {datetime.now():%Y-%m-%d %H:%M:%S}",
                 "description": request.form.get("description", "").strip(),
                 "models": selected_models,
-                "app_ranges": app_ranges_parsed, # Pass dict: model -> list[int] (empty list means all)
-                "analysis_types": selected_analysis_types, # Pass list of Enums
-                "analysis_options": final_analysis_options # Pass correctly filtered options
+                "app_ranges": app_ranges_parsed,
+                "analysis_types": selected_analysis_types,
+                "analysis_options": final_analysis_options
             }
-            route_logger.info(f"Job data prepared for creation.")
-
-        except (BadRequest, ValueError, TypeError) as form_err:
-            route_logger.warning(f"Form validation failed: {form_err}")
-            flash(str(form_err), "error")
-            return render_template("create_batch_job.html", models=all_models, analysis_types=analysis_types_available, submitted_data=request.form), 400
-
-        # --- Job Creation and Start ---
-        try:
-            route_logger.debug("Calling job_storage.create_job...")
-            # Pass current_app context needed for task calculation inside create_job
+            
+            api_logger.info("Job data prepared for creation")
+            
+            # Create job
             job = job_storage.create_job(job_data, current_app._get_current_object())
-            job_log_prefix = f"[Job {job.id}]"
-            route_logger.info(f"{job_log_prefix} Created successfully in storage.")
-
-            success = batch_service.start_job(job.id) # Handles its own logging
-
+            api_logger.info(f"Created job {job.id}: '{job.name}'")
+            
+            # Start job execution
+            success = batch_service.start_job(job.id)
+            
             if success:
-                flash(f"Job '{job.name}' (ID:{job.id}) submitted & started.", "success")
+                flash(f"Job '{job.name}' (ID:{job.id}) submitted & started", "success")
             else:
-                # If start_job returns false, retrieve job to get error reason (already flashed by start_job usually)
-                job = job_storage.get_job(job.id) # Re-fetch job
-                reason = job.errors[-1] if job and job.errors else "Check logs."
-                flash(f"Job '{job.name}' (ID:{job.id}) submitted but start failed: {reason}", "warning") # Flash again for certainty
-                route_logger.warning(f"{job_log_prefix} Job submitted but failed start: {reason}")
-
-            redir_url = url_for("batch_analysis.batch_dashboard")
-            route_logger.info(f"{job_log_prefix} Redirecting to dashboard: {redir_url}")
-            return redirect(redir_url)
-
-        except (ValueError, TypeError) as create_err: # Catch specific errors from create_job validation
-            route_logger.error(f"Create/Start error: {create_err}", exc_info=True)
-            flash(f"Create error: {create_err}", "error")
-            return render_template("create_batch_job.html", models=all_models, analysis_types=analysis_types_available, submitted_data=request.form), 400
-        # Let main error_handler catch other unexpected exceptions
-
-    # --- GET Request ---
-    route_logger.info("Displaying create batch job form (GET request).")
+                job = job_storage.get_job(job.id)  # Refresh job
+                errors = [err.message for err in job.errors][:1] if job and job.errors else ["Unknown error"]
+                flash(f"Job '{job.name}' (ID:{job.id}) submitted but start failed: {errors[0]}", "warning")
+            
+            return redirect(url_for("batch_analysis.batch_dashboard"))
+            
+        except (BadRequest, ValueError, TypeError) as e:
+            api_logger.error(f"Form validation error: {e}")
+            flash(str(e), "error")
+            return render_template(
+                "create_batch_job.html",
+                models=all_models,
+                analysis_types=analysis_types_available,
+                submitted_data=request.form
+            ), 400
+        
+    # GET request - show form
+    api_logger.info("Displaying create batch job form (GET)")
     default_job_name = f"Batch Analysis - {datetime.now().strftime('%Y-%m-%d %H:%M')}"
-    return render_template("create_batch_job.html", models=all_models, analysis_types=analysis_types_available, default_job_name=default_job_name)
-
+    
+    return render_template(
+        "create_batch_job.html",
+        models=all_models,
+        analysis_types=analysis_types_available,
+        default_job_name=default_job_name
+    )
 
 @batch_analysis_bp.route("/job/<int:job_id>")
 @error_handler
 def view_job(job_id: int):
-    """Displays the detailed view for a specific batch job."""
-    job_log_prefix=f"[Job {job_id}]"; route_logger.info(f"{job_log_prefix} Req View Job")
-    status_data = batch_service.get_job_status(job_id) # Gets job dict, progress, summary
-    if "error" in status_data: raise NotFound(status_data["error"]) # Let error_handler manage response
-
-    results_list = sorted(job_storage.get_results(job_id), key=lambda r: (r.model, r.app_num, r.analysis_type.value))
-    results_dict_list = [r.to_dict() for r in results_list] # Convert results for template
-    route_logger.info(f"{job_log_prefix} Found {len(results_dict_list)} results.")
-
+    """Display detailed view for a specific job."""
+    job_log_prefix = f"[Job {job_id}]"
+    api_logger.info(f"{job_log_prefix} View job request")
+    
+    # Get job status
+    status_data = batch_service.get_job_status(job_id)
+    
+    if "error" in status_data:
+        raise NotFound(status_data["error"])
+        
+    # Get job results
+    results_list = sorted(
+        job_storage.get_results(job_id),
+        key=lambda r: (r.model, r.app_num, r.analysis_type.value)
+    )
+    
+    results_dict_list = [r.to_dict() for r in results_list]
+    api_logger.info(f"{job_log_prefix} Found {len(results_dict_list)} results")
+    
     job_info_dict = status_data.get('job')
-    if not job_info_dict: route_logger.error(f"{job_log_prefix} Missing 'job' dict in status!"); raise InternalServerError("Job info missing.")
-
-    return render_template("view_job.html", job=job_info_dict, status_data=status_data,
-                           results=results_dict_list, JobStatus=JobStatus, AnalysisType=AnalysisType)
+    if not job_info_dict:
+        api_logger.error(f"{job_log_prefix} Missing 'job' dict in status")
+        raise InternalServerError("Job info missing")
+        
+    return render_template(
+        "view_job.html",
+        job=job_info_dict,
+        status_data=status_data,
+        results=results_dict_list,
+        JobStatus=JobStatus,
+        AnalysisType=AnalysisType
+    )
 
 @batch_analysis_bp.route("/job/<int:job_id>/status")
 @error_handler
 def get_job_status_api(job_id: int):
-    """API endpoint to get the status of a specific job (JSON)."""
-    job_log_prefix=f"[Job {job_id}]"; route_logger.info(f"{job_log_prefix} API req status.")
+    """API endpoint to get job status."""
+    job_log_prefix = f"[Job {job_id}]"
+    api_logger.info(f"{job_log_prefix} API status request")
+    
     status_data = batch_service.get_job_status(job_id)
-    if "error" in status_data: raise NotFound(status_data["error"]) # Raise 404 for API
+    
+    if "error" in status_data:
+        raise NotFound(status_data["error"])
+        
     return jsonify(status_data)
 
 @batch_analysis_bp.route("/job/<int:job_id>/cancel", methods=["POST"])
 @error_handler
 def cancel_job_api(job_id: int):
     """API endpoint to cancel a running job."""
-    job_log_prefix=f"[Job {job_id}]"; route_logger.info(f"{job_log_prefix} API req cancel.")
+    job_log_prefix = f"[Job {job_id}]"
+    api_logger.info(f"{job_log_prefix} API cancel request")
+    
     success = batch_service.cancel_job(job_id)
-    if success: return jsonify({"success": True, "status": "canceling", "message": "Job marked for cancellation."})
+    
+    if success:
+        return jsonify({
+            "success": True,
+            "status": "cancelling",
+            "message": "Job marked for cancellation"
+        })
     else:
         # Provide specific reason for failure
         job = job_storage.get_job(job_id)
-        if not job: raise NotFound(f"Job {job_id} not found.")
-        elif job.status != JobStatus.RUNNING: raise BadRequest(f"Job not running (status: {job.status.value}).")
-        else: raise InternalServerError("Cancel request failed unexpectedly.") # Should be rare
+        
+        if not job:
+            raise NotFound(f"Job {job_id} not found")
+        elif job.status not in [JobStatus.INITIALIZING, JobStatus.RUNNING, JobStatus.QUEUED]:
+            raise BadRequest(f"Job cannot be cancelled (status: {job.status.value})")
+        else:
+            raise InternalServerError("Cancel request failed unexpectedly")
 
 @batch_analysis_bp.route("/job/<int:job_id>/delete", methods=["POST"])
 @error_handler
 def delete_job_api(job_id: int):
-    """API endpoint to delete a completed/failed/canceled job."""
-    job_log_prefix=f"[Job {job_id}]"; route_logger.info(f"{job_log_prefix} API req delete.")
-    # Check status before attempting delete
-    job = job_storage.get_job(job_id) # Check existence first
-    if not job: raise NotFound(f"Delete fail: Job {job_id} not found.")
-    if job.status == JobStatus.RUNNING: raise BadRequest("Cannot delete a running job. Cancel it first.")
-
-    success = job_storage.delete_job(job_id) # Attempt deletion
-
+    """API endpoint to delete a job."""
+    job_log_prefix = f"[Job {job_id}]"
+    api_logger.info(f"{job_log_prefix} API delete request")
+    
+    # Check job status before attempting delete
+    job = job_storage.get_job(job_id)
+    
+    if not job:
+        raise NotFound(f"Job {job_id} not found")
+        
+    if job.status in [JobStatus.RUNNING, JobStatus.INITIALIZING, JobStatus.CANCELLING]:
+        raise BadRequest(f"Cannot delete a {job.status.value} job. Cancel it first.")
+        
+    success = job_storage.delete_job(job_id)
+    
     if success:
         is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
-        if not is_ajax: flash(f"Job {job_id} deleted.", "success"); return redirect(url_for("batch_analysis.batch_dashboard"))
-        else: return jsonify({"success": True, "message": f"Job {job_id} deleted."})
+        
+        if not is_ajax:
+            flash(f"Job {job_id} deleted", "success")
+            return redirect(url_for("batch_analysis.batch_dashboard"))
+        else:
+            return jsonify({
+                "success": True,
+                "message": f"Job {job_id} deleted"
+            })
     else:
-        # If delete failed, check *why* (e.g., job disappeared between check and delete?)
-        if not job_storage.get_job(job_id): raise NotFound(f"Delete fail: Job {job_id} not found (disappeared?).")
-        else: raise InternalServerError("Delete failed unexpectedly.")
-
+        # This should not happen if job exists and isn't running
+        if not job_storage.get_job(job_id):
+            raise NotFound(f"Job {job_id} not found (disappeared)")
+        else:
+            raise InternalServerError("Delete failed unexpectedly")
 
 @batch_analysis_bp.route("/result/<int:result_id>")
 @error_handler
 def view_result(result_id: int):
-    """Displays the detailed view for a specific task result."""
-    res_log_prefix = f"[Result {result_id}]"; route_logger.info(f"{res_log_prefix} Req View Result");
+    """Display detailed view for a specific result."""
+    res_log_prefix = f"[Result {result_id}]"
+    api_logger.info(f"{res_log_prefix} View result request")
+    
     result = job_storage.get_result(result_id)
-    if not result: raise NotFound(f"Result {result_id} not found.")
-
+    
+    if not result:
+        raise NotFound(f"Result {result_id} not found")
+        
     job = job_storage.get_job(result.job_id)
-    if not job: route_logger.error(f"{res_log_prefix} Parent Job {result.job_id} missing!"); raise InternalServerError("Parent job missing.")
-
-    try: job_dict = job.to_dict(); result_dict = result.to_dict()
-    except Exception as ser_err: route_logger.exception(f"{res_log_prefix} Serialize err: {ser_err}"); raise InternalServerError("Data prep error.")
-
-    return render_template("view_result.html", result=result_dict, job=job_dict,
-                           AnalysisType=AnalysisType, JobStatus=JobStatus)
+    
+    if not job:
+        api_logger.error(f"{res_log_prefix} Parent job {result.job_id} missing")
+        raise InternalServerError("Parent job missing")
+        
+    try:
+        job_dict = job.to_dict()
+        result_dict = result.to_dict()
+    except Exception as e:
+        api_logger.exception(f"{res_log_prefix} Serialization error: {e}")
+        raise InternalServerError("Data preparation error")
+        
+    # Format details for display
+    full_details_json = None
+    try:
+        # Pretty-print the details
+        full_details_json = json.dumps(result.details, indent=2, default=str)
+    except Exception as e:
+        api_logger.warning(f"{res_log_prefix} Could not JSON format details: {e}")
+        full_details_json = f"Error displaying full details: {e}\n\nRaw Details:\n{result.details}"
+        
+    return render_template(
+        "view_result.html",
+        result=result_dict,
+        job=job_dict,
+        full_details_json=full_details_json,
+        AnalysisType=AnalysisType,
+        JobStatus=JobStatus
+    )
 
 # =============================================================================
-# Module Initialization & Helpers
+# Module Initialization
 # =============================================================================
-def init_batch_analysis(app: flask.Flask):
-    """Initializes the batch analysis module."""
-    logger.info("Initializing Batch Analysis Module...")
-    base_path_key = 'APP_BASE_PATH'
+
+def init_batch_analysis(app: Any) -> None:
+    """Initialize the batch analysis module with a Flask application."""
+    module_logger.info("Initializing Batch Analysis Module...")
+    
     # Ensure APP_BASE_PATH is configured
+    base_path_key = 'APP_BASE_PATH'
     if base_path_key not in app.config or not app.config[base_path_key]:
         default_path = Path(app.config.get('BASE_DIR', Path(app.root_path).parent))
         app.config[base_path_key] = default_path
-        logger.warning(f"{base_path_key} not configured. Using default: {app.config[base_path_key]}")
+        module_logger.warning(f"{base_path_key} not configured. Using default: {app.config[base_path_key]}")
     else:
-        app.config[base_path_key] = Path(app.config[base_path_key]) # Ensure Path object
-    logger.info(f"Effective {base_path_key}: {app.config[base_path_key]}")
-
-    # Register App with Service (critical for background context)
-    try: batch_service.set_app(app)
-    except Exception as service_reg_err: logger.exception(f"CRITICAL: Failed to register Flask app with BatchAnalysisService: {service_reg_err}")
-
-    # Add Jinja Helpers
-    logger.debug("Adding helpers/globals to Jinja environment.")
+        app.config[base_path_key] = Path(app.config[base_path_key])
+        
+    module_logger.info(f"Using {base_path_key}: {app.config[base_path_key]}")
+    
+    # Register app with service
     try:
-        # *** FIX: Register as filter, not global ***
+        batch_service.set_app(app)
+    except Exception as e:
+        module_logger.exception(f"Failed to register Flask app with BatchAnalysisService: {e}")
+    
+    # Add Jinja helpers
+    module_logger.debug("Adding helpers to Jinja environment")
+    try:
         app.jinja_env.filters['humanize_duration'] = humanize_duration
-        # Register globals
         app.jinja_env.globals.update(AnalysisType=AnalysisType)
         app.jinja_env.globals.update(JobStatus=JobStatus)
-        app.jinja_env.globals.update(now_utc=lambda: datetime.now(timezone.utc)) # UTC now
-        logger.debug("Jinja helpers/filters added successfully.")
-    except Exception as jinja_err: logger.error(f"Failed to add Jinja helpers/filters: {jinja_err}")
-
-    # --- Log Checks for Required Services ---
-    logger.debug("Checking for required service instances on app context...")
-    service_attr_map = {
-        AnalysisType.FRONTEND_SECURITY: 'frontend_security_analyzer',
-        AnalysisType.BACKEND_SECURITY: 'backend_security_analyzer',
-        AnalysisType.PERFORMANCE: 'performance_tester',
-        AnalysisType.GPT4ALL: 'gpt4all_analyzer',
-        AnalysisType.ZAP: 'scan_manager'
+        app.jinja_env.globals.update(TaskStatus=TaskStatus)
+        app.jinja_env.globals.update(now_utc=lambda: datetime.now(timezone.utc))
+        module_logger.debug("Jinja helpers added successfully")
+    except Exception as e:
+        module_logger.error(f"Failed to add Jinja helpers: {e}")
+    
+    # Check for required services
+    module_logger.debug("Checking for required service instances on app context")
+    required_attrs = {
+        AnalysisType.FRONTEND_SECURITY.value: 'frontend_security_analyzer',
+        AnalysisType.BACKEND_SECURITY.value: 'backend_security_analyzer',
+        AnalysisType.PERFORMANCE.value: 'performance_tester',
+        AnalysisType.GPT4ALL.value: 'gpt4all_analyzer',
+        AnalysisType.ZAP.value: 'scan_manager'
     }
-    required_attrs = { atype.value: service_attr_map[atype] for atype in AnalysisType if atype in service_attr_map }
-    missing = [f"{attr} (for {atype})" for atype, attr in required_attrs.items() if not hasattr(app, attr) or getattr(app, attr) is None]
-    if missing: logger.error(f"Flask app context MISSING services for Batch Analysis: {', '.join(missing)}. Related tasks WILL fail.")
-    else: logger.info("All required service attributes found on app context.")
-    if PortManager is None: logger.error("PortManager class unavailable. Performance tasks WILL fail.")
-    else: logger.info("PortManager class is available.")
-
-    logger.info("Batch Analysis Module initialized.")
-
-
-def humanize_duration(seconds: Optional[Union[int, float]]) -> str:
-    """Converts seconds into a human-readable string (Xs, Xm Ys, Xh Ym)."""
-    if seconds is None or not isinstance(seconds, (int, float)) or seconds < 0: return "N/A"
+    
+    missing = [f"{attr} (for {atype})" for atype, attr in required_attrs.items() 
+               if not hasattr(app, attr) or getattr(app, attr) is None]
+    
+    if missing:
+        module_logger.error(f"Missing required services: {', '.join(missing)}. Related tasks will fail.")
+    else:
+        module_logger.info("All required service attributes found on app context")
+    
+    # Check for utility classes/functions
+    port_manager_available = False
     try:
-        delta = timedelta(seconds=int(seconds))
-        if delta < timedelta(minutes=1): return f"{delta.seconds}s"
-        elif delta < timedelta(hours=1):
-             m, s = divmod(delta.seconds, 60)
-             return f"{m}m {s}s"
-        else:
-             h, remainder = divmod(delta.seconds, 3600)
-             m, s = divmod(remainder, 60)
-             # Add days if needed: d = delta.days ... f"{d}d {h}h {m}m"
-             return f"{h}h {m}m" # Simplified H:M format
-    except (ValueError, TypeError):
-        logger.warning(f"Could not humanize duration for value: {seconds}", exc_info=False)
-        return "Invalid"
+        from services import PortManager
+        port_manager_available = True
+    except ImportError:
+        pass
+        
+    if not port_manager_available:
+        module_logger.error("PortManager class unavailable. Performance tasks will fail.")
+    else:
+        module_logger.info("PortManager class is available")
+    
+    module_logger.info("Batch Analysis Module initialization complete")
 
-
-logger.info("Batch Analysis module loaded (enhanced v6 - Claude Structure + Fixes).")
+# Initialize module state
+module_logger.info("Batch Analysis module loaded (Completely Rewritten Version)")
