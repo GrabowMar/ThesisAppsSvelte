@@ -1,9 +1,0 @@
-2025-03-13 21:07:27,290 - gpt4all_analysis - INFO - GPT4All analysis module initialized
-2025-03-13 21:07:27,321 - gpt4all_analysis - INFO - Initializing GPT4AllAnalyzer with base_path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
-2025-03-13 21:07:27,322 - gpt4all_analysis - INFO - API URL: http://localhost:4891/v1
-2025-03-13 21:07:27,322 - gpt4all_analysis - INFO - Model name: deepseek-r1-distill-qwen-7b
-2025-03-13 21:07:32,987 - gpt4all_analysis - INFO - Initializing GPT4AllAnalyzer with base_path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app1
-2025-03-13 21:07:32,988 - gpt4all_analysis - INFO - API URL: http://localhost:4891/v1
-2025-03-13 21:07:32,991 - gpt4all_analysis - INFO - Model name: deepseek-r1-distill-qwen-7b
-2025-03-13 21:07:33,024 - gpt4all_analysis - INFO - Starting analysis type: security in directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\Llama\app1
-2025-03-13 21:07:33,024 - gpt4all_analysis - INFO - Basic security analysis not implemented - using mock implementation

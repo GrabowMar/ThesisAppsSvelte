@@ -1,8 +1,0 @@
-[2025-03-26 02:22:03] INFO: Connected to database: extractor.db
-[2025-03-26 02:22:11] INFO: Info: Pasted content from clipboard
-[2025-03-26 02:22:11] INFO: Pasted content from clipboard
-[2025-03-26 02:22:14] INFO: Saved extracted file: filename.extension
-[2025-03-26 02:22:14] INFO: Info: Extracted 1 files
-[2025-03-26 02:22:14] INFO: Extracted 1 files
-[2025-03-26 02:22:23] INFO: Database connection closed
-[2025-03-26 02:22:23] INFO: Application shutting down
