@@ -11,11 +11,11 @@ service initialization.
 import logging
 import os
 import random
-import http  # Using HTTPStatus enum
+import http
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict, Any, Tuple, Union
 
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, Response
 from werkzeug.exceptions import HTTPException
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -27,11 +27,10 @@ from backend_security_analysis import BackendSecurityAnalyzer
 from frontend_security_analysis import FrontendSecurityAnalyzer
 from gpt4all_analysis import GPT4AllAnalyzer
 from performance_analysis import LocustPerformanceTester
-from zap_scanner import create_scanner # Used for ZAPScanner instance
+from zap_scanner import create_scanner
 
 # Import Core Services and Utilities
 from logging_service import initialize_logging, create_logger_for_component
-# <<< Import necessary classes from services >>>
 from services import DockerManager, SystemHealthMonitor, ScanManager, PortManager
 from utils import AppConfig, CustomJSONEncoder, stop_zap_scanners
 from routes import (
@@ -42,8 +41,8 @@ from routes import (
 # =============================================================================
 # Constants
 # =============================================================================
-_OCCASIONAL_CLEANUP_PROBABILITY = 0.01  # Probability for running cleanup tasks
-_AJAX_REQUEST_HEADER = "XMLHttpRequest"  # Standard header value for AJAX requests
+CLEANUP_PROBABILITY = 0.01  # Probability for running occasional cleanup tasks
+AJAX_HEADER_VALUE = "XMLHttpRequest"  # Standard header value for AJAX requests
 
 # =============================================================================
 # Error Handlers
@@ -60,12 +59,12 @@ def register_error_handlers(app: Flask) -> None:
     """
     error_logger = create_logger_for_component('errors')
 
-    def _handle_error_response(
+    def generate_error_response(
         error_code: int,
         error_name: str,
         error_message: str,
         original_error: Optional[Exception] = None
-    ):
+    ) -> Tuple[Union[Response, str], int]:
         """
         Generate appropriate error response (JSON for AJAX, HTML otherwise).
 
@@ -78,51 +77,44 @@ def register_error_handlers(app: Flask) -> None:
         Returns:
             A Flask Response object tuple (response, status_code).
         """
-        if request.headers.get("X-Requested-With") == _AJAX_REQUEST_HEADER:
+        # For AJAX requests, return JSON response
+        if request.headers.get("X-Requested-With") == AJAX_HEADER_VALUE:
             return jsonify({
                 "success": False,
                 "error": error_name,
                 "message": error_message
             }), error_code
 
+        # For standard requests, attempt to use appropriate template
         template_name = f"{error_code}.html"
-        template_exists = False
+        
+        # Try to find the specific error template
         try:
             app.jinja_env.get_template(template_name)
-            template_exists = True
-        except Exception: # Catches TemplateNotFound, etc.
-             template_exists = False
-
-        # Use specific template if it exists, otherwise fallback logic
-        if not template_exists:
-             if error_code == http.HTTPStatus.NOT_FOUND:
-                 # Log critical if even 404.html is missing
-                 error_logger.critical(f"Error template '{template_name}' not found!")
-                 basic_response = f"<h1>Error {error_code}</h1><p>{error_name}: {error_message}</p>"
-                 return basic_response, error_code
-             elif error_code >= http.HTTPStatus.INTERNAL_SERVER_ERROR:
-                 # For server errors, try 500.html as a generic fallback
-                 template_name = "500.html"
-                 try:
-                     app.jinja_env.get_template(template_name)
-                     template_exists = True
-                 except Exception:
-                     error_logger.critical(f"Fallback error template '{template_name}' not found!")
-                     basic_response = f"<h1>Error {error_code}</h1><p>{error_name}: {error_message}</p>"
-                     return basic_response, error_code
-             else:
-                 # For other client errors without specific templates
-                 error_logger.warning(f"Error template '{template_name}' not found, providing basic response.")
-                 basic_response = f"<h1>Error {error_code}</h1><p>{error_name}: {error_message}</p>"
-                 return basic_response, error_code
-
-        return render_template(template_name, error=original_error or error_message), error_code
+            return render_template(template_name, error=original_error or error_message), error_code
+        except Exception:
+            # Template not found, use appropriate fallback
+            if error_code == http.HTTPStatus.NOT_FOUND:
+                error_logger.critical(f"Error template '{template_name}' not found!")
+            elif error_code >= http.HTTPStatus.INTERNAL_SERVER_ERROR:
+                # For server errors, try 500.html as fallback
+                try:
+                    app.jinja_env.get_template("500.html")
+                    return render_template("500.html", error=original_error or error_message), error_code
+                except Exception:
+                    error_logger.critical("Fallback error template '500.html' not found!")
+            else:
+                error_logger.warning(f"Error template '{template_name}' not found, providing basic response.")
+            
+            # If all template attempts fail, provide basic HTML response
+            basic_response = f"<h1>Error {error_code}</h1><p>{error_name}: {error_message}</p>"
+            return basic_response, error_code
 
     @app.errorhandler(http.HTTPStatus.NOT_FOUND)
     def not_found(error: HTTPException):
         """Handle 404 Not Found errors."""
         error_logger.warning(f"404 error: {request.path} - {error.description}")
-        return _handle_error_response(
+        return generate_error_response(
             http.HTTPStatus.NOT_FOUND,
             error.name,
             error.description,
@@ -135,7 +127,7 @@ def register_error_handlers(app: Flask) -> None:
         error_logger.error(f"500 error: {request.path} - {error}", exc_info=True)
         error_name = getattr(error, 'name', 'Internal Server Error')
         error_description = getattr(error, 'description', str(error))
-        return _handle_error_response(
+        return generate_error_response(
             http.HTTPStatus.INTERNAL_SERVER_ERROR,
             error_name,
             error_description,
@@ -162,7 +154,7 @@ def register_error_handlers(app: Flask) -> None:
         error_logger.exception(
             f"Unhandled exception ({error_code} - {error_name}): {request.path} - {error}"
         )
-        return _handle_error_response(
+        return generate_error_response(
             error_code,
             error_name,
             error_description,
@@ -183,13 +175,13 @@ def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
     hooks_logger = create_logger_for_component('hooks')
 
     @app.before_request
-    def before():
+    def perform_request_preprocessing():
         """Execute actions before processing each request."""
         # Perform occasional cleanup based on probability
-        if random.random() < _OCCASIONAL_CLEANUP_PROBABILITY:
+        if random.random() < CLEANUP_PROBABILITY:
             hooks_logger.debug(
-                "Running occasional cleanup tasks (prob: %s)",
-                _OCCASIONAL_CLEANUP_PROBABILITY
+                "Running occasional cleanup tasks (probability: %s)",
+                CLEANUP_PROBABILITY
             )
             try:
                 if docker_manager:
@@ -200,7 +192,7 @@ def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
                 hooks_logger.exception(f"Error during cleanup tasks: {e}")
 
     @app.after_request
-    def after(response):
+    def process_response(response):
         """Process the response before returning it to the client."""
         # Add common security headers
         response.headers.update({
@@ -211,7 +203,7 @@ def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
         })
 
         # Disable caching for AJAX requests
-        if request.headers.get("X-Requested-With") == _AJAX_REQUEST_HEADER:
+        if request.headers.get("X-Requested-With") == AJAX_HEADER_VALUE:
             response.headers["Cache-Control"] = (
                 "no-store, no-cache, must-revalidate, max-age=0"
             )
@@ -221,7 +213,7 @@ def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
         return response
 
     @app.teardown_appcontext
-    def teardown(exception=None):
+    def cleanup_resources(exception=None):
         """Clean up resources when the request context is torn down."""
         if exception:
             hooks_logger.warning(
@@ -232,7 +224,6 @@ def register_request_hooks(app: Flask, docker_manager: DockerManager) -> None:
         if "ZAP_SCANS" in app.config:
             hooks_logger.debug("Stopping active ZAP scans during teardown")
             stop_zap_scanners(app.config["ZAP_SCANS"])
-
 
 # =============================================================================
 # Flask App Factory
@@ -250,157 +241,197 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     Returns:
         Configured Flask application instance.
     """
+    # Create Flask application
     app = Flask(__name__)
 
+    # Load and apply configuration
     app_config = config or AppConfig.from_env()
     app.config.from_object(app_config)
-    # Ensure BASE_DIR is explicitly available in Flask config if needed elsewhere
     app.config["BASE_DIR"] = app_config.BASE_DIR
-    # Add APP_BASE_PATH to config, used by batch_analysis and others
-    # Derives from BASE_DIR if not set via environment
     app.config.setdefault('APP_BASE_PATH', app_config.BASE_DIR)
 
+    # Initialize logging
     initialize_logging(app)
     app_logger = create_logger_for_component('app')
     app_logger.info("Starting application setup")
 
+    # Configure JSON handling
     app.json_encoder = CustomJSONEncoder
 
+    # Set up base paths
     base_path = app_config.BASE_DIR.parent
     app_logger.info(f"Application base directory: {app_config.BASE_DIR}")
     app_logger.info(f"Parent base path: {base_path}")
     app_logger.info(f"Effective APP_BASE_PATH: {app.config['APP_BASE_PATH']}")
 
+    # Initialize analyzers
     app_logger.info("Initializing service components and analyzers")
-    # Initialize standard analyzers
-    app.backend_security_analyzer = BackendSecurityAnalyzer(base_path)
-    app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
-    app.gpt4all_analyzer = GPT4AllAnalyzer(app_config.BASE_DIR)
-    app.performance_tester = LocustPerformanceTester(base_path)
-    app.zap_scanner = create_scanner(app_config.BASE_DIR) # Instance for potential direct use
-    app.config["ZAP_SCANS"] = {} # Store active ZAP scan processes/managers
+    initialize_analyzers(app, base_path, app_config.BASE_DIR)
+    
+    # Initialize core services
+    initialize_services(app, app_logger)
 
-    # Initialize core managers
-    docker_manager = DockerManager()
-    app.config["docker_manager"] = docker_manager # Store in config for broader access if needed
-
-    # --- Initialize ScanManager ---
-    # PortManager uses class methods, no instance needed on app context
-    try:
-        # ScanManager takes no arguments in its __init__
-        app.scan_manager = ScanManager()
-        app_logger.info("Initialized ScanManager on app context.")
-    except ImportError:
-        app_logger.error("Failed to import ScanManager from services. Batch analysis requiring it may fail.")
-        app.scan_manager = None
-    except Exception as e:
-        app_logger.exception(f"Error initializing ScanManager: {e}")
-        app.scan_manager = None
-    # --- End ScanManager Initialization ---
-
-    # PortManager is used via class methods (PortManager.get_app_ports), no instance needed here.
-    app.port_manager = PortManager # Assign the CLASS itself if needed elsewhere, but likely not.
-
-    # Apply proxy fix middleware if running behind a reverse proxy
+    # Apply proxy fix middleware for running behind reverse proxies
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
+    # Register blueprints
     app_logger.info("Registering application blueprints")
-    app.register_blueprint(main_bp)
-    app.register_blueprint(api_bp, url_prefix="/api")
-    app.register_blueprint(analysis_bp) # Assumes prefix defined within blueprint or root
-    app.register_blueprint(performance_bp, url_prefix="/performance")
-    app.register_blueprint(gpt4all_bp, url_prefix="/gpt4all")
-    app.register_blueprint(zap_bp, url_prefix="/zap")
+    register_blueprints(app)
 
-    # --- Initialize and Register Batch Analysis Module ---
-    # This MUST come AFTER ScanManager is initialized on 'app'
-    app_logger.info("Initializing batch analysis module...")
-    init_batch_analysis(app) # It will check for app.scan_manager
-    app_logger.info("Registering batch analysis blueprint...")
-    app.register_blueprint(batch_analysis_bp, url_prefix="/batch-analysis")
-    # --- End Batch Analysis Initialization ---
-
+    # Register error handlers and request hooks
     app_logger.info("Registering error handlers and request hooks")
     register_error_handlers(app)
-    register_request_hooks(app, docker_manager)
+    register_request_hooks(app, app.config["docker_manager"])
 
     app_logger.info("Application initialization complete")
     return app
 
+def initialize_analyzers(app: Flask, base_path: Path, base_dir: Path) -> None:
+    """
+    Initialize and attach analyzer components to the Flask application.
+    
+    Args:
+        app: Flask application instance
+        base_path: Parent directory of the application
+        base_dir: Base directory of the application
+    """
+    app.backend_security_analyzer = BackendSecurityAnalyzer(base_path)
+    app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
+    app.gpt4all_analyzer = GPT4AllAnalyzer(base_dir)
+    app.performance_tester = LocustPerformanceTester(base_path)
+    app.zap_scanner = create_scanner(base_dir)
+    app.config["ZAP_SCANS"] = {}  # Store active ZAP scan processes/managers
+
+def initialize_services(app: Flask, logger: logging.Logger) -> None:
+    """
+    Initialize and attach service components to the Flask application.
+    
+    Args:
+        app: Flask application instance
+        logger: Logger for service initialization messages
+    """
+    # Initialize DockerManager
+    docker_manager = DockerManager()
+    app.config["docker_manager"] = docker_manager
+
+    # Initialize ScanManager
+    try:
+        app.scan_manager = ScanManager()
+        logger.info("Initialized ScanManager on app context.")
+    except ImportError:
+        logger.error("Failed to import ScanManager from services. Batch analysis requiring it may fail.")
+        app.scan_manager = None
+    except Exception as e:
+        logger.exception(f"Error initializing ScanManager: {e}")
+        app.scan_manager = None
+
+    # PortManager is used via class methods
+    app.port_manager = PortManager
+
+def register_blueprints(app: Flask) -> None:
+    """
+    Register all blueprint routes for the application.
+    
+    Args:
+        app: Flask application instance
+    """
+    app.register_blueprint(main_bp)
+    app.register_blueprint(api_bp, url_prefix="/api")
+    app.register_blueprint(analysis_bp)
+    app.register_blueprint(performance_bp, url_prefix="/performance")
+    app.register_blueprint(gpt4all_bp, url_prefix="/gpt4all")
+    app.register_blueprint(zap_bp, url_prefix="/zap")
+    
+    # Initialize and register batch analysis
+    init_batch_analysis(app)  # It will check for app.scan_manager
+    app.register_blueprint(batch_analysis_bp, url_prefix="/batch-analysis")
+
+def check_system_health(app: Flask, logger: logging.Logger) -> None:
+    """
+    Perform post-initialization system health checks.
+    
+    Args:
+        app: Flask application instance
+        logger: Logger for health check messages
+    """
+    docker_manager = app.config.get("docker_manager")
+    system_health = False
+
+    if docker_manager and docker_manager.client:
+        logger.info("Checking system health via Docker manager...")
+        try:
+            system_health = SystemHealthMonitor.check_health(
+                docker_manager.client
+            )
+            if system_health:
+                logger.info("System health check passed.")
+            else:
+                logger.warning(
+                    "System health check failed - "
+                    "reduced functionality expected."
+                )
+        except Exception as health_check_exc:
+            logger.error(
+                f"Error during system health check: {health_check_exc}",
+                exc_info=True
+            )
+    else:
+        logger.warning(
+            "Docker client unavailable or manager not initialized - "
+            "cannot perform health check; reduced functionality expected."
+        )
+
+    # Check if ScanManager was initialized successfully
+    if not app.scan_manager:
+        logger.warning("ScanManager was not initialized successfully. ZAP-related batch tasks may fail.")
+
+def display_access_info(config: AppConfig, logger: logging.Logger) -> None:
+    """
+    Display application access information in the logs.
+    
+    Args:
+        config: Application configuration
+        logger: Logger for access information messages
+    """
+    host_display = "localhost" if config.HOST in ["0.0.0.0", "127.0.0.1"] else config.HOST
+    
+    logger.info(f"{'='*50}")
+    logger.info(f"AI Model Management System is ready!")
+    logger.info(f"Access the application at: http://{host_display}:{config.PORT}/")
+    logger.info(f"{'='*50}\n")
 
 # =============================================================================
 # Main Entry Point
 # =============================================================================
 if __name__ == "__main__":
-    # Standalone logger for startup messages before app context is available
+    # Set up standalone logger for startup
     main_logger = logging.getLogger('main')
     main_logger.setLevel(logging.INFO)
     handler = logging.StreamHandler()
     log_format = '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
     handler.setFormatter(logging.Formatter(log_format))
-    if not main_logger.hasHandlers(): # Avoid duplicate handlers if root is configured
+    if not main_logger.hasHandlers():  # Avoid duplicate handlers
         main_logger.addHandler(handler)
 
     main_logger.info("Application starting via __main__ execution")
 
+    # Load configuration from environment
     config = AppConfig.from_env()
 
     try:
-        main_logger.info(
-            f"Creating application with LOG_LEVEL={config.LOG_LEVEL}"
-        )
+        # Create and initialize the application
+        main_logger.info(f"Creating application with LOG_LEVEL={config.LOG_LEVEL}")
         app = create_app(config)
 
-        # Perform post-initialization checks within app context
+        # Perform health checks
         with app.app_context():
             main_logger.info("Performing post-initialization health checks...")
-            docker_manager = app.config.get("docker_manager")
-            system_health = False
-
-            if docker_manager and docker_manager.client:
-                main_logger.info("Checking system health via Docker manager...")
-                try:
-                    system_health = SystemHealthMonitor.check_health(
-                        docker_manager.client
-                    )
-                    if system_health:
-                        main_logger.info("System health check passed.")
-                    else:
-                        main_logger.warning(
-                            "System health check failed - "
-                            "reduced functionality expected."
-                        )
-                except Exception as health_check_exc:
-                    main_logger.error(
-                        f"Error during system health check: {health_check_exc}",
-                        exc_info=True
-                    )
-            else:
-                main_logger.warning(
-                    "Docker client unavailable or manager not initialized - "
-                    "cannot perform health check; reduced functionality expected."
-                )
-
-            # Check if ScanManager was initialized successfully
-            if not app.scan_manager:
-                 main_logger.warning("ScanManager was not initialized successfully. ZAP-related batch tasks may fail.")
-            # No need to check app.port_manager instance anymore
+            check_system_health(app, main_logger)
 
         # Display access information
-        host_display = "localhost" if config.HOST in ["0.0.0.0", "127.0.0.1"] else config.HOST
-        main_logger.info(f"\n{'='*50}")
-        main_logger.info(f"AI Model Management System is ready!")
-        main_logger.info(f"Access the application at: http://{host_display}:{config.PORT}/")
-        main_logger.info(f"Available endpoints:")
-        main_logger.info(f" • Dashboard:         http://{host_display}:{config.PORT}/")
-        main_logger.info(f" • API:               http://{host_display}:{config.PORT}/api")
-        main_logger.info(f" • Security Analysis: http://{host_display}:{config.PORT}/analysis")
-        main_logger.info(f" • Performance Test:  http://{host_display}:{config.PORT}/performance")
-        main_logger.info(f" • GPT4All Analysis:  http://{host_display}:{config.PORT}/gpt4all")
-        main_logger.info(f" • Security Scanner:  http://{host_display}:{config.PORT}/zap")
-        main_logger.info(f" • Batch Analysis:    http://{host_display}:{config.PORT}/batch-analysis")
-        main_logger.info(f"{'='*50}\n")
+        display_access_info(config, main_logger)
 
+        # Start the Flask development server
         main_logger.info(
             f"Starting Flask server on {config.HOST}:{config.PORT} "
             f"(debug={config.DEBUG})"
@@ -412,4 +443,4 @@ if __name__ == "__main__":
     except Exception as e:
         main_logger.critical(f"FATAL: Failed to start application: {e}", exc_info=True)
         import sys
-        sys.exit(1) # Indicate failure
+        sys.exit(1)  # Indicate failure

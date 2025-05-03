@@ -118,3 +118,333 @@ Traceback (most recent call last):
     current_state = current_scan_manager.get_scan_status(scan_id_thread)
                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 AttributeError: 'ScanManager' object has no attribute 'get_scan_status'. Did you mean: 'get_scan_details'?
+2025-05-03 13:17:57 [ERROR] [-] docker.docker._create_docker_client:124 - Docker client creation or connection failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 118, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+2025-05-03 13:17:58 [ERROR] [-] docker.docker._create_docker_client:124 - Docker client creation or connection failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 118, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+2025-05-03 13:36:22 [ERROR] [-] docker.docker._create_docker_client:124 - Docker client creation or connection failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 118, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+2025-05-03 13:36:29 [ERROR] [-] docker.docker._create_docker_client:124 - Docker client creation or connection failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 118, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+2025-05-03 13:36:31 [ERROR] [-] docker.docker._create_docker_client:124 - Docker client creation or connection failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 118, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')

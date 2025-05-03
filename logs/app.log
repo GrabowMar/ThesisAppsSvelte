@@ -19957,3 +19957,979 @@ AttributeError: 'ScanManager' object has no attribute 'get_scan_status'. Did you
 2025-05-02 23:59:57 [DEBUG] [-] [Thread-49 (process_request_thread)] hooks.hooks: Stopping active ZAP scans during teardown
 2025-05-02 23:59:57 [INFO] [-] [Thread-49 (process_request_thread)] zap_scanner.zap_scanner.stop: No active ZAP scans found to stop.
 2025-05-02 23:59:57 [INFO] [-] [Thread-49 (process_request_thread)] app.werkzeug: 127.0.0.1 - - [02/May/2025 23:59:57] "GET /zap/scan/Llama/2/status HTTP/1.1" 200 -
+2025-05-03 13:17:56 [INFO] [-] [MainThread] app.root: Queue-based logging initialized. Level: DEBUG. Log directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\logs
+2025-05-03 13:17:56 [INFO] [-] [MainThread] app.app: Enhanced queue-based logging service initialized.
+2025-05-03 13:17:56 [INFO] [-] [MainThread] app.app: Starting application setup
+2025-05-03 13:17:56 [INFO] [-] [MainThread] app.app: Application base directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:17:56 [INFO] [-] [MainThread] app.app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:17:56 [INFO] [-] [MainThread] app.app: Effective APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:17:56 [INFO] [-] [MainThread] app.app: Initializing service components and analyzers
+2025-05-03 13:17:56 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:17:56 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npm' at: C:\Program Files\nodejs\npm.cmd
+2025-05-03 13:17:56 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:17:56 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:17:56 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'snyk' at: C:\Users\grabowmar\AppData\Roaming\npm\snyk.cmd
+2025-05-03 13:17:56 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Available tools check: {'npm-audit': True, 'eslint': True, 'jshint': True, 'snyk': True}
+2025-05-03 13:17:56 [INFO] [-] [MainThread] app.gpt4all: GPT4All client initialized with API URL: http://localhost:4891/v1
+2025-05-03 13:17:56 [INFO] [-] [MainThread] app.gpt4all: GPT4All analyzer initialized (Base Path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app, API URL: http://localhost:4891/v1)
+2025-05-03 13:17:56 [INFO] [-] [MainThread] performance_analysis.performance_analysis: PerformanceTester initialized. Output dir: c:\Users\grabowmar\Desktop\ThesisAppsSvelte, Static URL path: /static
+2025-05-03 13:17:56 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-05-03 13:17:57 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-05-03 13:17:57 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found free port: 8090
+2025-05-03 13:17:57 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:17:57 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-05-03 13:17:57 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:17:57 [ERROR] [-] [MainThread] docker.docker: Docker client creation or connection failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 118, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+2025-05-03 13:17:57 [WARNING] [-] [MainThread] docker.docker: Docker manager initialized WITHOUT a valid client.
+2025-05-03 13:17:57 [INFO] [-] [MainThread] scan_manager.scan_manager: Scan manager initialized
+2025-05-03 13:17:57 [INFO] [-] [MainThread] app.app: Initialized ScanManager on app context.
+2025-05-03 13:17:57 [INFO] [-] [MainThread] app.app: Registering application blueprints
+2025-05-03 13:17:57 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Initializing Batch Analysis Module...
+2025-05-03 13:17:57 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Using APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:17:57 [INFO] [-] [MainThread] batch_analysis.batch_analysis.service: App registered with BatchAnalysisService. Config: MaxJobs:2, MaxTasks:2, DefaultTimeout:1800s
+2025-05-03 13:17:57 [INFO] [-] [MainThread] batch_analysis.batch_analysis: All required service attributes found on app context
+2025-05-03 13:17:57 [INFO] [-] [MainThread] batch_analysis.batch_analysis: PortManager class is available
+2025-05-03 13:17:57 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Batch Analysis Module initialization complete
+2025-05-03 13:17:57 [INFO] [-] [MainThread] app.app: Registering error handlers and request hooks
+2025-05-03 13:17:57 [INFO] [-] [MainThread] app.app: Application initialization complete
+2025-05-03 13:17:57 [INFO] [-] [MainThread] main.main: Performing post-initialization health checks...
+2025-05-03 13:17:57 [WARNING] [-] [MainThread] main.main: Docker client unavailable or manager not initialized - cannot perform health check; reduced functionality expected.
+2025-05-03 13:17:57 [DEBUG] [-] [MainThread] hooks.hooks: Stopping active ZAP scans during teardown
+2025-05-03 13:17:57 [INFO] [-] [MainThread] zap_scanner.zap_scanner.stop: No active ZAP scans found to stop.
+2025-05-03 13:17:57 [INFO] [-] [MainThread] main.main: ==================================================
+2025-05-03 13:17:57 [INFO] [-] [MainThread] main.main: AI Model Management System is ready!
+2025-05-03 13:17:57 [INFO] [-] [MainThread] main.main: Access the application at: http://localhost:5000/
+2025-05-03 13:17:57 [INFO] [-] [MainThread] main.main: ==================================================
+
+2025-05-03 13:17:57 [INFO] [-] [MainThread] main.main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-05-03 13:17:57 [INFO] [-] [MainThread] app.werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-05-03 13:17:57 [INFO] [-] [MainThread] app.werkzeug: [33mPress CTRL+C to quit[0m
+2025-05-03 13:17:57 [INFO] [-] [MainThread] app.werkzeug:  * Restarting with stat
+2025-05-03 13:17:58 [INFO] [-] [MainThread] app.root: Queue-based logging initialized. Level: DEBUG. Log directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\logs
+2025-05-03 13:17:58 [INFO] [-] [MainThread] app.app: Enhanced queue-based logging service initialized.
+2025-05-03 13:17:58 [INFO] [-] [MainThread] app.app: Starting application setup
+2025-05-03 13:17:58 [INFO] [-] [MainThread] app.app: Application base directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:17:58 [INFO] [-] [MainThread] app.app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:17:58 [INFO] [-] [MainThread] app.app: Effective APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:17:58 [INFO] [-] [MainThread] app.app: Initializing service components and analyzers
+2025-05-03 13:17:58 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:17:58 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npm' at: C:\Program Files\nodejs\npm.cmd
+2025-05-03 13:17:58 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:17:58 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:17:58 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'snyk' at: C:\Users\grabowmar\AppData\Roaming\npm\snyk.cmd
+2025-05-03 13:17:58 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Available tools check: {'npm-audit': True, 'eslint': True, 'jshint': True, 'snyk': True}
+2025-05-03 13:17:58 [INFO] [-] [MainThread] app.gpt4all: GPT4All client initialized with API URL: http://localhost:4891/v1
+2025-05-03 13:17:58 [INFO] [-] [MainThread] app.gpt4all: GPT4All analyzer initialized (Base Path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app, API URL: http://localhost:4891/v1)
+2025-05-03 13:17:58 [INFO] [-] [MainThread] performance_analysis.performance_analysis: PerformanceTester initialized. Output dir: c:\Users\grabowmar\Desktop\ThesisAppsSvelte, Static URL path: /static
+2025-05-03 13:17:58 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-05-03 13:17:58 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-05-03 13:17:58 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found free port: 8090
+2025-05-03 13:17:58 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:17:58 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-05-03 13:17:58 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:17:58 [ERROR] [-] [MainThread] docker.docker: Docker client creation or connection failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 118, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+2025-05-03 13:17:58 [WARNING] [-] [MainThread] docker.docker: Docker manager initialized WITHOUT a valid client.
+2025-05-03 13:17:58 [INFO] [-] [MainThread] scan_manager.scan_manager: Scan manager initialized
+2025-05-03 13:17:58 [INFO] [-] [MainThread] app.app: Initialized ScanManager on app context.
+2025-05-03 13:17:58 [INFO] [-] [MainThread] app.app: Registering application blueprints
+2025-05-03 13:17:58 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Initializing Batch Analysis Module...
+2025-05-03 13:17:58 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Using APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:17:58 [INFO] [-] [MainThread] batch_analysis.batch_analysis.service: App registered with BatchAnalysisService. Config: MaxJobs:2, MaxTasks:2, DefaultTimeout:1800s
+2025-05-03 13:17:58 [INFO] [-] [MainThread] batch_analysis.batch_analysis: All required service attributes found on app context
+2025-05-03 13:17:58 [INFO] [-] [MainThread] batch_analysis.batch_analysis: PortManager class is available
+2025-05-03 13:17:58 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Batch Analysis Module initialization complete
+2025-05-03 13:17:58 [INFO] [-] [MainThread] app.app: Registering error handlers and request hooks
+2025-05-03 13:17:58 [INFO] [-] [MainThread] app.app: Application initialization complete
+2025-05-03 13:17:58 [INFO] [-] [MainThread] main.main: Performing post-initialization health checks...
+2025-05-03 13:17:58 [WARNING] [-] [MainThread] main.main: Docker client unavailable or manager not initialized - cannot perform health check; reduced functionality expected.
+2025-05-03 13:17:58 [DEBUG] [-] [MainThread] hooks.hooks: Stopping active ZAP scans during teardown
+2025-05-03 13:17:58 [INFO] [-] [MainThread] zap_scanner.zap_scanner.stop: No active ZAP scans found to stop.
+2025-05-03 13:17:58 [INFO] [-] [MainThread] main.main: ==================================================
+2025-05-03 13:17:58 [INFO] [-] [MainThread] main.main: AI Model Management System is ready!
+2025-05-03 13:17:58 [INFO] [-] [MainThread] main.main: Access the application at: http://localhost:5000/
+2025-05-03 13:17:58 [INFO] [-] [MainThread] main.main: ==================================================
+
+2025-05-03 13:17:58 [INFO] [-] [MainThread] main.main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-05-03 13:17:58 [WARNING] [-] [MainThread] app.werkzeug:  * Debugger is active!
+2025-05-03 13:17:58 [INFO] [-] [MainThread] app.werkzeug:  * Debugger PIN: 103-119-036
+2025-05-03 13:36:20 [INFO] [-] [MainThread] app.werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\logging_service.py', reloading
+2025-05-03 13:36:20 [INFO] [-] [MainThread] app.root: Stopping queue listener...
+2025-05-03 13:36:20 [INFO] [-] [MainThread] app.werkzeug:  * Restarting with stat
+2025-05-03 13:36:22 [DEBUG] [-] [MainThread] logging_service.logging_service: Configured root logger with QueueHandler.
+2025-05-03 13:36:22 [DEBUG] [-] [MainThread] logging_service.logging_service: Configured werkzeug logger with QueueHandler.
+2025-05-03 13:36:22 [DEBUG] [-] [MainThread] logging_service.logging_service: Installing coloredlogs...
+2025-05-03 13:36:22 [DEBUG] [-] [MainThread] logging_service.logging_service: Coloredlogs installed, found handler: <StandardErrorHandler <stderr> (DEBUG)>
+2025-05-03 13:36:22 [DEBUG] [-] [MainThread] logging_service.logging_service: Added ContextFilter to console handler <StandardErrorHandler <stderr> (DEBUG)>
+2025-05-03 13:36:22 [DEBUG] [-] [MainThread] logging_service.logging_service: Added RequestFilter to console handler <StandardErrorHandler <stderr> (DEBUG)>
+2025-05-03 13:36:22 [DEBUG] [-] [MainThread] logging_service.logging_service: Starting QueueListener...
+2025-05-03 13:36:22 [INFO] [-] [MainThread] logging_service.logging_service: QueueListener started successfully.
+2025-05-03 13:36:22 [INFO] [-] [MainThread] app.root: Logging service initialization complete. Level: DEBUG. Log directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\logs
+2025-05-03 13:36:22 [INFO] [-] [MainThread] logging_service.logging_service: Enhanced queue-based logging service initialization complete.
+2025-05-03 13:36:22 [INFO] [-] [MainThread] app.app: Starting application setup
+2025-05-03 13:36:22 [INFO] [-] [MainThread] app.app: Application base directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:36:22 [INFO] [-] [MainThread] app.app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:36:22 [INFO] [-] [MainThread] app.app: Effective APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:36:22 [INFO] [-] [MainThread] app.app: Initializing service components and analyzers
+2025-05-03 13:36:22 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:36:22 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npm' at: C:\Program Files\nodejs\npm.cmd
+2025-05-03 13:36:22 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:36:22 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:36:22 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'snyk' at: C:\Users\grabowmar\AppData\Roaming\npm\snyk.cmd
+2025-05-03 13:36:22 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Available tools check: {'npm-audit': True, 'eslint': True, 'jshint': True, 'snyk': True}
+2025-05-03 13:36:22 [INFO] [-] [MainThread] app.gpt4all: GPT4All client initialized with API URL: http://localhost:4891/v1
+2025-05-03 13:36:22 [INFO] [-] [MainThread] app.gpt4all: GPT4All analyzer initialized (Base Path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app, API URL: http://localhost:4891/v1)
+2025-05-03 13:36:22 [INFO] [-] [MainThread] performance_analysis.performance_analysis: PerformanceTester initialized. Output dir: c:\Users\grabowmar\Desktop\ThesisAppsSvelte, Static URL path: /static
+2025-05-03 13:36:22 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-05-03 13:36:22 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-05-03 13:36:22 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found free port: 8090
+2025-05-03 13:36:22 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:36:22 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-05-03 13:36:22 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:36:22 [ERROR] [-] [MainThread] docker.docker: Docker client creation or connection failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 118, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+2025-05-03 13:36:22 [WARNING] [-] [MainThread] docker.docker: Docker manager initialized WITHOUT a valid client.
+2025-05-03 13:36:22 [INFO] [-] [MainThread] scan_manager.scan_manager: Scan manager initialized
+2025-05-03 13:36:22 [INFO] [-] [MainThread] app.app: Initialized ScanManager on app context.
+2025-05-03 13:36:22 [INFO] [-] [MainThread] app.app: Registering application blueprints
+2025-05-03 13:36:22 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Initializing Batch Analysis Module...
+2025-05-03 13:36:22 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Using APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:36:22 [INFO] [-] [MainThread] batch_analysis.batch_analysis.service: App registered with BatchAnalysisService. Config: MaxJobs:2, MaxTasks:2, DefaultTimeout:1800s
+2025-05-03 13:36:22 [INFO] [-] [MainThread] batch_analysis.batch_analysis: All required service attributes found on app context
+2025-05-03 13:36:22 [INFO] [-] [MainThread] batch_analysis.batch_analysis: PortManager class is available
+2025-05-03 13:36:22 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Batch Analysis Module initialization complete
+2025-05-03 13:36:22 [INFO] [-] [MainThread] app.app: Registering error handlers and request hooks
+2025-05-03 13:36:22 [INFO] [-] [MainThread] app.app: Application initialization complete
+2025-05-03 13:36:22 [INFO] [-] [MainThread] main.main: Performing post-initialization health checks...
+2025-05-03 13:36:22 [WARNING] [-] [MainThread] main.main: Docker client unavailable or manager not initialized - cannot perform health check; reduced functionality expected.
+2025-05-03 13:36:22 [DEBUG] [-] [MainThread] hooks.hooks: Stopping active ZAP scans during teardown
+2025-05-03 13:36:22 [INFO] [-] [MainThread] zap_scanner.zap_scanner.stop: No active ZAP scans found to stop.
+2025-05-03 13:36:22 [INFO] [-] [MainThread] main.main: ==================================================
+2025-05-03 13:36:22 [INFO] [-] [MainThread] main.main: AI Model Management System is ready!
+2025-05-03 13:36:22 [INFO] [-] [MainThread] main.main: Access the application at: http://localhost:5000/
+2025-05-03 13:36:22 [INFO] [-] [MainThread] main.main: ==================================================
+
+2025-05-03 13:36:22 [INFO] [-] [MainThread] main.main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-05-03 13:36:22 [WARNING] [-] [MainThread] app.werkzeug:  * Debugger is active!
+2025-05-03 13:36:22 [INFO] [-] [MainThread] app.werkzeug:  * Debugger PIN: 103-119-036
+2025-05-03 13:36:29 [DEBUG] [-] [MainThread] logging_service.logging_service: Configured root logger with QueueHandler.
+2025-05-03 13:36:29 [DEBUG] [-] [MainThread] logging_service.logging_service: Configured werkzeug logger with QueueHandler.
+2025-05-03 13:36:29 [DEBUG] [-] [MainThread] logging_service.logging_service: Installing coloredlogs...
+2025-05-03 13:36:29 [DEBUG] [-] [MainThread] logging_service.logging_service: Coloredlogs installed, found handler: <StandardErrorHandler <stderr> (DEBUG)>
+2025-05-03 13:36:29 [DEBUG] [-] [MainThread] logging_service.logging_service: Added ContextFilter to console handler <StandardErrorHandler <stderr> (DEBUG)>
+2025-05-03 13:36:29 [DEBUG] [-] [MainThread] logging_service.logging_service: Added RequestFilter to console handler <StandardErrorHandler <stderr> (DEBUG)>
+2025-05-03 13:36:29 [DEBUG] [-] [MainThread] logging_service.logging_service: Starting QueueListener...
+2025-05-03 13:36:29 [INFO] [-] [MainThread] logging_service.logging_service: QueueListener started successfully.
+2025-05-03 13:36:29 [INFO] [-] [MainThread] app.root: Logging service initialization complete. Level: DEBUG. Log directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\logs
+2025-05-03 13:36:29 [INFO] [-] [MainThread] logging_service.logging_service: Enhanced queue-based logging service initialization complete.
+2025-05-03 13:36:29 [INFO] [-] [MainThread] app.app: Starting application setup
+2025-05-03 13:36:29 [INFO] [-] [MainThread] app.app: Application base directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:36:29 [INFO] [-] [MainThread] app.app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:36:29 [INFO] [-] [MainThread] app.app: Effective APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:36:29 [INFO] [-] [MainThread] app.app: Initializing service components and analyzers
+2025-05-03 13:36:29 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:36:29 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npm' at: C:\Program Files\nodejs\npm.cmd
+2025-05-03 13:36:29 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:36:29 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:36:29 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'snyk' at: C:\Users\grabowmar\AppData\Roaming\npm\snyk.cmd
+2025-05-03 13:36:29 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Available tools check: {'npm-audit': True, 'eslint': True, 'jshint': True, 'snyk': True}
+2025-05-03 13:36:29 [INFO] [-] [MainThread] app.gpt4all: GPT4All client initialized with API URL: http://localhost:4891/v1
+2025-05-03 13:36:29 [INFO] [-] [MainThread] app.gpt4all: GPT4All analyzer initialized (Base Path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app, API URL: http://localhost:4891/v1)
+2025-05-03 13:36:29 [INFO] [-] [MainThread] performance_analysis.performance_analysis: PerformanceTester initialized. Output dir: c:\Users\grabowmar\Desktop\ThesisAppsSvelte, Static URL path: /static
+2025-05-03 13:36:29 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-05-03 13:36:29 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-05-03 13:36:29 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found free port: 8090
+2025-05-03 13:36:29 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:36:29 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-05-03 13:36:29 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:36:29 [ERROR] [-] [MainThread] docker.docker: Docker client creation or connection failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 118, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+2025-05-03 13:36:29 [WARNING] [-] [MainThread] docker.docker: Docker manager initialized WITHOUT a valid client.
+2025-05-03 13:36:29 [INFO] [-] [MainThread] scan_manager.scan_manager: Scan manager initialized
+2025-05-03 13:36:29 [INFO] [-] [MainThread] app.app: Initialized ScanManager on app context.
+2025-05-03 13:36:29 [INFO] [-] [MainThread] app.app: Registering application blueprints
+2025-05-03 13:36:29 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Initializing Batch Analysis Module...
+2025-05-03 13:36:29 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Using APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:36:29 [INFO] [-] [MainThread] batch_analysis.batch_analysis.service: App registered with BatchAnalysisService. Config: MaxJobs:2, MaxTasks:2, DefaultTimeout:1800s
+2025-05-03 13:36:29 [INFO] [-] [MainThread] batch_analysis.batch_analysis: All required service attributes found on app context
+2025-05-03 13:36:29 [INFO] [-] [MainThread] batch_analysis.batch_analysis: PortManager class is available
+2025-05-03 13:36:29 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Batch Analysis Module initialization complete
+2025-05-03 13:36:29 [INFO] [-] [MainThread] app.app: Registering error handlers and request hooks
+2025-05-03 13:36:29 [INFO] [-] [MainThread] app.app: Application initialization complete
+2025-05-03 13:36:29 [INFO] [-] [MainThread] main.main: Performing post-initialization health checks...
+2025-05-03 13:36:29 [WARNING] [-] [MainThread] main.main: Docker client unavailable or manager not initialized - cannot perform health check; reduced functionality expected.
+2025-05-03 13:36:29 [DEBUG] [-] [MainThread] hooks.hooks: Stopping active ZAP scans during teardown
+2025-05-03 13:36:29 [INFO] [-] [MainThread] zap_scanner.zap_scanner.stop: No active ZAP scans found to stop.
+2025-05-03 13:36:29 [INFO] [-] [MainThread] main.main: ==================================================
+2025-05-03 13:36:29 [INFO] [-] [MainThread] main.main: AI Model Management System is ready!
+2025-05-03 13:36:29 [INFO] [-] [MainThread] main.main: Access the application at: http://localhost:5000/
+2025-05-03 13:36:29 [INFO] [-] [MainThread] main.main: ==================================================
+
+2025-05-03 13:36:29 [INFO] [-] [MainThread] main.main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-05-03 13:36:29 [INFO] [-] [MainThread] app.werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-05-03 13:36:29 [INFO] [-] [MainThread] app.werkzeug: [33mPress CTRL+C to quit[0m
+2025-05-03 13:36:29 [INFO] [-] [MainThread] app.werkzeug:  * Restarting with stat
+2025-05-03 13:36:31 [DEBUG] [-] [MainThread] logging_service.logging_service: Configured root logger with QueueHandler.
+2025-05-03 13:36:31 [DEBUG] [-] [MainThread] logging_service.logging_service: Configured werkzeug logger with QueueHandler.
+2025-05-03 13:36:31 [DEBUG] [-] [MainThread] logging_service.logging_service: Installing coloredlogs...
+2025-05-03 13:36:31 [DEBUG] [-] [MainThread] logging_service.logging_service: Coloredlogs installed, found handler: <StandardErrorHandler <stderr> (DEBUG)>
+2025-05-03 13:36:31 [DEBUG] [-] [MainThread] logging_service.logging_service: Added ContextFilter to console handler <StandardErrorHandler <stderr> (DEBUG)>
+2025-05-03 13:36:31 [DEBUG] [-] [MainThread] logging_service.logging_service: Added RequestFilter to console handler <StandardErrorHandler <stderr> (DEBUG)>
+2025-05-03 13:36:31 [DEBUG] [-] [MainThread] logging_service.logging_service: Starting QueueListener...
+2025-05-03 13:36:31 [INFO] [-] [MainThread] logging_service.logging_service: QueueListener started successfully.
+2025-05-03 13:36:31 [INFO] [-] [MainThread] app.root: Logging service initialization complete. Level: DEBUG. Log directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\logs
+2025-05-03 13:36:31 [INFO] [-] [MainThread] logging_service.logging_service: Enhanced queue-based logging service initialization complete.
+2025-05-03 13:36:31 [INFO] [-] [MainThread] app.app: Starting application setup
+2025-05-03 13:36:31 [INFO] [-] [MainThread] app.app: Application base directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:36:31 [INFO] [-] [MainThread] app.app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:36:31 [INFO] [-] [MainThread] app.app: Effective APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:36:31 [INFO] [-] [MainThread] app.app: Initializing service components and analyzers
+2025-05-03 13:36:31 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:36:31 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npm' at: C:\Program Files\nodejs\npm.cmd
+2025-05-03 13:36:31 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:36:31 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:36:31 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'snyk' at: C:\Users\grabowmar\AppData\Roaming\npm\snyk.cmd
+2025-05-03 13:36:31 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Available tools check: {'npm-audit': True, 'eslint': True, 'jshint': True, 'snyk': True}
+2025-05-03 13:36:31 [INFO] [-] [MainThread] app.gpt4all: GPT4All client initialized with API URL: http://localhost:4891/v1
+2025-05-03 13:36:31 [INFO] [-] [MainThread] app.gpt4all: GPT4All analyzer initialized (Base Path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app, API URL: http://localhost:4891/v1)
+2025-05-03 13:36:31 [INFO] [-] [MainThread] performance_analysis.performance_analysis: PerformanceTester initialized. Output dir: c:\Users\grabowmar\Desktop\ThesisAppsSvelte, Static URL path: /static
+2025-05-03 13:36:31 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-05-03 13:36:31 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-05-03 13:36:31 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found free port: 8090
+2025-05-03 13:36:31 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:36:31 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-05-03 13:36:31 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:36:31 [ERROR] [-] [MainThread] docker.docker: Docker client creation or connection failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 118, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+2025-05-03 13:36:31 [WARNING] [-] [MainThread] docker.docker: Docker manager initialized WITHOUT a valid client.
+2025-05-03 13:36:31 [INFO] [-] [MainThread] scan_manager.scan_manager: Scan manager initialized
+2025-05-03 13:36:31 [INFO] [-] [MainThread] app.app: Initialized ScanManager on app context.
+2025-05-03 13:36:31 [INFO] [-] [MainThread] app.app: Registering application blueprints
+2025-05-03 13:36:31 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Initializing Batch Analysis Module...
+2025-05-03 13:36:31 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Using APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:36:31 [INFO] [-] [MainThread] batch_analysis.batch_analysis.service: App registered with BatchAnalysisService. Config: MaxJobs:2, MaxTasks:2, DefaultTimeout:1800s
+2025-05-03 13:36:31 [INFO] [-] [MainThread] batch_analysis.batch_analysis: All required service attributes found on app context
+2025-05-03 13:36:31 [INFO] [-] [MainThread] batch_analysis.batch_analysis: PortManager class is available
+2025-05-03 13:36:31 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Batch Analysis Module initialization complete
+2025-05-03 13:36:31 [INFO] [-] [MainThread] app.app: Registering error handlers and request hooks
+2025-05-03 13:36:31 [INFO] [-] [MainThread] app.app: Application initialization complete
+2025-05-03 13:36:31 [INFO] [-] [MainThread] main.main: Performing post-initialization health checks...
+2025-05-03 13:36:31 [WARNING] [-] [MainThread] main.main: Docker client unavailable or manager not initialized - cannot perform health check; reduced functionality expected.
+2025-05-03 13:36:31 [DEBUG] [-] [MainThread] hooks.hooks: Stopping active ZAP scans during teardown
+2025-05-03 13:36:31 [INFO] [-] [MainThread] zap_scanner.zap_scanner.stop: No active ZAP scans found to stop.
+2025-05-03 13:36:31 [INFO] [-] [MainThread] main.main: ==================================================
+2025-05-03 13:36:31 [INFO] [-] [MainThread] main.main: AI Model Management System is ready!
+2025-05-03 13:36:31 [INFO] [-] [MainThread] main.main: Access the application at: http://localhost:5000/
+2025-05-03 13:36:31 [INFO] [-] [MainThread] main.main: ==================================================
+
+2025-05-03 13:36:31 [INFO] [-] [MainThread] main.main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-05-03 13:36:31 [WARNING] [-] [MainThread] app.werkzeug:  * Debugger is active!
+2025-05-03 13:36:31 [INFO] [-] [MainThread] app.werkzeug:  * Debugger PIN: 103-119-036
+2025-05-03 13:37:08 [DEBUG] [-] [MainThread] logging_service.logging_service: Configured root logger with QueueHandler.
+2025-05-03 13:37:08 [DEBUG] [-] [MainThread] logging_service.logging_service: Configured werkzeug logger with QueueHandler.
+2025-05-03 13:37:08 [DEBUG] [-] [MainThread] logging_service.logging_service: Installing coloredlogs...
+2025-05-03 13:37:08 [DEBUG] [-] [MainThread] logging_service.logging_service: Coloredlogs installed, found handler: <StandardErrorHandler <stderr> (DEBUG)>
+2025-05-03 13:37:08 [DEBUG] [-] [MainThread] logging_service.logging_service: Added ContextFilter to console handler <StandardErrorHandler <stderr> (DEBUG)>
+2025-05-03 13:37:08 [DEBUG] [-] [MainThread] logging_service.logging_service: Added RequestFilter to console handler <StandardErrorHandler <stderr> (DEBUG)>
+2025-05-03 13:37:08 [DEBUG] [-] [MainThread] logging_service.logging_service: Starting QueueListener...
+2025-05-03 13:37:08 [INFO] [-] [MainThread] logging_service.logging_service: QueueListener started successfully.
+2025-05-03 13:37:08 [INFO] [-] [MainThread] app.root: Logging service initialization complete. Level: DEBUG. Log directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\logs
+2025-05-03 13:37:08 [INFO] [-] [MainThread] logging_service.logging_service: Enhanced queue-based logging service initialization complete.
+2025-05-03 13:37:08 [INFO] [-] [MainThread] app.app: Starting application setup
+2025-05-03 13:37:08 [INFO] [-] [MainThread] app.app: Application base directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:37:08 [INFO] [-] [MainThread] app.app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:37:08 [INFO] [-] [MainThread] app.app: Effective APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:37:08 [INFO] [-] [MainThread] app.app: Initializing service components and analyzers
+2025-05-03 13:37:08 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:37:08 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npm' at: C:\Program Files\nodejs\npm.cmd
+2025-05-03 13:37:08 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:37:08 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:37:08 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'snyk' at: C:\Users\grabowmar\AppData\Roaming\npm\snyk.cmd
+2025-05-03 13:37:08 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Available tools check: {'npm-audit': True, 'eslint': True, 'jshint': True, 'snyk': True}
+2025-05-03 13:37:08 [INFO] [-] [MainThread] app.gpt4all: GPT4All client initialized with API URL: http://localhost:4891/v1
+2025-05-03 13:37:08 [INFO] [-] [MainThread] app.gpt4all: GPT4All analyzer initialized (Base Path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app, API URL: http://localhost:4891/v1)
+2025-05-03 13:37:08 [INFO] [-] [MainThread] performance_analysis.performance_analysis: PerformanceTester initialized. Output dir: c:\Users\grabowmar\Desktop\ThesisAppsSvelte, Static URL path: /static
+2025-05-03 13:37:08 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-05-03 13:37:08 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-05-03 13:37:08 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found free port: 8090
+2025-05-03 13:37:08 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:37:08 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-05-03 13:37:08 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:37:16 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /version HTTP/1.1" 200 None
+2025-05-03 13:37:16 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /v1.47/_ping HTTP/1.1" 200 None
+2025-05-03 13:37:16 [INFO] [-] [MainThread] docker.docker: Docker client created and connection verified.
+2025-05-03 13:37:16 [INFO] [-] [MainThread] docker.docker: Docker manager initialized (Cache: 5s)
+2025-05-03 13:37:16 [INFO] [-] [MainThread] scan_manager.scan_manager: Scan manager initialized
+2025-05-03 13:37:16 [INFO] [-] [MainThread] app.app: Initialized ScanManager on app context.
+2025-05-03 13:37:16 [INFO] [-] [MainThread] app.app: Registering application blueprints
+2025-05-03 13:37:16 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Initializing Batch Analysis Module...
+2025-05-03 13:37:16 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Using APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:37:16 [INFO] [-] [MainThread] batch_analysis.batch_analysis.service: App registered with BatchAnalysisService. Config: MaxJobs:2, MaxTasks:2, DefaultTimeout:1800s
+2025-05-03 13:37:16 [INFO] [-] [MainThread] batch_analysis.batch_analysis: All required service attributes found on app context
+2025-05-03 13:37:16 [INFO] [-] [MainThread] batch_analysis.batch_analysis: PortManager class is available
+2025-05-03 13:37:16 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Batch Analysis Module initialization complete
+2025-05-03 13:37:16 [INFO] [-] [MainThread] app.app: Registering error handlers and request hooks
+2025-05-03 13:37:16 [INFO] [-] [MainThread] app.app: Application initialization complete
+2025-05-03 13:37:16 [INFO] [-] [MainThread] main.main: Performing post-initialization health checks...
+2025-05-03 13:37:16 [INFO] [-] [MainThread] main.main: Checking system health via Docker manager...
+2025-05-03 13:37:16 [INFO] [-] [MainThread] system_health.system_health: Performing system health check...
+2025-05-03 13:37:16 [DEBUG] [-] [MainThread] system_health.system_health: Pinging Docker daemon...
+2025-05-03 13:37:16 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /v1.47/_ping HTTP/1.1" 200 None
+2025-05-03 13:37:16 [DEBUG] [-] [MainThread] system_health.system_health: Docker daemon ping successful.
+2025-05-03 13:37:16 [DEBUG] [-] [MainThread] system_health.system_health: Checking disk space on Windows using 'wmic'
+2025-05-03 13:37:16 [DEBUG] [-] [MainThread] system_health.system_health: Disk space check passed (Usage <= 90%)
+2025-05-03 13:37:16 [INFO] [-] [MainThread] system_health.system_health: System health check passed (Docker connection OK, Disk space OK).
+2025-05-03 13:37:16 [INFO] [-] [MainThread] main.main: System health check passed.
+2025-05-03 13:37:16 [DEBUG] [-] [MainThread] hooks.hooks: Stopping active ZAP scans during teardown
+2025-05-03 13:37:16 [INFO] [-] [MainThread] zap_scanner.zap_scanner.stop: No active ZAP scans found to stop.
+2025-05-03 13:37:16 [INFO] [-] [MainThread] main.main: ==================================================
+2025-05-03 13:37:16 [INFO] [-] [MainThread] main.main: AI Model Management System is ready!
+2025-05-03 13:37:16 [INFO] [-] [MainThread] main.main: Access the application at: http://localhost:5000/
+2025-05-03 13:37:16 [INFO] [-] [MainThread] main.main: ==================================================
+
+2025-05-03 13:37:16 [INFO] [-] [MainThread] main.main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-05-03 13:37:16 [INFO] [-] [MainThread] app.werkzeug: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-05-03 13:37:16 [INFO] [-] [MainThread] app.werkzeug: [33mPress CTRL+C to quit[0m
+2025-05-03 13:37:16 [INFO] [-] [MainThread] app.werkzeug:  * Restarting with stat
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] logging_service.logging_service: Configured root logger with QueueHandler.
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] logging_service.logging_service: Configured werkzeug logger with QueueHandler.
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] logging_service.logging_service: Installing coloredlogs...
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] logging_service.logging_service: Coloredlogs installed, found handler: <StandardErrorHandler <stderr> (DEBUG)>
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] logging_service.logging_service: Added ContextFilter to console handler <StandardErrorHandler <stderr> (DEBUG)>
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] logging_service.logging_service: Added RequestFilter to console handler <StandardErrorHandler <stderr> (DEBUG)>
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] logging_service.logging_service: Starting QueueListener...
+2025-05-03 13:37:18 [INFO] [-] [MainThread] logging_service.logging_service: QueueListener started successfully.
+2025-05-03 13:37:18 [INFO] [-] [MainThread] app.root: Logging service initialization complete. Level: DEBUG. Log directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\logs
+2025-05-03 13:37:18 [INFO] [-] [MainThread] logging_service.logging_service: Enhanced queue-based logging service initialization complete.
+2025-05-03 13:37:18 [INFO] [-] [MainThread] app.app: Starting application setup
+2025-05-03 13:37:18 [INFO] [-] [MainThread] app.app: Application base directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:37:18 [INFO] [-] [MainThread] app.app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:37:18 [INFO] [-] [MainThread] app.app: Effective APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:37:18 [INFO] [-] [MainThread] app.app: Initializing service components and analyzers
+2025-05-03 13:37:18 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npm' at: C:\Program Files\nodejs\npm.cmd
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'snyk' at: C:\Users\grabowmar\AppData\Roaming\npm\snyk.cmd
+2025-05-03 13:37:18 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Available tools check: {'npm-audit': True, 'eslint': True, 'jshint': True, 'snyk': True}
+2025-05-03 13:37:18 [INFO] [-] [MainThread] app.gpt4all: GPT4All client initialized with API URL: http://localhost:4891/v1
+2025-05-03 13:37:18 [INFO] [-] [MainThread] app.gpt4all: GPT4All analyzer initialized (Base Path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app, API URL: http://localhost:4891/v1)
+2025-05-03 13:37:18 [INFO] [-] [MainThread] performance_analysis.performance_analysis: PerformanceTester initialized. Output dir: c:\Users\grabowmar\Desktop\ThesisAppsSvelte, Static URL path: /static
+2025-05-03 13:37:18 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-05-03 13:37:18 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-05-03 13:37:18 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found free port: 8090
+2025-05-03 13:37:18 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:37:18 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-05-03 13:37:18 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /version HTTP/1.1" 200 None
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /v1.47/_ping HTTP/1.1" 200 None
+2025-05-03 13:37:18 [INFO] [-] [MainThread] docker.docker: Docker client created and connection verified.
+2025-05-03 13:37:18 [INFO] [-] [MainThread] docker.docker: Docker manager initialized (Cache: 5s)
+2025-05-03 13:37:18 [INFO] [-] [MainThread] scan_manager.scan_manager: Scan manager initialized
+2025-05-03 13:37:18 [INFO] [-] [MainThread] app.app: Initialized ScanManager on app context.
+2025-05-03 13:37:18 [INFO] [-] [MainThread] app.app: Registering application blueprints
+2025-05-03 13:37:18 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Initializing Batch Analysis Module...
+2025-05-03 13:37:18 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Using APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:37:18 [INFO] [-] [MainThread] batch_analysis.batch_analysis.service: App registered with BatchAnalysisService. Config: MaxJobs:2, MaxTasks:2, DefaultTimeout:1800s
+2025-05-03 13:37:18 [INFO] [-] [MainThread] batch_analysis.batch_analysis: All required service attributes found on app context
+2025-05-03 13:37:18 [INFO] [-] [MainThread] batch_analysis.batch_analysis: PortManager class is available
+2025-05-03 13:37:18 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Batch Analysis Module initialization complete
+2025-05-03 13:37:18 [INFO] [-] [MainThread] app.app: Registering error handlers and request hooks
+2025-05-03 13:37:18 [INFO] [-] [MainThread] app.app: Application initialization complete
+2025-05-03 13:37:18 [INFO] [-] [MainThread] main.main: Performing post-initialization health checks...
+2025-05-03 13:37:18 [INFO] [-] [MainThread] main.main: Checking system health via Docker manager...
+2025-05-03 13:37:18 [INFO] [-] [MainThread] system_health.system_health: Performing system health check...
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] system_health.system_health: Pinging Docker daemon...
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /v1.47/_ping HTTP/1.1" 200 None
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] system_health.system_health: Docker daemon ping successful.
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] system_health.system_health: Checking disk space on Windows using 'wmic'
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] system_health.system_health: Disk space check passed (Usage <= 90%)
+2025-05-03 13:37:18 [INFO] [-] [MainThread] system_health.system_health: System health check passed (Docker connection OK, Disk space OK).
+2025-05-03 13:37:18 [INFO] [-] [MainThread] main.main: System health check passed.
+2025-05-03 13:37:18 [DEBUG] [-] [MainThread] hooks.hooks: Stopping active ZAP scans during teardown
+2025-05-03 13:37:18 [INFO] [-] [MainThread] zap_scanner.zap_scanner.stop: No active ZAP scans found to stop.
+2025-05-03 13:37:18 [INFO] [-] [MainThread] main.main: ==================================================
+2025-05-03 13:37:18 [INFO] [-] [MainThread] main.main: AI Model Management System is ready!
+2025-05-03 13:37:18 [INFO] [-] [MainThread] main.main: Access the application at: http://localhost:5000/
+2025-05-03 13:37:18 [INFO] [-] [MainThread] main.main: ==================================================
+
+2025-05-03 13:37:18 [INFO] [-] [MainThread] main.main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-05-03 13:37:18 [WARNING] [-] [MainThread] app.werkzeug:  * Debugger is active!
+2025-05-03 13:37:18 [INFO] [-] [MainThread] app.werkzeug:  * Debugger PIN: 103-119-036
+2025-05-03 13:46:51 [INFO] [-] [MainThread] app.werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\logging_service.py', reloading
+2025-05-03 13:46:51 [INFO] [-] [MainThread] logging_service.logging_service: Stopping queue listener...
+2025-05-03 13:46:51 [INFO] [-] [MainThread] app.werkzeug:  * Restarting with stat
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] logging_service.logging_service: Configured root logger with QueueHandler.
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] logging_service.logging_service: Configured werkzeug logger with QueueHandler.
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] logging_service.logging_service: Console handler already exists. Ensuring level and formatter.
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] logging_service.logging_service: Starting QueueListener...
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] logging_service.logging_service: Registered QueueListener shutdown hook.
+2025-05-03 13:46:53 [INFO] [-] [MainThread] logging_service.logging_service: QueueListener started successfully.
+2025-05-03 13:46:53 [INFO] [-] [MainThread] app.root: Logging service fully initialized in worker process. Level: DEBUG.
+2025-05-03 13:46:53 [INFO] [-] [MainThread] logging_service.logging_service: Enhanced queue-based logging service initialization sequence complete.
+2025-05-03 13:46:53 [INFO] [-] [MainThread] app.app: Starting application setup
+2025-05-03 13:46:53 [INFO] [-] [MainThread] app.app: Application base directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:46:53 [INFO] [-] [MainThread] app.app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:46:53 [INFO] [-] [MainThread] app.app: Effective APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:46:53 [INFO] [-] [MainThread] app.app: Initializing service components and analyzers
+2025-05-03 13:46:53 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npm' at: C:\Program Files\nodejs\npm.cmd
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'snyk' at: C:\Users\grabowmar\AppData\Roaming\npm\snyk.cmd
+2025-05-03 13:46:53 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Available tools check: {'npm-audit': True, 'eslint': True, 'jshint': True, 'snyk': True}
+2025-05-03 13:46:53 [INFO] [-] [MainThread] app.gpt4all: GPT4All client initialized with API URL: http://localhost:4891/v1
+2025-05-03 13:46:53 [INFO] [-] [MainThread] app.gpt4all: GPT4All analyzer initialized (Base Path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app, API URL: http://localhost:4891/v1)
+2025-05-03 13:46:53 [INFO] [-] [MainThread] performance_analysis.performance_analysis: PerformanceTester initialized. Output dir: c:\Users\grabowmar\Desktop\ThesisAppsSvelte, Static URL path: /static
+2025-05-03 13:46:53 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-05-03 13:46:53 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-05-03 13:46:53 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found free port: 8090
+2025-05-03 13:46:53 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:46:53 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-05-03 13:46:53 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /version HTTP/1.1" 200 None
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /v1.47/_ping HTTP/1.1" 200 None
+2025-05-03 13:46:53 [INFO] [-] [MainThread] docker.docker: Docker client created and connection verified.
+2025-05-03 13:46:53 [INFO] [-] [MainThread] docker.docker: Docker manager initialized (Cache: 5s)
+2025-05-03 13:46:53 [INFO] [-] [MainThread] scan_manager.scan_manager: Scan manager initialized
+2025-05-03 13:46:53 [INFO] [-] [MainThread] app.app: Initialized ScanManager on app context.
+2025-05-03 13:46:53 [INFO] [-] [MainThread] app.app: Registering application blueprints
+2025-05-03 13:46:53 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Initializing Batch Analysis Module...
+2025-05-03 13:46:53 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Using APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:46:53 [INFO] [-] [MainThread] batch_analysis.batch_analysis.service: App registered with BatchAnalysisService. Config: MaxJobs:2, MaxTasks:2, DefaultTimeout:1800s
+2025-05-03 13:46:53 [INFO] [-] [MainThread] batch_analysis.batch_analysis: All required service attributes found on app context
+2025-05-03 13:46:53 [INFO] [-] [MainThread] batch_analysis.batch_analysis: PortManager class is available
+2025-05-03 13:46:53 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Batch Analysis Module initialization complete
+2025-05-03 13:46:53 [INFO] [-] [MainThread] app.app: Registering error handlers and request hooks
+2025-05-03 13:46:53 [INFO] [-] [MainThread] app.app: Application initialization complete
+2025-05-03 13:46:53 [INFO] [-] [MainThread] main.main: Performing post-initialization health checks...
+2025-05-03 13:46:53 [INFO] [-] [MainThread] main.main: Checking system health via Docker manager...
+2025-05-03 13:46:53 [INFO] [-] [MainThread] system_health.system_health: Performing system health check...
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] system_health.system_health: Pinging Docker daemon...
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /v1.47/_ping HTTP/1.1" 200 None
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] system_health.system_health: Docker daemon ping successful.
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] system_health.system_health: Checking disk space on Windows using 'wmic'
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] system_health.system_health: Disk space check passed (Usage <= 90%)
+2025-05-03 13:46:53 [INFO] [-] [MainThread] system_health.system_health: System health check passed (Docker connection OK, Disk space OK).
+2025-05-03 13:46:53 [INFO] [-] [MainThread] main.main: System health check passed.
+2025-05-03 13:46:53 [DEBUG] [-] [MainThread] hooks.hooks: Stopping active ZAP scans during teardown
+2025-05-03 13:46:53 [INFO] [-] [MainThread] zap_scanner.zap_scanner.stop: No active ZAP scans found to stop.
+2025-05-03 13:46:53 [INFO] [-] [MainThread] main.main: ==================================================
+2025-05-03 13:46:53 [INFO] [-] [MainThread] main.main: AI Model Management System is ready!
+2025-05-03 13:46:53 [INFO] [-] [MainThread] main.main: Access the application at: http://localhost:5000/
+2025-05-03 13:46:53 [INFO] [-] [MainThread] main.main: ==================================================
+
+2025-05-03 13:46:53 [INFO] [-] [MainThread] main.main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-05-03 13:46:53 [WARNING] [-] [MainThread] app.werkzeug:  * Debugger is active!
+2025-05-03 13:46:53 [INFO] [-] [MainThread] app.werkzeug:  * Debugger PIN: 103-119-036
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] logging_service.logging_service: Configured root logger with QueueHandler.
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] logging_service.logging_service: Configured werkzeug logger with QueueHandler.
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] logging_service.logging_service: Console handler already exists. Ensuring level and formatter.
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] logging_service.logging_service: Starting QueueListener...
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] logging_service.logging_service: Registered QueueListener shutdown hook.
+2025-05-03 13:47:00 [INFO] [-] [MainThread] logging_service.logging_service: QueueListener started successfully.
+2025-05-03 13:47:00 [INFO] [-] [MainThread] app.root: Logging service fully initialized in worker process. Level: DEBUG.
+2025-05-03 13:47:00 [INFO] [-] [MainThread] logging_service.logging_service: Enhanced queue-based logging service initialization sequence complete.
+2025-05-03 13:47:00 [INFO] [-] [MainThread] app.app: Starting application setup
+2025-05-03 13:47:00 [INFO] [-] [MainThread] app.app: Application base directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:47:00 [INFO] [-] [MainThread] app.app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:47:00 [INFO] [-] [MainThread] app.app: Effective APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:47:00 [INFO] [-] [MainThread] app.app: Initializing service components and analyzers
+2025-05-03 13:47:00 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npm' at: C:\Program Files\nodejs\npm.cmd
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'snyk' at: C:\Users\grabowmar\AppData\Roaming\npm\snyk.cmd
+2025-05-03 13:47:00 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Available tools check: {'npm-audit': True, 'eslint': True, 'jshint': True, 'snyk': True}
+2025-05-03 13:47:00 [INFO] [-] [MainThread] app.gpt4all: GPT4All client initialized with API URL: http://localhost:4891/v1
+2025-05-03 13:47:00 [INFO] [-] [MainThread] app.gpt4all: GPT4All analyzer initialized (Base Path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app, API URL: http://localhost:4891/v1)
+2025-05-03 13:47:00 [INFO] [-] [MainThread] performance_analysis.performance_analysis: PerformanceTester initialized. Output dir: c:\Users\grabowmar\Desktop\ThesisAppsSvelte, Static URL path: /static
+2025-05-03 13:47:00 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-05-03 13:47:00 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-05-03 13:47:00 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found free port: 8090
+2025-05-03 13:47:00 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:47:00 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-05-03 13:47:00 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /version HTTP/1.1" 200 None
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /v1.47/_ping HTTP/1.1" 200 None
+2025-05-03 13:47:00 [INFO] [-] [MainThread] docker.docker: Docker client created and connection verified.
+2025-05-03 13:47:00 [INFO] [-] [MainThread] docker.docker: Docker manager initialized (Cache: 5s)
+2025-05-03 13:47:00 [INFO] [-] [MainThread] scan_manager.scan_manager: Scan manager initialized
+2025-05-03 13:47:00 [INFO] [-] [MainThread] app.app: Initialized ScanManager on app context.
+2025-05-03 13:47:00 [INFO] [-] [MainThread] app.app: Registering application blueprints
+2025-05-03 13:47:00 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Initializing Batch Analysis Module...
+2025-05-03 13:47:00 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Using APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:47:00 [INFO] [-] [MainThread] batch_analysis.batch_analysis.service: App registered with BatchAnalysisService. Config: MaxJobs:2, MaxTasks:2, DefaultTimeout:1800s
+2025-05-03 13:47:00 [INFO] [-] [MainThread] batch_analysis.batch_analysis: All required service attributes found on app context
+2025-05-03 13:47:00 [INFO] [-] [MainThread] batch_analysis.batch_analysis: PortManager class is available
+2025-05-03 13:47:00 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Batch Analysis Module initialization complete
+2025-05-03 13:47:00 [INFO] [-] [MainThread] app.app: Registering error handlers and request hooks
+2025-05-03 13:47:00 [INFO] [-] [MainThread] app.app: Application initialization complete
+2025-05-03 13:47:00 [INFO] [-] [MainThread] main.main: Performing post-initialization health checks...
+2025-05-03 13:47:00 [INFO] [-] [MainThread] main.main: Checking system health via Docker manager...
+2025-05-03 13:47:00 [INFO] [-] [MainThread] system_health.system_health: Performing system health check...
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] system_health.system_health: Pinging Docker daemon...
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /v1.47/_ping HTTP/1.1" 200 None
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] system_health.system_health: Docker daemon ping successful.
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] system_health.system_health: Checking disk space on Windows using 'wmic'
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] system_health.system_health: Disk space check passed (Usage <= 90%)
+2025-05-03 13:47:00 [INFO] [-] [MainThread] system_health.system_health: System health check passed (Docker connection OK, Disk space OK).
+2025-05-03 13:47:00 [INFO] [-] [MainThread] main.main: System health check passed.
+2025-05-03 13:47:00 [DEBUG] [-] [MainThread] hooks.hooks: Stopping active ZAP scans during teardown
+2025-05-03 13:47:00 [INFO] [-] [MainThread] zap_scanner.zap_scanner.stop: No active ZAP scans found to stop.
+2025-05-03 13:47:00 [INFO] [-] [MainThread] main.main: ==================================================
+2025-05-03 13:47:00 [INFO] [-] [MainThread] main.main: AI Model Management System is ready!
+2025-05-03 13:47:00 [INFO] [-] [MainThread] main.main: Access the application at: http://localhost:5000/
+2025-05-03 13:47:00 [INFO] [-] [MainThread] main.main: ==================================================
+
+2025-05-03 13:47:00 [INFO] [-] [MainThread] main.main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-05-03 13:47:00 [WARNING] [-] [MainThread] app.werkzeug:  * Debugger is active!
+2025-05-03 13:47:00 [INFO] [-] [MainThread] app.werkzeug:  * Debugger PIN: 103-119-036
+2025-05-03 13:48:35 [INFO] [-] [MainThread] app.werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\logging_service.py', reloading
+2025-05-03 13:48:35 [INFO] [-] [MainThread] logging_service.logging_service: Stopping queue listener...
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] logging_service.logging_service: Configured root logger with QueueHandler.
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] logging_service.logging_service: Configured werkzeug logger with QueueHandler.
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] logging_service.logging_service: Console handler already exists. Ensuring level and formatter.
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] logging_service.logging_service: Starting QueueListener...
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] logging_service.logging_service: Registered QueueListener shutdown hook.
+2025-05-03 13:48:37 [INFO] [-] [MainThread] logging_service.logging_service: QueueListener started successfully.
+2025-05-03 13:48:37 [INFO] [-] [MainThread] app.root: Logging service fully initialized in worker process. Level: DEBUG.
+2025-05-03 13:48:37 [INFO] [-] [MainThread] logging_service.logging_service: Enhanced queue-based logging service initialization sequence complete.
+2025-05-03 13:48:37 [INFO] [-] [MainThread] app.app: Starting application setup
+2025-05-03 13:48:37 [INFO] [-] [MainThread] app.app: Application base directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:48:37 [INFO] [-] [MainThread] app.app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:48:37 [INFO] [-] [MainThread] app.app: Effective APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:48:37 [INFO] [-] [MainThread] app.app: Initializing service components and analyzers
+2025-05-03 13:48:37 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npm' at: C:\Program Files\nodejs\npm.cmd
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'snyk' at: C:\Users\grabowmar\AppData\Roaming\npm\snyk.cmd
+2025-05-03 13:48:37 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Available tools check: {'npm-audit': True, 'eslint': True, 'jshint': True, 'snyk': True}
+2025-05-03 13:48:37 [INFO] [-] [MainThread] app.gpt4all: GPT4All client initialized with API URL: http://localhost:4891/v1
+2025-05-03 13:48:37 [INFO] [-] [MainThread] app.gpt4all: GPT4All analyzer initialized (Base Path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app, API URL: http://localhost:4891/v1)
+2025-05-03 13:48:37 [INFO] [-] [MainThread] performance_analysis.performance_analysis: PerformanceTester initialized. Output dir: c:\Users\grabowmar\Desktop\ThesisAppsSvelte, Static URL path: /static
+2025-05-03 13:48:37 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-05-03 13:48:37 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-05-03 13:48:37 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found free port: 8090
+2025-05-03 13:48:37 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:48:37 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-05-03 13:48:37 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /version HTTP/1.1" 200 None
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /v1.47/_ping HTTP/1.1" 200 None
+2025-05-03 13:48:37 [INFO] [-] [MainThread] docker.docker: Docker client created and connection verified.
+2025-05-03 13:48:37 [INFO] [-] [MainThread] docker.docker: Docker manager initialized (Cache: 5s)
+2025-05-03 13:48:37 [INFO] [-] [MainThread] scan_manager.scan_manager: Scan manager initialized
+2025-05-03 13:48:37 [INFO] [-] [MainThread] app.app: Initialized ScanManager on app context.
+2025-05-03 13:48:37 [INFO] [-] [MainThread] app.app: Registering application blueprints
+2025-05-03 13:48:37 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Initializing Batch Analysis Module...
+2025-05-03 13:48:37 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Using APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:48:37 [INFO] [-] [MainThread] batch_analysis.batch_analysis.service: App registered with BatchAnalysisService. Config: MaxJobs:2, MaxTasks:2, DefaultTimeout:1800s
+2025-05-03 13:48:37 [INFO] [-] [MainThread] batch_analysis.batch_analysis: All required service attributes found on app context
+2025-05-03 13:48:37 [INFO] [-] [MainThread] batch_analysis.batch_analysis: PortManager class is available
+2025-05-03 13:48:37 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Batch Analysis Module initialization complete
+2025-05-03 13:48:37 [INFO] [-] [MainThread] app.app: Registering error handlers and request hooks
+2025-05-03 13:48:37 [INFO] [-] [MainThread] app.app: Application initialization complete
+2025-05-03 13:48:37 [INFO] [-] [MainThread] main.main: Performing post-initialization health checks...
+2025-05-03 13:48:37 [INFO] [-] [MainThread] main.main: Checking system health via Docker manager...
+2025-05-03 13:48:37 [INFO] [-] [MainThread] system_health.system_health: Performing system health check...
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] system_health.system_health: Pinging Docker daemon...
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /v1.47/_ping HTTP/1.1" 200 None
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] system_health.system_health: Docker daemon ping successful.
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] system_health.system_health: Checking disk space on Windows using 'wmic'
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] system_health.system_health: Disk space check passed (Usage <= 90%)
+2025-05-03 13:48:37 [INFO] [-] [MainThread] system_health.system_health: System health check passed (Docker connection OK, Disk space OK).
+2025-05-03 13:48:37 [INFO] [-] [MainThread] main.main: System health check passed.
+2025-05-03 13:48:37 [DEBUG] [-] [MainThread] hooks.hooks: Stopping active ZAP scans during teardown
+2025-05-03 13:48:37 [INFO] [-] [MainThread] zap_scanner.zap_scanner.stop: No active ZAP scans found to stop.
+2025-05-03 13:48:37 [INFO] [-] [MainThread] main.main: ==================================================
+2025-05-03 13:48:37 [INFO] [-] [MainThread] main.main: AI Model Management System is ready!
+2025-05-03 13:48:37 [INFO] [-] [MainThread] main.main: Access the application at: http://localhost:5000/
+2025-05-03 13:48:37 [INFO] [-] [MainThread] main.main: ==================================================
+
+2025-05-03 13:48:37 [INFO] [-] [MainThread] main.main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-05-03 13:48:37 [WARNING] [-] [MainThread] app.werkzeug:  * Debugger is active!
+2025-05-03 13:48:37 [INFO] [-] [MainThread] app.werkzeug:  * Debugger PIN: 103-119-036
+2025-05-03 13:48:41 [INFO] [-] [MainThread] app.werkzeug:  * Detected change in 'c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\z_interface_app\\logging_service.py', reloading
+2025-05-03 13:48:41 [INFO] [-] [MainThread] logging_service.logging_service: Stopping queue listener...
+2025-05-03 13:48:43 [INFO] [-] [MainThread] app.root: Queue-based logging initialized. Level: DEBUG. Log directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\logs
+2025-05-03 13:48:43 [INFO] [-] [MainThread] app.app: Enhanced queue-based logging service initialized.
+2025-05-03 13:48:43 [INFO] [-] [MainThread] app.app: Starting application setup
+2025-05-03 13:48:43 [INFO] [-] [MainThread] app.app: Application base directory: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:48:43 [INFO] [-] [MainThread] app.app: Parent base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:48:43 [INFO] [-] [MainThread] app.app: Effective APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:48:43 [INFO] [-] [MainThread] app.app: Initializing service components and analyzers
+2025-05-03 13:48:43 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Initialized FrontendSecurityAnalyzer with base path: C:\Users\grabowmar\Desktop\ThesisAppsSvelte
+2025-05-03 13:48:43 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npm' at: C:\Program Files\nodejs\npm.cmd
+2025-05-03 13:48:43 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:48:43 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'npx' at: C:\Program Files\nodejs\npx.cmd
+2025-05-03 13:48:43 [DEBUG] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Found executable for 'snyk' at: C:\Users\grabowmar\AppData\Roaming\npm\snyk.cmd
+2025-05-03 13:48:43 [INFO] [-] [MainThread] frontend_security_analysis.frontend_security_analysis: Available tools check: {'npm-audit': True, 'eslint': True, 'jshint': True, 'snyk': True}
+2025-05-03 13:48:43 [INFO] [-] [MainThread] app.gpt4all: GPT4All client initialized with API URL: http://localhost:4891/v1
+2025-05-03 13:48:43 [INFO] [-] [MainThread] app.gpt4all: GPT4All analyzer initialized (Base Path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app, API URL: http://localhost:4891/v1)
+2025-05-03 13:48:43 [INFO] [-] [MainThread] performance_analysis.performance_analysis: PerformanceTester initialized. Output dir: c:\Users\grabowmar\Desktop\ThesisAppsSvelte, Static URL path: /static
+2025-05-03 13:48:43 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Creating comprehensive ZAP scanner instance...
+2025-05-03 13:48:43 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found Java: openjdk version "21.0.6" 2025-01-21 LTS
+2025-05-03 13:48:43 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Found free port: 8090
+2025-05-03 13:48:43 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAPScanner initialized with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:48:43 [INFO] [-] [MainThread] zap_scanner.zap_scanner: ZAP proxy configuration: 127.0.0.1:8090
+2025-05-03 13:48:43 [INFO] [-] [MainThread] zap_scanner.zap_scanner: Comprehensive ZAP scanner created with base path: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:48:43 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /version HTTP/1.1" 200 None
+2025-05-03 13:48:43 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /v1.47/_ping HTTP/1.1" 200 None
+2025-05-03 13:48:43 [INFO] [-] [MainThread] docker.docker: Docker client created and connection verified.
+2025-05-03 13:48:43 [INFO] [-] [MainThread] docker.docker: Docker manager initialized (Cache: 5s)
+2025-05-03 13:48:43 [INFO] [-] [MainThread] scan_manager.scan_manager: Scan manager initialized
+2025-05-03 13:48:43 [INFO] [-] [MainThread] app.app: Initialized ScanManager on app context.
+2025-05-03 13:48:43 [INFO] [-] [MainThread] app.app: Registering application blueprints
+2025-05-03 13:48:43 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Initializing Batch Analysis Module...
+2025-05-03 13:48:43 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Using APP_BASE_PATH: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app
+2025-05-03 13:48:43 [INFO] [-] [MainThread] batch_analysis.batch_analysis.service: App registered with BatchAnalysisService. Config: MaxJobs:2, MaxTasks:2, DefaultTimeout:1800s
+2025-05-03 13:48:43 [INFO] [-] [MainThread] batch_analysis.batch_analysis: All required service attributes found on app context
+2025-05-03 13:48:43 [INFO] [-] [MainThread] batch_analysis.batch_analysis: PortManager class is available
+2025-05-03 13:48:43 [INFO] [-] [MainThread] batch_analysis.batch_analysis: Batch Analysis Module initialization complete
+2025-05-03 13:48:43 [INFO] [-] [MainThread] app.app: Registering error handlers and request hooks
+2025-05-03 13:48:43 [INFO] [-] [MainThread] app.app: Application initialization complete
+2025-05-03 13:48:43 [INFO] [-] [MainThread] main.main: Performing post-initialization health checks...
+2025-05-03 13:48:43 [INFO] [-] [MainThread] main.main: Checking system health via Docker manager...
+2025-05-03 13:48:43 [INFO] [-] [MainThread] system_health.system_health: Performing system health check...
+2025-05-03 13:48:43 [DEBUG] [-] [MainThread] system_health.system_health: Pinging Docker daemon...
+2025-05-03 13:48:43 [DEBUG] [-] [MainThread] urllib3.urllib3.connectionpool: http://localhost:None "GET /v1.47/_ping HTTP/1.1" 200 None
+2025-05-03 13:48:43 [DEBUG] [-] [MainThread] system_health.system_health: Docker daemon ping successful.
+2025-05-03 13:48:43 [DEBUG] [-] [MainThread] system_health.system_health: Checking disk space on Windows using 'wmic'
+2025-05-03 13:48:43 [DEBUG] [-] [MainThread] system_health.system_health: Disk space check passed (Usage <= 90%)
+2025-05-03 13:48:43 [INFO] [-] [MainThread] system_health.system_health: System health check passed (Docker connection OK, Disk space OK).
+2025-05-03 13:48:43 [INFO] [-] [MainThread] main.main: System health check passed.
+2025-05-03 13:48:43 [DEBUG] [-] [MainThread] hooks.hooks: Stopping active ZAP scans during teardown
+2025-05-03 13:48:43 [INFO] [-] [MainThread] zap_scanner.zap_scanner.stop: No active ZAP scans found to stop.
+2025-05-03 13:48:43 [INFO] [-] [MainThread] main.main: ==================================================
+2025-05-03 13:48:43 [INFO] [-] [MainThread] main.main: AI Model Management System is ready!
+2025-05-03 13:48:43 [INFO] [-] [MainThread] main.main: Access the application at: http://localhost:5000/
+2025-05-03 13:48:43 [INFO] [-] [MainThread] main.main: ==================================================
+
+2025-05-03 13:48:43 [INFO] [-] [MainThread] main.main: Starting Flask server on 127.0.0.1:5000 (debug=True)
+2025-05-03 13:48:43 [WARNING] [-] [MainThread] app.werkzeug:  * Debugger is active!
+2025-05-03 13:48:43 [INFO] [-] [MainThread] app.werkzeug:  * Debugger PIN: 103-119-036
