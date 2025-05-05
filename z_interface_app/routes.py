@@ -212,7 +212,18 @@ def get_zap_results_path(app, model: str, app_num: int) -> Path:
     # Try various potential locations for the ZAP results file
     base_dir = Path(app.config["BASE_DIR"])
     
-    # Possible locations to check
+    # New primary location in zap_reports directory
+    zap_reports_dir = base_dir / "zap_reports" / model / f"app{app_num}"
+    zap_reports_file = zap_reports_dir / ".zap_results.json"
+    
+    # Create directory if it doesn't exist
+    zap_reports_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Check if file exists in new location first
+    if zap_reports_file.exists():
+        return zap_reports_file
+        
+    # Possible fallback locations to check (original ones)
     possible_paths = [
         # Direct model/app path in base directory
         base_dir / model / f"app{app_num}" / ".zap_results.json",
@@ -235,8 +246,8 @@ def get_zap_results_path(app, model: str, app_num: int) -> Path:
         if path.exists():
             return path
     
-    # If no file exists, return the default path (for future writing)
-    return possible_paths[0]
+    # If no file exists, return the new location for future writing
+    return zap_reports_file
 
 
 # =============================================================================
@@ -863,6 +874,9 @@ def log_client_error():
 # =============================================================================
 # ZAP Routes (/zap)
 # =============================================================================
+# =============================================================================
+# ZAP Routes (/zap)
+# =============================================================================
 @zap_bp.route("/<string:model>/<int:app_num>")
 @ajax_compatible
 def zap_scan_page(model: str, app_num: int):
@@ -876,9 +890,37 @@ def zap_scan_page(model: str, app_num: int):
     results_exist = False
 
     try:
-        # Get the correct path to the ZAP results file
-        results_file = get_zap_results_path(current_app, model, app_num)
-        results_exist = results_file.exists()
+        # Base directory for the application
+        base_dir = Path(current_app.config["BASE_DIR"])
+        
+        # New location for ZAP results
+        zap_reports_dir = base_dir / "zap_reports" / model / f"app{app_num}"
+        results_file = zap_reports_dir / ".zap_results.json"
+        
+        # Check if results exist in new location
+        if results_file.exists() and results_file.stat().st_size > 10:
+            results_exist = True
+        else:
+            # Try legacy locations
+            legacy_locations = [
+                # Direct model/app path in base directory
+                base_dir / model / f"app{app_num}" / ".zap_results.json",
+                # With z_interface_app in the path
+                base_dir / "z_interface_app" / model / f"app{app_num}" / ".zap_results.json",
+                # Base directory itself being z_interface_app
+                base_dir.parent / model / f"app{app_num}" / ".zap_results.json",
+                # Alternative filename (without leading dot)
+                base_dir / model / f"app{app_num}" / "zap_results.json",
+                # Inside z_interface_app with no dot in filename
+                base_dir / "z_interface_app" / model / f"app{app_num}" / "zap_results.json"
+            ]
+            
+            # Check each legacy location
+            for path in legacy_locations:
+                if path.exists() and path.stat().st_size > 10:
+                    results_file = path
+                    results_exist = True
+                    break
         
         if results_exist:
             zap_logger.info(f"Loading ZAP results from: {results_file}")
@@ -922,7 +964,7 @@ def zap_scan_page(model: str, app_num: int):
                 error_msg = f"Failed to process results file: {e}"
                 zap_logger.exception(error_msg)
         else:
-            zap_logger.info(f"No ZAP results file found at: {results_file}")
+            zap_logger.info(f"No ZAP results file found for {model}/app{app_num}")
 
         return render_template(
             "zap_scan.html",
@@ -999,6 +1041,7 @@ def start_zap_scan(model: str, app_num: int):
                     success = scanner.start_scan(model_thread, app_num_thread)  # Blocks until scan finishes
 
                     scan_thread_logger.info(f"Scan finished for {scan_id_thread}. Success reported by scanner: {success}")
+                    
                     # Determine final status based on scanner's return and potential prior errors
                     # Scan manager state might have been updated if scan_target failed critically
                     current_state = current_scan_manager.get_scan_details(scan_id_thread)
@@ -1009,11 +1052,17 @@ def start_zap_scan(model: str, app_num: int):
 
                     final_progress = 100  # Mark as 100% done
 
-                    results_file = app_dir_thread / ".zap_results.json"
+                    # Create zap_reports directory for saving results
+                    zap_reports_dir = base_dir_thread / "zap_reports" / model_thread / f"app{app_num_thread}"
+                    zap_reports_dir.mkdir(parents=True, exist_ok=True)
+                    results_file = zap_reports_dir / ".zap_results.json"
+
                     summary_data = {}
                     risk_counts = {}
                     duration = None
                     vuln_with_code = 0
+                    
+                    # Copy from scanner results (if available) or check if results file already exists
                     if results_file.exists() and results_file.stat().st_size > 10:
                         try:
                             with open(results_file, 'r', encoding='utf-8') as f:
@@ -1041,6 +1090,16 @@ def start_zap_scan(model: str, app_num: int):
                         info_count=risk_counts.get("Info", 0),
                     )
                     scan_thread_logger.info(f"Scan {scan_id_thread} final status updated to {final_status}")
+
+                    # Also copy code report if it exists in the legacy location but not in the new location
+                    legacy_report_file = app_dir_thread / ".zap_code_report.md"
+                    new_report_file = zap_reports_dir / ".zap_code_report.md"
+                    if legacy_report_file.exists() and not new_report_file.exists():
+                        try:
+                            shutil.copy2(legacy_report_file, new_report_file)
+                            scan_thread_logger.info(f"Copied legacy code report to new location: {new_report_file}")
+                        except Exception as copy_err:
+                            scan_thread_logger.error(f"Failed to copy legacy code report: {copy_err}")
 
                 except FileNotFoundError as e:
                     scan_thread_logger.error(f"Cannot start scan {scan_id_thread}, directory not found: {e}")
@@ -1119,8 +1178,18 @@ def zap_scan_status(model: str, app_num: int):
         
         if response["status"] in terminal_states:
             try:
-                app_dir = get_app_directory(current_app, model, app_num)
-                results_file = app_dir / ".zap_results.json"
+                base_dir = Path(current_app.config["BASE_DIR"])
+                
+                # Check new location first
+                results_file = base_dir / "zap_reports" / model / f"app{app_num}" / ".zap_results.json"
+                
+                # Fallback to legacy location if needed
+                if not results_file.exists() or results_file.stat().st_size < 10:
+                    app_dir = get_app_directory(current_app, model, app_num)
+                    legacy_results_file = app_dir / ".zap_results.json"
+                    if legacy_results_file.exists() and legacy_results_file.stat().st_size >= 10:
+                        results_file = legacy_results_file
+                
                 if results_file.exists() and results_file.stat().st_size > 10:
                     with open(results_file, 'r', encoding='utf-8') as f:
                         data = json.load(f)
@@ -1140,7 +1209,7 @@ def zap_scan_status(model: str, app_num: int):
                     zap_logger.debug(f"Updated final counts/duration from results file for scan {scan_id}")
 
             except FileNotFoundError:
-                zap_logger.warning(f"Cannot read final counts for {scan_id}, app directory not found.")
+                zap_logger.warning(f"Cannot read final counts for {scan_id}, directory not found.")
             except Exception as e:
                 zap_logger.exception(f"Error reading final results file for scan {scan_id}: {e}")
 
@@ -1217,13 +1286,22 @@ def download_code_report(model: str, app_num: int):
     log_client_request(zap_logger, "Code report download", model, app_num)
     
     try:
-        app_dir = get_app_directory(current_app, model, app_num)
-        report_file = app_dir / ".zap_code_report.md"
+        base_dir = Path(current_app.config["BASE_DIR"])
+        
+        # Check new location first
+        report_dir = base_dir / "zap_reports" / model / f"app{app_num}"
+        report_file = report_dir / ".zap_code_report.md"
 
+        # Fallback to legacy location if not found
         if not report_file.is_file():
-            zap_logger.warning(f"Code report file not found: {report_file}")
-            flash("Code analysis report not found. Please run a ZAP scan first.", "error")
-            return redirect(url_for('zap.zap_scan_page', model=model, app_num=app_num))
+            app_dir = get_app_directory(current_app, model, app_num)
+            legacy_report_file = app_dir / ".zap_code_report.md"
+            if legacy_report_file.is_file():
+                report_file = legacy_report_file
+            else:
+                zap_logger.warning(f"Code report file not found at any location")
+                flash("Code analysis report not found. Please run a ZAP scan first.", "error")
+                return redirect(url_for('zap.zap_scan_page', model=model, app_num=app_num))
 
         zap_logger.info(f"Sending code report file: {report_file}")
         return send_file(
@@ -1246,18 +1324,28 @@ def regenerate_code_report(model: str, app_num: int):
     
     try:
         base_dir = Path(current_app.config["BASE_DIR"])
-        app_dir = get_app_directory(current_app, model, app_num)
-        results_file = app_dir / ".zap_results.json"
-        report_file_path = app_dir / ".zap_code_report.md"
+        
+        # Use new report directory structure
+        report_dir = base_dir / "zap_reports" / model / f"app{app_num}"
+        report_dir.mkdir(parents=True, exist_ok=True)
+        results_file = report_dir / ".zap_results.json"
+        report_file_path = report_dir / ".zap_code_report.md"
 
+        # Fallback to legacy location if needed
         if not results_file.is_file() or results_file.stat().st_size < 10:
-            msg = f"Valid ZAP results file not found at {results_file}. Cannot regenerate report."
-            zap_logger.warning(msg)
-            return APIResponse(
-                success=False, 
-                error="Scan results not found or empty.", 
-                code=http.HTTPStatus.NOT_FOUND
-            )
+            app_dir = get_app_directory(current_app, model, app_num)
+            legacy_results_file = app_dir / ".zap_results.json"
+            if legacy_results_file.is_file() and legacy_results_file.stat().st_size >= 10:
+                results_file = legacy_results_file
+                # Report will still be generated at the new location
+            else:
+                msg = f"Valid ZAP results file not found. Cannot regenerate report."
+                zap_logger.warning(msg)
+                return APIResponse(
+                    success=False, 
+                    error="Scan results not found or empty.", 
+                    code=http.HTTPStatus.NOT_FOUND
+                )
 
         zap_logger.info(f"Reading scan results from {results_file}")
         with open(results_file, 'r', encoding='utf-8') as f:
@@ -1590,6 +1678,8 @@ def analyze_single_file():
 # =============================================================================
 # Performance Testing Routes (/performance)
 # =============================================================================
+
+
 def get_tester():
     """Get the performance tester instance."""
     if not hasattr(current_app, 'performance_tester'):
@@ -1597,280 +1687,245 @@ def get_tester():
     return current_app.performance_tester
 
 
-def get_base_dir():
-    """Get the base directory from configuration."""
-    return Path(current_app.config.get("BASE_DIR", "."))
-
-
-def derive_app_num(port: int) -> Optional[int]:
+def get_app_info(port: int) -> Dict[str, Any]:
     """
-    Derive app number from port.
+    Get app information from port number including base_dir and app_num.
     
     Args:
         port: The port number
         
     Returns:
-        Optional[int]: The derived app number or None if it cannot be determined
+        Dict with app_num and base_dir
     """
-    try:
-        BASE_FRONTEND_PORT = current_app.config.get("BASE_FRONTEND_PORT", 5501)
-        PORTS_PER_APP = current_app.config.get("PORTS_PER_APP", 2)
-        port_offset = port - BASE_FRONTEND_PORT
-        if port_offset >= 0:
-            app_num = (port_offset // PORTS_PER_APP) + 1
-            perf_logger.debug(f"Derived app_num={app_num} from port={port}")
-            return app_num
-        else:
-            perf_logger.warning(
-                f"Port {port} is below BASE_FRONTEND_PORT {BASE_FRONTEND_PORT}, cannot derive app_num."
-            )
-            return None
-    except Exception as e:
-        perf_logger.warning(f"Could not derive app_num from port {port}: {e}")
-        return None
+    base_dir = Path(current_app.config.get("BASE_DIR", "."))
+    app_num = None
+    
+    # Try to derive app number from port
+    base_port = current_app.config.get("BASE_FRONTEND_PORT", 5501)
+    ports_per_app = current_app.config.get("PORTS_PER_APP", 2)
+    port_offset = port - base_port
+    
+    if port_offset >= 0:
+        app_num = (port_offset // ports_per_app) + 1
+        perf_logger.debug(f"Derived app_num={app_num} from port={port}")
+    else:
+        perf_logger.warning(f"Port {port} is below base port {base_port}, cannot derive app_num")
+    
+    return {"app_num": app_num, "base_dir": base_dir}
 
 
 @performance_bp.route("/<string:model>/<int:port>", methods=["GET", "POST"])
 @ajax_compatible
 def performance_test(model: str, port: int):
-    """
-    Display performance test page (GET) or run a test using the library (POST).
-    """
+    """Display performance test page (GET) or run a test using the library (POST)."""
     if request.method == "POST":
         log_client_request(perf_logger, "Performance test", model)
-        perf_logger.info(f"Starting performance test POST request for {model} on port {port} using library method.")
+        perf_logger.info(f"Starting performance test for {model} on port {port}")
         
         try:
+            # Get required components
             tester = get_tester()
-            base_dir = get_base_dir()
-            app_num = derive_app_num(port)
+            app_info = get_app_info(port)
+            app_num = app_info["app_num"]
             
+            # Parse and validate request data
             data = request.get_json()
             if not data:
-                raise BadRequest("Missing JSON request body.")
+                raise BadRequest("Missing JSON request body")
 
+            # Extract test parameters
             num_users = int(data.get("num_users", 10))
-            duration = int(data.get("duration", 30))  # Duration in seconds for library call
+            duration = int(data.get("duration", 30))
             spawn_rate = int(data.get("spawn_rate", 1))
             endpoints_raw = data.get("endpoints", [{"path": "/", "method": "GET", "weight": 1}])
 
+            # Validate parameters
             if not (num_users > 0 and duration > 0 and spawn_rate > 0):
-                raise BadRequest("Number of users, duration, and spawn rate must be positive integers.")
+                raise BadRequest("Test parameters must be positive integers")
             if not endpoints_raw:
-                raise BadRequest("At least one endpoint configuration must be provided.")
+                raise BadRequest("At least one endpoint must be provided")
 
-            perf_logger.info(
-                f"Test parameters: users={num_users}, duration={duration}s, "
-                f"spawn_rate={spawn_rate}, endpoints={endpoints_raw}"
-            )
-
+            # Format endpoints
             formatted_endpoints = []
             for ep in endpoints_raw:
                 if isinstance(ep, dict) and "path" in ep:
-                    # Basic validation
                     ep['method'] = ep.get('method', 'GET').upper()
-                    ep['weight'] = int(ep.get('weight', 1))
-                    if ep['weight'] < 1:
-                        ep['weight'] = 1
+                    ep['weight'] = max(1, int(ep.get('weight', 1)))
                     formatted_endpoints.append(ep)
                 else:
-                    raise BadRequest(f"Invalid endpoint format: {ep}. Expecting list of dicts with 'path'.")
+                    raise BadRequest(f"Invalid endpoint format: {ep}")
 
-            test_base_name = f"{model}_{port}"  # Timestamp added by run_test_library
-            host_url = f"http://localhost:{port}"  # Assuming localhost for now
-
-            perf_logger.info(f"Running library performance test '{test_base_name}' against {host_url}")
+            # Build test parameters
+            test_name = f"{model}_{port}"
+            host_url = f"http://localhost:{port}"
 
             # Run the test
-            result_data = tester.run_test_library(
-                test_name=test_base_name,  # Base name, timestamp added internally
+            result = tester.run_test_library(
+                test_name=test_name,
                 host=host_url,
                 endpoints=formatted_endpoints,
                 user_count=num_users,
                 spawn_rate=spawn_rate,
-                run_time=duration,  # Pass duration in seconds
-                generate_graphs=True,  # Generate graphs and include URLs
+                run_time=duration,
+                generate_graphs=True,
                 model=model,
                 app_num=app_num
             )
 
-            perf_logger.info(f"Test '{result_data.test_name}' completed.")
-
-            # Return the result data directly
+            # Return the results
             return {
                 "status": "success",
-                "message": f"Test '{result_data.test_name}' completed.",
-                "data": result_data.to_dict()  # Send the full result object as dict
+                "message": f"Test '{result.test_name}' completed",
+                "data": result.to_dict()
             }
         except Exception as e:
             return handle_route_error(e, perf_logger)
-    else:
-        # GET request
-        try:
-            log_client_request(perf_logger, "Performance test form", model)
-            
-            tester = get_tester()
-            base_dir = get_base_dir()
-            app_num = derive_app_num(port)
-            
-            # You might want to load last saved result here if available
-            last_result_data = None
-            if app_num:
-                try:
-                    # Check for consolidated results file
-                    app_dir = base_dir / "performance_reports" / model / f"app{app_num}"
-                    result_file = app_dir / ".locust_result.json"
+    
+    # GET request - show test form
+    try:
+        log_client_request(perf_logger, "Performance test form", model)
+        
+        # Get app info
+        app_info = get_app_info(port)
+        app_num = app_info["app_num"]
+        base_dir = app_info["base_dir"]
+        
+        # Try to load the last test result
+        last_result = None
+        if app_num:
+            try:
+                # Try both with and without the leading dot
+                for filename in [".locust_result.json", "locust_result.json"]:
+                    result_file = base_dir / "performance_reports" / model / f"app{app_num}" / filename
                     if result_file.exists():
                         with open(result_file, "r") as f:
-                            last_result_data = json.load(f)
+                            last_result = json.load(f)
                         perf_logger.info(f"Loaded last result from {result_file}")
-                except Exception as load_err:
-                    perf_logger.warning(f"Could not load last result for {model}/app{app_num}: {load_err}")
+                        break
+            except Exception as e:
+                perf_logger.warning(f"Could not load last result: {e}")
 
-            return render_template(
-                "performance_test.html", 
-                model=model, 
-                port=port, 
-                last_result=last_result_data
-            )
-        except Exception as e:
-            return handle_route_error(e, perf_logger)
-
-
-@performance_bp.route("/<string:model>/<int:port>/stop", methods=["POST"])
-@ajax_compatible
-def stop_performance_test(model: str, port: int):
-    """Stop a running performance test (implementation needed)."""
-    log_client_request(perf_logger, "Stop performance test", model)
-    perf_logger.warning("Performance test stopping is not yet implemented.")
-    return {"status": "warning", "message": "Test stopping not implemented."}
+        # Render the template
+        return render_template(
+            "performance_test.html", 
+            model=model, 
+            port=port, 
+            last_result=last_result
+        )
+    except Exception as e:
+        return handle_route_error(e, perf_logger)
 
 
 @performance_bp.route("/<string:model>/<int:port>/reports", methods=["GET"])
 @ajax_compatible
-def list_performance_reports(model: str, port: int):
-    """
-    List available performance test artifacts (directories containing graphs/results).
-    """
+def list_reports(model: str, port: int):
+    """List available performance test reports."""
     log_client_request(perf_logger, "List performance reports", model)
     
     try:
-        reports = []
-        base_dir = get_base_dir()
-        report_base_dir = base_dir / "performance_reports"
-        if not report_base_dir.is_dir():
-            perf_logger.debug(f"Report directory does not exist: {report_base_dir}")
+        app_info = get_app_info(port)
+        base_dir = app_info["base_dir"]
+        app_num = app_info["app_num"]
+        
+        # Get the reports directory
+        reports_dir = base_dir / "performance_reports"
+        if not reports_dir.is_dir():
             return {"reports": []}
 
-        test_name_prefix = f"{model}_{port}_"
-        tester = get_tester()  # Need static_url_path from tester
-
-        for test_dir in report_base_dir.iterdir():
-            if test_dir.is_dir() and test_dir.name.startswith(test_name_prefix):
-                report_id = test_dir.name  # e.g., model_port_YYYYMMDD_HHMMSS
-                timestamp_str = report_id.replace(test_name_prefix, "")
+        # Find reports matching the model and port
+        test_prefix = f"{model}_{port}_"
+        reports = []
+        
+        # Process each report directory
+        for test_dir in reports_dir.iterdir():
+            if test_dir.is_dir() and test_dir.name.startswith(test_prefix):
+                # Get report ID and timestamp
+                report_id = test_dir.name
+                timestamp_str = report_id.replace(test_prefix, "")
                 formatted_time = "Unknown Time"
+                
+                # Parse timestamp
                 try:
                     dt_obj = datetime.strptime(timestamp_str, "%Y%m%d_%H%M%S")
                     formatted_time = dt_obj.strftime("%Y-%m-%d %H:%M:%S")
                 except ValueError:
-                    pass  # Ignore if parsing fails
-
+                    pass
+                
+                # Get graph files
                 graphs = []
                 for graph_file in test_dir.glob("*.png"):
-                    # Construct URL relative to static path
-                    relative_path = graph_file.relative_to(base_dir)  # Relative to Flask's static root
-                    graph_url = url_for('static', filename=relative_path.as_posix())
-
+                    relative_path = graph_file.relative_to(base_dir)
                     graphs.append({
                         "name": graph_file.stem.replace("_", " ").title(),
-                        "url": graph_url
+                        "url": url_for('static', filename=relative_path.as_posix())
                     })
-
-                # Check for the consolidated JSON result file
-                consolidated_json_path = None
-                app_num = derive_app_num(port)
+                
+                # Check for JSON result file
+                json_path = None
+                json_url = None
                 if app_num:
-                    app_specific_dir = report_base_dir / model / f"app{app_num}"
-                    json_file = app_specific_dir / ".locust_result.json"
+                    app_dir = reports_dir / model / f"app{app_num}"
+                    json_file = app_dir / ".locust_result.json"
                     if json_file.exists():
-                        consolidated_json_path = str(json_file)  # Store path for potential loading
-
+                        try:
+                            with open(json_file, "r") as f:
+                                data = json.load(f)
+                            # Only check if test_name exists, don't require exact match
+                            if "test_name" in data:
+                                json_path = str(json_file)
+                                json_url = url_for(
+                                    '.get_report_data', 
+                                    model=model, 
+                                    port=port, 
+                                    report_id=report_id
+                                )
+                        except Exception:
+                            pass
+                
+                # Add report to list
                 reports.append({
                     "id": report_id,
                     "timestamp_str": timestamp_str,
                     "created": formatted_time,
                     "graphs": graphs,
-                    "has_consolidated_json": consolidated_json_path is not None,
-                    # Add URL to view consolidated data if needed
-                    "results_url": url_for(
-                        '.get_performance_results', 
-                        model=model, 
-                        port=port, 
-                        report_id=report_id
-                    ) if consolidated_json_path else None
+                    "has_consolidated_json": json_path is not None,
+                    "results_url": json_url
                 })
-
+        
+        # Sort reports by timestamp (newest first)
         reports.sort(key=lambda x: x.get("timestamp_str", ""), reverse=True)
-        perf_logger.info(f"Found {len(reports)} performance report directories for {model} on port {port}")
-        return {"reports": reports}  # Return list directly for ajax_compatible
+        perf_logger.info(f"Found {len(reports)} performance reports")
+        return {"reports": reports}
     except Exception as e:
         return handle_route_error(e, perf_logger)
 
 
 @performance_bp.route("/<string:model>/<int:port>/reports/<path:report_id>", methods=["GET"])
-def view_performance_report_from_json(model: str, port: int, report_id: str):
-    """
-    Loads saved JSON results and renders them in a view template.
-    """
-    log_client_request(perf_logger, "View saved performance report", model)
+def view_report(model: str, port: int, report_id: str):
+    """View a performance report."""
+    log_client_request(perf_logger, "View performance report", model)
     
     try:
-        base_dir = get_base_dir()
-        
-        # Security Check
+        # Validate report ID
         expected_prefix = f"{model}_{port}_"
         if not report_id.startswith(expected_prefix) or ".." in report_id or report_id.startswith('/'):
-            perf_logger.warning(f"Invalid or potentially unsafe report ID requested for viewing: {report_id}")
-            return render_template("404.html", message="Invalid Report ID"), http.HTTPStatus.BAD_REQUEST
-
-        # Find the corresponding consolidated JSON file
-        result_data = None
-        app_num = derive_app_num(port)
-        if app_num:
-            app_specific_dir = base_dir / "performance_reports" / model / f"app{app_num}"
-            json_file = app_specific_dir / ".locust_result.json"
-            # Check if this JSON corresponds to the requested report_id (e.g., by timestamp)
-            if json_file.exists():
-                try:
-                    with open(json_file, "r") as f:
-                        loaded_data = json.load(f)
-                    # Match based on test_name stored in the JSON
-                    if loaded_data.get("test_name") == report_id:
-                        result_data = loaded_data
-                        perf_logger.info(f"Found matching consolidated JSON: {json_file}")
-                    else:
-                        perf_logger.warning(
-                            f"Consolidated JSON {json_file} does not match test_name {report_id}"
-                        )
-                except Exception as e:
-                    perf_logger.error(f"Error loading or checking consolidated JSON {json_file}: {e}")
-
-        if not result_data:
-            perf_logger.warning(f"No matching consolidated result JSON found for report ID {report_id}")
-            return render_template(
-                "404.html", 
-                message=f"Result data for report {report_id} not found."
-            ), http.HTTPStatus.NOT_FOUND
-
-        # If data found, render it using a template similar to the main one
+            perf_logger.warning(f"Invalid report ID: {report_id}")
+            return render_template("404.html", message="Invalid Report ID"), 400
+        
+        # Get report data
+        data = _get_report_data(model, port, report_id, strict_validation=False)
+        if not data:
+            perf_logger.warning(f"Report data not found: {report_id}")
+            return render_template("404.html", message="Report not found"), 404
+        
+        # Render template with report data
         return render_template(
-            "performance_test.html",  # Reuse the main template
+            "performance_test.html",
             model=model,
             port=port,
-            report_id=report_id,  # Pass report_id for context
-            last_result=result_data,  # Pass loaded data
-            is_viewing_report=True  # Flag for template logic
+            report_id=report_id,
+            last_result=data,
+            is_viewing_report=True
         )
     except Exception as e:
         return handle_route_error(e, perf_logger)
@@ -1878,78 +1933,111 @@ def view_performance_report_from_json(model: str, port: int, report_id: str):
 
 @performance_bp.route("/<string:model>/<int:port>/results/<path:report_id>", methods=["GET"])
 @ajax_compatible
-def get_performance_results(model: str, port: int, report_id: str):
-    """
-    Get raw JSON results from the saved .locust_result.json file.
-    """
-    log_client_request(perf_logger, "Get raw performance results", model)
+def get_report_data(model: str, port: int, report_id: str):
+    """Get JSON data for a performance report."""
+    log_client_request(perf_logger, "Get report data", model)
     
     try:
-        base_dir = get_base_dir()
-
-        # Security Check
+        # Validate report ID
         expected_prefix = f"{model}_{port}_"
         if not report_id.startswith(expected_prefix) or ".." in report_id or report_id.startswith('/'):
-            perf_logger.warning(f"Invalid or potentially unsafe report ID for results: {report_id}")
             raise BadRequest("Invalid Report ID")
-
-        json_file_path = None
-        app_num = derive_app_num(port)
-        if app_num:
-            app_specific_dir = base_dir / "performance_reports" / model / f"app{app_num}"
-            json_file = app_specific_dir / ".locust_result.json"
-            # Check if this file matches the report_id based on its content
-            if json_file.exists():
-                try:
-                    with open(json_file, "r") as f:
-                        data = json.load(f)
-                    if data.get("test_name") == report_id:
-                        json_file_path = json_file
-                        perf_logger.debug(f"Found matching consolidated JSON for {report_id}: {json_file_path}")
-                        return data  # Return the loaded data directly
-                    else:
-                        perf_logger.warning(
-                            f"Consolidated JSON {json_file} test_name does not match {report_id}"
-                        )
-                except Exception as e:
-                    perf_logger.error(f"Error reading or checking consolidated JSON {json_file}: {e}")
-
-        # If not found in consolidated location or mismatch, raise NotFound
-        perf_logger.warning(f"No matching consolidated JSON result file found for report ID: {report_id}")
-        raise NotFound("Result data not found for this report ID")
+        
+        # Get report data
+        data = _get_report_data(model, port, report_id, strict_validation=False)
+        if not data:
+            raise NotFound("Report data not found")
+        
+        return data
     except Exception as e:
         return handle_route_error(e, perf_logger)
+
+
+def _get_report_data(model: str, port: int, report_id: str, strict_validation: bool = True) -> Optional[Dict[str, Any]]:
+    """
+    Get the JSON data for a report.
+    
+    Args:
+        model: Model name
+        port: Port number
+        report_id: Report ID
+        strict_validation: Whether to strictly validate test_name matching
+        
+    Returns:
+        Report data dict or None if not found
+    """
+    # Get app info
+    app_info = get_app_info(port)
+    app_num = app_info["app_num"]
+    base_dir = app_info["base_dir"]
+    
+    # Check if app number is available
+    if not app_num:
+        perf_logger.warning(f"Could not derive app_num from port {port}")
+        return None
+    
+    # Get JSON file path
+    app_dir = base_dir / "performance_reports" / model / f"app{app_num}"
+    json_file = app_dir / ".locust_result.json"
+    
+    # Check if file exists
+    if not json_file.exists():
+        perf_logger.warning(f"JSON file not found: {json_file}")
+        return None
+    
+    # Read and validate file
+    try:
+        with open(json_file, "r") as f:
+            data = json.load(f)
+        
+        # Verify test_name if strict validation is enabled
+        if strict_validation and data.get("test_name") != report_id:
+            perf_logger.warning(f"Test name in file does not match report ID")
+            return None
+        
+        # Always include test_name for reference
+        if "test_name" not in data:
+            data["test_name"] = report_id
+            perf_logger.debug(f"Added missing test_name to data")
+        
+        perf_logger.info(f"Successfully loaded report data with {len(data.get('endpoints', []))} endpoints")
+        return data
+    except Exception as e:
+        perf_logger.error(f"Error reading JSON file: {e}")
+        return None
 
 
 @performance_bp.route("/<string:model>/<int:port>/reports/<path:report_id>/delete", methods=["POST"])
 @ajax_compatible
-def delete_performance_report(model: str, port: int, report_id: str):
-    """Delete a specific performance test report directory and its contents."""
+def delete_report(model: str, port: int, report_id: str):
+    """Delete a performance report."""
     log_client_request(perf_logger, "Delete performance report", model)
     
     try:
-        base_dir = get_base_dir()
-        report_dir = base_dir / "performance_reports" / report_id
-
-        # Security Check
+        # Validate report ID
         expected_prefix = f"{model}_{port}_"
         if not report_id.startswith(expected_prefix) or ".." in report_id or report_id.startswith('/'):
-            perf_logger.warning(f"Invalid or potentially unsafe report ID for deletion: {report_id}")
             raise BadRequest("Invalid Report ID")
-
+        
+        # Get report directory
+        app_info = get_app_info(port)
+        base_dir = app_info["base_dir"]
+        report_dir = base_dir / "performance_reports" / report_id
+        
+        # Check if directory exists
         if not report_dir.is_dir():
-            perf_logger.warning(f"Report directory not found for deletion: {report_dir}")
             raise NotFound("Report directory not found")
-
-        perf_logger.warning(f"Recursively deleting report directory: {report_dir}")
-        import shutil
+        
+        # Delete directory
         shutil.rmtree(report_dir)
-        perf_logger.info(f"Successfully deleted report directory {report_id}")
-
-        return {"status": "success", "message": f"Report directory {report_id} deleted successfully"}
+        perf_logger.info(f"Deleted report directory: {report_dir}")
+        
+        return {
+            "status": "success",
+            "message": f"Report {report_id} deleted successfully"
+        }
     except Exception as e:
         return handle_route_error(e, perf_logger)
-
 
 # =============================================================================
 # GPT4All Routes (/gpt4all)

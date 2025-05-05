@@ -894,9 +894,9 @@ class GPT4AllAnalyzer:
         """
         # Try common directory patterns
         patterns = [
-            self.base_path.parent / f"{model}/app{app_num}",
-            self.base_path.parent / f"{model.lower()}/app{app_num}",
-            self.base_path.parent / f"{model}/App{app_num}",
+            self.base_path.parent / f"models/{model}/app{app_num}",
+            self.base_path.parent / f"models/{model.lower()}/app{app_num}",
+            self.base_path.parent / f"models/{model}/App{app_num}",
             # self.base_path.parent / f"models/{model}/app{app_num}",
             # self.base_path.parent / f"z_interface_app/{model}/app{app_num}",
             # self.base_path / f"z_interface_app/{model.lower()}/app{app_num}",
@@ -911,11 +911,11 @@ class GPT4AllAnalyzer:
                 return pattern
         
         # If no directory is found, log all attempted paths
-        logger.warning(f"App directory not found for {model}/app{app_num}")
+        logger.warning(f"App directory not found for models/{model}/app{app_num}")
         logger.warning(f"Attempted paths: {[str(p) for p in patterns]}")
         
         # Return a default path
-        return self.base_path / f"{model}/app{app_num}"
+        return self.base_path / f"models/{model}/app{app_num}"
     
     def collect_code_files(self, directory: Path) -> Tuple[List[Path], List[Path]]:
         """

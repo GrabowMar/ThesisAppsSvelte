@@ -227,7 +227,7 @@ class LocustPerformanceTester:
         """
         try:
             # Results go into 'output_dir/performance_reports/model/appN'
-            base_reports_dir = self.output_dir / "performance_reports"
+            base_reports_dir = self.output_dir / "z_interface_app" / "performance_reports"
             app_dir = base_reports_dir / model / f"app{app_num}"
             app_dir.mkdir(parents=True, exist_ok=True)
 
