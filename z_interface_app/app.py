@@ -9,10 +9,10 @@ import os
 import time
 import http
 from pathlib import Path
-from typing import Optional, Dict, Any, Tuple, Union
+from typing import Optional, Dict, Any, Tuple, Union, List, Set
 from threading import Lock
 
-from flask import Flask, request, render_template, jsonify, Response, current_app
+from flask import Flask, request, render_template, jsonify, Response, current_app, g
 from werkzeug.exceptions import HTTPException
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -37,7 +37,7 @@ from routes import (
     gpt4all_bp, zap_bp
 )
 
-# Thread-safe lock for initialization and cleanup operations
+# Thread-safe locks for initialization and cleanup operations
 INIT_LOCK = Lock()
 CLEANUP_LOCK = Lock()
 CLEANUP_INTERVAL = 300  # 5 minutes
@@ -52,7 +52,20 @@ def generate_error_response(
     original_error: Optional[Exception] = None,
     error_logger: Optional[logging.Logger] = None
 ) -> Tuple[Union[Response, str], int]:
-    """Generate appropriate error response (JSON for AJAX, HTML otherwise)."""
+    """
+    Generate appropriate error response (JSON for AJAX, HTML otherwise).
+    
+    Args:
+        app: Flask application instance
+        error_code: HTTP status code for the error
+        error_name: Human-readable name for the error
+        error_message: Descriptive error message
+        original_error: Original exception if available
+        error_logger: Logger instance to use for error logging
+        
+    Returns:
+        Tuple of (response, status_code)
+    """
     if error_logger is None:
         error_logger = create_logger_for_component('errors')
         
@@ -64,24 +77,53 @@ def generate_error_response(
             "message": error_message
         }), error_code
 
-    # Standard requests get HTML response
+    # Try to find appropriate error template
+    return _render_error_template(
+        app, error_code, error_name, error_message, original_error, error_logger
+    )
+
+
+def _render_error_template(
+    app: Flask, 
+    error_code: int, 
+    error_name: str, 
+    error_message: str,
+    original_error: Optional[Exception], 
+    error_logger: logging.Logger
+) -> Tuple[Union[Response, str], int]:
+    """
+    Render appropriate error template based on error code.
+    
+    Args:
+        app: Flask application instance
+        error_code: HTTP status code for the error
+        error_name: Human-readable name for the error
+        error_message: Descriptive error message
+        original_error: Original exception if available
+        error_logger: Logger instance to use for error logging
+        
+    Returns:
+        Tuple of (rendered template or fallback HTML, status_code)
+    """
     template_name = f"{error_code}.html"
+    fallback_template = "500.html"
     
     try:
-        # Check if template exists before rendering
-        if template_name in app.jinja_env.list_templates():
+        templates = set(app.jinja_env.list_templates())
+        
+        # Check if specific template exists
+        if template_name in templates:
             return render_template(template_name, error=original_error or error_message), error_code
-        elif error_code == http.HTTPStatus.NOT_FOUND:
-            error_logger.warning(f"Error template '{template_name}' not found!")
-        elif error_code >= http.HTTPStatus.INTERNAL_SERVER_ERROR:
-            if "500.html" in app.jinja_env.list_templates():
-                return render_template("500.html", error=original_error or error_message), error_code
-            else:
-                error_logger.warning("Fallback error template '500.html' not found!")
-        else:
-            error_logger.warning(f"Error template '{template_name}' not found, providing basic response.")
+        
+        # For specific error types, check for fallback template
+        if error_code >= http.HTTPStatus.INTERNAL_SERVER_ERROR and fallback_template in templates:
+            return render_template(fallback_template, error=original_error or error_message), error_code
+            
+        # Log template missing for important errors
+        if error_code in (http.HTTPStatus.NOT_FOUND, http.HTTPStatus.INTERNAL_SERVER_ERROR):
+            error_logger.warning(f"Error template '{template_name}' not found, using basic response.")
     except Exception as e:
-        error_logger.exception(f"Error while checking for template existence: {e}")
+        error_logger.exception(f"Error while rendering error template: {e}")
     
     # Basic HTML fallback
     basic_response = f"<h1>Error {error_code}</h1><p>{error_name}: {error_message}</p>"
@@ -89,7 +131,12 @@ def generate_error_response(
 
 
 def register_error_handlers(app: Flask) -> None:
-    """Register Flask error handlers for HTTP status codes."""
+    """
+    Register Flask error handlers for HTTP status codes.
+    
+    Args:
+        app: Flask application instance
+    """
     error_logger = create_logger_for_component('errors')
 
     @app.errorhandler(http.HTTPStatus.NOT_FOUND)
@@ -128,11 +175,52 @@ def register_error_handlers(app: Flask) -> None:
         )
 
 
+def perform_cleanup_tasks(app: Flask, logger: logging.Logger) -> None:
+    """
+    Perform cleanup of resources like Docker containers and idle ZAP scans.
+    
+    Args:
+        app: Flask application instance
+        logger: Logger instance to use for logging cleanup operations
+    """
+    try:
+        # Docker container cleanup
+        docker_manager = app.config.get("docker_manager")
+        if docker_manager and hasattr(docker_manager, 'cleanup_containers'):
+            logger.debug("Cleaning up Docker containers")
+            docker_manager.cleanup_containers()
+        
+        # Idle ZAP scan cleanup
+        if "ZAP_SCANS" in app.config:
+            zap_scans = app.config["ZAP_SCANS"]
+            if zap_scans and isinstance(zap_scans, dict):
+                current_time = time.time()
+                idle_scans = {
+                    scan_id: scan_info for scan_id, scan_info in zap_scans.items()
+                    if isinstance(scan_info, dict) and 
+                    scan_info.get("last_activity", 0) < current_time - 3600  # 1 hour idle
+                }
+                
+                if idle_scans:
+                    logger.info(f"Stopping {len(idle_scans)} idle ZAP scans")
+                    stop_zap_scanners(idle_scans)
+                    # Remove stopped scans
+                    for scan_id in idle_scans:
+                        zap_scans.pop(scan_id, None)
+    except Exception as e:
+        logger.exception(f"Error during cleanup tasks: {e}")
+
+
 def register_request_hooks(app: Flask) -> None:
-    """Register Flask request hooks for request processing."""
+    """
+    Register Flask request hooks for request processing.
+    
+    Args:
+        app: Flask application instance
+    """
     hooks_logger = create_logger_for_component('hooks')
     
-    # Store last cleanup time in app config instead of global variable
+    # Store last cleanup time in app config
     app.config.setdefault("LAST_CLEANUP_TIME", 0)
     
     @app.before_request
@@ -140,38 +228,17 @@ def register_request_hooks(app: Flask) -> None:
         # Use thread-safe access to cleanup state
         with CLEANUP_LOCK:
             current_time = time.time()
-            last_cleanup_time = current_app.config.get("LAST_CLEANUP_TIME", 0)
+            # Access config through app object stored in g to prevent context issues
+            app = current_app._get_current_object()
+            last_cleanup_time = app.config.get("LAST_CLEANUP_TIME", 0)
             
             # Scheduled cleanup based on fixed interval
             if current_time - last_cleanup_time > CLEANUP_INTERVAL:
                 hooks_logger.debug(
                     f"Running scheduled cleanup tasks (interval: {CLEANUP_INTERVAL}s)"
                 )
-                try:
-                    # Docker container cleanup
-                    docker_manager = current_app.config.get("docker_manager")
-                    if docker_manager and hasattr(docker_manager, 'cleanup_containers'):
-                        docker_manager.cleanup_containers()
-                    
-                    # Idle ZAP scan cleanup
-                    if "ZAP_SCANS" in current_app.config:
-                        zap_scans = current_app.config["ZAP_SCANS"]
-                        if zap_scans and isinstance(zap_scans, dict):
-                            idle_scans = []
-                            for scan_id, scan_info in zap_scans.items():
-                                if isinstance(scan_info, dict) and scan_info.get("last_activity", 0) < current_time - 3600:  # 1 hour idle
-                                    idle_scans.append(scan_id)
-                            
-                            if idle_scans:
-                                hooks_logger.info(f"Stopping {len(idle_scans)} idle ZAP scans")
-                                stop_zap_scanners({k: zap_scans[k] for k in idle_scans})
-                                # Remove stopped scans
-                                for scan_id in idle_scans:
-                                    zap_scans.pop(scan_id, None)
-                    
-                    current_app.config["LAST_CLEANUP_TIME"] = current_time
-                except Exception as e:
-                    hooks_logger.exception(f"Error during cleanup tasks: {e}")
+                perform_cleanup_tasks(app, hooks_logger)
+                app.config["LAST_CLEANUP_TIME"] = current_time
 
     @app.after_request
     def process_response(response):
@@ -200,25 +267,21 @@ def register_request_hooks(app: Flask) -> None:
         if exception:
             teardown_logger.warning(f"Context teardown with exception: {exception}")
 
-        try:
-            # ZAP scan cleanup
-            if "ZAP_SCANS" in current_app.config:
-                zap_scans = current_app.config["ZAP_SCANS"]
-                if zap_scans:
-                    teardown_logger.debug("Stopping active ZAP scans during teardown")
-                    stop_zap_scanners(zap_scans)
-            
-            # Docker resource cleanup
-            docker_manager = current_app.config.get("docker_manager")
-            if docker_manager and hasattr(docker_manager, 'cleanup_containers'):
-                teardown_logger.debug("Cleaning up Docker resources during teardown")
-                docker_manager.cleanup_containers()
-        except Exception as e:
-            teardown_logger.exception(f"Error during resource cleanup: {e}")
+        # Use app from current context
+        app = current_app._get_current_object()
+        teardown_logger.debug("Performing resource cleanup during teardown")
+        perform_cleanup_tasks(app, teardown_logger)
 
 
 def initialize_analyzers(app: Flask, base_path: Path, base_dir: Path) -> None:
-    """Initialize and attach analyzer components to the Flask application."""
+    """
+    Initialize and attach analyzer components to the Flask application.
+    
+    Args:
+        app: Flask application instance
+        base_path: Base path for application
+        base_dir: Base directory for application
+    """
     app.backend_security_analyzer = BackendSecurityAnalyzer(base_path)
     app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
     app.gpt4all_analyzer = GPT4AllAnalyzer(base_dir)
@@ -228,8 +291,29 @@ def initialize_analyzers(app: Flask, base_path: Path, base_dir: Path) -> None:
 
 
 def initialize_services(app: Flask, logger: logging.Logger) -> None:
-    """Initialize and attach service components to the Flask application."""
+    """
+    Initialize and attach service components to the Flask application.
+    
+    Args:
+        app: Flask application instance
+        logger: Logger instance for service initialization
+    """
     # DockerManager initialization
+    initialize_docker_manager(app, logger)
+    initialize_scan_manager(app, logger)
+    
+    # PortManager is used via class methods
+    app.port_manager = PortManager
+
+
+def initialize_docker_manager(app: Flask, logger: logging.Logger) -> None:
+    """
+    Initialize Docker manager for the application.
+    
+    Args:
+        app: Flask application instance
+        logger: Logger for Docker manager initialization
+    """
     try:
         docker_manager = DockerManager()
         app.config["docker_manager"] = docker_manager
@@ -241,7 +325,15 @@ def initialize_services(app: Flask, logger: logging.Logger) -> None:
         logger.exception(f"Error initializing DockerManager: {e}")
         app.config["docker_manager"] = None
 
-    # ScanManager initialization
+
+def initialize_scan_manager(app: Flask, logger: logging.Logger) -> None:
+    """
+    Initialize scan manager for the application.
+    
+    Args:
+        app: Flask application instance
+        logger: Logger for scan manager initialization
+    """
     try:
         app.scan_manager = ScanManager()
         logger.info("Initialized ScanManager on app context.")
@@ -252,12 +344,16 @@ def initialize_services(app: Flask, logger: logging.Logger) -> None:
         logger.exception(f"Error initializing ScanManager: {e}")
         app.scan_manager = None
 
-    # PortManager is used via class methods
-    app.port_manager = PortManager
-
 
 def register_blueprints(app: Flask) -> None:
-    """Register application blueprints."""
+    """
+    Register application blueprints.
+    
+    Args:
+        app: Flask application instance
+    """
+    logger = create_logger_for_component('app')
+    
     # Core blueprints
     app.register_blueprint(main_bp)
     app.register_blueprint(api_bp, url_prefix="/api")
@@ -266,8 +362,19 @@ def register_blueprints(app: Flask) -> None:
     app.register_blueprint(gpt4all_bp, url_prefix="/gpt4all")
     app.register_blueprint(zap_bp, url_prefix="/zap")
     
+    # Register batch analysis blueprint if available
+    register_batch_analysis_blueprint(app, logger)
+
+
+def register_batch_analysis_blueprint(app: Flask, logger: logging.Logger) -> None:
+    """
+    Register batch analysis blueprint if available.
+    
+    Args:
+        app: Flask application instance
+        logger: Logger for blueprint registration
+    """
     # Batch analysis (only if available and ScanManager is initialized)
-    logger = create_logger_for_component('app')
     if HAS_BATCH_ANALYSIS and app.scan_manager is not None:
         try:
             init_batch_analysis(app)
@@ -283,7 +390,16 @@ def register_blueprints(app: Flask) -> None:
 
 
 def check_system_health(app: Flask, logger: logging.Logger) -> bool:
-    """Perform system health checks and return status."""
+    """
+    Perform system health checks and return status.
+    
+    Args:
+        app: Flask application instance
+        logger: Logger for health check logging
+        
+    Returns:
+        bool: True if system is healthy, False otherwise
+    """
     docker_manager = app.config.get("docker_manager")
     system_health = False
 
@@ -313,7 +429,13 @@ def check_system_health(app: Flask, logger: logging.Logger) -> bool:
 
 
 def display_access_info(config: AppConfig, logger: logging.Logger) -> None:
-    """Display application access information in logs."""
+    """
+    Display application access information in logs.
+    
+    Args:
+        config: Application configuration
+        logger: Logger for access info logging
+    """
     try:
         host = config.HOST or "127.0.0.1"
         host_display = "localhost" if host in ["0.0.0.0", "127.0.0.1"] else host
@@ -328,8 +450,37 @@ def display_access_info(config: AppConfig, logger: logging.Logger) -> None:
         logger.info("AI Model Management System is ready, but access info unavailable.")
 
 
+def should_initialize_components(app: Flask, app_config: AppConfig) -> bool:
+    """
+    Determine whether components should be initialized based on
+    the current environment and state.
+    
+    Args:
+        app: Flask application instance
+        app_config: Application configuration
+        
+    Returns:
+        bool: True if components should be initialized, False otherwise
+    """
+    is_initialized = app.config.get('IS_INITIALIZED', False)
+    is_reloader_process = os.environ.get('WERKZEUG_RUN_MAIN') == 'true'
+    
+    return (
+        (is_reloader_process and app_config.DEBUG) or 
+        (not app_config.DEBUG and not is_initialized)
+    )
+
+
 def create_app(config: Optional[AppConfig] = None) -> Flask:
-    """Create and configure the Flask application instance."""
+    """
+    Create and configure the Flask application instance.
+    
+    Args:
+        config: Application configuration
+        
+    Returns:
+        Flask: Configured Flask application
+    """
     # Create Flask app and apply config
     app = Flask(__name__)
     app_config = config or AppConfig.from_env()
@@ -358,31 +509,8 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
     app_logger.info(f"Application base directory: {app_config.BASE_DIR}")
     app_logger.info(f"Parent base path: {base_path}")
 
-    # Use a thread-safe approach to initialization
-    with INIT_LOCK:
-        # Initialize components - prevent double initialization between processes
-        is_initialized = app.config.get('IS_INITIALIZED', False)
-        should_initialize = (
-            (is_reloader_process and app_config.DEBUG) or 
-            (not app_config.DEBUG and not is_initialized)
-        )
-        
-        if should_initialize:
-            app_logger.info("Initializing components and services")
-            try:
-                initialize_analyzers(app, base_path, app_config.BASE_DIR)
-                initialize_services(app, app_logger)
-                app.config['IS_INITIALIZED'] = True
-            except Exception as e:
-                app_logger.exception(f"Error during initialization: {e}")
-                raise RuntimeError(f"Failed to initialize application: {e}") from e
-        else:
-            app_logger.info(f"Skipping initialization ({process_type}, initialized={is_initialized})")
-            # Ensure placeholder values are set to avoid attribute errors
-            if not is_initialized:
-                app.config["docker_manager"] = None
-                app.scan_manager = None
-                app.config["ZAP_SCANS"] = {}
+    # Initialize components if appropriate
+    initialize_app_components(app, app_config, base_path, app_logger)
 
     # Apply proxy fix middleware
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
@@ -394,6 +522,43 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
 
     app_logger.info("Application initialization complete")
     return app
+
+
+def initialize_app_components(
+    app: Flask, 
+    app_config: AppConfig, 
+    base_path: Path, 
+    app_logger: logging.Logger
+) -> None:
+    """
+    Initialize application components using a thread-safe approach.
+    
+    Args:
+        app: Flask application instance
+        app_config: Application configuration
+        base_path: Base path for application
+        app_logger: Logger for component initialization
+    """
+    # Use a thread-safe approach to initialization
+    with INIT_LOCK:
+        if should_initialize_components(app, app_config):
+            app_logger.info("Initializing components and services")
+            try:
+                initialize_analyzers(app, base_path, app_config.BASE_DIR)
+                initialize_services(app, app_logger)
+                app.config['IS_INITIALIZED'] = True
+            except Exception as e:
+                app_logger.exception(f"Error during initialization: {e}")
+                raise RuntimeError(f"Failed to initialize application: {e}") from e
+        else:
+            process_type = "reloader process" if os.environ.get('WERKZEUG_RUN_MAIN') == 'true' else "parent process"
+            is_initialized = app.config.get('IS_INITIALIZED', False)
+            app_logger.info(f"Skipping initialization ({process_type}, initialized={is_initialized})")
+            # Ensure placeholder values are set to avoid attribute errors
+            if not is_initialized:
+                app.config["docker_manager"] = None
+                app.scan_manager = None
+                app.config["ZAP_SCANS"] = {}
 
 
 if __name__ == "__main__":

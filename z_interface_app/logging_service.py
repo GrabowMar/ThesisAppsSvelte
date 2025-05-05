@@ -6,15 +6,15 @@ import time
 import uuid
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Union, Any, Tuple
-import queue # Import the queue module
-import atexit # For graceful listener shutdown
+import queue
+import atexit
 
 # Third-Party Imports
 import coloredlogs
-from flask import Flask, Response, current_app, g, has_app_context, has_request_context, jsonify, request # Added Response
+from flask import Flask, Response, current_app, g, has_app_context, has_request_context, jsonify, request
 from werkzeug.exceptions import HTTPException
 
-# Local Application Imports (assuming app_models is local)
+# Local Application Imports
 try:
     # Attempt to import the standard APIResponse model
     from app_models import APIResponse
@@ -31,7 +31,7 @@ except ImportError:
 
         def to_response(self) -> Tuple[Any, int]:
             """Convert to Flask response with appropriate status code."""
-            from flask import jsonify # Local import
+            from flask import jsonify
             response_data = {
                 "success": self.success,
                 "message": self.message,
@@ -47,18 +47,25 @@ class LogConfig:
         "DEBUG": logging.DEBUG, "INFO": logging.INFO, "WARNING": logging.WARNING,
         "ERROR": logging.ERROR, "CRITICAL": logging.CRITICAL
     }
-    CONSOLE_FORMAT: str = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-    # Add request_id and component to file format
-    FILE_FORMAT: str = "%(asctime)s [%(levelname)s] [%(request_id)s] [%(threadName)s] %(component)s.%(name)s: %(message)s"
-    REQUEST_FILE_FORMAT: str = "%(asctime)s [%(levelname)s] [%(request_id)s] %(message)s"
-    ERROR_FILE_FORMAT: str = "%(asctime)s [%(levelname)s] [%(request_id)s] %(component)s.%(name)s.%(funcName)s:%(lineno)d - %(message)s"
+    
+    # Base format with common elements
+    BASE_FORMAT: str = "%(asctime)s [%(levelname)s]"
+    # Format extensions
+    CONSOLE_FORMAT: str = f"{BASE_FORMAT} %(name)s: %(message)s"
+    FILE_FORMAT: str = f"{BASE_FORMAT} [%(request_id)s] [%(threadName)s] %(component)s.%(name)s: %(message)s"
+    REQUEST_FILE_FORMAT: str = f"{BASE_FORMAT} [%(request_id)s] %(message)s"
+    ERROR_FILE_FORMAT: str = f"{BASE_FORMAT} [%(request_id)s] %(component)s.%(name)s.%(funcName)s:%(lineno)d - %(message)s"
+    
     DATE_FORMAT: str = "%Y-%m-%d %H:%M:%S"
     DEFAULT_LOG_DIR: str = "logs"
     REQUEST_LOG: str = "requests.log"
     ERROR_LOG: str = "errors.log"
     APP_LOG: str = "app.log"
-    MAX_BYTES: int = 10 * 1024 * 1024
+    MAX_BYTES: int = 10 * 1024 * 1024  # 10 MB
     BACKUP_COUNT: int = 5
+    
+    # Default queue size (100,000 messages)
+    DEFAULT_QUEUE_SIZE: int = 100000
 
     @classmethod
     def get_level(cls, level_name: str) -> int:
@@ -107,41 +114,35 @@ class RequestFilter(logging.Filter):
 
     def filter(self, record: logging.LogRecord) -> bool:
         """Filters log records based on request path and status code."""
-        # Try filtering based on werkzeug log format
-        is_werkzeug_log = (
-            record.name == 'werkzeug' and
-            hasattr(record, 'args') and
-            isinstance(record.args, tuple) and
-            len(record.args) >= 3 and
-            isinstance(record.args[0], str) and
-            record.args[0].startswith(('GET ', 'POST ', 'PUT ', 'DELETE ', 'PATCH ')) # Check for method
-        )
+        # Only filter werkzeug access logs
+        if record.name != 'werkzeug':
+            return True
+            
+        # Check if it's an access log by looking at the arguments pattern
+        if not (hasattr(record, 'args') and 
+                isinstance(record.args, tuple) and 
+                len(record.args) >= 3 and
+                isinstance(record.args[0], str) and
+                any(record.args[0].startswith(method) for method in 
+                    ('GET ', 'POST ', 'PUT ', 'DELETE ', 'PATCH '))):
+            return True
+            
+        try:
+            # Extract path and status code from werkzeug log format
+            request_line = record.args[0]
+            status_code = record.args[1]
+            path = request_line.split()[1]  # Get path from "GET /path HTTP/1.1"
 
-        if is_werkzeug_log:
-            try:
-                # Simpler parsing assuming standard werkzeug format in args
-                # args = ("GET /api/status HTTP/1.1", 200, ...)
-                request_line = record.args[0]
-                status_code = record.args[1]
-                path = request_line.split()[1] # Get path from "GET /path HTTP/1.1"
-
-                for excluded_path_pattern in self.excluded_paths:
-                    if excluded_path_pattern in path:
-                        is_success = 200 <= status_code < 400
-                        if is_success:
-                            return False # Filter success for excluded paths
-                        elif self.log_excluded_on_error:
-                            return True # Log errors for excluded paths
-                        else:
-                            return False # Filter errors too if configured
-
-                return True # Not an excluded path
-            except (IndexError, ValueError, TypeError):
-                # Cannot parse reliably, let it pass
-                return True
-
-        # Don't filter non-werkzeug logs or logs not matching the expected format
-        return True
+            # Check if path matches any excluded pattern
+            for excluded_path_pattern in self.excluded_paths:
+                if excluded_path_pattern in path:
+                    # Filter successful requests for excluded paths
+                    is_success = 200 <= status_code < 400
+                    return not is_success or self.log_excluded_on_error
+                    
+            return True  # Not an excluded path
+        except (IndexError, ValueError, TypeError):
+            return True  # Cannot parse reliably, let it pass
 
 
 class LoggingService:
@@ -150,7 +151,6 @@ class LoggingService:
     def __init__(self, app: Optional[Flask] = None):
         self.app: Optional[Flask] = app
         self.log_dir: Path = Path(LogConfig.DEFAULT_LOG_DIR)
-        # Store the actual handlers (targets for the listener)
         self.target_handlers: Dict[str, logging.Handler] = {}
         self.context_filter: Optional[ContextFilter] = None
         self.queue_listener: Optional[logging.handlers.QueueListener] = None
@@ -166,106 +166,122 @@ class LoggingService:
         self.log_dir = Path(app.config.get('LOG_DIR', os.environ.get('LOG_DIR', LogConfig.DEFAULT_LOG_DIR)))
         self.log_dir.mkdir(parents=True, exist_ok=True)
 
-        # --- Step 1: Create the target handlers (but don't add them to loggers yet) ---
+        # Create context filter for all handlers
         self.context_filter = ContextFilter(app_name=app.name or LogConfig.DEFAULT_COMPONENT_NAME)
-        app_handler = self._create_target_rotating_handler(
+        
+        # Create target handlers
+        self._create_target_handlers(log_level)
+        
+        # Set up queue-based logging
+        self._setup_queue_logging(log_level)
+        
+        # Configure console logging
+        self._setup_console_logging(log_level, app.debug)
+        
+        # Configure component levels
+        self._configure_component_loggers()
+        
+        # Register shutdown hook
+        atexit.register(self.stop_listener)
+        
+        logging.getLogger().info(
+            f"Queue-based logging initialized. Level: {log_level_name}. "
+            f"Log directory: {self.log_dir}"
+        )
+
+    def _create_target_handlers(self, log_level: int) -> None:
+        """Create the target handlers for different log files."""
+        # App log handler
+        self.target_handlers['app'] = self._create_target_rotating_handler(
             filename=self.log_dir / LogConfig.APP_LOG,
-            level=log_level, # Will log records at this level or higher
+            level=log_level,
             formatter=logging.Formatter(LogConfig.FILE_FORMAT, LogConfig.DATE_FORMAT),
-            filters=[self.context_filter] # Add context filter
+            filters=[self.context_filter]
         )
-        self.target_handlers['app'] = app_handler
 
-        error_handler = self._create_target_rotating_handler(
+        # Error log handler
+        self.target_handlers['errors'] = self._create_target_rotating_handler(
             filename=self.log_dir / LogConfig.ERROR_LOG,
-            level=logging.ERROR, # *Only* logs ERROR and CRITICAL
+            level=logging.ERROR,
             formatter=logging.Formatter(LogConfig.ERROR_FILE_FORMAT, LogConfig.DATE_FORMAT),
-            filters=[self.context_filter] # Add context filter
+            filters=[self.context_filter]
         )
-        self.target_handlers['errors'] = error_handler
 
-        request_handler = self._create_target_rotating_handler(
+        # Request log handler
+        self.target_handlers['requests'] = self._create_target_rotating_handler(
             filename=self.log_dir / LogConfig.REQUEST_LOG,
-            level=log_level, # Logs werkzeug messages at this level or higher
+            level=log_level,
             formatter=logging.Formatter(LogConfig.REQUEST_FILE_FORMAT, LogConfig.DATE_FORMAT),
-            # Add RequestFilter *and* ContextFilter to this specific handler
             filters=[self.context_filter, RequestFilter()]
         )
-        self.target_handlers['requests'] = request_handler
 
-        # --- Step 2: Create the Log Queue and QueueHandler ---
-        log_queue = queue.Queue(-1)
+    def _setup_queue_logging(self, log_level: int) -> None:
+        """Set up queue-based logging system."""
+        # Create a bounded queue to prevent memory issues
+        queue_size = self.app.config.get('LOG_QUEUE_SIZE', LogConfig.DEFAULT_QUEUE_SIZE)
+        log_queue = queue.Queue(queue_size)
         queue_handler = logging.handlers.QueueHandler(log_queue)
 
-        # --- Step 3: Configure Loggers to use QueueHandler ---
         # Configure root logger
         root_logger = logging.getLogger()
-        # Remove default handlers Flask might add
-        for handler in root_logger.handlers[:]:
-            root_logger.removeHandler(handler)
-        root_logger.setLevel(log_level) # Set base level for root
-        root_logger.addHandler(queue_handler) # Send all root logs to the queue
+        self._clear_existing_handlers(root_logger)
+        root_logger.setLevel(log_level)
+        root_logger.addHandler(queue_handler)
 
         # Configure werkzeug logger
         werkzeug_logger = logging.getLogger('werkzeug')
-        for handler in werkzeug_logger.handlers[:]:
-            werkzeug_logger.removeHandler(handler)
+        self._clear_existing_handlers(werkzeug_logger)
         werkzeug_logger.setLevel(log_level)
-        werkzeug_logger.addHandler(queue_handler) # Send werkzeug logs to the queue
-        werkzeug_logger.propagate = False # IMPORTANT: Prevent duplication to root
+        werkzeug_logger.addHandler(queue_handler)
+        werkzeug_logger.propagate = False
 
-        # --- Step 4: Configure Console Handler (Does NOT use the queue) ---
-        console_handlers = []
-        if app.debug or os.environ.get('FLASK_ENV') != 'production':
-             # Setup coloredlogs; it attaches its own handler to the root logger
-             console_handler = self._configure_colored_console_logs(log_level)
-             if console_handler:
-                 console_handlers.append(console_handler)
-        else:
-             # Add standard console handler directly to the root logger
-             console_handler = self._configure_standard_console_handler(log_level)
-             if console_handler:
-                 root_logger.addHandler(console_handler) # Add directly
-                 console_handlers.append(console_handler)
-
-        # Apply ContextFilter and RequestFilter to console handlers
-        request_filter_console = RequestFilter() # Separate instance for console
-        for ch in console_handlers:
-             if self.context_filter and self.context_filter not in ch.filters:
-                 ch.addFilter(self.context_filter)
-             if request_filter_console not in ch.filters:
-                 ch.addFilter(request_filter_console)
-
-        # --- Step 5: Create and Start the QueueListener ---
-        # The listener pulls from the queue and sends to the *correct* target file handlers
+        # Create and start the queue listener
         self.queue_listener = logging.handlers.QueueListener(
             log_queue,
-            # Handlers that the listener will dispatch to:
             self.target_handlers['app'],
             self.target_handlers['errors'],
             self.target_handlers['requests'],
-            respect_handler_level=True # IMPORTANT: Ensures handler levels/filters are checked
+            respect_handler_level=True
         )
         self.queue_listener.start()
 
-        # Register listener stop for graceful shutdown
-        atexit.register(self.stop_listener)
+    def _setup_console_logging(self, log_level: int, is_debug_mode: bool) -> None:
+        """Set up console logging based on environment."""
+        console_handler = None
+        
+        if is_debug_mode or os.environ.get('FLASK_ENV') != 'production':
+            # Use colored logs in development
+            console_handler = self._configure_colored_console_logs(log_level)
+        else:
+            # Use standard console handler in production
+            console_handler = self._configure_standard_console_handler(log_level)
+            
+        # Add context and request filters to console handler if available
+        if console_handler:
+            console_handler.addFilter(self.context_filter)
+            console_handler.addFilter(RequestFilter())
 
-        # Configure component levels (this just sets level, propagation sends to root -> queue)
-        self._configure_component_loggers()
+    def _clear_existing_handlers(self, logger: logging.Logger) -> None:
+        """Remove all handlers from a logger."""
+        for handler in logger.handlers[:]:
+            logger.removeHandler(handler)
 
-        root_logger.info(f"Queue-based logging initialized. Level: {log_level_name}. Log directory: {self.log_dir}")
-
-    def stop_listener(self):
+    def stop_listener(self) -> None:
         """Stops the queue listener thread."""
         if self.queue_listener:
             logging.info("Stopping queue listener...")
             self.queue_listener.stop()
-            self.queue_listener = None # Indicate stopped
+            self.queue_listener = None
             logging.info("Queue listener stopped.")
 
-    def _create_target_rotating_handler(self, filename: Path, level: int, formatter: logging.Formatter, filters: Optional[List[logging.Filter]] = None) -> logging.handlers.RotatingFileHandler:
-        """Creates a RotatingFileHandler intended to be used by the QueueListener."""
+    def _create_target_rotating_handler(
+        self, 
+        filename: Path, 
+        level: int, 
+        formatter: logging.Formatter, 
+        filters: Optional[List[logging.Filter]] = None
+    ) -> logging.handlers.RotatingFileHandler:
+        """Creates a RotatingFileHandler for the queue listener."""
         handler = logging.handlers.RotatingFileHandler(
             filename=filename,
             maxBytes=LogConfig.MAX_BYTES,
@@ -282,69 +298,64 @@ class LoggingService:
     def _configure_component_loggers(self) -> None:
         """Sets specific logging levels for different application components."""
         component_levels = {
-             "zap_scanner": logging.INFO,
-             "owasp_zap": logging.WARNING,
-             "docker": logging.INFO,
-             "performance": logging.INFO,
-             "security": logging.INFO,
-             "gpt4all": logging.INFO,
-             "batch_analysis": logging.INFO,
+            "zap_scanner": logging.INFO,
+            "owasp_zap": logging.WARNING,
+            "docker": logging.INFO,
+            "performance": logging.INFO,
+            "security": logging.INFO,
+            "gpt4all": logging.INFO,
+            "batch_analysis": logging.INFO,
         }
         for component, level in component_levels.items():
             logging.getLogger(component).setLevel(level)
-            # Ensure propagation is True (default) so logs reach the root logger -> QueueHandler
 
     def _configure_colored_console_logs(self, level: int) -> Optional[logging.StreamHandler]:
-        """Configures colored console logs and returns the handler created."""
+        """Configures colored console logs and returns the handler."""
         try:
-            # Clear existing root handlers before applying coloredlogs if needed
+            # Clear existing handlers before adding colored logs
             root_logger = logging.getLogger()
-            console_handler_found = None
-            for handler in root_logger.handlers[:]:
-                if isinstance(handler, logging.StreamHandler):
-                    # Assume this might be a default handler or one from a previous init
-                    # Keep track of it to add filters later
-                    console_handler_found = handler
-                    # Don't remove if we want coloredlogs to potentially replace/style it
-                # Keep the QueueHandler
-                if not isinstance(handler, logging.handlers.QueueHandler) and not isinstance(handler, logging.StreamHandler):
-                     root_logger.removeHandler(handler)
-
+            self._clear_existing_handlers(root_logger)
+            
+            # Install coloredlogs
             coloredlogs.install(
                 level=level,
-                logger=root_logger, # Apply to root
+                logger=root_logger,
                 fmt=LogConfig.CONSOLE_FORMAT,
                 datefmt=LogConfig.DATE_FORMAT,
                 level_styles={
-                    'debug': {'color': 'blue'}, 'info': {'color': 'green'},
+                    'debug': {'color': 'blue'}, 
+                    'info': {'color': 'green'},
                     'warning': {'color': 'yellow', 'bold': True},
                     'error': {'color': 'red', 'bold': True},
                     'critical': {'color': 'red', 'bold': True, 'background': 'white'}
                 },
                 field_styles={
-                    'asctime': {'color': 'green'}, 'levelname': {'color': 'cyan', 'bold': True},
-                    'name': {'color': 'magenta'}, 'request_id': {'color': 'blue'},
+                    'asctime': {'color': 'green'}, 
+                    'levelname': {'color': 'cyan', 'bold': True},
+                    'name': {'color': 'magenta'}, 
+                    'request_id': {'color': 'blue'},
                     'component': {'color': 'yellow'}
                 }
             )
-             # Find the handler created or modified by coloredlogs
-            final_console_handler = None
+            
+            # Find and return the StreamHandler created by coloredlogs
             for handler in root_logger.handlers:
-                 if isinstance(handler, logging.StreamHandler):
-                     final_console_handler = handler
-                     break
-            return final_console_handler
+                if isinstance(handler, logging.StreamHandler):
+                    return handler
+                    
+            return None
+            
         except Exception as e:
             logging.error(f"Failed to initialize coloredlogs: {e}", exc_info=True)
-            return None # Fallback to standard console handler if coloredlogs fails
+            return self._configure_standard_console_handler(level)
 
-    def _configure_standard_console_handler(self, level: int) -> Optional[logging.StreamHandler]:
-        """Adds a standard, non-colored console handler directly to root logger."""
+    def _configure_standard_console_handler(self, level: int) -> logging.StreamHandler:
+        """Creates a standard console handler."""
         console_formatter = logging.Formatter(LogConfig.CONSOLE_FORMAT, LogConfig.DATE_FORMAT)
         console_handler = logging.StreamHandler()
         console_handler.setLevel(level)
         console_handler.setFormatter(console_formatter)
-        # Filters (ContextFilter, RequestFilter) will be added in init_app
+        logging.getLogger().addHandler(console_handler)
         return console_handler
 
     def get_logger(self, name: str) -> logging.Logger:
@@ -352,10 +363,35 @@ class LoggingService:
         return logging.getLogger(name)
 
 
-# --- Middleware and Helper Functions (Largely Unchanged) ---
+# Middleware and Helper Functions
 
-class EnhancedRequestLoggerMiddleware:
-    """Flask middleware hooks to log request start, end, and errors."""
+class CorsMiddleware:
+    """Flask middleware for handling CORS headers."""
+    
+    def __init__(self, app: Flask):
+        self.app = app
+        self._register_handlers()
+        
+    def _register_handlers(self) -> None:
+        """Register the after_request handler for CORS headers."""
+        
+        @self.app.after_request
+        def add_cors_headers(response: Response) -> Response:
+            """Add CORS headers to responses if enabled."""
+            if not current_app.config.get('CORS_ENABLED', False):
+                return response
+                
+            if isinstance(response, Response):
+                response.headers['Access-Control-Allow-Origin'] = '*'
+                response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+                response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Requested-With'
+                
+            return response
+
+
+class RequestLoggerMiddleware:
+    """Flask middleware for logging request details."""
+    
     SLOW_REQUEST_THRESHOLD_SECONDS: float = 1.0
     REQUEST_ID_HEADER: str = 'X-Request-ID'
     AJAX_HEADER_CHECK: Tuple[str, str] = ('X-Requested-With', 'XMLHttpRequest')
@@ -366,130 +402,123 @@ class EnhancedRequestLoggerMiddleware:
 
     def __init__(self, app: Flask):
         self.app = app
-        # Get logger via standard method, context is added by filter
-        self.logger = logging.getLogger(__name__) # Use module name for middleware logs
+        self.logger = logging.getLogger(__name__)
         self._register_handlers()
 
     def _is_quiet_endpoint(self) -> bool:
-        if not has_request_context(): return False
+        """Check if the current request path matches quiet endpoint patterns."""
+        if not has_request_context():
+            return False
         path = request.path
         return any(pattern in path for pattern in self.QUIET_ENDPOINTS_PATTERNS)
 
     def _register_handlers(self) -> None:
-        """Registers the before_request, after_request, and errorhandler methods."""
-
+        """Register request processing handlers."""
+        
         @self.app.before_request
         def before_request_logging() -> None:
-            """Log the start of a request and set up context."""
+            """Log request start and set up request context."""
             request_id = str(uuid.uuid4())[:self.REQUEST_ID_LENGTH]
             g.request_id = request_id
             g.start_time = time.time()
             g.is_quiet = self._is_quiet_endpoint()
 
-            if g.is_quiet: return
+            if g.is_quiet:
+                return
 
             referrer = request.referrer or '-'
             user_agent = request.user_agent.string if request.user_agent else '-'
-            # Use root logger - context filter adds request_id, listener sends to app.log
+            
             logging.info(
                 f"Request started: {request.method} {request.path} - "
                 f"IP: {request.remote_addr} - Ref: {referrer[:50]}.. - Agent: {user_agent[:50]}.."
             )
 
         @self.app.after_request
-        def after_request_logging(response: Any) -> Any:
-            """Log the completion of a request, duration, and add headers."""
+        def after_request_logging(response: Response) -> Response:
+            """Log request completion and add request ID header."""
             start_time = g.get('start_time', time.time())
             duration = time.time() - start_time
             request_id = g.get('request_id', ContextFilter.DEFAULT_REQUEST_ID)
 
+            # Safely extract status code
             status_code = 0
-            is_response_object = isinstance(response, Response)
-
-            if is_response_object:
-                response.headers[self.REQUEST_ID_HEADER] = request_id
-                status_code = response.status_code
-            elif isinstance(response, tuple) and len(response) > 1 and isinstance(response[1], int):
-                # Handle cases where view returns (data, status_code)
-                status_code = response[1]
-            else:
-                 # Try to infer from Werkzeug response object if possible, fallback to 0
-                 try:
-                     status_code = getattr(response,'status_code',0)
-                 except Exception:
-                     pass # Keep status_code 0
-
+            try:
+                if isinstance(response, Response):
+                    status_code = response.status_code
+                    # Add request ID header
+                    response.headers[self.REQUEST_ID_HEADER] = request_id
+                elif isinstance(response, tuple) and len(response) > 1 and isinstance(response[1], int):
+                    status_code = response[1]
+                else:
+                    status_code = getattr(response, 'status_code', 0)
+            except Exception:
+                pass
 
             is_quiet = g.get('is_quiet', False)
             is_error = status_code >= 400
             is_slow = duration > self.SLOW_REQUEST_THRESHOLD_SECONDS
 
-            # Enhanced logging condition: Log if error, slow, or not quiet endpoint
+            # Log based on conditions
             if is_error or is_slow or not is_quiet:
                 log_level = logging.WARNING if is_error else logging.INFO
                 status_msg = f"{status_code}"
-                if is_slow: status_msg += " [SLOW]"
+                if is_slow:
+                    status_msg += " [SLOW]"
 
-                # Check if werkzeug is likely to log this already
-                # Werkzeug logs usually have level INFO for success, WARNING for errors
-                werkzeug_will_log = not is_quiet or is_error
-
-                # Log via root logger if not quiet, or if slow/error (provides more context)
-                # Avoid double-logging simple successful requests handled by werkzeug filter
-                if (is_error or is_slow) or not is_quiet:
-                     # Log extra details not typically in werkzeug log
-                     logging.log( # Use logging.log for dynamic level
-                          log_level,
-                          f"Request finished: {request.method} {request.path} - "
-                          f"Status: {status_msg} - Duration: {duration:.3f}s"
-                     )
-
-            # Add CORS headers if enabled
-            if current_app.config.get('CORS_ENABLED', False) and is_response_object:
-                response.headers['Access-Control-Allow-Origin'] = '*'
-                response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-                response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Requested-With'
+                logging.log(
+                    log_level,
+                    f"Request finished: {request.method} {request.path} - "
+                    f"Status: {status_msg} - Duration: {duration:.3f}s"
+                )
 
             return response
 
         @self.app.errorhandler(Exception)
         def handle_exception_logging(e: Exception) -> Any:
-            """Log unhandled exceptions."""
+            """Log unhandled exceptions and provide JSON response for AJAX requests."""
             start_time = g.get('start_time', time.time())
             duration = time.time() - start_time
-            request_id = g.get('request_id', ContextFilter.DEFAULT_REQUEST_ID)
 
-            # Log exception via root logger - context filter adds request_id, listener sends to error.log
-            logging.exception( # Use logging.exception to include traceback
+            logging.exception(
                 f"Unhandled exception during request: {request.method} {request.path} - "
                 f"Error: {e!s} - Duration: {duration:.3f}s"
             )
 
+            # Provide JSON response for AJAX requests
             header_name, header_value = self.AJAX_HEADER_CHECK
             if request.headers.get(header_name) == header_value:
                 status_code = e.code if isinstance(e, HTTPException) else 500
                 api_response = APIResponse(
-                    success=False, error=str(e),
-                    message="An internal server error occurred.", code=status_code
+                    success=False, 
+                    error=str(e),
+                    message="An internal server error occurred.", 
+                    code=status_code
                 )
                 return api_response.to_response()
-            raise e # Re-raise for non-AJAX to get default Flask error page
+                
+            raise e  # Re-raise for non-AJAX to get default Flask error page
+
 
 def create_logger_for_component(component_name: str) -> logging.Logger:
     """Gets a logger instance for a specific application component."""
     return logging.getLogger(component_name)
 
-def initialize_logging(app: Flask) -> LoggingService:
-    """Initializes the enhanced, queue-based logging system."""
-    # Disable default handlers early
-    app.logger.handlers.clear()
-    app.logger.propagate = True # Let Flask app logs go to our root logger
 
+def initialize_logging(app: Flask) -> LoggingService:
+    """Initialize the enhanced logging system and request middleware."""
+    # Disable default handlers
+    app.logger.handlers.clear()
+    app.logger.propagate = True
+    
+    # Initialize logging service
     logging_service = LoggingService()
     logging_service.init_app(app)
-
-    EnhancedRequestLoggerMiddleware(app)
-
+    
+    # Initialize middleware
+    RequestLoggerMiddleware(app)
+    CorsMiddleware(app)
+    
     app.extensions['logging_service'] = logging_service
-    app.logger.info("Enhanced queue-based logging service initialized.") # Use app logger
+    app.logger.info("Enhanced queue-based logging service initialized.")
     return logging_service

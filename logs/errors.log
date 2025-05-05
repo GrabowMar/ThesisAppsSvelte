@@ -1,0 +1,432 @@
+2025-05-04 23:30:09 [ERROR] [-] ajax.ajax.index.wrapped:323 - Error encountered in decorated function 'index'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 286, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 160, in index
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 221, in block 'content'
+    <a href="{{ url_for('performance.performance_test', model=app.model, port=app.frontend_port) }}" class="action-btn text-center text-2xs py-1 bg-purple-50 hover:bg-purple-100 text-purple-700">Perf</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'performance.performance_test' with values ['model', 'port']. Did you mean 'main.check_app_status' instead?
+2025-05-04 23:30:09 [ERROR] [53040cef] app.root.after_request_logging:543 - Request finished: GET / - Status: 500 [SLOW] - Duration: 2.518s
+2025-05-04 23:36:20 [ERROR] [-] ajax.ajax.index.wrapped:323 - Error encountered in decorated function 'index'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 286, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 160, in index
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 221, in block 'content'
+    <a href="{{ url_for('performance.performance_test', model=app.model, port=app.frontend_port) }}" class="action-btn text-center text-2xs py-1 bg-purple-50 hover:bg-purple-100 text-purple-700">Perf</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'performance.performance_test' with values ['model', 'port']. Did you mean 'main.check_app_status' instead?
+2025-05-04 23:36:20 [ERROR] [2fed52c4] app.root.after_request_logging:543 - Request finished: GET / - Status: 500 [SLOW] - Duration: 2.099s
+2025-05-04 23:44:45 [ERROR] [-] ajax.ajax.index.wrapped:323 - Error encountered in decorated function 'index'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 286, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 160, in index
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 221, in block 'content'
+    <a href="{{ url_for('performance.performance_test', model=app.model, port=app.frontend_port) }}" class="action-btn text-center text-2xs py-1 bg-purple-50 hover:bg-purple-100 text-purple-700">Perf</a>            <a href="{{ url_for('analysis.security_analysis', model=app.model, app_num=app.app_num) }}" class="action-btn text-center text-2xs py-1 bg-rose-50 hover:bg-rose-100 text-rose-700">API</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'performance.performance_test' with values ['model', 'port']. Did you mean 'main.check_app_status' instead?
+2025-05-04 23:44:45 [ERROR] [cb401661] app.root.after_request_logging:543 - Request finished: GET / - Status: 500 - Duration: 0.243s
+2025-05-04 23:46:21 [ERROR] [-] ajax.ajax.index.wrapped:323 - Error encountered in decorated function 'index'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 286, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 136, in index
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 221, in block 'content'
+    <a href="{{ url_for('performance.performance_test', model=app.model, port=app.frontend_port) }}" class="action-btn text-center text-2xs py-1 bg-purple-50 hover:bg-purple-100 text-purple-700">Perf</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'performance.performance_test' with values ['model', 'port']. Did you mean 'main.check_app_status' instead?
+2025-05-04 23:46:21 [ERROR] [bede1941] app.root.after_request_logging:543 - Request finished: GET / - Status: 500 [SLOW] - Duration: 1.927s
+2025-05-04 23:46:34 [ERROR] [-] ajax.ajax.index.wrapped:323 - Error encountered in decorated function 'index'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 286, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 136, in index
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 221, in block 'content'
+    <a href="{{ url_for('performance.performance_test', model=app.model, port=app.frontend_port) }}" class="action-btn text-center text-2xs py-1 bg-purple-50 hover:bg-purple-100 text-purple-700">Perf</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'performance.performance_test' with values ['model', 'port']. Did you mean 'main.check_app_status' instead?
+2025-05-04 23:46:34 [ERROR] [e27d5181] app.root.after_request_logging:543 - Request finished: GET / - Status: 500 [SLOW] - Duration: 2.196s
+2025-05-04 23:48:22 [ERROR] [-] ajax.ajax.index.wrapped:323 - Error encountered in decorated function 'index'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 286, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 136, in index
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 221, in block 'content'
+    <a href="{{ url_for('performance.performance_test', model=app.model, port=app.frontend_port) }}" class="action-btn text-center text-2xs py-1 bg-purple-50 hover:bg-purple-100 text-purple-700">Perf</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'performance.performance_test' with values ['model', 'port']. Did you mean 'main.check_app_status' instead?
+2025-05-04 23:48:22 [ERROR] [7d4e9a8f] app.root.after_request_logging:543 - Request finished: GET / - Status: 500 [SLOW] - Duration: 1.920s
+2025-05-04 23:54:57 [ERROR] [-] ajax.ajax.index.wrapped:323 - Error encountered in decorated function 'index'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 286, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 136, in index
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 221, in block 'content'
+    <a href="{{ url_for('performance.performance_test', model=app.model, port=app.frontend_port) }}" class="action-btn text-center text-2xs py-1 bg-purple-50 hover:bg-purple-100 text-purple-700">Perf</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'performance.performance_test' with values ['model', 'port']. Did you mean 'main.check_app_status' instead?
+2025-05-04 23:54:57 [ERROR] [a98102df] app.root.after_request_logging:543 - Request finished: GET / - Status: 500 [SLOW] - Duration: 1.963s
+2025-05-05 00:03:53 [ERROR] [-] ajax.ajax.index.wrapped:323 - Error encountered in decorated function 'index'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 286, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 161, in index
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 221, in block 'content'
+    <a href="{{ url_for('performance.performance_test', model=app.model, port=app.frontend_port) }}" class="action-btn text-center text-2xs py-1 bg-purple-50 hover:bg-purple-100 text-purple-700">Perf</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'performance.performance_test' with values ['model', 'port']. Did you mean 'main.check_app_status' instead?
+2025-05-05 00:03:53 [ERROR] [03180bc5] app.root.after_request_logging:543 - Request finished: GET / - Status: 500 [SLOW] - Duration: 2.213s
+2025-05-05 00:07:22 [ERROR] [-] ajax.ajax.index.wrapped:323 - Error encountered in decorated function 'index'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 286, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 161, in index
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 221, in block 'content'
+    <a href="{{ url_for('performance.performance_test', model=app.model, port=app.frontend_port) }}" class="action-btn text-center text-2xs py-1 bg-purple-50 hover:bg-purple-100 text-purple-700">Perf</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'performance.performance_test' with values ['model', 'port']. Did you mean 'main.check_app_status' instead?
+2025-05-05 00:07:22 [ERROR] [a283dd3c] app.root.after_request_logging:543 - Request finished: GET / - Status: 500 [SLOW] - Duration: 2.000s
+2025-05-05 00:07:43 [ERROR] [-] ajax.ajax.index.wrapped:323 - Error encountered in decorated function 'index'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 286, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 136, in index
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 221, in block 'content'
+    <a href="{{ url_for('performance.performance_test', model=app.model, port=app.frontend_port) }}" class="action-btn text-center text-2xs py-1 bg-purple-50 hover:bg-purple-100 text-purple-700">Perf</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'performance.performance_test' with values ['model', 'port']. Did you mean 'main.check_app_status' instead?
+2025-05-05 00:07:43 [ERROR] [bedcf013] app.root.after_request_logging:543 - Request finished: GET / - Status: 500 [SLOW] - Duration: 1.827s
+2025-05-05 00:07:52 [ERROR] [-] ajax.ajax.index.wrapped:323 - Error encountered in decorated function 'index'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 286, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 136, in index
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 221, in block 'content'
+    <a href="{{ url_for('performance.performance_test', model=app.model, port=app.frontend_port) }}" class="action-btn text-center text-2xs py-1 bg-purple-50 hover:bg-purple-100 text-purple-700">Perf</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'performance.performance_test' with values ['model', 'port']. Did you mean 'main.check_app_status' instead?
+2025-05-05 00:07:52 [ERROR] [e1d09488] app.root.after_request_logging:543 - Request finished: GET / - Status: 500 [SLOW] - Duration: 1.843s
+2025-05-05 00:08:03 [ERROR] [-] ajax.ajax.index.wrapped:323 - Error encountered in decorated function 'index'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 286, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 136, in index
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 221, in block 'content'
+    <a href="{{ url_for('performance.performance_test', model=app.model, port=app.frontend_port) }}" class="action-btn text-center text-2xs py-1 bg-purple-50 hover:bg-purple-100 text-purple-700">Perf</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'performance.performance_test' with values ['model', 'port']. Did you mean 'main.check_app_status' instead?
+2025-05-05 00:08:03 [ERROR] [fa44149c] app.root.after_request_logging:543 - Request finished: GET / - Status: 500 [SLOW] - Duration: 2.220s
