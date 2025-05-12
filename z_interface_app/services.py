@@ -1,6 +1,8 @@
 """
 Service components for the AI Model Management System.
 This module contains service classes that implement core business logic.
+
+Optimized to reduce cleanup frequency and improve overall organization.
 """
 
 # =============================================================================
@@ -30,35 +32,52 @@ from zap_scanner import create_scanner
 from logging_service import create_logger_for_component
 
 # =============================================================================
+# Configuration Module
+# =============================================================================
+class Config:
+    """Central configuration class for the application."""
+    
+    # Docker Manager Configuration
+    DOCKER_TIMEOUT_SECONDS = int(os.getenv("DOCKER_TIMEOUT", "10"))
+    CACHE_DURATION_SECONDS = int(os.getenv("CACHE_DURATION", "5"))
+    CONTAINER_PRUNE_FILTER_HOURS = os.getenv("CONTAINER_PRUNE_FILTER", "24h")
+    CONTAINER_CLEANUP_INTERVAL_MINUTES = int(os.getenv("CONTAINER_CLEANUP_INTERVAL", "60"))
+    
+    # Windows uses a different Docker socket path than Unix-based systems
+    WINDOWS_DOCKER_HOST = os.getenv("WINDOWS_DOCKER_HOST", "npipe:////./pipe/docker_engine")
+    UNIX_DOCKER_HOST = os.getenv("UNIX_DOCKER_HOST", "unix://var/run/docker.sock")
+    
+    # SystemHealthMonitor Configuration
+    DISK_USAGE_THRESHOLD_PERCENT = int(os.getenv("DISK_USAGE_THRESHOLD", "90"))
+    HEALTH_CHECK_INTERVAL_SECONDS = int(os.getenv("HEALTH_CHECK_INTERVAL", "300"))
+    
+    # ScanManager Configuration
+    SCAN_CLEANUP_HOURS = int(os.getenv("SCAN_CLEANUP_HOURS", "1"))
+    
+    # DatabaseManager Configuration
+    DB_PATH = os.getenv("DB_PATH", "scans.db")
+    DEFAULT_SCAN_LIMIT = int(os.getenv("DEFAULT_SCAN_LIMIT", "10"))
+    
+    # Port Manager Configuration
+    BASE_BACKEND_PORT = int(os.getenv("BASE_BACKEND_PORT", "5001"))
+    BASE_FRONTEND_PORT = int(os.getenv("BASE_FRONTEND_PORT", "5501"))
+    PORTS_PER_APP = int(os.getenv("PORTS_PER_APP", "2"))
+    BUFFER_PORTS = int(os.getenv("BUFFER_PORTS", "20"))
+    APPS_PER_MODEL = int(os.getenv("APPS_PER_MODEL", "30"))
+
+# =============================================================================
 # Module Constants
 # =============================================================================
-# DockerManager Defaults
-_DEFAULT_CACHE_DURATION_SECONDS = 5
-_DEFAULT_DOCKER_TIMEOUT_SECONDS = 10
-_DEFAULT_WINDOWS_DOCKER_HOST = "npipe:////./pipe/docker_engine"
-_DEFAULT_UNIX_DOCKER_HOST = "unix://var/run/docker.sock"
-_DEFAULT_CONTAINER_PRUNE_FILTER_HOURS = "24h"
-
-# SystemHealthMonitor Defaults
-_DISK_USAGE_THRESHOLD_PERCENT = 90
-
-# ScanManager Defaults
+# ScanManager Status Enum
 class ScanStatus(enum.Enum):
     """Enumeration for ZAP scan statuses."""
     STARTING = "Starting"
-    SPIDERING = "Spidering"  # Fixed typo "Spiderming" -> "Spidering"
+    SPIDERING = "Spidering"
     SCANNING = "Scanning"
     COMPLETE = "Complete"
     FAILED = "Failed"
     STOPPED = "Stopped"
     ERROR = "Error"
-
-_SCAN_CLEANUP_DURATION = timedelta(hours=1)
-
-# DatabaseManager Defaults
-_DEFAULT_DB_PATH = "scans.db"
-_DEFAULT_SCAN_LIMIT = 10
-
 
 # =============================================================================
 # Docker Management
@@ -76,12 +95,16 @@ class DockerManager:
         self.logger = create_logger_for_component('docker')
         self.client = client or self._create_docker_client()
         self._cache: Dict[str, Tuple[float, Any]] = {}
-        self._cache_duration = int(os.getenv(
-            "CACHE_DURATION", str(_DEFAULT_CACHE_DURATION_SECONDS)
-        ))
+        self._cache_duration = Config.CACHE_DURATION_SECONDS
+        
+        # Add last cleanup timestamp to implement throttling
+        self._last_cleanup_time = 0.0
+        self._cleanup_interval = Config.CONTAINER_CLEANUP_INTERVAL_MINUTES * 60  # Convert to seconds
+        
         if self.client:
             self.logger.info(
-                f"Docker manager initialized (Cache: {self._cache_duration}s)"
+                f"Docker manager initialized (Cache: {self._cache_duration}s, "
+                f"Cleanup interval: {Config.CONTAINER_CLEANUP_INTERVAL_MINUTES}m)"
             )
         else:
             self.logger.warning(
@@ -96,11 +119,9 @@ class DockerManager:
             Docker client instance or None if creation fails
         """
         try:
-            default_host = _DEFAULT_WINDOWS_DOCKER_HOST if os.name == 'nt' else _DEFAULT_UNIX_DOCKER_HOST
+            default_host = Config.WINDOWS_DOCKER_HOST if os.name == 'nt' else Config.UNIX_DOCKER_HOST
             docker_host = os.getenv("DOCKER_HOST", default_host)
-            timeout = int(os.getenv(
-                "DOCKER_TIMEOUT", str(_DEFAULT_DOCKER_TIMEOUT_SECONDS)
-            ))
+            timeout = Config.DOCKER_TIMEOUT_SECONDS
 
             self.logger.debug(
                 f"Creating Docker client with host: {docker_host}, timeout: {timeout}s"
@@ -225,13 +246,27 @@ class DockerManager:
             self.logger.exception(f"Log retrieval failed for {container_name}: {e}")
             return f"Log retrieval error: {e}"
 
-    def cleanup_containers(self) -> None:
-        """Remove stopped containers older than the configured duration."""
+    def cleanup_containers(self, force: bool = False) -> None:
+        """
+        Remove stopped containers older than the configured duration.
+        
+        Args:
+            force: If True, ignore the time throttling and perform cleanup anyway
+        """
+        now = time.time()
+        # Only clean up if enough time has passed since last cleanup or if forced
+        if not force and (now - self._last_cleanup_time < self._cleanup_interval):
+            self.logger.debug(
+                f"Skipping container cleanup, last performed {int((now - self._last_cleanup_time) / 60)} minutes ago"
+            )
+            return
+
         if not self.client:
             self.logger.warning("Docker client unavailable for container cleanup")
             return
+            
         try:
-            filter_duration = _DEFAULT_CONTAINER_PRUNE_FILTER_HOURS
+            filter_duration = Config.CONTAINER_PRUNE_FILTER_HOURS
             self.logger.info(f"Cleaning up stopped containers older than {filter_duration}")
             result = self.client.containers.prune(filters={"until": filter_duration})
             containers_deleted = result.get('ContainersDeleted', [])
@@ -244,9 +279,68 @@ class DockerManager:
                 )
             else:
                 self.logger.info("No containers found matching the cleanup criteria.")
+                
+            # Update the last cleanup time
+            self._last_cleanup_time = now
         except Exception as e:
             self.logger.exception(f"Container cleanup failed: {e}")
 
+# =============================================================================
+# Cleanup Scheduler
+# =============================================================================
+class CleanupScheduler:
+    """Scheduler for periodic cleanup tasks."""
+
+    def __init__(self, docker_manager: DockerManager):
+        """
+        Initialize the cleanup scheduler.
+        
+        Args:
+            docker_manager: Docker manager instance to use for cleanup operations
+        """
+        self.docker_manager = docker_manager
+        self.logger = create_logger_for_component('cleanup_scheduler')
+        self._stop_event = threading.Event()
+        self._thread = None
+
+    def start(self):
+        """Start the cleanup scheduler thread."""
+        if self._thread is not None and self._thread.is_alive():
+            self.logger.warning("Cleanup scheduler already running")
+            return
+
+        self._stop_event.clear()
+        self._thread = threading.Thread(target=self._scheduler_loop)
+        self._thread.daemon = True
+        self._thread.start()
+        self.logger.info("Cleanup scheduler started")
+
+    def stop(self):
+        """Stop the cleanup scheduler thread."""
+        if self._thread is None or not self._thread.is_alive():
+            return
+
+        self.logger.info("Stopping cleanup scheduler")
+        self._stop_event.set()
+        self._thread.join(timeout=5.0)
+        self._thread = None
+        self.logger.info("Cleanup scheduler stopped")
+
+    def _scheduler_loop(self):
+        """Main scheduler loop that runs cleanup tasks periodically."""
+        interval_seconds = Config.CONTAINER_CLEANUP_INTERVAL_MINUTES * 60  # Convert to seconds
+        
+        while not self._stop_event.is_set():
+            try:
+                # Run container cleanup with force=True to bypass throttling
+                self.docker_manager.cleanup_containers(force=True)
+                
+                # Sleep for the interval or until stopped
+                self._stop_event.wait(interval_seconds)
+            except Exception as e:
+                self.logger.exception(f"Error in cleanup scheduler: {e}")
+                # Sleep a bit after an error to avoid tight loop
+                time.sleep(10)
 
 # =============================================================================
 # System Health Monitoring
@@ -255,11 +349,14 @@ class SystemHealthMonitor:
     """Monitors system health metrics including disk space and Docker status."""
 
     _logger = create_logger_for_component('system_health')
+    _last_check_time = 0.0
+    _check_interval = Config.HEALTH_CHECK_INTERVAL_SECONDS
+    _last_check_results = {}
 
     @classmethod
-    def check_disk_space(cls, threshold: int = _DISK_USAGE_THRESHOLD_PERCENT) -> bool:
+    def check_disk_space(cls, threshold: int = Config.DISK_USAGE_THRESHOLD_PERCENT) -> bool:
         """
-        Check if disk space usage is below a threshold (default 90%).
+        Check if disk space usage is below a threshold.
 
         Args:
             threshold: The percentage threshold for disk usage.
@@ -381,6 +478,7 @@ class SystemHealthMonitor:
     def check_health(cls, docker_client: Optional[docker.DockerClient]) -> bool:
         """
         Check overall system health including Docker connectivity and disk space.
+        Uses cached results if checked recently.
 
         Args:
             docker_client: Docker client instance to check.
@@ -388,6 +486,12 @@ class SystemHealthMonitor:
         Returns:
             True if system is considered healthy, False otherwise.
         """
+        now = time.time()
+        if now - cls._last_check_time < cls._check_interval:
+            # Use cached results if we checked recently
+            cls._logger.debug("Using cached health check results")
+            return cls._last_check_results.get('is_healthy', False)
+
         cls._logger.info("Performing system health check...")
         docker_ok = cls.check_docker_connection(docker_client)
         disk_ok = cls.check_disk_space()  # Uses default threshold
@@ -398,20 +502,21 @@ class SystemHealthMonitor:
         else:
             cls._logger.warning(f"System health check FAILED (Docker OK: {docker_ok}, Disk OK: {disk_ok}).")
 
-        return is_healthy
+        # Update cache
+        cls._last_check_time = now
+        cls._last_check_results = {
+            'is_healthy': is_healthy,
+            'docker_ok': docker_ok,
+            'disk_ok': disk_ok
+        }
 
+        return is_healthy
 
 # =============================================================================
 # Port Management
 # =============================================================================
 class PortManager:
     """Manages port allocations for application containers."""
-
-    BASE_BACKEND_PORT = 5001
-    BASE_FRONTEND_PORT = 5501
-    PORTS_PER_APP = 2  # Number of ports allocated *per application instance*
-    BUFFER_PORTS = 20  # Buffer ports between models
-    APPS_PER_MODEL = 30  # Max apps per model range
 
     _logger = create_logger_for_component('port_manager')
 
@@ -427,17 +532,17 @@ class PortManager:
             Dictionary with start and end ports for backend and frontend.
         """
         # Calculate the total span needed for one model's apps + buffer
-        total_block_size = cls.APPS_PER_MODEL * cls.PORTS_PER_APP + cls.BUFFER_PORTS
+        total_block_size = Config.APPS_PER_MODEL * Config.PORTS_PER_APP + Config.BUFFER_PORTS
         base_backend_offset = model_idx * total_block_size
         base_frontend_offset = model_idx * total_block_size
 
-        backend_start = cls.BASE_BACKEND_PORT + base_backend_offset
+        backend_start = Config.BASE_BACKEND_PORT + base_backend_offset
         # End is the start of the *next* model's block, minus the buffer.
         # Or more simply, start + number of ports allocated for apps in this block.
-        backend_end = backend_start + cls.APPS_PER_MODEL * cls.PORTS_PER_APP
+        backend_end = backend_start + Config.APPS_PER_MODEL * Config.PORTS_PER_APP
 
-        frontend_start = cls.BASE_FRONTEND_PORT + base_frontend_offset
-        frontend_end = frontend_start + cls.APPS_PER_MODEL * cls.PORTS_PER_APP
+        frontend_start = Config.BASE_FRONTEND_PORT + base_frontend_offset
+        frontend_end = frontend_start + Config.APPS_PER_MODEL * Config.PORTS_PER_APP
 
         return {
             "backend": {"start": backend_start, "end": backend_end},
@@ -460,15 +565,15 @@ class PortManager:
         """
         if app_num <= 0:
             raise ValueError("app_num must be a positive integer (1-based).")
-        if app_num > cls.APPS_PER_MODEL:
-            raise ValueError(f"app_num {app_num} exceeds the maximum configured APPS_PER_MODEL ({cls.APPS_PER_MODEL}).")
+        if app_num > Config.APPS_PER_MODEL:
+            raise ValueError(f"app_num {app_num} exceeds the maximum configured APPS_PER_MODEL ({Config.APPS_PER_MODEL}).")
 
         rng = cls.get_port_range(model_idx)
 
         # Calculate the starting port for the app's block
         # Offset is based on the 0-based index (app_num - 1) times the block size per app.
-        backend_port = rng["backend"]["start"] + (app_num - 1) * cls.PORTS_PER_APP
-        frontend_port = rng["frontend"]["start"] + (app_num - 1) * cls.PORTS_PER_APP
+        backend_port = rng["backend"]["start"] + (app_num - 1) * Config.PORTS_PER_APP
+        frontend_port = rng["frontend"]["start"] + (app_num - 1) * Config.PORTS_PER_APP
 
         # Validate the *starting* port is within the calculated range END.
         # The app might use ports up to start + PORTS_PER_APP - 1.
@@ -490,10 +595,9 @@ class PortManager:
         ports = {"backend": backend_port, "frontend": frontend_port}
         cls._logger.debug(
             f"Calculated starting ports for model_idx={model_idx}, app_num={app_num}: {ports}"
-            f" (App block uses {cls.PORTS_PER_APP} ports)"
+            f" (App block uses {Config.PORTS_PER_APP} ports)"
         )
         return ports
-
 
 # =============================================================================
 # ZAP Scanner Integration
@@ -618,7 +722,7 @@ class ScanManager:
                 self.logger.warning(f"Attempted to update non-existent scan ID: {scan_id}")
                 return False
 
-    def cleanup_old_scans(self, max_age: timedelta = _SCAN_CLEANUP_DURATION) -> int:
+    def cleanup_old_scans(self, max_age: timedelta = timedelta(hours=Config.SCAN_CLEANUP_HOURS)) -> int:
         """
         Remove completed or failed scans older than max_age.
         
@@ -678,7 +782,6 @@ class ScanManager:
             
         return cleanup_count
 
-
 # =============================================================================
 # AI Service Integration Placeholder
 # =============================================================================
@@ -707,7 +810,6 @@ def call_ai_service(model: str, prompt: str) -> str:
     time.sleep(0.5)  # Simulate network delay
     return f"AI analysis result for model '{model}' based on provided prompt."
 
-
 # =============================================================================
 # Database Management
 # =============================================================================
@@ -718,7 +820,7 @@ class DatabaseManager:
     Implements context manager protocol for reliable connection handling.
     """
 
-    def __init__(self, db_path: str = _DEFAULT_DB_PATH):
+    def __init__(self, db_path: str = Config.DB_PATH):
         """
         Initialize database manager. Connection is established in __enter__.
 
@@ -851,7 +953,7 @@ class DatabaseManager:
                 return None
 
     def get_security_scans(
-        self, model: Optional[str] = None, app_num: Optional[int] = None, limit: int = _DEFAULT_SCAN_LIMIT
+        self, model: Optional[str] = None, app_num: Optional[int] = None, limit: int = Config.DEFAULT_SCAN_LIMIT
     ) -> List[sqlite3.Row]:
         """
         Retrieve security scan results with optional filters, ordered by newest first.
@@ -942,7 +1044,7 @@ class DatabaseManager:
                 return None
 
     def get_performance_tests(
-        self, model: Optional[str] = None, limit: int = _DEFAULT_SCAN_LIMIT
+        self, model: Optional[str] = None, limit: int = Config.DEFAULT_SCAN_LIMIT
     ) -> List[sqlite3.Row]:
         """
         Retrieves performance test results.
@@ -980,3 +1082,54 @@ class DatabaseManager:
             except sqlite3.Error as e:
                 self.logger.exception(f"Failed to retrieve performance tests: {e}")
                 return []
+
+# =============================================================================
+# Application Initialization
+# =============================================================================
+def initialize_application():
+    """Initialize the application components and start background services."""
+    logger = create_logger_for_component('app_init')
+    logger.info("Initializing application components...")
+    
+    # Create Docker manager
+    docker_manager = DockerManager()
+    
+    # Set up cleanup scheduler
+    cleanup_scheduler = CleanupScheduler(docker_manager)
+    cleanup_scheduler.start()
+    
+    # Perform initial health check
+    health_ok = SystemHealthMonitor.check_health(docker_manager.client)
+    if not health_ok:
+        logger.warning("Initial health check failed, but continuing startup")
+    
+    # Initialize scan manager
+    scan_manager = ScanManager()
+    
+    # Initialize database
+    with DatabaseManager() as db:
+        db._create_tables()
+    
+    # Return initialized components for use in the application
+    return {
+        "docker_manager": docker_manager,
+        "cleanup_scheduler": cleanup_scheduler,
+        "scan_manager": scan_manager
+    }
+
+# =============================================================================
+# Modified Teardown Logic (to be used in Flask or similar web frameworks)
+# =============================================================================
+def teardown():
+    """
+    Perform resource cleanup during teardown.
+    This function should be registered with the web framework's teardown handler.
+    """
+    logger = create_logger_for_component('teardown')
+    logger.debug("Performing resource cleanup during teardown")
+    
+    # No Docker container cleanup on every request
+    # Other necessary cleanup that should happen on each request can be added here
+    
+    # Close any other resources that need to be cleaned up per request
+    pass  # No operation needed for basic teardown

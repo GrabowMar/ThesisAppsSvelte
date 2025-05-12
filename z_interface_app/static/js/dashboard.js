@@ -1,6 +1,6 @@
 /**
  * AI Model Management Dashboard
- * Object-Oriented JavaScript implementation using ES6 classes
+ * Optimized JavaScript implementation using ES6 classes
  */
 
 // Main Application Class
@@ -9,19 +9,21 @@ class Dashboard {
    * Initialize the dashboard application
    */
   constructor() {
-    // Create configuration manager
+    // Core services
     this.config = new ConfigurationManager();
-    
-    // Create services
+    this.eventManager = new EventManager();
+    this.errorHandler = new ErrorHandler(this);
     this.stateManager = new StateManager();
-    this.apiService = new ApiService(this.config);
-    this.utilityService = new UtilityService();
+    this.apiService = new ApiService(this.config, this.errorHandler);
+    this.utilityService = new UtilityService(this.errorHandler);
+    this.uiService = new UIService(this);
+    this.pollingService = new PollingService(this);
     
-    // Create controllers that depend on services
+    // Controllers
     this.coreController = new CoreController(this);
     this.uiController = new UIController(this);
     
-    // Create feature managers
+    // Feature management
     this.featureManager = new FeatureManager(this);
   }
 
@@ -31,15 +33,23 @@ class Dashboard {
   init() {
     console.log('Initializing AI Model Management Dashboard');
     
-    // Initialize components
+    // Load configuration
+    this.config.loadStoredSettings();
+    
+    // Initialize controllers
     this.coreController.init();
     this.uiController.init();
     
-    // Set up global event listeners
+    // Set up global event handlers
     this.setupGlobalListeners();
     
-    // Initialize features if they exist on the current page
+    // Initialize feature modules
     this.featureManager.initFeatures();
+    
+    // Perform initial refresh
+    if (this.config.autoRefresh.enabled) {
+      this.coreController.refreshAllStatuses();
+    }
   }
 
   /**
@@ -47,7 +57,7 @@ class Dashboard {
    */
   setupGlobalListeners() {
     // Handle visibility change to manage auto-refresh
-    document.addEventListener('visibilitychange', () => {
+    this.eventManager.on(document, 'visibilitychange', () => {
       if (document.hidden) {
         this.coreController.autoRefreshService.pause();
       } else {
@@ -56,7 +66,15 @@ class Dashboard {
     });
     
     // Set up global error handling
-    window.addEventListener('error', this.utilityService.handleGlobalError.bind(this.utilityService));
+    window.addEventListener('error', this.errorHandler.handleGlobalError.bind(this.errorHandler));
+    
+    // Handle page unload to clean up resources
+    window.addEventListener('beforeunload', () => {
+      // Stop all polling activities
+      this.pollingService.stopAllPolling();
+      // Remove all event listeners
+      this.eventManager.offAll();
+    });
   }
 }
 
@@ -74,11 +92,17 @@ class ConfigurationManager {
     
     this.api = {
       retryAttempts: 3,
-      retryDelay: 1000
+      retryDelay: 1000,
+      timeout: 30000
     };
     
     this.ui = {
-      toastDuration: 3000
+      toastDuration: 3000,
+      maxLogLines: 500
+    };
+    
+    this.animations = {
+      enabled: true
     };
   }
 
@@ -90,7 +114,10 @@ class ConfigurationManager {
       const storedSettings = localStorage.getItem('dashboardSettings');
       if (storedSettings) {
         const settings = JSON.parse(storedSettings);
-        this.autoRefresh.enabled = settings.autoRefresh?.enabled ?? false;
+        // Use nullish coalescing to safely set values
+        this.autoRefresh.enabled = settings.autoRefresh?.enabled ?? this.autoRefresh.enabled;
+        this.autoRefresh.interval = settings.autoRefresh?.interval ?? this.autoRefresh.interval;
+        this.animations.enabled = settings.animations?.enabled ?? this.animations.enabled;
       }
     } catch (e) {
       console.warn('Failed to load stored settings:', e);
@@ -104,13 +131,196 @@ class ConfigurationManager {
     try {
       const settings = {
         autoRefresh: {
-          enabled: this.autoRefresh.enabled
+          enabled: this.autoRefresh.enabled,
+          interval: this.autoRefresh.interval
+        },
+        animations: {
+          enabled: this.animations.enabled
         }
       };
       localStorage.setItem('dashboardSettings', JSON.stringify(settings));
     } catch (e) {
       console.warn('Failed to save settings:', e);
     }
+  }
+}
+
+/**
+ * Event Manager Class
+ * Manages event listeners with proper cleanup
+ */
+class EventManager {
+  constructor() {
+    this.handlers = new Map();
+    this.idCounter = 0;
+  }
+  
+  /**
+   * Add event listener with optional delegation
+   * @param {Element|Document|Window} element - Element to attach listener to
+   * @param {string} eventType - Event type (e.g., 'click')
+   * @param {string|Function} selector - CSS selector for delegation or handler function
+   * @param {Function} [handler] - Event handler (if selector is provided)
+   * @returns {string} - Handler ID for removal
+   */
+  on(element, eventType, selector, handler) {
+    // If only 3 arguments passed, second is handler, not selector
+    if (typeof selector === 'function') {
+      handler = selector;
+      selector = null;
+    }
+    
+    // Create wrapped handler for proper delegation
+    const wrappedHandler = selector 
+      ? (e) => { 
+          if ($(e.target).is(selector) || $(e.target).closest(selector).length) {
+            handler.call(this, e); 
+          }
+        }
+      : handler;
+    
+    // Generate unique handler ID
+    const id = `handler_${++this.idCounter}`;
+    
+    // Store handler details
+    this.handlers.set(id, { 
+      element, 
+      eventType, 
+      wrappedHandler,
+      originalHandler: handler 
+    });
+    
+    // Attach event
+    $(element).on(eventType, wrappedHandler);
+    
+    return id;
+  }
+  
+  /**
+   * Remove event listener by ID
+   * @param {string} id - Handler ID
+   * @returns {boolean} - Success status
+   */
+  off(id) {
+    if (!this.handlers.has(id)) return false;
+    
+    const { element, eventType, wrappedHandler } = this.handlers.get(id);
+    $(element).off(eventType, wrappedHandler);
+    this.handlers.delete(id);
+    
+    return true;
+  }
+  
+  /**
+   * Remove all registered event listeners
+   */
+  offAll() {
+    this.handlers.forEach((handler, id) => {
+      this.off(id);
+    });
+  }
+}
+
+/**
+ * Error Handler Class
+ * Centralized error handling
+ */
+class ErrorHandler {
+  /**
+   * @param {Dashboard} dashboard - Dashboard instance
+   */
+  constructor(dashboard) {
+    this.dashboard = dashboard;
+  }
+  
+  /**
+   * Handle error with logging and notification
+   * @param {Error|string} error - Error object or message
+   * @param {Object} context - Additional context for logging
+   * @param {boolean} displayToast - Whether to show user notification
+   * @returns {Promise} - Rejected promise with the error
+   */
+  handleError(error, context = {}, displayToast = true) {
+    // Log to console
+    console.error('Error occurred:', error, 'Context:', context);
+    
+    // Extract error message
+    const errorMessage = this.formatErrorMessage(error);
+    
+    // Log to server
+    this.logToServer(errorMessage, error, context);
+    
+    // Show toast notification if requested
+    if (displayToast && this.dashboard.uiController) {
+      this.dashboard.uiController.showToast(errorMessage, 'error');
+    }
+    
+    // Return rejected promise to maintain chain
+    return $.Deferred().reject(error);
+  }
+  
+  /**
+   * Format error message for display
+   * @param {*} error - Error object or message
+   * @returns {string} - Formatted message
+   */
+  formatErrorMessage(error) {
+    if (typeof error === 'string') return error;
+    if (error && error.message) return error.message;
+    if (error && error.responseJSON && error.responseJSON.error) return error.responseJSON.error;
+    if (error && error.statusText) return `Server error: ${error.statusText}`;
+    return 'An unexpected error occurred';
+  }
+  
+  /**
+   * Log error to server
+   * @param {string} message - Error message
+   * @param {*} originalError - Original error object
+   * @param {Object} context - Additional context
+   */
+  logToServer(message, originalError, context) {
+    const errorData = {
+      message: message,
+      context: context,
+      error: originalError ? originalError.toString() : 'Unknown error',
+      stack: originalError && originalError.stack ? originalError.stack : 'No stack trace',
+      url: window.location.href,
+      userAgent: navigator.userAgent,
+      timestamp: new Date().toISOString()
+    };
+    
+    // Use fetch for fire-and-forget logging
+    fetch('/api/log-client-error', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify(errorData),
+      // Prevent error handler for this request to avoid infinite loop
+      credentials: 'same-origin'
+    }).catch(e => console.error('Failed to send error log:', e));
+  }
+  
+  /**
+   * Handle global JS errors
+   * @param {ErrorEvent} event - Error event
+   * @returns {boolean} - Whether to prevent default handling
+   */
+  handleGlobalError(event) {
+    const errorDetails = {
+      message: event.message || 'Unknown JavaScript error',
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+      stack: event.error ? event.error.stack : 'No stack trace',
+      type: 'global_error'
+    };
+    
+    this.logToServer(errorDetails.message, event.error, errorDetails);
+    
+    // Don't prevent default error handling so browser console still shows error
+    return false;
   }
 }
 
@@ -123,9 +333,713 @@ class StateManager {
     this.isRefreshing = false;
     this.lastRefreshTime = null;
     this.pendingActions = new Map();
-    this.activeFilters = {};
+    this.activeFilters = {
+      search: '',
+      model: 'all',
+      status: 'all'
+    };
     this.autoRefreshPaused = false;
     this.currentAnalysis = null;
+    this.pendingRequests = 0;
+  }
+  
+  /**
+   * Track pending action state
+   * @param {string} actionKey - Unique action identifier
+   * @param {boolean} isPending - Whether action is pending
+   */
+  setActionPending(actionKey, isPending) {
+    if (isPending) {
+      this.pendingActions.set(actionKey, true);
+    } else {
+      this.pendingActions.delete(actionKey);
+    }
+  }
+  
+  /**
+   * Check if action is pending
+   * @param {string} actionKey - Action identifier
+   * @returns {boolean} - Whether action is pending
+   */
+  isActionPending(actionKey) {
+    return this.pendingActions.has(actionKey);
+  }
+  
+  /**
+   * Track API request count
+   * @param {boolean} isStarting - Whether request is starting or ending
+   */
+  trackApiRequest(isStarting) {
+    if (isStarting) {
+      this.pendingRequests++;
+    } else {
+      this.pendingRequests = Math.max(0, this.pendingRequests - 1);
+    }
+  }
+  
+  /**
+   * Check if any API requests are pending
+   * @returns {boolean} - Whether any requests are pending
+   */
+  hasApiRequestsPending() {
+    return this.pendingRequests > 0;
+  }
+}
+
+/**
+ * API Service Class
+ * Centralized API request handling
+ */
+class ApiService {
+  /**
+   * @param {ConfigurationManager} config - Configuration instance
+   * @param {ErrorHandler} errorHandler - Error handler instance
+   */
+  constructor(config, errorHandler) {
+    this.config = config;
+    this.errorHandler = errorHandler;
+    this.pendingRequests = new Map();
+  }
+  
+  /**
+   * Perform API request with standard options
+   * @param {string} endpoint - API endpoint
+   * @param {Object} options - AJAX options
+   * @returns {Promise} - Promise for the request
+   */
+  request(endpoint, options = {}) {
+    // Validate endpoint
+    if (!endpoint || endpoint.includes('/undefined')) {
+      return this.errorHandler.handleError(
+        new Error(`Invalid API endpoint: ${endpoint}`),
+        { endpoint, options },
+        options.suppressToast !== true
+      );
+    }
+    
+    // Default request options
+    const requestOptions = {
+      url: endpoint,
+      method: options.method || 'GET',
+      dataType: options.dataType || 'json',
+      cache: options.cache !== undefined ? options.cache : false,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        ...options.headers
+      },
+      data: options.data,
+      contentType: options.contentType,
+      timeout: options.timeout || this.config.api.timeout
+    };
+    
+    // Generate request ID
+    const requestId = options.requestId || `${endpoint}_${Date.now()}`;
+    
+    // Cancel previous request with same ID if exists
+    this.cancelRequest(requestId);
+    
+    // Perform request with retry support
+    return this.fetchWithRetry(requestOptions, options.retries, requestId)
+      .always(() => {
+        // Remove from pending requests
+        this.pendingRequests.delete(requestId);
+      });
+  }
+  
+  /**
+   * Cancel pending request by ID
+   * @param {string} requestId - Request identifier
+   * @returns {boolean} - Whether a request was cancelled
+   */
+  cancelRequest(requestId) {
+    if (this.pendingRequests.has(requestId)) {
+      const xhr = this.pendingRequests.get(requestId);
+      if (xhr && xhr.abort) {
+        xhr.abort();
+        this.pendingRequests.delete(requestId);
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  /**
+   * Fetch with retry logic
+   * @param {Object} options - AJAX options
+   * @param {number|null} retries - Number of retries
+   * @param {string} requestId - Request identifier
+   * @returns {Promise} - Promise for the request
+   */
+  fetchWithRetry(options, retries = null, requestId) {
+    if (retries === null) {
+      retries = this.config.api.retryAttempts;
+    }
+    
+    // Function to attempt the request
+    const attemptRequest = (remainingRetries) => {
+      const xhr = $.ajax(options);
+      
+      // Store XHR for potential cancellation
+      this.pendingRequests.set(requestId, xhr);
+      
+      return xhr.fail((jqXHR, textStatus, errorThrown) => {
+        // Don't retry if request was aborted
+        if (textStatus === 'abort') {
+          return $.Deferred().reject({ aborted: true });
+        }
+        
+        // Don't retry if no retries left
+        if (remainingRetries <= 0) {
+          return $.Deferred().reject(errorThrown || jqXHR || textStatus);
+        }
+        
+        console.warn(
+          `API request attempt failed (${this.config.api.retryAttempts - remainingRetries + 1}/${this.config.api.retryAttempts}):`, 
+          textStatus
+        );
+        
+        // Wait before retry using exponential backoff
+        const delay = this.config.api.retryDelay * Math.pow(2, this.config.api.retryAttempts - remainingRetries);
+        
+        return new Promise(resolve => setTimeout(resolve, delay))
+          .then(() => {
+            return attemptRequest(remainingRetries - 1);
+          });
+      });
+    };
+    
+    return attemptRequest(retries);
+  }
+  
+  /**
+   * Perform GET request
+   * @param {string} endpoint - API endpoint
+   * @param {Object} options - Additional options
+   * @returns {Promise} - Promise for the request
+   */
+  get(endpoint, options = {}) {
+    return this.request(endpoint, { ...options, method: 'GET' });
+  }
+  
+  /**
+   * Perform POST request
+   * @param {string} endpoint - API endpoint
+   * @param {Object} data - Request payload
+   * @param {Object} options - Additional options
+   * @returns {Promise} - Promise for the request
+   */
+  post(endpoint, data = {}, options = {}) {
+    return this.request(endpoint, {
+      ...options,
+      method: 'POST',
+      data: options.contentType === 'application/json' ? JSON.stringify(data) : data
+    });
+  }
+}
+
+/**
+ * Utility Service Class
+ * Provides helper functions
+ */
+class UtilityService {
+  /**
+   * @param {ErrorHandler} errorHandler - Error handler instance
+   */
+  constructor(errorHandler) {
+    this.errorHandler = errorHandler;
+  }
+
+  /**
+   * Create a debounced function
+   * @param {Function} func - Function to debounce
+   * @param {number} wait - Wait time in milliseconds
+   * @returns {Function} - Debounced function
+   */
+  debounce(func, wait) {
+    let timeout;
+    return function() {
+      const context = this;
+      const args = arguments;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        func.apply(context, args);
+      }, wait);
+    };
+  }
+
+  /**
+   * Create a throttled function
+   * @param {Function} func - Function to throttle
+   * @param {number} limit - Throttle limit in milliseconds
+   * @returns {Function} - Throttled function
+   */
+  throttle(func, limit) {
+    let inThrottle;
+    return function() {
+      const context = this;
+      const args = arguments;
+      if (!inThrottle) {
+        func.apply(context, args);
+        inThrottle = true;
+        setTimeout(() => inThrottle = false, limit);
+      }
+    };
+  }
+
+  /**
+   * Capitalize first letter of a string
+   * @param {string} string - String to capitalize
+   * @returns {string} - Capitalized string
+   */
+  capitalizeFirst(string) {
+    if (!string) return '';
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  /**
+   * Format bytes to human-readable string
+   * @param {number} bytes - Bytes to format
+   * @param {number} decimals - Decimal places
+   * @returns {string} - Formatted string
+   */
+  formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) return '0 B';
+    
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i];
+  }
+
+  /**
+   * Format seconds to human-readable uptime
+   * @param {number} seconds - Seconds to format
+   * @returns {string} - Formatted uptime string
+   */
+  formatUptime(seconds) {
+    if (seconds === undefined || seconds === null) return 'Unknown';
+    
+    const days = Math.floor(seconds / 86400);
+    seconds %= 86400;
+    const hours = Math.floor(seconds / 3600);
+    seconds %= 3600;
+    const minutes = Math.floor(seconds / 60);
+    
+    let result = '';
+    if (days > 0) result += `${days}d `;
+    if (hours > 0 || days > 0) result += `${hours}h `;
+    result += `${minutes}m`;
+    
+    return result;
+  }
+  
+  /**
+   * Format date/time to locale string
+   * @param {Date|string|number} date - Date to format
+   * @param {Object} options - Format options
+   * @returns {string} - Formatted date string
+   */
+  formatDateTime(date, options = {}) {
+    if (!date) return '';
+    
+    try {
+      const dateObj = date instanceof Date ? date : new Date(date);
+      return dateObj.toLocaleString(undefined, {
+        dateStyle: options.dateStyle || 'short',
+        timeStyle: options.timeStyle || 'medium',
+        ...options
+      });
+    } catch (e) {
+      this.errorHandler.handleError(e, { date }, false);
+      return String(date);
+    }
+  }
+  
+  /**
+   * Generate unique ID
+   * @param {string} prefix - Optional prefix
+   * @returns {string} - Unique ID
+   */
+  generateId(prefix = 'id') {
+    return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+  
+  /**
+   * Safely parse JSON
+   * @param {string} jsonString - JSON string to parse
+   * @param {*} fallbackValue - Value to return if parsing fails
+   * @returns {*} - Parsed object or fallback value
+   */
+  safeJsonParse(jsonString, fallbackValue = null) {
+    try {
+      return JSON.parse(jsonString);
+    } catch (e) {
+      console.warn('JSON parse error:', e);
+      return fallbackValue;
+    }
+  }
+}
+
+/**
+ * UI Service Class
+ * Handles UI utilities and element manipulation
+ */
+class UIService {
+  /**
+   * @param {Dashboard} dashboard - Dashboard instance
+   */
+  constructor(dashboard) {
+    this.dashboard = dashboard;
+    this.toastContainer = null;
+    this.toastQueue = [];
+    this.isProcessingToasts = false;
+  }
+  
+  /**
+   * Update element text content
+   * @param {string|Element} selector - Element selector or DOM element
+   * @param {*} value - New content value
+   * @param {Function} formatFn - Optional formatting function
+   * @returns {boolean} - Success status
+   */
+  updateElement(selector, value, formatFn = null) {
+    const $element = selector instanceof Element ? $(selector) : $(selector);
+    if (!$element.length) return false;
+    
+    const displayValue = formatFn ? formatFn(value) : value;
+    $element.text(displayValue);
+    return true;
+  }
+  
+  /**
+   * Update element with class based on thresholds
+   * @param {string|Element} selector - Element selector or DOM element
+   * @param {*} value - Value to check against thresholds
+   * @param {Object} classConfig - Class configuration
+   * @returns {boolean} - Success status
+   */
+  updateElementWithClass(selector, value, classConfig) {
+    const $element = selector instanceof Element ? $(selector) : $(selector);
+    if (!$element.length) return false;
+    
+    // Find appropriate class from thresholds
+    let className = classConfig.default || '';
+    
+    if (classConfig.thresholds) {
+      // Sort thresholds in descending order to check highest first
+      const thresholds = [...classConfig.thresholds].sort((a, b) => 
+        (b.threshold === undefined ? -Infinity : b.threshold) - 
+        (a.threshold === undefined ? -Infinity : a.threshold)
+      );
+      
+      // Find first matching threshold
+      for (const threshold of thresholds) {
+        if (threshold.threshold === undefined || value > threshold.threshold) {
+          className = threshold.class;
+          break;
+        }
+      }
+    }
+    
+    // Update class
+    $element.attr('class', className);
+    return true;
+  }
+  
+  /**
+   * Show loading indicator
+   * @param {Element} element - Element to show loading in
+   * @param {string} text - Loading text
+   * @returns {Function} - Function to hide loading indicator
+   */
+  showLoading(element, text = 'Loading...') {
+    const $element = $(element);
+    if (!$element.length) return () => {};
+    
+    // Store original content and disabled state
+    const originalContent = $element.html();
+    const wasDisabled = $element.prop('disabled');
+    
+    // Create spinner
+    const spinner = `
+      <svg class="inline-block w-4 h-4 mr-1 animate-spin" viewBox="0 0 24 24" fill="none">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+    `;
+    
+    // Update element
+    $element.html(spinner + text);
+    $element.prop('disabled', true);
+    
+    // Return function to restore original state
+    return () => {
+      $element.html(originalContent);
+      $element.prop('disabled', wasDisabled);
+    };
+  }
+  
+  /**
+   * Show toast notification
+   * @param {string} message - Message to display
+   * @param {string} type - Notification type (success, error, info)
+   * @param {Object} options - Additional options
+   * @returns {Element} - Toast element
+   */
+  showToast(message, type = 'success', options = {}) {
+    if (!message) return null;
+    
+    // Create toast container if needed
+    if (!this.toastContainer) {
+      this.toastContainer = $('<div>', {
+        id: 'toastContainer',
+        class: 'fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none'
+      }).appendTo('body')[0];
+    }
+    
+    // Determine toast style based on type
+    const toastClasses = 
+      type === 'success' ? 'bg-green-100 border border-green-300 text-green-800' :
+      type === 'error' ? 'bg-red-100 border border-red-300 text-red-800' :
+      type === 'warning' ? 'bg-yellow-100 border border-yellow-300 text-yellow-800' :
+      'bg-blue-100 border border-blue-300 text-blue-800';
+    
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `px-4 py-2 rounded-sm shadow-md text-sm transition-opacity duration-300 opacity-0 pointer-events-auto ${toastClasses}`;
+    toast.textContent = message;
+    
+    // Add dismiss button if not auto-dismiss
+    if (options.autoDismiss === false) {
+      const dismissBtn = document.createElement('button');
+      dismissBtn.className = 'ml-2 text-gray-600 hover:text-gray-800';
+      dismissBtn.innerHTML = '&times;';
+      dismissBtn.addEventListener('click', () => {
+        this.dismissToast(toast);
+      });
+      toast.appendChild(dismissBtn);
+    }
+    
+    // Add to queue
+    this.toastQueue.push({
+      element: toast,
+      duration: options.duration || this.dashboard.config.ui.toastDuration
+    });
+    
+    // Process queue
+    this.processToastQueue();
+    
+    return toast;
+  }
+  
+  /**
+   * Process toast notification queue
+   */
+  processToastQueue() {
+    if (this.isProcessingToasts || this.toastQueue.length === 0) return;
+    
+    this.isProcessingToasts = true;
+    
+    // Get next toast from queue
+    const { element, duration } = this.toastQueue.shift();
+    
+    // Add to container
+    this.toastContainer.appendChild(element);
+    
+    // Show with animation
+    setTimeout(() => {
+      element.classList.add('opacity-100');
+      
+      // Auto-dismiss after duration
+      if (duration > 0) {
+        setTimeout(() => {
+          this.dismissToast(element);
+        }, duration);
+      }
+    }, 10);
+  }
+  
+  /**
+   * Dismiss toast notification
+   * @param {Element} toast - Toast element to dismiss
+   */
+  dismissToast(toast) {
+    // Hide with animation
+    toast.classList.remove('opacity-100');
+    toast.classList.add('opacity-0');
+    
+    // Remove after animation
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+      
+      // Process next toast
+      this.isProcessingToasts = false;
+      this.processToastQueue();
+    }, 300);
+  }
+  
+  /**
+   * Toggle element visibility
+   * @param {string|Element} selector - Element selector or DOM element
+   * @param {boolean} isVisible - Whether element should be visible
+   * @returns {boolean} - Success status
+   */
+  toggleVisibility(selector, isVisible) {
+    const $element = selector instanceof Element ? $(selector) : $(selector);
+    if (!$element.length) return false;
+    
+    $element.toggle(isVisible);
+    return true;
+  }
+  
+  /**
+   * Create loading indicator HTML
+   * @param {string} text - Loading text
+   * @returns {string} - HTML for loading indicator
+   */
+  getLoadingIndicator(text = 'Loading') {
+    return `
+      <svg class="inline-block w-4 h-4 mr-1 animate-spin" viewBox="0 0 24 24" fill="none">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>${text}...
+    `;
+  }
+}
+
+/**
+ * Polling Service Class
+ * Manages polling for data updates
+ */
+class PollingService {
+  /**
+   * @param {Dashboard} dashboard - Dashboard instance
+   */
+  constructor(dashboard) {
+    this.dashboard = dashboard;
+    this.activePolls = new Map();
+  }
+  
+  /**
+   * Start polling an endpoint
+   * @param {string} id - Unique poll identifier
+   * @param {string} endpoint - Endpoint to poll
+   * @param {Object} options - Polling options
+   * @returns {string} - Poll ID
+   */
+  startPolling(id, endpoint, options = {}) {
+    // Ensure we have a valid ID
+    const pollId = id || this.dashboard.utilityService.generateId('poll');
+    
+    // Stop existing poll if it exists
+    this.stopPolling(pollId);
+    
+    // Configure poll
+    const config = {
+      interval: options.interval || 2000,
+      maxErrorCount: options.maxErrorCount || 3,
+      onSuccess: options.onSuccess || (() => {}),
+      onError: options.onError || (() => {}),
+      onComplete: options.onComplete || (() => {}),
+      completionCheck: options.completionCheck || (() => false),
+      requestOptions: options.requestOptions || {}
+    };
+    
+    let errorCount = 0;
+    
+    // Create polling function
+    const doPoll = () => {
+      if (!this.activePolls.has(pollId)) return;
+      
+      this.dashboard.apiService.request(endpoint, {
+        ...config.requestOptions,
+        suppressToast: true,
+        requestId: `poll_${pollId}`
+      })
+      .done(data => {
+        // Reset error count on success
+        errorCount = 0;
+        
+        // Call success handler
+        config.onSuccess(data);
+        
+        // Check if polling should complete
+        if (config.completionCheck(data)) {
+          this.stopPolling(pollId);
+          config.onComplete(data);
+          return;
+        }
+        
+        // Schedule next poll if still active
+        if (this.activePolls.has(pollId)) {
+          const timerId = setTimeout(doPoll, config.interval);
+          this.activePolls.set(pollId, timerId);
+        }
+      })
+      .fail(error => {
+        // Skip error handling for aborted requests
+        if (error && error.aborted) return;
+        
+        errorCount++;
+        
+        // Call error handler
+        config.onError(error, errorCount);
+        
+        // Stop polling if too many errors
+        if (errorCount >= config.maxErrorCount) {
+          this.stopPolling(pollId);
+          return;
+        }
+        
+        // Schedule next poll with increased delay if still active
+        if (this.activePolls.has(pollId)) {
+          const backoffDelay = config.interval * Math.pow(2, errorCount);
+          const timerId = setTimeout(doPoll, backoffDelay);
+          this.activePolls.set(pollId, timerId);
+        }
+      });
+    };
+    
+    // Start polling immediately
+    const timerId = setTimeout(doPoll, 0);
+    this.activePolls.set(pollId, timerId);
+    
+    return pollId;
+  }
+  
+  /**
+   * Stop polling by ID
+   * @param {string} id - Poll ID
+   * @returns {boolean} - Whether poll was stopped
+   */
+  stopPolling(id) {
+    if (this.activePolls.has(id)) {
+      clearTimeout(this.activePolls.get(id));
+      this.activePolls.delete(id);
+      
+      // Cancel any in-flight requests
+      this.dashboard.apiService.cancelRequest(`poll_${id}`);
+      
+      return true;
+    }
+    return false;
+  }
+  
+  /**
+   * Stop all active polling
+   */
+  stopAllPolling() {
+    for (const [id, timerId] of this.activePolls.entries()) {
+      clearTimeout(timerId);
+      
+      // Cancel any in-flight requests
+      this.dashboard.apiService.cancelRequest(`poll_${id}`);
+    }
+    
+    this.activePolls.clear();
   }
 }
 
@@ -135,7 +1049,7 @@ class StateManager {
  */
 class CoreController {
   /**
-   * @param {Dashboard} dashboard - Main dashboard instance
+   * @param {Dashboard} dashboard - Dashboard instance
    */
   constructor(dashboard) {
     this.dashboard = dashboard;
@@ -147,7 +1061,6 @@ class CoreController {
    * Initialize core functionality
    */
   init() {
-    this.dashboard.config.loadStoredSettings();
     this.autoRefreshService.setup();
     this.systemInfoService.init();
   }
@@ -179,11 +1092,9 @@ class CoreController {
       this.dashboard.stateManager.lastRefreshTime = new Date();
       this.dashboard.uiController.updateRefreshTimestamp();
     } catch (error) {
-      console.error('Error refreshing statuses:', error);
-      this.dashboard.utilityService.logError({
-        message: 'Failed to refresh all statuses',
-        error
-      });
+      this.dashboard.errorHandler.handleError(error, {
+        action: 'refreshAllStatuses'
+      }, true);
     } finally {
       this.dashboard.stateManager.isRefreshing = false;
     }
@@ -196,23 +1107,17 @@ class CoreController {
    * @returns {Promise} - Promise for the status update
    */
   updateAppStatus(model, appNum) {
-    if (!model || !appNum) return Promise.reject(new Error('Invalid parameters'));
+    if (!model || !appNum) {
+      return $.Deferred().reject(new Error('Invalid parameters'));
+    }
     
-    return $.ajax({
-      url: `/status/${model}/${appNum}`,
-      method: 'GET',
-      dataType: 'json',
-      cache: false,
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest'
-      }
-    })
-    .done(data => {
-      this.dashboard.uiController.updateStatusDisplay(model, appNum, data);
-    })
-    .fail((jqXHR, textStatus, errorThrown) => {
-      console.error(`Error updating status for ${model} app ${appNum}:`, errorThrown);
-    });
+    return this.dashboard.apiService.get(`/status/${model}/${appNum}`)
+      .done(data => {
+        this.dashboard.uiController.updateStatusDisplay(model, appNum, data);
+      })
+      .fail(error => {
+        console.error(`Error updating status for ${model} app ${appNum}:`, error);
+      });
   }
 
   /**
@@ -227,30 +1132,24 @@ class CoreController {
       return $.Deferred().reject('Missing required parameters for action');
     }
     
-    // Show special handling for rebuild which may take longer
+    // Special handling for rebuild which may take longer
     if (action === 'rebuild') {
-      this.dashboard.uiController.showToast(`Rebuilding ${model} App ${appNum}. This may take several minutes...`, 'info');
+      this.dashboard.uiController.showToast(
+        `Rebuilding ${model} App ${appNum}. This may take several minutes...`, 
+        'info'
+      );
     }
     
-    return $.ajax({
-      url: `/${action}/${model}/${appNum}`,
-      method: 'GET',
-      dataType: 'json',
-      cache: false,
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest'
-      }
-    })
-    .done(result => {
-      if (result && result.message) {
-        console.log(`${action} result:`, result.message);
-      }
-      return true;
-    })
-    .fail((jqXHR, textStatus, errorThrown) => {
-      console.error(`Action '${action}' failed:`, errorThrown);
-      throw new Error(`Failed to ${action}: ${errorThrown}`);
-    });
+    return this.dashboard.apiService.post(`/${action}/${model}/${appNum}`)
+      .done(result => {
+        if (result && result.message) {
+          console.log(`${action} result:`, result.message);
+        }
+        return true;
+      })
+      .fail(error => {
+        throw new Error(`Failed to ${action}: ${error}`);
+      });
   }
 
   /**
@@ -280,33 +1179,52 @@ class CoreController {
       return $(card).data('app-id');
     }).filter(Boolean);
     
-    // Initialize counters
-    let success = 0;
-    let failed = 0;
-    let processed = 0;
+    // Process results
+    const results = { 
+      success: 0, 
+      failed: 0, 
+      processed: 0, 
+      total: appNumbers.length 
+    };
+    
+    const deferred = $.Deferred();
     
     // Process apps in batches
+    this.processBatchesSequentially(action, model, appNumbers, results, deferred);
+    
+    return deferred.promise();
+  }
+
+  /**
+   * Process batches sequentially
+   * @param {string} action - Action to perform
+   * @param {string} model - Model name
+   * @param {Array} appNumbers - Array of app numbers
+   * @param {Object} results - Results object
+   * @param {Object} deferred - Deferred object
+   */
+  processBatchesSequentially(action, model, appNumbers, results, deferred) {
     const batchSize = 3;
-    const deferred = $.Deferred();
     const batchPromises = [];
     
-    // Process each batch
+    // Create batch promises
     for (let i = 0; i < appNumbers.length; i += batchSize) {
       const batch = appNumbers.slice(i, i + batchSize);
       
-      // Create promises for this batch
       const processBatch = () => {
         const promises = batch.map(appNum => {
           return this.processBatchOperation(action, model, appNum)
-            .then(result => {
-              processed++;
-              if (result) success++;
-              else failed++;
+            .then(success => {
+              results.processed++;
+              if (success) results.success++;
+              else results.failed++;
               
               // Update UI with progress
-              this.dashboard.uiController.updateBatchProgress(model, action, processed, appNumbers.length);
+              this.dashboard.uiController.updateBatchProgress(
+                model, action, results.processed, results.total
+              );
               
-              return result;
+              return success;
             });
         });
         
@@ -325,20 +1243,24 @@ class CoreController {
     // When all batches are done
     chain.then(() => {
       // Update final status
-      this.dashboard.uiController.updateBatchResult(model, action, success, failed, appNumbers.length);
+      this.dashboard.uiController.updateBatchResult(
+        model, action, results.success, results.failed, results.total
+      );
       
       // Refresh statuses
       setTimeout(() => {
         this.refreshAllStatuses();
       }, 1000);
       
-      deferred.resolve({ success, failed, total: appNumbers.length });
+      deferred.resolve(results);
     }).fail(error => {
-      console.error('Batch operation failed:', error);
+      this.dashboard.errorHandler.handleError(error, {
+        action: 'batchOperation',
+        model,
+        appNumbers
+      });
       deferred.reject(error);
     });
-    
-    return deferred.promise();
   }
 
   /**
@@ -356,19 +1278,13 @@ class CoreController {
     
     // Handle special non-Docker actions
     if (action === 'health-check') {
-      return $.ajax({
-        url: `/api/health/${model}/${appNum}`,
-        method: 'GET',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      })
-      .then(() => true)
-      .fail(() => false);
+      return this.dashboard.apiService.get(`/api/health/${model}/${appNum}`)
+        .then(() => true)
+        .fail(() => false);
     }
     
     // Handle standard actions with retry logic
-    return this.dashboard.apiService.fetchWithRetry(`/${action}/${model}/${appNum}`)
+    return this.dashboard.apiService.post(`/${action}/${model}/${appNum}`)
       .then(() => true)
       .fail(() => false);
   }
@@ -380,7 +1296,7 @@ class CoreController {
  */
 class AutoRefreshService {
   /**
-   * @param {Dashboard} dashboard - Main dashboard instance
+   * @param {Dashboard} dashboard - Dashboard instance
    */
   constructor(dashboard) {
     this.dashboard = dashboard;
@@ -450,7 +1366,8 @@ class AutoRefreshService {
    * Resume auto-refresh if it was paused
    */
   resume() {
-    if (this.dashboard.stateManager.autoRefreshPaused && this.dashboard.config.autoRefresh.enabled) {
+    if (this.dashboard.stateManager.autoRefreshPaused && 
+        this.dashboard.config.autoRefresh.enabled) {
       this.dashboard.config.autoRefresh.timer = setInterval(() => {
         this.dashboard.coreController.refreshAllStatuses();
       }, this.dashboard.config.autoRefresh.interval);
@@ -465,7 +1382,7 @@ class AutoRefreshService {
  */
 class SystemInfoService {
   /**
-   * @param {Dashboard} dashboard - Main dashboard instance
+   * @param {Dashboard} dashboard - Dashboard instance
    */
   constructor(dashboard) {
     this.dashboard = dashboard;
@@ -484,21 +1401,13 @@ class SystemInfoService {
    * Load system information from API
    */
   load() {
-    $.ajax({
-      url: '/api/system-info',
-      method: 'GET',
-      dataType: 'json',
-      cache: false,
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest'
-      }
-    })
-    .done(data => {
-      this.dashboard.uiController.updateSystemInfoDisplay(data);
-    })
-    .fail((jqXHR, textStatus, errorThrown) => {
-      console.error('Failed to load system info:', errorThrown);
-    });
+    this.dashboard.apiService.get('/api/system-info')
+      .done(data => {
+        this.dashboard.uiController.updateSystemInfoDisplay(data);
+      })
+      .fail(error => {
+        console.error('Failed to load system info:', error);
+      });
   }
 }
 
@@ -508,7 +1417,7 @@ class SystemInfoService {
  */
 class UIController {
   /**
-   * @param {Dashboard} dashboard - Main dashboard instance
+   * @param {Dashboard} dashboard - Dashboard instance
    */
   constructor(dashboard) {
     this.dashboard = dashboard;
@@ -537,33 +1446,50 @@ class UIController {
   init() {
     this.setupEventListeners();
     this.setupFilters();
+    this.updateAutoRefreshDisplay(this.dashboard.config.autoRefresh.enabled);
   }
 
   /**
    * Set up UI event listeners
    */
   setupEventListeners() {
+    this.setupActionButtons();
+    this.setupRefreshButtons();
+    this.setupBatchMenuButtons();
+    this.setupDocumentClicks();
+  }
+
+  /**
+   * Set up action button event listeners
+   */
+  setupActionButtons() {
     // Action buttons
-    $(this.selectors.actionButtons).each((i, button) => {
-      if (!$(button).data('action')) return;
-      
-      $(button).on('click', e => {
-        this.handleActionButton(e);
-      });
+    this.dashboard.eventManager.on(document, 'click', this.selectors.actionButtons, e => {
+      this.handleActionButton(e);
     });
-    
+  }
+
+  /**
+   * Set up refresh button event listeners
+   */
+  setupRefreshButtons() {
     // Refresh all button
-    $(this.selectors.refreshAllBtn).on('click', () => {
+    this.dashboard.eventManager.on(document, 'click', this.selectors.refreshAllBtn, () => {
       this.dashboard.coreController.refreshAllStatuses();
     });
     
     // Toggle auto-refresh button
-    $(this.selectors.toggleAutorefreshBtn).on('click', () => {
+    this.dashboard.eventManager.on(document, 'click', this.selectors.toggleAutorefreshBtn, () => {
       this.dashboard.coreController.autoRefreshService.toggle();
     });
-    
+  }
+
+  /**
+   * Set up batch menu button event listeners
+   */
+  setupBatchMenuButtons() {
     // Batch menu buttons
-    $(this.selectors.batchMenu).on('click', e => {
+    this.dashboard.eventManager.on(document, 'click', this.selectors.batchMenu, e => {
       e.stopPropagation();
       const $dropdown = $(e.currentTarget).next(this.selectors.batchMenuItems);
       
@@ -573,14 +1499,19 @@ class UIController {
       $(this.selectors.batchMenuItems).not($dropdown).addClass('hidden');
     });
     
-    // Close dropdowns when clicking elsewhere
-    $(document).on('click', () => {
-      $(this.selectors.batchMenuItems).addClass('hidden');
-    });
-    
     // Batch action buttons
-    $(this.selectors.batchAction).on('click', e => {
+    this.dashboard.eventManager.on(document, 'click', this.selectors.batchAction, e => {
       this.handleBatchAction(e);
+    });
+  }
+
+  /**
+   * Set up document-level click handler to close dropdowns
+   */
+  setupDocumentClicks() {
+    // Close dropdowns when clicking elsewhere
+    this.dashboard.eventManager.on(document, 'click', () => {
+      $(this.selectors.batchMenuItems).addClass('hidden');
     });
   }
 
@@ -686,18 +1617,20 @@ class UIController {
     
     // Prevent duplicate actions
     const actionKey = `${action}-${model}-${appNum}`;
-    if (this.dashboard.stateManager.pendingActions.has(actionKey)) {
+    if (this.dashboard.stateManager.isActionPending(actionKey)) {
       console.log(`Action ${actionKey} already in progress, skipping`);
       return;
     }
     
     // Add to pending actions
     const originalText = button.textContent;
-    this.dashboard.stateManager.pendingActions.set(actionKey, true);
+    this.dashboard.stateManager.setActionPending(actionKey, true);
     
     // Update button state
     button.disabled = true;
-    button.innerHTML = this.getLoadingIndicator(action);
+    button.innerHTML = this.dashboard.uiService.getLoadingIndicator(
+      this.dashboard.utilityService.capitalizeFirst(action)
+    );
     
     // Perform the action
     this.dashboard.coreController.performAppAction(action, model, appNum)
@@ -711,11 +1644,11 @@ class UIController {
       })
       .fail(error => {
         this.showToast(`Failed to ${action}: ${error.message || error}`, 'error');
-        this.dashboard.utilityService.logError({
-          message: `Action '${action}' failed`,
-          context: { action, model, appNum },
-          error
-        });
+        this.dashboard.errorHandler.handleError(
+          error,
+          { action, model, appNum },
+          false  // Don't show duplicate toast
+        );
       })
       .always(() => {
         // Restore button state
@@ -723,7 +1656,7 @@ class UIController {
         button.textContent = originalText;
         
         // Remove from pending actions
-        this.dashboard.stateManager.pendingActions.delete(actionKey);
+        this.dashboard.stateManager.setActionPending(actionKey, false);
       });
   }
 
@@ -769,11 +1702,15 @@ class UIController {
         this.showToast(`Batch operation failed: ${error.message || error}`, 'error');
         this.showBatchStatus(model, action, 'failed');
         
-        this.dashboard.utilityService.logError({
-          message: `Batch operation '${action}' failed`,
-          context: { action, model },
-          error
-        });
+        this.dashboard.errorHandler.handleError(
+          error,
+          { 
+            action: 'batchOperation',
+            batchAction: action,
+            model
+          },
+          false  // Don't show duplicate toast
+        );
       });
   }
 
@@ -790,86 +1727,108 @@ class UIController {
     if ($appCard.length === 0) return;
     
     try {
-      // Update status badges
-      const $backendStatusEl = $appCard.find('[data-status="backend"]');
-      const $frontendStatusEl = $appCard.find('[data-status="frontend"]');
-      const $statusBadgeEl = $appCard.find('.status-badge');
-      
-      // Backend status
-      if ($backendStatusEl.length) {
-        $backendStatusEl.text(data.backend_status?.running ? 'Running' : 'Stopped');
-        $backendStatusEl.attr('class', data.backend_status?.running ? 'font-medium text-green-700' : 'font-medium text-red-700');
-      }
-      
-      // Frontend status
-      if ($frontendStatusEl.length) {
-        $frontendStatusEl.text(data.frontend_status?.running ? 'Running' : 'Stopped');
-        $frontendStatusEl.attr('class', data.frontend_status?.running ? 'font-medium text-green-700' : 'font-medium text-red-700');
-      }
-      
-      // Overall status badge
-      if ($statusBadgeEl.length) {
-        const isBackendRunning = data.backend_status?.running || false;
-        const isFrontendRunning = data.frontend_status?.running || false;
-        
-        let status, classes;
-        if (isBackendRunning && isFrontendRunning) {
-          status = 'Running';
-          classes = 'status-badge text-xs px-1 border rounded-sm bg-green-100 text-green-800 border-green-700';
-        } else if (isBackendRunning || isFrontendRunning) {
-          status = 'Partial';
-          classes = 'status-badge text-xs px-1 border rounded-sm bg-yellow-100 text-yellow-800 border-yellow-700';
-        } else {
-          status = 'Stopped';
-          classes = 'status-badge text-xs px-1 border rounded-sm bg-red-100 text-red-800 border-red-700';
-        }
-        
-        $statusBadgeEl.text(status);
-        $statusBadgeEl.attr('class', classes);
-        
-        // Update app card status attribute for filtering
-        $appCard.data('status', status.toLowerCase());
-      }
-      
-      // Update last updated time
-      const $lastUpdateEl = $appCard.find('[data-last-update]');
-      if ($lastUpdateEl.length) {
-        const now = new Date();
-        $lastUpdateEl.text(`Last updated: ${now.toLocaleTimeString()}`);
-        $lastUpdateEl.data('timestamp', now.getTime());
-      }
+      this.updateStatusElements($appCard, data);
+      this.updateLastUpdateTimestamp($appCard);
       
       // Update metrics if available
       if (data.metrics) {
         this.updateMetricsDisplay($appCard, data.metrics);
       }
     } catch (error) {
-      console.error('Error updating status display:', error);
+      this.dashboard.errorHandler.handleError(
+        error,
+        { 
+          action: 'updateStatusDisplay', 
+          model, 
+          appNum, 
+          dataKeys: data ? Object.keys(data) : null
+        },
+        false  // Don't show toast for UI updates
+      );
+    }
+  }
+
+  /**
+   * Update status elements within an app card
+   * @param {jQuery} $appCard - App card jQuery element
+   * @param {Object} data - Status data
+   */
+  updateStatusElements($appCard, data) {
+    // Backend status
+    const $backendStatusEl = $appCard.find('[data-status="backend"]');
+    if ($backendStatusEl.length) {
+      $backendStatusEl.text(data.backend_status?.running ? 'Running' : 'Stopped');
+      $backendStatusEl.attr('class', data.backend_status?.running ? 'font-medium text-green-700' : 'font-medium text-red-700');
+    }
+    
+    // Frontend status
+    const $frontendStatusEl = $appCard.find('[data-status="frontend"]');
+    if ($frontendStatusEl.length) {
+      $frontendStatusEl.text(data.frontend_status?.running ? 'Running' : 'Stopped');
+      $frontendStatusEl.attr('class', data.frontend_status?.running ? 'font-medium text-green-700' : 'font-medium text-red-700');
+    }
+    
+    // Overall status badge
+    const $statusBadgeEl = $appCard.find('.status-badge');
+    if ($statusBadgeEl.length) {
+      const isBackendRunning = data.backend_status?.running || false;
+      const isFrontendRunning = data.frontend_status?.running || false;
+      
+      let status, classes;
+      if (isBackendRunning && isFrontendRunning) {
+        status = 'Running';
+        classes = 'status-badge text-xs px-1 border rounded-sm bg-green-100 text-green-800 border-green-700';
+      } else if (isBackendRunning || isFrontendRunning) {
+        status = 'Partial';
+        classes = 'status-badge text-xs px-1 border rounded-sm bg-yellow-100 text-yellow-800 border-yellow-700';
+      } else {
+        status = 'Stopped';
+        classes = 'status-badge text-xs px-1 border rounded-sm bg-red-100 text-red-800 border-red-700';
+      }
+      
+      $statusBadgeEl.text(status);
+      $statusBadgeEl.attr('class', classes);
+      
+      // Update app card status attribute for filtering
+      $appCard.data('status', status.toLowerCase());
+    }
+  }
+
+  /**
+   * Update the last updated timestamp on an app card
+   * @param {jQuery} $appCard - App card jQuery element
+   */
+  updateLastUpdateTimestamp($appCard) {
+    const $lastUpdateEl = $appCard.find('[data-last-update]');
+    if ($lastUpdateEl.length) {
+      const now = new Date();
+      $lastUpdateEl.text(`Last updated: ${now.toLocaleTimeString()}`);
+      $lastUpdateEl.data('timestamp', now.getTime());
     }
   }
 
   /**
    * Update metrics display for an app
-   * @param {HTMLElement} card - App card element
+   * @param {jQuery} $card - App card jQuery element
    * @param {Object} metrics - Metrics data
    */
-  updateMetricsDisplay(card, metrics) {
-    if (!card || !metrics) return;
+  updateMetricsDisplay($card, metrics) {
+    if (!$card || !metrics) return;
     
     // CPU usage
-    const $cpuEl = $(card).find('.metric-cpu');
+    const $cpuEl = $card.find('.metric-cpu');
     if ($cpuEl.length && metrics.cpu_percent !== undefined) {
       $cpuEl.text(`${metrics.cpu_percent.toFixed(1)}%`);
     }
     
     // Memory usage
-    const $memEl = $(card).find('.metric-memory');
+    const $memEl = $card.find('.metric-memory');
     if ($memEl.length && metrics.memory_usage !== undefined) {
       $memEl.text(this.dashboard.utilityService.formatBytes(metrics.memory_usage));
     }
     
     // Request count
-    const $requestsEl = $(card).find('.metric-requests');
+    const $requestsEl = $card.find('.metric-requests');
     if ($requestsEl.length && metrics.request_count !== undefined) {
       $requestsEl.text(metrics.request_count.toLocaleString());
     }
@@ -958,47 +1917,54 @@ class UIController {
   updateSystemInfoDisplay(data) {
     if (!data) return;
     
-    // CPU usage
-    const $cpuEl = $('#systemCpuUsage');
-    if ($cpuEl.length && data.cpu_percent !== undefined) {
-      $cpuEl.text(`${data.cpu_percent.toFixed(1)}%`);
-      
-      $cpuEl.attr('class', data.cpu_percent > 80 
-        ? 'text-red-600 font-medium' 
-        : data.cpu_percent > 50 
-          ? 'text-yellow-600 font-medium' 
-          : 'text-green-600 font-medium');
-    }
+    // Update each system metric element
+    this.updateSystemMetric('#systemCpuUsage', data.cpu_percent, '%', [
+      { threshold: 80, class: 'text-red-600 font-medium' },
+      { threshold: 50, class: 'text-yellow-600 font-medium' },
+      { default: 'text-green-600 font-medium' }
+    ]);
     
-    // Memory usage
-    const $memEl = $('#systemMemoryUsage');
-    if ($memEl.length && data.memory_percent !== undefined) {
-      $memEl.text(`${data.memory_percent.toFixed(1)}%`);
-      
-      $memEl.attr('class', data.memory_percent > 85 
-        ? 'text-red-600 font-medium' 
-        : data.memory_percent > 70 
-          ? 'text-yellow-600 font-medium' 
-          : 'text-green-600 font-medium');
-    }
+    this.updateSystemMetric('#systemMemoryUsage', data.memory_percent, '%', [
+      { threshold: 85, class: 'text-red-600 font-medium' },
+      { threshold: 70, class: 'text-yellow-600 font-medium' },
+      { default: 'text-green-600 font-medium' }
+    ]);
     
-    // Disk usage
-    const $diskEl = $('#systemDiskUsage');
-    if ($diskEl.length && data.disk_percent !== undefined) {
-      $diskEl.text(`${data.disk_percent.toFixed(1)}%`);
-      
-      $diskEl.attr('class', data.disk_percent > 90 
-        ? 'text-red-600 font-medium' 
-        : data.disk_percent > 75 
-          ? 'text-yellow-600 font-medium' 
-          : 'text-green-600 font-medium');
-    }
+    this.updateSystemMetric('#systemDiskUsage', data.disk_percent, '%', [
+      { threshold: 90, class: 'text-red-600 font-medium' },
+      { threshold: 75, class: 'text-yellow-600 font-medium' },
+      { default: 'text-green-600 font-medium' }
+    ]);
     
     // System uptime
     const $uptimeEl = $('#systemUptime');
     if ($uptimeEl.length && data.uptime_seconds !== undefined) {
       $uptimeEl.text(this.dashboard.utilityService.formatUptime(data.uptime_seconds));
     }
+  }
+
+  /**
+   * Update a system metric element
+   * @param {string} selector - Element selector
+   * @param {number} value - Metric value
+   * @param {string} suffix - Value suffix
+   * @param {Array} thresholds - Styling thresholds
+   */
+  updateSystemMetric(selector, value, suffix, thresholds) {
+    this.dashboard.uiService.updateElement(
+      selector, 
+      value, 
+      v => `${v.toFixed(1)}${suffix}`
+    );
+    
+    this.dashboard.uiService.updateElementWithClass(
+      selector, 
+      value, 
+      {
+        default: thresholds[thresholds.length - 1].class,
+        thresholds: thresholds.slice(0, -1)
+      }
+    );
   }
 
   /**
@@ -1033,261 +1999,14 @@ class UIController {
   }
 
   /**
-   * Get loading indicator HTML
-   * @param {string} action - Action being performed
-   * @returns {string} - HTML for the loading indicator
-   */
-  getLoadingIndicator(action) {
-    return `<svg class="inline-block w-4 h-4 mr-1 animate-spin" viewBox="0 0 24 24" fill="none">
-      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-    </svg>${this.dashboard.utilityService.capitalizeFirst(action)}ing...`;
-  }
-
-  /**
-   * Show a toast notification
+   * Show toast notification
    * @param {string} message - Message to display
    * @param {string} type - Notification type (success, error, info)
-   * @returns {HTMLElement} - Toast element
+   * @param {Object} options - Additional options
+   * @returns {Element} - Toast element
    */
-  showToast(message, type = 'success') {
-    if (!message) return;
-    
-    // Create toast container if it doesn't exist
-    let $toastContainer = $('#toastContainer');
-    if ($toastContainer.length === 0) {
-      $toastContainer = $('<div>', {
-        id: 'toastContainer',
-        class: 'fixed bottom-4 right-4 z-50 flex flex-col gap-2'
-      }).appendTo('body');
-    }
-    
-    // Create toast element
-    const $toast = $('<div>', {
-      class: `px-4 py-2 rounded-sm shadow-md text-sm transition-opacity duration-300 ${
-        type === 'success' ? 'bg-green-100 border border-green-300 text-green-800' :
-        type === 'error' ? 'bg-red-100 border border-red-300 text-red-800' :
-        'bg-blue-100 border border-blue-300 text-blue-800'
-      }`,
-      text: message
-    });
-    
-    // Add to container
-    $toastContainer.append($toast);
-    
-    // Remove after delay
-    setTimeout(() => {
-      $toast.css('opacity', 0);
-      setTimeout(() => {
-        $toast.remove();
-      }, 300);
-    }, this.dashboard.config.ui.toastDuration);
-    
-    return $toast;
-  }
-}
-
-/**
- * API Service Class
- * Handles network requests and data handling
- */
-class ApiService {
-  /**
-   * @param {ConfigurationManager} config - Configuration instance
-   */
-  constructor(config) {
-    this.config = config;
-  }
-
-  /**
-   * Fetch with retry logic
-   * @param {string} url - URL to fetch
-   * @param {Object} options - Fetch options
-   * @param {number} retries - Number of retries
-   * @returns {Promise} - Promise for the request
-   */
-  fetchWithRetry(url, options = {}, retries = null) {
-    if (retries === null) {
-      retries = this.config.api.retryAttempts;
-    }
-    
-    // Default headers
-    const headers = {
-      'X-Requested-With': 'XMLHttpRequest',
-      'Cache-Control': 'no-cache'
-    };
-    
-    // Default request options
-    const ajaxOptions = Object.assign({
-      url: url,
-      headers: headers,
-      method: options.method || 'GET',
-      dataType: options.dataType || 'json'
-    }, options);
-    
-    // Remove invalid options
-    delete ajaxOptions.retries;
-    
-    // Ensure URL is valid
-    if (url.includes('/undefined')) {
-      return $.Deferred().reject(new Error(`Invalid URL: ${url}`));
-    }
-    
-    // Function to attempt the request
-    const attemptRequest = remainingRetries => {
-      return $.ajax(ajaxOptions)
-        .fail((jqXHR, textStatus, errorThrown) => {
-          if (remainingRetries <= 0) {
-            return $.Deferred().reject(errorThrown || textStatus);
-          }
-          
-          console.warn(`API request attempt failed (${retries - remainingRetries + 1}/${retries}):`, textStatus);
-          
-          // Wait before retry using exponential backoff
-          const delay = this.config.api.retryDelay * Math.pow(2, retries - remainingRetries);
-          
-          return new Promise(resolve => setTimeout(resolve, delay))
-            .then(() => {
-              return attemptRequest(remainingRetries - 1);
-            });
-        });
-    };
-    
-    return attemptRequest(retries);
-  }
-}
-
-/**
- * Utility Service Class
- * Provides helper functions
- */
-class UtilityService {
-  /**
-   * Create a debounced function
-   * @param {Function} func - Function to debounce
-   * @param {number} wait - Wait time in milliseconds
-   * @returns {Function} - Debounced function
-   */
-  debounce(func, wait) {
-    let timeout;
-    return function() {
-      const context = this;
-      const args = arguments;
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        func.apply(context, args);
-      }, wait);
-    };
-  }
-
-  /**
-   * Capitalize first letter of a string
-   * @param {string} string - String to capitalize
-   * @returns {string} - Capitalized string
-   */
-  capitalizeFirst(string) {
-    if (!string) return '';
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
-
-  /**
-   * Format bytes to human-readable string
-   * @param {number} bytes - Bytes to format
-   * @returns {string} - Formatted string
-   */
-  formatBytes(bytes) {
-    if (bytes === 0) return '0 B';
-    
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  }
-
-  /**
-   * Format seconds to human-readable uptime
-   * @param {number} seconds - Seconds to format
-   * @returns {string} - Formatted uptime string
-   */
-  formatUptime(seconds) {
-    if (seconds === undefined || seconds === null) return 'Unknown';
-    
-    const days = Math.floor(seconds / 86400);
-    seconds %= 86400;
-    const hours = Math.floor(seconds / 3600);
-    seconds %= 3600;
-    const minutes = Math.floor(seconds / 60);
-    
-    let result = '';
-    if (days > 0) result += `${days}d `;
-    if (hours > 0 || days > 0) result += `${hours}h `;
-    result += `${minutes}m`;
-    
-    return result;
-  }
-
-  /**
-   * Handle global errors
-   * @param {Event} event - Error event
-   * @returns {boolean} - Whether to prevent default handling
-   */
-  handleGlobalError(event) {
-    const errorDetails = {
-      message: event.originalEvent?.message || 'Unknown error',
-      filename: event.originalEvent?.filename,
-      lineno: event.originalEvent?.lineno,
-      colno: event.originalEvent?.colno,
-      stack: event.originalEvent?.error ? event.originalEvent.error.stack : 'No stack trace',
-      url: window.location.href,
-      userAgent: navigator.userAgent,
-      timestamp: new Date().toISOString()
-    };
-    
-    console.error('CLIENT ERROR:', errorDetails);
-    
-    // Send error to server for logging
-    $.ajax({
-      url: '/api/log-client-error',
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(errorDetails)
-    })
-    .fail((jqXHR, textStatus, errorThrown) => {
-      console.error('Failed to send error to server:', errorThrown);
-    });
-    
-    return true; // Prevent default error handling
-  }
-
-  /**
-   * Log error to server
-   * @param {Object} errorData - Error data to log
-   */
-  logError(errorData) {
-    if (!errorData) return;
-    
-    const enhancedErrorData = {
-      ...errorData,
-      error: errorData.error ? errorData.error.toString() : 'Unknown error',
-      stack: errorData.error?.stack || 'No stack trace',
-      url: window.location.href,
-      userAgent: navigator.userAgent,
-      timestamp: new Date().toISOString()
-    };
-    
-    console.error('CLIENT ERROR:', enhancedErrorData);
-    
-    // Send to server
-    $.ajax({
-      url: '/api/log-client-error',
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(enhancedErrorData)
-    })
-    .fail((jqXHR, textStatus, errorThrown) => {
-      console.error('Failed to send error to server:', errorThrown);
-    });
+  showToast(message, type = 'success', options = {}) {
+    return this.dashboard.uiService.showToast(message, type, options);
   }
 }
 
@@ -1303,41 +2022,35 @@ class FeatureManager {
     this.dashboard = dashboard;
     
     // Feature instances
-    this.securityAnalysis = new SecurityAnalysis(dashboard);
-    this.performanceTest = new PerformanceTest(dashboard);
-    this.requirementsAnalysis = new RequirementsAnalysis(dashboard);
-    this.securityAnalysisPage = new SecurityAnalysisPage(dashboard);
-    this.zapScan = new ZapScan(dashboard);
+    this.features = {
+      securityAnalysis: new SecurityAnalysis(dashboard),
+      performanceTest: new PerformanceTest(dashboard),
+      requirementsAnalysis: new RequirementsAnalysis(dashboard),
+      securityAnalysisPage: new SecurityAnalysisPage(dashboard),
+      zapScan: new ZapScan(dashboard)
+    };
+    
+    // Feature detection map
+    this.featureDetectors = {
+      securityAnalysis: () => document.querySelector('.security-scan-btn') !== null,
+      performanceTest: () => document.getElementById('runTest') !== null,
+      requirementsAnalysis: () => document.querySelector('form') !== null && document.getElementById('submitBtn') !== null,
+      securityAnalysisPage: () => document.getElementById('searchIssues') !== null && document.getElementById('riskFilter') !== null,
+      zapScan: () => document.getElementById('startScan') !== null
+    };
   }
 
   /**
    * Initialize features based on page elements
    */
   initFeatures() {
-    // Security Analysis
-    if (document.querySelector('.security-scan-btn')) {
-      this.securityAnalysis.init();
-    }
-    
-    // Performance Test
-    if (document.getElementById('runTest')) {
-      this.performanceTest.init();
-    }
-    
-    // Requirements Analysis
-    if (document.querySelector('form') && document.getElementById('submitBtn')) {
-      this.requirementsAnalysis.init();
-    }
-    
-    // Security Analysis Page
-    if (document.getElementById('searchIssues') && document.getElementById('riskFilter')) {
-      this.securityAnalysisPage.init();
-    }
-    
-    // ZAP Scan
-    if (document.getElementById('startScan')) {
-      this.zapScan.init();
-    }
+    // Detect and initialize only relevant features
+    Object.entries(this.featureDetectors).forEach(([feature, detector]) => {
+      if (detector() && this.features[feature]) {
+        console.log(`Initializing feature: ${feature}`);
+        this.features[feature].init();
+      }
+    });
   }
 }
 
@@ -1347,7 +2060,7 @@ class FeatureManager {
  */
 class SecurityAnalysis {
   /**
-   * @param {Dashboard} dashboard - Main dashboard instance
+   * @param {Dashboard} dashboard - Dashboard instance
    */
   constructor(dashboard) {
     this.dashboard = dashboard;
@@ -1366,22 +2079,15 @@ class SecurityAnalysis {
    */
   setupEventListeners() {
     // Setup security scan buttons
-    document.querySelectorAll('.security-scan-btn').forEach(button => {
-      button.addEventListener('click', this.handleScanClick.bind(this));
-    });
+    this.dashboard.eventManager.on(document, 'click', '.security-scan-btn', this.handleScanClick.bind(this));
     
     // Setup modal close buttons
-    document.querySelectorAll('.modal-close').forEach(button => {
-      button.addEventListener('click', () => {
-        document.getElementById('securityModal').classList.add('hidden');
-      });
+    this.dashboard.eventManager.on(document, 'click', '.modal-close', () => {
+      document.getElementById('securityModal').classList.add('hidden');
     });
     
     // Setup start analysis button
-    const startAnalysisBtn = document.getElementById('startAnalysis');
-    if (startAnalysisBtn) {
-      startAnalysisBtn.addEventListener('click', this.startAnalysis.bind(this));
-    }
+    this.dashboard.eventManager.on(document, 'click', '#startAnalysis', this.startAnalysis.bind(this));
   }
 
   /**
@@ -1420,17 +2126,16 @@ class SecurityAnalysis {
     document.getElementById('scanLoading').classList.remove('hidden');
     document.getElementById('startAnalysis').disabled = true;
     
+    this.appendToLog(`Starting security analysis with type=${analysisType}, model=${aiModel}`);
+    
     // Run analysis
-    $.ajax({
-      url: '/api/security/analyze-file',
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify({
-        model: model,
-        app_num: appNum,
-        analysis_type: analysisType,
-        ai_model: aiModel
-      })
+    this.dashboard.apiService.post('/api/security/analyze-file', {
+      model: model,
+      app_num: appNum,
+      analysis_type: analysisType,
+      ai_model: aiModel
+    }, {
+      contentType: 'application/json'
     })
     .done(results => {
       // Update results display
@@ -1449,15 +2154,20 @@ class SecurityAnalysis {
       document.getElementById('scanLoading').classList.add('hidden');
       document.getElementById('scanResults').classList.remove('hidden');
     })
-    .fail((jqXHR, textStatus, errorThrown) => {
-      this.dashboard.uiController.showToast(`Analysis failed: ${errorThrown}`, 'error');
+    .fail(error => {
+      this.dashboard.uiController.showToast(`Analysis failed: ${error.message || error}`, 'error');
       document.getElementById('scanLoading').classList.add('hidden');
       
-      this.dashboard.utilityService.logError({
-        message: 'Security analysis failed',
-        context: { model, appNum, analysisType, aiModel },
-        error: errorThrown
-      });
+      this.dashboard.errorHandler.handleError(
+        error,
+        { 
+          action: 'securityAnalysis', 
+          model, 
+          appNum, 
+          analysisType, 
+          aiModel 
+        }
+      );
     })
     .always(() => {
       document.getElementById('startAnalysis').disabled = false;
@@ -1503,30 +2213,33 @@ class SecurityAnalysis {
    * Load security summary from API
    */
   loadSecuritySummary() {
-    $.ajax({
-      url: '/api/security/global-summary',
-      method: 'GET',
-      dataType: 'json'
-    })
-    .done(data => {
-      // Update global counters
-      const highIssuesEl = document.getElementById('totalHighIssues');
-      const mediumIssuesEl = document.getElementById('totalMediumIssues');
-      const lowIssuesEl = document.getElementById('totalLowIssues');
-      const lastGlobalScanEl = document.getElementById('lastGlobalScan');
-      
-      if (highIssuesEl) highIssuesEl.textContent = data.totals?.high || 0;
-      if (mediumIssuesEl) mediumIssuesEl.textContent = data.totals?.medium || 0;
-      if (lowIssuesEl) lowIssuesEl.textContent = data.totals?.low || 0;
-      if (lastGlobalScanEl) {
-        lastGlobalScanEl.textContent = data.last_scan 
-          ? new Date(data.last_scan).toLocaleString() 
-          : 'Never';
-      }
-    })
-    .fail((jqXHR, textStatus, errorThrown) => {
-      console.error('Failed to load security summary:', errorThrown);
-    });
+    this.dashboard.apiService.get('/api/security/global-summary')
+      .done(data => {
+        // Update global counters
+        this.dashboard.uiService.updateElement('#totalHighIssues', data.totals?.high || 0);
+        this.dashboard.uiService.updateElement('#totalMediumIssues', data.totals?.medium || 0);
+        this.dashboard.uiService.updateElement('#totalLowIssues', data.totals?.low || 0);
+        this.dashboard.uiService.updateElement(
+          '#lastGlobalScan', 
+          data.last_scan ? new Date(data.last_scan).toLocaleString() : 'Never'
+        );
+      })
+      .fail(error => {
+        console.error('Failed to load security summary:', error);
+      });
+  }
+  
+  /**
+   * Append message to log
+   * @param {string} message - Message to append
+   */
+  appendToLog(message) {
+    const logElement = document.getElementById('securityLog');
+    if (!logElement) return;
+    
+    const timestamp = new Date().toLocaleTimeString();
+    logElement.textContent += `[${timestamp}] ${message}\n`;
+    logElement.scrollTop = logElement.scrollHeight;
   }
 }
 
@@ -1536,7 +2249,7 @@ class SecurityAnalysis {
  */
 class PerformanceTest {
   /**
-   * @param {Dashboard} dashboard - Main dashboard instance
+   * @param {Dashboard} dashboard - Dashboard instance
    */
   constructor(dashboard) {
     this.dashboard = dashboard;
@@ -1553,23 +2266,11 @@ class PerformanceTest {
    * Set up event listeners for performance testing
    */
   setupEventListeners() {
-    const runTestBtn = document.getElementById('runTest');
-    const stopTestBtn = document.getElementById('stopTest');
-    const clearLogBtn = document.getElementById('clearLog');
-    
-    if (runTestBtn) {
-      runTestBtn.addEventListener('click', this.runTest.bind(this));
-    }
-    
-    if (stopTestBtn) {
-      stopTestBtn.addEventListener('click', this.stopTest.bind(this));
-    }
-    
-    if (clearLogBtn) {
-      clearLogBtn.addEventListener('click', () => {
-        document.getElementById('outputLog').textContent = '';
-      });
-    }
+    this.dashboard.eventManager.on(document, 'click', '#runTest', this.runTest.bind(this));
+    this.dashboard.eventManager.on(document, 'click', '#stopTest', this.stopTest.bind(this));
+    this.dashboard.eventManager.on(document, 'click', '#clearLog', () => {
+      document.getElementById('outputLog').textContent = '';
+    });
   }
 
   /**
@@ -1592,16 +2293,13 @@ class PerformanceTest {
     this.simulateProgress(duration);
     
     // Make API request
-    $.ajax({
-      url: window.location.href,
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify({
-        num_users: numUsers,
-        duration: duration,
-        spawn_rate: spawnRate,
-        endpoints: ["/", "/api/status"]
-      })
+    this.dashboard.apiService.post(window.location.href, {
+      num_users: numUsers,
+      duration: duration,
+      spawn_rate: spawnRate,
+      endpoints: ["/", "/api/status"]
+    }, {
+      contentType: 'application/json'
     })
     .done(result => {
       if (result.status === 'success') {
@@ -1620,11 +2318,11 @@ class PerformanceTest {
         throw new Error(result.error || 'Test failed');
       }
     })
-    .fail((jqXHR, textStatus, errorThrown) => {
+    .fail(error => {
       document.getElementById('progressBar').style.width = '0%';
       document.getElementById('testStatus').textContent = 'Failed';
-      this.appendToLog(`Error: ${errorThrown || jqXHR.responseJSON?.error || textStatus}`);
-      this.dashboard.uiController.showToast(`Test failed: ${errorThrown || jqXHR.responseJSON?.error || textStatus}`, 'error');
+      this.appendToLog(`Error: ${error.message || 'Test failed'}`);
+      this.dashboard.uiController.showToast(`Test failed: ${error.message || 'Unknown error'}`, 'error');
     })
     .always(() => {
       document.getElementById('runTest').disabled = false;
@@ -1638,21 +2336,18 @@ class PerformanceTest {
   stopTest() {
     this.appendToLog('Stopping test...');
     
-    $.ajax({
-      url: `${window.location.href}/stop`,
-      method: 'POST'
-    })
-    .done(() => {
-      this.appendToLog('Test stopped successfully');
-      document.getElementById('testStatus').textContent = 'Stopped';
-    })
-    .fail((jqXHR, textStatus, errorThrown) => {
-      this.appendToLog(`Failed to stop test: ${errorThrown || jqXHR.responseJSON?.error || textStatus}`);
-    })
-    .always(() => {
-      document.getElementById('runTest').disabled = false;
-      document.getElementById('stopTest').classList.add('hidden');
-    });
+    this.dashboard.apiService.post(`${window.location.href}/stop`)
+      .done(() => {
+        this.appendToLog('Test stopped successfully');
+        document.getElementById('testStatus').textContent = 'Stopped';
+      })
+      .fail(error => {
+        this.appendToLog(`Failed to stop test: ${error.message || 'Unknown error'}`);
+      })
+      .always(() => {
+        document.getElementById('runTest').disabled = false;
+        document.getElementById('stopTest').classList.add('hidden');
+      });
   }
 
   /**
@@ -1662,12 +2357,16 @@ class PerformanceTest {
   simulateProgress(duration) {
     let elapsed = 0;
     const interval = 1000; // Update every second
-    document.getElementById('progressBar').style.width = '0%';
+    const progressBar = document.getElementById('progressBar');
+    
+    if (!progressBar) return;
+    
+    progressBar.style.width = '0%';
     
     const timer = setInterval(() => {
       elapsed += interval;
       const percentage = Math.min(Math.floor((elapsed / (duration * 1000)) * 100), 95);
-      document.getElementById('progressBar').style.width = `${percentage}%`;
+      progressBar.style.width = `${percentage}%`;
       
       if (elapsed >= duration * 1000) {
         clearInterval(timer);
@@ -1696,10 +2395,7 @@ class PerformanceTest {
     };
     
     Object.entries(elementsToUpdate).forEach(([id, value]) => {
-      const element = document.getElementById(id);
-      if (element) {
-        element.textContent = value;
-      }
+      this.dashboard.uiService.updateElement(`#${id}`, value);
     });
     
     // Update endpoint table
@@ -1709,10 +2405,10 @@ class PerformanceTest {
     this.updateErrorTable(data.errors || []);
     
     // Show/hide visualization
-    const visualizationSection = document.getElementById('visualizationSection');
-    if (visualizationSection) {
-      visualizationSection.classList.toggle('hidden', !(data.endpoints && data.endpoints.length > 0));
-    }
+    this.dashboard.uiService.toggleVisibility(
+      '#visualizationSection',
+      data.endpoints && data.endpoints.length > 0
+    );
   }
 
   /**
@@ -1799,7 +2495,7 @@ class PerformanceTest {
  */
 class RequirementsAnalysis {
   /**
-   * @param {Dashboard} dashboard - Main dashboard instance
+   * @param {Dashboard} dashboard - Dashboard instance
    */
   constructor(dashboard) {
     this.dashboard = dashboard;
@@ -1818,8 +2514,8 @@ class RequirementsAnalysis {
    */
   setupEventListeners() {
     // Toggle requirement details
-    $('.hover\\:bg-gray-50').on('click', function() {
-      const detailId = $(this).attr('onclick')?.match(/toggleDetails\('([^']+)'\)/)?.[1];
+    this.dashboard.eventManager.on(document, 'click', '.hover\\:bg-gray-50', e => {
+      const detailId = $(e.currentTarget).attr('onclick')?.match(/toggleDetails\('([^']+)'\)/)?.[1];
       if (detailId) {
         $(`#${detailId}`).toggle();
       }
@@ -1834,12 +2530,8 @@ class RequirementsAnalysis {
     const $submitBtn = $('#submitBtn');
     
     if ($form.length && $submitBtn.length) {
-      $form.on('submit', function() {
-        $submitBtn.html(`
-          <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>Checking...`);
+      $form.on('submit', () => {
+        $submitBtn.html(this.dashboard.uiService.getLoadingIndicator('Check'));
         $submitBtn.prop('disabled', true);
       });
     }
@@ -1852,7 +2544,7 @@ class RequirementsAnalysis {
  */
 class SecurityAnalysisPage {
   /**
-   * @param {Dashboard} dashboard - Main dashboard instance
+   * @param {Dashboard} dashboard - Dashboard instance
    */
   constructor(dashboard) {
     this.dashboard = dashboard;
@@ -1914,10 +2606,10 @@ class SecurityAnalysisPage {
    * Set up expand buttons for alerts
    */
   setupExpandButtons() {
-    $('.expand-btn').on('click', function() {
-      const $details = $(this).closest('div').next().find('.alert-details');
+    this.dashboard.eventManager.on(document, 'click', '.expand-btn', e => {
+      const $details = $(e.currentTarget).closest('div').next().find('.alert-details');
       $details.toggleClass('hidden');
-      $(this).text($details.hasClass('hidden') ? 'Expand' : 'Collapse');
+      $(e.currentTarget).text($details.hasClass('hidden') ? 'Expand' : 'Collapse');
     });
   }
 }
@@ -1928,12 +2620,11 @@ class SecurityAnalysisPage {
  */
 class ZapScan {
   /**
-   * @param {Dashboard} dashboard - Main dashboard instance
+   * @param {Dashboard} dashboard - Dashboard instance
    */
   constructor(dashboard) {
     this.dashboard = dashboard;
-    this.pollingActive = false;
-    this.pollingErrorCount = 0;
+    this.scanPollId = null;
   }
 
   /**
@@ -1948,274 +2639,26 @@ class ZapScan {
    * Set up event listeners for ZAP scan
    */
   setupEventListeners() {
-    const startScanBtn = document.getElementById('startScan');
-    const stopScanBtn = document.getElementById('stopScan');
-    const clearLogBtn = document.getElementById('clearLog');
-    
-    if (startScanBtn) {
-      startScanBtn.addEventListener('click', this.startScan.bind(this));
-    }
-    
-    if (stopScanBtn) {
-      stopScanBtn.addEventListener('click', this.stopScan.bind(this));
-    }
-    
-    if (clearLogBtn) {
-      clearLogBtn.addEventListener('click', () => {
-        document.getElementById('progressLog').textContent = '';
-      });
-    }
-    
-    // Add this new code for expand buttons
-    document.addEventListener('click', (event) => {
-      // Check if the clicked element is an expand button
-      if (event.target.classList.contains('expand-btn')) {
-        // Find the details container within the alert item
-        const alertItem = event.target.closest('.alert-item');
-        if (!alertItem) return;
-        
-        const details = alertItem.querySelector('.alert-details');
-        if (!details) return;
-        
-        // Toggle visibility
-        if (details.classList.contains('hidden')) {
-          details.classList.remove('hidden');
-          event.target.textContent = 'Collapse';
-        } else {
-          details.classList.add('hidden');
-          event.target.textContent = 'Expand';
-        }
-      }
+    this.setupScanButtons();
+    this.setupExpandButtons();
+  }
+
+  /**
+   * Set up scan control buttons
+   */
+  setupScanButtons() {
+    this.dashboard.eventManager.on(document, 'click', '#startScan', this.startScan.bind(this));
+    this.dashboard.eventManager.on(document, 'click', '#stopScan', this.stopScan.bind(this));
+    this.dashboard.eventManager.on(document, 'click', '#clearLog', () => {
+      document.getElementById('progressLog').textContent = '';
     });
   }
 
   /**
-   * Update target URL display
+   * Set up expand buttons for scan results
    */
-  updateTargetUrl() {
-    // Extract model and app from URL
-    const urlParts = window.location.pathname.split('/');
-    const model = urlParts[urlParts.length - 2] || '';
-    const appNum = urlParts[urlParts.length - 1] || '';
-    
-    // Calculate port using the logic from the original code
-    const port = this.calculatePort(model, parseInt(appNum));
-    
-    const targetUrlElement = document.getElementById('targetUrl');
-    if (targetUrlElement) {
-      targetUrlElement.textContent = `http://localhost:${port}`;
-    }
-  }
-
-  /**
-   * Calculate port based on model and app number
-   * @param {string} model - Model name
-   * @param {number} appNum - App number
-   * @returns {number} - Calculated port
-   */
-  calculatePort(model, appNum) {
-    // Constants matching those in app.py PortManager
-    const BASE_FRONTEND_PORT = 5501;
-    const PORTS_PER_APP = 2;
-    const BUFFER_PORTS = 20;
-    const APPS_PER_MODEL = 30;
-    const TOTAL_PORTS_PER_MODEL = APPS_PER_MODEL * PORTS_PER_APP + BUFFER_PORTS;
-    
-    // AI_MODELS array from app.py for model indexing
-    const AI_MODELS = [
-      "Llama", "Mistral", "DeepSeek", "GPT4o", "Claude", 
-      "Gemini", "Grok", "R1", "O3"
-    ];
-    
-    // Get model index (0-based)
-    let modelIdx = AI_MODELS.indexOf(model);
-    if (modelIdx === -1) {
-      console.warn(`Model "${model}" not found in AI_MODELS list. Using default index 0.`);
-      modelIdx = 0;
-    }
-    
-    // Calculate frontend port using the same logic as PortManager.get_app_ports
-    const frontendPortRangeStart = BASE_FRONTEND_PORT + (modelIdx * TOTAL_PORTS_PER_MODEL);
-    const port = frontendPortRangeStart + ((appNum - 1) * PORTS_PER_APP);
-    
-    return port;
-  }
-
-  /**
-   * Start ZAP scan
-   */
-  startScan() {
-    // Get model and app from URL
-    const urlParts = window.location.pathname.split('/');
-    const model = urlParts[urlParts.length - 2] || '';
-    const appNum = urlParts[urlParts.length - 1] || '';
-    
-    // Get scan options
-    const scanOptions = {
-      spiderDepth: parseInt(document.getElementById('spiderDepth')?.value) || 5,
-      threadCount: parseInt(document.getElementById('threadCount')?.value) || 2,
-      useAjaxSpider: document.getElementById('ajaxSpider')?.checked || false,
-      usePassiveScan: document.getElementById('passiveScan')?.checked || true,
-      useActiveScan: document.getElementById('activeScan')?.checked || true,
-      scanPolicy: document.getElementById('scanPolicy')?.value || 'Default Policy'
-    };
-    
-    // Update UI for scan start
-    document.getElementById('startScan').disabled = true;
-    document.getElementById('stopScan').classList.remove('hidden');
-    document.getElementById('scanStatus').textContent = 'Starting...';
-    document.getElementById('scanProgress').classList.remove('hidden');
-    
-    this.appendToLog(`Starting scan with options: Spider Depth=${scanOptions.spiderDepth}, Threads=${scanOptions.threadCount}, AJAX=${scanOptions.useAjaxSpider}`);
-    
-    // Start the scan
-    $.ajax({
-      url: `/zap/scan/${model}/${appNum}`,
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(scanOptions)
-    })
-    .done(() => {
-      this.appendToLog('Scan started successfully');
-      this.pollProgress(model, appNum);
-    })
-    .fail((jqXHR, textStatus, errorThrown) => {
-      this.appendToLog(`Error: ${errorThrown || jqXHR.responseJSON?.error || textStatus}`);
-      document.getElementById('scanStatus').textContent = 'Error';
-      document.getElementById('startScan').disabled = false;
-      document.getElementById('stopScan').classList.add('hidden');
-      this.dashboard.uiController.showToast(`Failed to start scan: ${errorThrown || jqXHR.responseJSON?.error || textStatus}`, 'error');
-    });
-  }
-
-  /**
-   * Stop ZAP scan
-   */
-  stopScan() {
-    // Get model and app from URL
-    const urlParts = window.location.pathname.split('/');
-    const model = urlParts[urlParts.length - 2] || '';
-    const appNum = urlParts[urlParts.length - 1] || '';
-    
-    this.appendToLog('Stopping scan...');
-    
-    $.ajax({
-      url: `/zap/scan/${model}/${appNum}/stop`,
-      method: 'POST'
-    })
-    .done(() => {
-      this.appendToLog('Scan stopped successfully');
-      document.getElementById('scanStatus').textContent = 'Stopped';
-      document.getElementById('startScan').disabled = false;
-      document.getElementById('stopScan').classList.add('hidden');
-    })
-    .fail((jqXHR, textStatus, errorThrown) => {
-      this.appendToLog(`Error stopping scan: ${errorThrown || jqXHR.responseJSON?.error || textStatus}`);
-      this.dashboard.uiController.showToast(`Failed to stop scan: ${errorThrown || jqXHR.responseJSON?.error || textStatus}`, 'error');
-    });
-  }
-
-  /**
-   * Poll scan progress
-   * @param {string} model - Model name
-   * @param {string|number} appNum - App number
-   */
-  pollProgress(model, appNum) {
-    this.pollingActive = true;
-    this.pollingErrorCount = 0;
-    
-    const updateUI = () => {
-      $.ajax({
-        url: `/zap/scan/${model}/${appNum}/status`,
-        method: 'GET',
-        dataType: 'json'
-      })
-      .done(data => {
-        // Update progress bar
-        document.getElementById('progressBar').style.width = `${Math.min(Math.max(data.progress, 0), 100)}%`;
-        
-        // Update status text
-        document.getElementById('scanStatus').textContent = data.status || 'Unknown';
-        
-        // Update count elements
-        document.getElementById('highCount').textContent = data.high_count || 0;
-        document.getElementById('mediumCount').textContent = data.medium_count || 0;
-        document.getElementById('lowCount').textContent = data.low_count || 0;
-        document.getElementById('infoCount').textContent = data.info_count || 0;
-        
-        // Log important state changes
-        if (data.status !== 'Running' && data.status !== 'Starting') {
-          this.appendToLog(`Status changed to: ${data.status}`);
-        }
-        
-        // Check if scan is complete
-        if (data.status === 'Complete') {
-          this.pollingActive = false;
-          
-          document.getElementById('stopScan').classList.add('hidden');
-          document.getElementById('startScan').disabled = false;
-          
-          const lastScanTimeEl = document.getElementById('lastScanTime');
-          if (lastScanTimeEl) {
-            lastScanTimeEl.textContent = new Date().toLocaleString();
-          }
-          
-          this.appendToLog('Scan completed. Reloading page to show results...');
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
-          return;
-        }
-        
-        // Continue polling if still active
-        if (this.pollingActive) {
-          setTimeout(updateUI, 2000);
-        }
-      })
-      .fail((jqXHR, textStatus, errorThrown) => {
-        console.error('Polling error:', errorThrown);
-        this.appendToLog(`Error updating status: ${errorThrown || textStatus}`);
-        
-        // Increment error count
-        this.pollingErrorCount++;
-        
-        // Stop polling after too many errors
-        if (this.pollingErrorCount >= 3) {
-          this.pollingActive = false;
-          this.appendToLog('Stopped polling due to repeated errors');
-          return;
-        }
-        
-        // Retry with longer delay on error
-        if (this.pollingActive) {
-          setTimeout(updateUI, 5000);
-        }
-      });
-    };
-    
-    // Start the polling loop
-    updateUI();
-  }
-
-  /**
-   * Append message to log
-   * @param {string} message - Message to append
-   */
-  appendToLog(message) {
-    const progressLog = document.getElementById('progressLog');
-    if (!progressLog) return;
-    
-    const timestamp = new Date().toLocaleTimeString();
-    progressLog.textContent += `[${timestamp}] ${message}\n`;
-    progressLog.scrollTop = progressLog.scrollHeight;
-  }
-}
-
-// Initialize the application when the DOM is ready
-$(document).ready(function() {
-  // Create dashboard instance
-  window.dashboardApp = new Dashboard();
-  
-  // Initialize the dashboard
-  window.dashboardApp.init();
-});
+  setupExpandButtons() {
+    this.dashboard.eventManager.on(document, 'click', '.expand-btn', e => {
+      // Find the details container within the alert item
+      const alertItem = e.currentTarget.closest('.alert-item');
+      if (!alertItem) return;

@@ -6,6 +6,13 @@ This module provides a comprehensive wrapper for OWASP ZAP security scanning wit
 - Performance-optimized scanning configurations
 - Quick scan options for faster execution
 - Detailed vulnerability reporting with code context
+- Auto-repair for corrupted add-ons
+- Browser configuration for DOM XSS scanning
+- OAST service configuration for advanced scanners
+- Proper resource management and cleanup
+- Optimized directory structure for reports
+- Reduced logging noise and better error handling
+- Singleton pattern to prevent multiple instances
 """
 
 # Standard Library Imports
@@ -16,6 +23,7 @@ import re
 import socket
 import subprocess
 import time
+import shutil
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
@@ -34,11 +42,18 @@ ZAP_DEFAULT_THREAD_COUNT = 8
 ZAP_DEFAULT_MAX_CHILDREN = 30
 ZAP_DEFAULT_HEAP_SIZE = '4G'
 ZAP_DEFAULT_PORT_RANGE = (8090, 8099)
+ZAP_CALLBACK_PORT_RANGE = (8888, 8899)
 
 # File Extensions
 SOURCE_CODE_EXTENSIONS = [
     '.js', '.jsx', '.ts', '.tsx', '.php', '.py', 
     '.java', '.html', '.css'
+]
+
+# Essential ZAP Add-ons
+ESSENTIAL_ADDONS = [
+    'ascanrules', 'pscanrules', 'network', 'selenium', 
+    'openapi', 'reports', 'domxss', 'database'
 ]
 
 # Setup logger without forcing a specific handler
@@ -166,6 +181,13 @@ class ZAPScanner:
         self.source_root_dir = None  # Root directory for source code
         self.source_file_extensions = SOURCE_CODE_EXTENSIONS
         
+        # Browser configuration
+        self.firefox_binary_path = None
+
+        # OAST service status
+        self.oast_service_configured = False
+        self.callback_port = None
+        
         logger.info(f"ZAPScanner initialized with base path: {self.base_path}")
         logger.info(f"ZAP proxy configuration: {self.proxy_host}:{self.proxy_port}")
 
@@ -218,6 +240,72 @@ class ZAPScanner:
         error_msg = f"No free ports found between {start_port} and {max_port}"
         logger.error(error_msg)
         raise RuntimeError(error_msg)
+
+    def _find_firefox_binary(self) -> Optional[str]:
+        """
+        Find the Firefox browser binary path automatically.
+        
+        Returns:
+            Path to Firefox binary if found, None otherwise
+        """
+        possible_paths = [
+            # Windows paths
+            "C:/Program Files/Mozilla Firefox/firefox.exe",
+            "C:/Program Files (x86)/Mozilla Firefox/firefox.exe",
+            # Linux paths
+            "/usr/bin/firefox",
+            "/usr/local/bin/firefox",
+            # macOS paths
+            "/Applications/Firefox.app/Contents/MacOS/firefox"
+        ]
+        
+        # Check environment variable first
+        firefox_env = os.getenv("FIREFOX_BIN")
+        if firefox_env and os.path.exists(firefox_env):
+            logger.info(f"Found Firefox from environment variable: {firefox_env}")
+            return firefox_env
+            
+        # Check each possible path
+        for path in possible_paths:
+            if os.path.exists(path):
+                logger.info(f"Found Firefox binary at: {path}")
+                return path
+                
+        logger.warning("Firefox binary not found in common locations")
+        return None
+    
+    def _find_chrome_binary(self) -> Optional[str]:
+        """
+        Find the Chrome browser binary path automatically.
+        
+        Returns:
+            Path to Chrome binary if found, None otherwise
+        """
+        possible_paths = [
+            # Windows paths
+            "C:/Program Files/Google/Chrome/Application/chrome.exe",
+            "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
+            # Linux paths
+            "/usr/bin/google-chrome",
+            "/usr/local/bin/google-chrome",
+            # macOS paths
+            "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        ]
+        
+        # Check environment variable first
+        chrome_env = os.getenv("CHROME_BIN")
+        if chrome_env and os.path.exists(chrome_env):
+            logger.info(f"Found Chrome from environment variable: {chrome_env}")
+            return chrome_env
+            
+        # Check each possible path
+        for path in possible_paths:
+            if os.path.exists(path):
+                logger.info(f"Found Chrome binary at: {path}")
+                return path
+                
+        logger.warning("Chrome binary not found in common locations")
+        return None
 
     def _find_zap_installation(self) -> Path:
         """
@@ -660,6 +748,210 @@ class ZAPScanner:
         except Exception as e:
             logger.warning(f"Error during ZAP cleanup: {str(e)}")
 
+    def _verify_addons_integrity(self) -> List[str]:
+        """
+        Verify ZAP add-ons integrity and identify corrupted ones.
+        
+        Returns:
+            List of corrupted add-on IDs
+        """
+        logger.info("Verifying add-on integrity...")
+        corrupted_addons = []
+        
+        # Check for corrupted plugins directory
+        plugin_dir = os.path.join(os.path.expanduser("~"), "ZAP", "plugin")
+        if os.path.exists(plugin_dir):
+            try:
+                # Look for files with spaces in the filename - these are likely corrupted
+                for file in os.listdir(plugin_dir):
+                    if file.endswith(".zap"):
+                        # Check if the filename contains unexpected spaces 
+                        # (common sign of corruption in logs)
+                        if ". " in file:
+                            # This matches the error pattern seen in logs
+                            addon_id = file.split("-")[0]
+                            corrupted_addons.append(addon_id)
+                            logger.warning(f"Found likely corrupted add-on file: {file}")
+                
+                if corrupted_addons:
+                    logger.warning(
+                        f"Found {len(corrupted_addons)} potentially corrupted add-ons: "
+                        f"{', '.join(corrupted_addons)}")
+            except Exception as e:
+                logger.error(f"Error checking add-on integrity: {str(e)}")
+        
+        # Check for essential add-ons
+        for addon in ESSENTIAL_ADDONS:
+            # If it's not in corrupted list but is essential, verify it exists 
+            if addon not in corrupted_addons:
+                addon_file = None
+                # Look for the addon file with different version patterns
+                for file in os.listdir(plugin_dir) if os.path.exists(plugin_dir) else []:
+                    if file.startswith(f"{addon}-"):
+                        addon_file = file
+                        break
+                        
+                if not addon_file:
+                    # Add to list if essential add-on is missing
+                    corrupted_addons.append(addon)
+                    logger.warning(f"Essential add-on missing: {addon}")
+        
+        return corrupted_addons
+
+    def _fix_corrupted_addons(self, corrupted_addons: List[str]):
+        """
+        Fix corrupted add-ons by renaming or removing them.
+        
+        Args:
+            corrupted_addons: List of corrupted add-on IDs
+        """
+        if not corrupted_addons:
+            return
+            
+        logger.info(f"Attempting to fix {len(corrupted_addons)} corrupted add-ons...")
+        
+        plugin_dir = os.path.join(os.path.expanduser("~"), "ZAP", "plugin")
+        backup_dir = os.path.join(os.path.expanduser("~"), "ZAP", "plugin_backup")
+        
+        # Create backup directory if it doesn't exist
+        if not os.path.exists(backup_dir):
+            os.makedirs(backup_dir)
+            
+        # Process each corrupted add-on
+        for addon_id in corrupted_addons:
+            try:
+                # Find files related to this add-on
+                for file in os.listdir(plugin_dir):
+                    if file.startswith(f"{addon_id}-") or file == f"{addon_id}.zap":
+                        # Move to backup directory
+                        src_path = os.path.join(plugin_dir, file)
+                        dst_path = os.path.join(backup_dir, file)
+                        
+                        # Move file to backup
+                        shutil.move(src_path, dst_path)
+                        logger.info(f"Moved corrupted add-on {file} to backup directory")
+            except Exception as e:
+                logger.error(f"Error fixing corrupted add-on {addon_id}: {str(e)}")
+                
+        logger.info("Corrupted add-ons have been moved to backup directory")
+        logger.info("After ZAP starts, please reinstall these add-ons from the marketplace")
+
+    def _configure_browser_settings(self):
+        """
+        Configure browser settings for DOM XSS scanning.
+        
+        Returns:
+            True if browser was configured successfully, False otherwise
+        """
+        logger.info("Configuring browser settings for DOM XSS scanning...")
+        
+        try:
+            # Find browser binaries if not already set
+            if not self.firefox_binary_path:
+                self.firefox_binary_path = self._find_firefox_binary()
+                
+            # Configure Firefox binary path if found
+            if self.firefox_binary_path and hasattr(self.zap, 'selenium'):
+                logger.info(f"Setting Firefox binary path to: {self.firefox_binary_path}")
+                self.zap.selenium.set_option_firefox_binary_path(self.firefox_binary_path)
+                
+                # Set Firefox driver path if available
+                try:
+                    if hasattr(self.zap.selenium, 'set_option_firefox_driver_path'):
+                        # Look for geckodriver in common locations
+                        geckodriver_paths = [
+                            os.path.join(self.base_path, "geckodriver.exe"),
+                            os.path.join(self.base_path, "geckodriver"),
+                            os.path.join(os.path.expanduser("~"), "geckodriver.exe"),
+                            os.path.join(os.path.expanduser("~"), "geckodriver"),
+                            "/usr/local/bin/geckodriver"
+                        ]
+                        
+                        for path in geckodriver_paths:
+                            if os.path.exists(path):
+                                logger.info(f"Setting Firefox driver path to: {path}")
+                                self.zap.selenium.set_option_firefox_driver_path(path)
+                                break
+                except Exception as driver_error:
+                    logger.warning(f"Error setting Firefox driver path: {str(driver_error)}")
+                
+                return True
+            else:
+                # Try Chrome as fallback
+                chrome_path = self._find_chrome_binary()
+                if chrome_path and hasattr(self.zap, 'selenium'):
+                    logger.info(f"Setting Chrome binary path to: {chrome_path}")
+                    self.zap.selenium.set_option_chrome_binary_path(chrome_path)
+                    return True
+                    
+                logger.warning("No browser binaries found for DOM XSS scanning")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Error configuring browser settings: {str(e)}")
+            return False
+
+    def _configure_oast_service(self) -> bool:
+        """
+        Configure OAST service for blind vulnerability detection.
+        
+        Returns:
+            True if configured successfully, False otherwise
+        """
+        logger.info("Configuring OAST service for blind vulnerability detection...")
+        
+        try:
+            # First check if OAST service is already configured
+            if hasattr(self.zap, 'oast') and hasattr(self.zap.oast, 'services'):
+                services = self.zap.oast.services
+                if services:
+                    for service in services:
+                        if service.get('running', False):
+                            logger.info(f"OAST service already running: {service.get('name')}")
+                            self.oast_service_configured = True
+                            return True
+            
+            # Configure callback service if available
+            if not self.callback_port:
+                self.callback_port = self._find_free_port(
+                    start_port=ZAP_CALLBACK_PORT_RANGE[0], 
+                    max_port=ZAP_CALLBACK_PORT_RANGE[1]
+                )
+                
+            # Check if callback service is available
+            if hasattr(self.zap, 'callbackservice'):
+                status = self.zap.callbackservice.status
+                logger.info(f"Callback service status: {status}")
+                
+                if "Running" not in status:
+                    # Set options and start service
+                    self.zap.callbackservice.set_option_port(self.callback_port)
+                    self.zap.callbackservice.set_option_remote_address("0.0.0.0")
+                    self.zap.callbackservice.start_service()
+                    logger.info(f"Started callback service on port {self.callback_port}")
+                    
+                # Check if service is running after start attempt
+                status = self.zap.callbackservice.status
+                if "Running" in status:
+                    self.oast_service_configured = True
+                    
+                    # Configure active scan to use the service
+                    if hasattr(self.zap.ascan, 'set_option_scan_null_json_values'):
+                        self.zap.ascan.set_option_scan_null_json_values(True)
+                        logger.info("Enabled scanning of null JSON values")
+                    
+                    return True
+                else:
+                    logger.warning(f"Failed to start callback service, status: {status}")
+                    return False
+            else:
+                logger.warning("Callback service not available in this ZAP version")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Error configuring OAST service: {str(e)}")
+            return False
+
     def _start_zap_daemon(self) -> bool:
         """
         Start the ZAP daemon and connect to it, with enhanced logging.
@@ -671,6 +963,12 @@ class ZAPScanner:
         logger.info("Starting ZAP daemon...")
         try:
             self._cleanup_existing_zap()
+            
+            # Check for corrupted add-ons
+            corrupted_addons = self._verify_addons_integrity()
+            if corrupted_addons:
+                logger.warning(f"Found corrupted add-ons: {', '.join(corrupted_addons)}")
+                self._fix_corrupted_addons(corrupted_addons)
             
             # Create the tmp directory
             tmp_dir = self.base_path / "tmp"
@@ -730,6 +1028,20 @@ class ZAPScanner:
                     )
                     version = self.zap.core.version
                     logger.info(f"Successfully connected to ZAP {version}")
+                    
+                    # Configure browser settings
+                    browser_configured = self._configure_browser_settings()
+                    if browser_configured:
+                        logger.info("Browser settings configured successfully")
+                    else:
+                        logger.warning("No browsers configured. DOM XSS scanning will be limited.")
+                    
+                    # Configure OAST service
+                    oast_configured = self._configure_oast_service()
+                    if oast_configured:
+                        logger.info("OAST service configured successfully")
+                    else:
+                        logger.warning("OAST service not configured. Some scanners will be limited.")
                     
                     # Log time taken to start ZAP
                     elapsed = (datetime.now() - start_time).total_seconds()
@@ -993,12 +1305,49 @@ class ZAPScanner:
             self.zap.ascan.set_option_handle_anti_csrf_tokens(True)
             self.zap.ascan.set_option_scan_headers_all_requests(True)
             self.zap.ascan.set_option_add_query_param(True)
-            self.zap.ascan.set_option_scan_null_json_values(True)
-            self.zap.ascan.set_option_inject_plugin_id_in_header(True)
+            
+            # Enable JSON scanning options for modern apps
+            if hasattr(self.zap.ascan, 'set_option_scan_null_json_values'):
+                self.zap.ascan.set_option_scan_null_json_values(True)
+                logger.info("Enabled scanning of null JSON values")
+                
+            # Enable other scan options if available
+            if hasattr(self.zap.ascan, 'set_option_inject_plugin_id_in_header'):
+                self.zap.ascan.set_option_inject_plugin_id_in_header(True)
+                logger.info("Enabled plugin ID injection in headers")
+                
+            # Configure active scan limits
             self.zap.ascan.set_option_max_alerts_per_rule(0)  # Unlimited
             self.zap.ascan.set_option_max_rule_duration_in_mins(5)  # 5 minutes max per rule
             self.zap.ascan.set_option_max_scan_duration_in_mins(self.max_scan_duration_minutes)
             self.zap.ascan.set_option_thread_per_host(self.thread_per_host)
+            
+            # Enable OAST-based rules if OAST service is configured
+            if self.oast_service_configured:
+                logger.info("OAST service is configured, enabling blind vulnerability scanners...")
+                
+                # Enable Log4Shell scanner
+                log4shell_id = "90001"  # ID may vary depending on ZAP version
+                if hasattr(self.zap.ascan, 'set_scanner_alert_threshold'):
+                    try:
+                        self.zap.ascan.set_scanner_alert_threshold(log4shell_id, "LOW")
+                        logger.info("Enabled Log4Shell scanner")
+                    except Exception as e:
+                        logger.debug(f"Error enabling Log4Shell scanner: {str(e)}")
+                
+                # Enable other OAST-based scanners
+                for scanner_name in ["SSRF", "SSTI Blind", "Log4Shell"]:
+                    try:
+                        scanners = self.zap.ascan.scanners()
+                        for scanner in scanners:
+                            if scanner_name.lower() in scanner.get('name', '').lower():
+                                scanner_id = scanner.get('id')
+                                self.zap.ascan.enable_scanners(scanner_id)
+                                self.zap.ascan.set_scanner_alert_threshold(scanner_id, "LOW")
+                                logger.info(f"Enabled {scanner.get('name')} scanner")
+                                break
+                    except Exception as e:
+                        logger.debug(f"Error enabling {scanner_name} scanner: {str(e)}")
             
             # Log active scanners for debugging
             scanners = self.zap.ascan.scanners()
@@ -1097,6 +1446,12 @@ class ZAPScanner:
             else:
                 # Reset to default for full crawling
                 self.zap.ajaxSpider.set_option_element_id(None)
+                
+            # Set correct browser ID based on what's available
+            # Use chrome-headless if Firefox is not available
+            if not self.firefox_binary_path:
+                logger.info("Firefox not found, using Chrome-headless for AJAX Spider")
+                self.zap.ajaxSpider.set_option_browser_id("chrome-headless")
             
             # Start AJAX Spider with optimized settings
             logger.info(f"Running AJAX Spider on target: {target_url}")
@@ -1437,7 +1792,9 @@ class ZAPScanner:
                 "ajax_spider_enabled": True,
                 "unique_alert_types": len(alert_names),
                 "alert_categories": {k: len(v) for k, v in alert_categories.items()},
-                "vulnerabilities_with_code": with_code
+                "vulnerabilities_with_code": with_code,
+                "browser_configured": self.firefox_binary_path is not None,
+                "oast_service_configured": self.oast_service_configured
             })
             
             return vulnerabilities, summary
@@ -1556,9 +1913,43 @@ class ZAPScanner:
         report_content = '\n'.join(report)
         if output_file:
             try:
-                with open(output_file, 'w', encoding='utf-8') as f:
+                # Ensure the output directory exists
+                output_path = Path(output_file)
+                output_path.parent.mkdir(parents=True, exist_ok=True)
+                
+                with open(output_path, 'w', encoding='utf-8') as f:
                     f.write(report_content)
-                logger.info(f"Saved affected code report to: {output_file}")
+                logger.info(f"Saved affected code report to: {output_path}")
+                
+                # If the output is in the new zap_reports structure, create a link/copy in the legacy location
+                if "zap_reports" in str(output_path):
+                    # Try to determine model and app_num from path
+                    path_parts = Path(output_file).parts
+                    if len(path_parts) >= 4 and path_parts[-4] == "zap_reports":
+                        model = path_parts[-3]
+                        app_num_str = path_parts[-2]
+                        if app_num_str.startswith("app") and app_num_str[3:].isdigit():
+                            legacy_path = self.base_path / model / app_num_str / ".zap_code_report.md"
+                            try:
+                                # Ensure parent directory exists
+                                legacy_path.parent.mkdir(parents=True, exist_ok=True)
+                                # Create a symbolic link to the new file location if possible
+                                if hasattr(os, 'symlink'):
+                                    # Remove existing file or link if present
+                                    if legacy_path.exists():
+                                        legacy_path.unlink()
+                                    # Create relative symlink
+                                    os.symlink(
+                                        os.path.relpath(output_path, legacy_path.parent),
+                                        legacy_path
+                                    )
+                                    logger.info(f"Created symlink from legacy code report path to new file")
+                                else:
+                                    # On platforms without symlink support, make a copy
+                                    shutil.copy2(output_path, legacy_path)
+                                    logger.info(f"Copied code report to legacy path for compatibility")
+                            except Exception as legacy_err:
+                                logger.warning(f"Could not maintain legacy code report compatibility: {legacy_err}")
             except Exception as e:
                 logger.error(f"Error saving report to {output_file}: {str(e)}")
         
@@ -1627,9 +2018,10 @@ class ZAPScanner:
             # Run the scan
             vulnerabilities, summary = self.scan_target(target_url, quick_scan)
             
-            # Save results JSON only (no markdown)
-            results_path = self.base_path / f"{model}/app{app_num}/.zap_results.json"
-            results_path.parent.mkdir(parents=True, exist_ok=True)
+            # Create the new directory structure for saving results
+            zap_reports_dir = self.base_path / "zap_reports" / model / f"app{app_num}"
+            zap_reports_dir.mkdir(parents=True, exist_ok=True)
+            results_path = zap_reports_dir / ".zap_results.json"
             
             logger.info(f"Saving scan results to {results_path}")
             with open(results_path, "w") as f:
@@ -1649,6 +2041,29 @@ class ZAPScanner:
                     results_dict['alerts'].append(vuln_dict)
                 
                 json.dump(results_dict, f, indent=2)
+            
+            # For backwards compatibility, also save to legacy location
+            legacy_results_path = self.base_path / f"{model}/app{app_num}/.zap_results.json"
+            try:
+                # Ensure parent directory exists
+                legacy_results_path.parent.mkdir(parents=True, exist_ok=True)
+                # Create a symbolic link to the new file location if possible
+                if hasattr(os, 'symlink'):
+                    # Remove existing file or link if present
+                    if legacy_results_path.exists():
+                        legacy_results_path.unlink()
+                    # Create relative symlink
+                    os.symlink(
+                        os.path.relpath(results_path, legacy_results_path.parent),
+                        legacy_results_path
+                    )
+                    logger.info(f"Created symlink from legacy path to new results file")
+                else:
+                    # On platforms without symlink support, make a copy
+                    shutil.copy2(results_path, legacy_results_path)
+                    logger.info(f"Copied results to legacy path for compatibility")
+            except Exception as legacy_err:
+                logger.warning(f"Could not maintain legacy file compatibility: {legacy_err}")
                 
             # Update scan status
             scan_status.status = "Complete"
@@ -1678,7 +2093,7 @@ class ZAPScanner:
         finally:
             # Restore original timeout
             self.ajax_timeout = original_ajax_timeout
-    
+
     def _get_model_index(self, model_name: str) -> int:
         """
         Get the index of a model in the list of supported models.
@@ -1757,3 +2172,35 @@ def create_scanner(base_path: Path) -> ZAPScanner:
     scanner = ZAPScanner(base_path)
     logger.info(f"Comprehensive ZAP scanner created with base path: {base_path}")
     return scanner
+
+
+if __name__ == "__main__":
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.StreamHandler(),
+            logging.FileHandler("zap_scanner.log")
+        ]
+    )
+    
+    # Example usage
+    try:
+        base_path = Path("./zap_output")
+        scanner = create_scanner(base_path)
+        
+        # Example of scanning a local application
+        target_url = "http://localhost:8080"
+        logger.info(f"Scanning target: {target_url}")
+        vulnerabilities, summary = scanner.scan_target(target_url)
+        
+        # Generate report
+        report_file = base_path / "vulnerability_report.md"
+        scanner.generate_affected_code_report(vulnerabilities, str(report_file))
+        
+        logger.info(f"Scan complete. Found {len(vulnerabilities)} vulnerabilities.")
+        logger.info(f"Report saved to {report_file}")
+        
+    except Exception as e:
+        logger.error(f"Error running scanner: {str(e)}", exc_info=True)
