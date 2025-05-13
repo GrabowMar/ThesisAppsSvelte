@@ -246,31 +246,6 @@
 </div>
 
 {% block extra_scripts %}
-<script>
-// Initialize with Dashboard.js OOP structure
-$(document).ready(function() {
-  // Feature-specific initialization aligned with FeatureManager
-  const securityFilter = $('#securitySummaryFilter');
-  
-  if (securityFilter.length) {
-    securityFilter.on('change', function() {
-      const value = $(this).val();
-      const selector = value === 'high' ? '.high-risk' : 
-                      value === 'critical' ? '.critical' : '';
-      
-      if (selector) {
-        $('[data-app-id]').hide();
-        $(`.security-indicator${selector}`).closest('[data-app-id]').show();
-      } else {
-        $('[data-app-id]').show();
-      }
-      
-      // Show/hide no results message (uses UIController method)
-      const visibleApps = $('[data-app-id]:visible').length;
-      $('#noResultsMessage').toggle(visibleApps === 0);
-    });
-  }
-});
-</script>
+
 {% endblock %}
 {% endblock %} 

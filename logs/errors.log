@@ -430,3 +430,883 @@ Traceback (most recent call last):
     raise BuildError(endpoint, values, method, self)
 werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'performance.performance_test' with values ['model', 'port']. Did you mean 'main.check_app_status' instead?
 2025-05-05 00:08:03 [ERROR] [fa44149c] app.root.after_request_logging:543 - Request finished: GET / - Status: 500 [SLOW] - Duration: 2.220s
+2025-05-13 09:09:40 [ERROR] [-] docker_compose.docker_compose.run_docker_compose:511 - 
+time="2025-05-13T09:09:40+02:00" level=warning msg="c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\models\\Llama\\app3\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Network llama_app3_default  Creating
+ Network llama_app3_default  Created
+ Container llama_backend_5005  Creating
+Error response from daemon: Conflict. The container name "/llama_backend_5005" is already in use by container "01b2c7b2b8878e728b2d7e32daeeb320cee48bf9bae52176fc3ed88d3e033fab". You have to remove (or rename) that container to be able to reuse that name.
+
+2025-05-13 09:09:40 [ERROR] [-] docker.docker.action.start.handle_docker_action:563 - Docker action 'start' failed for Llama/app3
+2025-05-13 09:25:39 [ERROR] [-] routes.routes.main.handle_route_error:150 - Unexpected error: maximum recursion depth exceeded
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 260, in index
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  [Previous line repeated 959 more times]
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1496, in is_up_to_date
+    return self._uptodate()
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\loaders.py", line 221, in uptodate
+    return os.path.getmtime(filename) == mtime
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+RecursionError: maximum recursion depth exceeded
+2025-05-13 09:25:39 [ERROR] [-] error.error.log_and_handle_exception:167 - Exception in index: maximum recursion depth exceeded
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 177, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 267, in index
+    return handle_route_error(e, main_route_logger)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 164, in handle_route_error
+    raise e
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 260, in index
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  [Previous line repeated 959 more times]
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1496, in is_up_to_date
+    return self._uptodate()
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\loaders.py", line 221, in uptodate
+    return os.path.getmtime(filename) == mtime
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+RecursionError: maximum recursion depth exceeded
+2025-05-13 09:25:39 [ERROR] [-] app.errors.handle_exception:138 - Unhandled exception (500 - Internal Server Error): / - maximum recursion depth exceeded
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 177, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 267, in index
+    return handle_route_error(e, main_route_logger)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 164, in handle_route_error
+    raise e
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 260, in index
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  [Previous line repeated 959 more times]
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1496, in is_up_to_date
+    return self._uptodate()
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\loaders.py", line 221, in uptodate
+    return os.path.getmtime(filename) == mtime
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+RecursionError: maximum recursion depth exceeded
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 180, in wrapped
+    return _handle_ajax_exception(e, is_ajax, f.__name__, function_logger)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 217, in _handle_ajax_exception
+    return render_template("500.html", error=error_message), error_code
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\500.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  [Previous line repeated 959 more times]
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1496, in is_up_to_date
+    return self._uptodate()
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\loaders.py", line 221, in uptodate
+    return os.path.getmtime(filename) == mtime
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+RecursionError: maximum recursion depth exceeded
+2025-05-13 09:25:40 [ERROR] [-] app.errors._render_error_template:99 - Error while rendering error template: maximum recursion depth exceeded
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 177, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 267, in index
+    return handle_route_error(e, main_route_logger)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 164, in handle_route_error
+    raise e
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 260, in index
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\index.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  [Previous line repeated 959 more times]
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1496, in is_up_to_date
+    return self._uptodate()
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\loaders.py", line 221, in uptodate
+    return os.path.getmtime(filename) == mtime
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+RecursionError: maximum recursion depth exceeded
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 180, in wrapped
+    return _handle_ajax_exception(e, is_ajax, f.__name__, function_logger)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 217, in _handle_ajax_exception
+    return render_template("500.html", error=error_message), error_code
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\500.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  [Previous line repeated 959 more times]
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1496, in is_up_to_date
+    return self._uptodate()
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\loaders.py", line 221, in uptodate
+    return os.path.getmtime(filename) == mtime
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+RecursionError: maximum recursion depth exceeded
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 89, in _render_error_template
+    return render_template(template_name, error=original_error or error_message), error_code
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\500.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  [Previous line repeated 958 more times]
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1496, in is_up_to_date
+    return self._uptodate()
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\loaders.py", line 221, in uptodate
+    return os.path.getmtime(filename) == mtime
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+RecursionError: maximum recursion depth exceeded
+2025-05-13 09:25:40 [ERROR] [-] app.errors._render_error_template:99 - Error while rendering error template: maximum recursion depth exceeded
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 629, in match
+    raise NotFound() from None
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\app.py", line 89, in _render_error_template
+    return render_template(template_name, error=original_error or error_message), error_code
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\404.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  [Previous line repeated 955 more times]
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1496, in is_up_to_date
+    return self._uptodate()
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\loaders.py", line 221, in uptodate
+    return os.path.getmtime(filename) == mtime
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+RecursionError: maximum recursion depth exceeded
+2025-05-13 09:29:09 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:10 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:10 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:10 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:10 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:10 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:10 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:11 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:11 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:11 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:11 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:11 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:11 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:12 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:12 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:12 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:12 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
+2025-05-13 09:29:12 [ERROR] [-] batch_analysis.batch_analysis.api.decorated_function:1956 - Route 'batch_dashboard': Unhandled exception: 'job' is undefined
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 1932, in decorated_function
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\batch_analysis.py", line 2082, in batch_dashboard
+    return render_template(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 89, in top-level template code
+    {% if seconds is none or seconds < 0 %}N/A{% else %}{% set seconds = seconds|int %}{% if seconds < 60 %}{{ seconds }}s{% elif seconds < 3600 %}{{ '%dm %ds'|format(seconds // 60, seconds % 60) }}{% else %}{{ '%dh %dm'|format(seconds // 3600, (seconds % 3600) // 60) }}{% endif %}{% endif %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\base.html", line 103, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\templates\batch_dashboard.html", line 536, in block 'content'
+    <td id="jobDetailsId">{{ job.id }}</td>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'job' is undefined
