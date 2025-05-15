@@ -21,6 +21,8 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script defer src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
   {% block extra_head %}{% endblock %}
   
   <style>
@@ -187,4 +189,4 @@
     });
   </script>
 </body>
-</html>
+</html> 

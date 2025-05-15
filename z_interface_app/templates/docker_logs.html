@@ -51,4 +51,120 @@
   </div>
 </div>
 
+<script>
+  // Initialize when DOM is ready
+$(document).ready(function() {
+  // Set up syntax highlighting for log blocks
+  setupSyntaxHighlighting();
+  
+  // Set up auto-refresh functionality
+  setupAutoRefresh();
+  
+  function setupSyntaxHighlighting() {
+    // If you want to add syntax highlighting, you can use a library like highlight.js
+    // For now, we'll just make sure pre blocks are properly scrollable
+    $('pre').each(function() {
+      $(this).css({
+        'max-height': '300px',
+        'overflow': 'auto'
+      });
+    });
+  }
+  
+  function setupAutoRefresh() {
+    // Add auto-refresh button
+    const $header = $('h1').first().parent();
+    
+    if ($header.length) {
+      const $refreshBtn = $('<button>', {
+        class: 'action-btn h-6 px-2 text-xs flex items-center ml-2',
+        text: 'Auto-Refresh'
+      }).prepend(
+        $('<svg>', {
+          class: 'w-3 h-3 inline mr-1',
+          fill: 'none',
+          stroke: 'currentColor',
+          viewBox: '0 0 24 24',
+          html: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />'
+        })
+      );
+      
+      // Add toggle state
+      let refreshInterval = null;
+      
+      $refreshBtn.on('click', function() {
+        const isActive = $(this).hasClass('active');
+        
+        if (isActive) {
+          // Stop auto-refresh
+          clearInterval(refreshInterval);
+          $(this).removeClass('active bg-blue-600 text-white').addClass('text-gray-700');
+          $(this).text('Auto-Refresh');
+          $(this).prepend(
+            $('<svg>', {
+              class: 'w-3 h-3 inline mr-1',
+              fill: 'none',
+              stroke: 'currentColor',
+              viewBox: '0 0 24 24',
+              html: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />'
+            })
+          );
+        } else {
+          // Start auto-refresh
+          $(this).addClass('active bg-blue-600 text-white').removeClass('text-gray-700');
+          $(this).text('Stop Auto-Refresh');
+          $(this).prepend(
+            $('<svg>', {
+              class: 'w-3 h-3 inline mr-1',
+              fill: 'none',
+              stroke: 'currentColor',
+              viewBox: '0 0 24 24',
+              html: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />'
+            })
+          );
+          
+          // Refresh every 5 seconds
+          refreshInterval = setInterval(refreshLogs, 5000);
+        }
+      });
+      
+      // Add to header
+      $header.find('div:first').append($refreshBtn);
+    }
+  }
+  
+  function refreshLogs() {
+    $.ajax({
+      url: window.location.href,
+      method: 'GET'
+    })
+    .done(function(html) {
+      // Extract log content
+      const $parsedHtml = $(html);
+      
+      // Update the logs
+      $('pre').each(function(index) {
+        const $pre = $(this);
+        const $newPre = $parsedHtml.find('pre').eq(index);
+        
+        if ($newPre.length) {
+          // Only update if content has changed
+          if ($pre.text() !== $newPre.text()) {
+            $pre.text($newPre.text());
+            
+            // Flash to indicate update
+            $pre.css('background-color', '#f0f9ff');
+            setTimeout(function() {
+              $pre.css('background-color', '');
+            }, 300);
+          }
+        }
+      });
+    })
+    .fail(function(jqXHR) {
+      console.error('Failed to refresh logs:', jqXHR.statusText);
+    });
+  }
+});
+</script>
 {% endblock %}

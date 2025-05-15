@@ -94,4 +94,39 @@
   </aside>
 </div>
 
+<script>
+  $(document).ready(function() {
+    // Set current time
+    $('#currentTime').text(new Date().toLocaleTimeString());
+    
+    // Set current path
+    $('#currentPath').text(window.location.pathname);
+
+    // Set up glitch text
+    const $glitchText = $('.glitch-text');
+    if ($glitchText.length) {
+        const text = $glitchText.text();
+        $glitchText.attr('data-text', text);
+        
+        // Random glitch effect
+        setInterval(function() {
+            if (Math.random() < 0.1) { // 10% chance of glitch
+                const chars = '█▓▒░█▓▒░';
+                let glitched = text.split('\n').map(function(line) {
+                    if (Math.random() < 0.3) { // 30% chance to glitch each line
+                        return line.split('').map(function(char) {
+                            return Math.random() < 0.3 ? chars[Math.floor(Math.random() * chars.length)] : char;
+                        }).join('');
+                    }
+                    return line;
+                }).join('\n');
+                $glitchText.text(glitched);
+                setTimeout(function() {
+                    $glitchText.text(text);
+                }, 100);
+            }
+        }, 2000);
+    }
+});
+</script>
 {% endblock %}

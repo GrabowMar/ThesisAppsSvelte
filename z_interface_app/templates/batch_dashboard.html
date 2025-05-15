@@ -1287,5 +1287,766 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // ====== VIEW SWITCHING ======
+  const viewContainers = document.querySelectorAll('.view-container');
+  const viewButtons = document.querySelectorAll('.view-selector-btn');
+  const breadcrumbs = {
+    dashboard: document.getElementById('dashboardBreadcrumb'),
+    jobDetails: document.getElementById('jobDetailsBreadcrumb'),
+    resultDetails: document.getElementById('resultDetailsBreadcrumb')
+  };
 
+  function switchView(viewId) {
+    // Hide all views
+    viewContainers.forEach(container => {
+      container.classList.remove('active');
+    });
+    
+    // Show selected view
+    const selectedView = document.getElementById(viewId);
+    if (selectedView) {
+      selectedView.classList.add('active');
+    }
+    
+    // Update buttons
+    viewButtons.forEach(btn => {
+      if (btn.dataset.target === viewId) {
+        btn.classList.add('active', 'bg-blue-600', 'text-white');
+        btn.classList.remove('bg-gray-200', 'text-gray-700');
+      } else {
+        btn.classList.remove('active', 'bg-blue-600', 'text-white');
+        btn.classList.add('bg-gray-200', 'text-gray-700');
+      }
+    });
+    
+    // Update breadcrumbs
+    if (viewId === 'dashboardView') {
+      breadcrumbs.dashboard.classList.remove('hidden');
+      breadcrumbs.jobDetails.classList.add('hidden');
+      breadcrumbs.resultDetails.classList.add('hidden');
+    } else if (viewId === 'jobDetailsView') {
+      breadcrumbs.dashboard.classList.remove('hidden');
+      breadcrumbs.jobDetails.classList.remove('hidden');
+      breadcrumbs.resultDetails.classList.add('hidden');
+    } else if (viewId === 'resultDetailsView') {
+      breadcrumbs.dashboard.classList.remove('hidden');
+      breadcrumbs.jobDetails.classList.remove('hidden');
+      breadcrumbs.resultDetails.classList.remove('hidden');
+    }
+  }
+  
+  // Add click handlers to view buttons
+  viewButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetView = btn.dataset.target;
+      switchView(targetView);
+      
+      // Update browser history for better navigation
+      if (targetView === 'dashboardView') {
+        history.pushState({view: 'dashboard'}, 'Dashboard', '{{ url_for("batch_analysis.batch_dashboard") }}');
+      }
+    });
+  });
+  
+  // ====== FORM HANDLING ======
+  const batchJobForm = document.getElementById('batchJobForm');
+  const toggleCreateFormBtn = document.getElementById('toggleCreateForm');
+  const cancelCreateFormBtn = document.getElementById('cancelCreateForm');
+  const noJobsCreateBtn = document.getElementById('noJobsCreateBtn');
+  const createJobForm = document.getElementById('createJobForm');
+  
+  // Toggle create form visibility
+  if (toggleCreateFormBtn && createJobForm) {
+    toggleCreateFormBtn.addEventListener('click', function() {
+      const isHidden = createJobForm.classList.contains('hidden');
+      createJobForm.classList.toggle('hidden', !isHidden);
+      toggleCreateFormBtn.setAttribute('aria-expanded', !isHidden);
+    });
+  }
+  
+  if (cancelCreateFormBtn && createJobForm) {
+    cancelCreateFormBtn.addEventListener('click', function() {
+      createJobForm.classList.add('hidden');
+      if (toggleCreateFormBtn) toggleCreateFormBtn.setAttribute('aria-expanded', false);
+    });
+  }
+  
+  if (noJobsCreateBtn && toggleCreateFormBtn) {
+    noJobsCreateBtn.addEventListener('click', function() {
+      toggleCreateFormBtn.click();
+    });
+  }
+  
+  // Form validation
+  if (batchJobForm) {
+    batchJobForm.addEventListener('submit', function(e) {
+      const formValid = validateForm();
+      
+      if (!formValid) {
+        e.preventDefault();
+        showToast('Please fix the errors in the form', 'error');
+      } else {
+        // Show loading state on submit button
+        const submitBtn = document.getElementById('submitJobBtn');
+        if (submitBtn) {
+          submitBtn.innerHTML = 'Creating...';
+          submitBtn.disabled = true;
+        }
+      }
+    });
+  }
+  
+  function validateForm() {
+    let isValid = true;
+    
+    // Validate job name
+    const nameInput = document.getElementById('name');
+    const nameError = document.querySelector('.form-error-msg');
+    if (nameInput && nameInput.value.trim() === '') {
+      nameError.classList.remove('hidden');
+      isValid = false;
+    } else if (nameError) {
+      nameError.classList.add('hidden');
+    }
+    
+    // Validate analysis types
+    const analysisCheckboxes = document.querySelectorAll('input[name="analysis_types"]:checked');
+    const analysisError = document.querySelector('.analysis-types-error-msg');
+    if (analysisCheckboxes.length === 0) {
+      analysisError.classList.remove('hidden');
+      isValid = false;
+    } else {
+      analysisError.classList.add('hidden');
+    }
+    
+    // Validate models
+    const modelCheckboxes = document.querySelectorAll('input[name="models"]:checked');
+    const modelsError = document.querySelector('.models-error-msg');
+    if (modelCheckboxes.length === 0) {
+      modelsError.classList.remove('hidden');
+      isValid = false;
+    } else {
+      modelsError.classList.add('hidden');
+    }
+    
+    // Validate app ranges
+    const appRangeFields = document.querySelectorAll('.app-range-field:not(.hidden) input');
+    const rangeRegex = /^(\d+(-\d+)?)(,\s*\d+(-\d+)?)*$/;
+    let hasRangeError = false;
+    
+    appRangeFields.forEach(field => {
+      const value = field.value.trim();
+      const errorMsg = field.parentElement.nextElementSibling;
+      
+      // Empty is valid (means "all apps")
+      if (value === '') {
+        errorMsg.classList.add('hidden');
+        return;
+      }
+      
+      // Check format with regex
+      if (!rangeRegex.test(value)) {
+        errorMsg.classList.remove('hidden');
+        hasRangeError = true;
+        isValid = false;
+      } else {
+        // Check that ranges are valid (start <= end)
+        const ranges = value.split(',');
+        let rangeError = false;
+        
+        ranges.forEach(range => {
+          if (range.includes('-')) {
+            const [start, end] = range.split('-').map(num => parseInt(num.trim()));
+            if (start > end) {
+              rangeError = true;
+            }
+          }
+        });
+        
+        if (rangeError) {
+          errorMsg.classList.remove('hidden');
+          hasRangeError = true;
+          isValid = false;
+        } else {
+          errorMsg.classList.add('hidden');
+        }
+      }
+    });
+    
+    return isValid;
+  }
+  
+  // ====== ANALYSIS TYPE OPTION HANDLING ======
+  function updateAnalysisTypeOptions() {
+    const analysisCheckboxes = document.querySelectorAll('input[name="analysis_types"]');
+    
+    analysisCheckboxes.forEach(checkbox => {
+      const optionsId = `${checkbox.value}_options`;
+      const optionsElement = document.getElementById(optionsId);
+      
+      if (optionsElement) {
+        optionsElement.classList.toggle('hidden', !checkbox.checked);
+      }
+    });
+  }
+  
+  // Initialize analysis options visibility
+  updateAnalysisTypeOptions();
+  
+  // Add change event listeners to analysis checkboxes
+  const analysisCheckboxes = document.querySelectorAll('input[name="analysis_types"]');
+  analysisCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', updateAnalysisTypeOptions);
+  });
+  
+  // ====== MODEL SELECTION HANDLING ======
+  function updateAppRangeVisibility() {
+    const modelCheckboxes = document.querySelectorAll('.model-checkbox');
+    const appRangeFields = document.querySelectorAll('.app-range-field');
+    const noModelSelectedMsg = document.getElementById('noModelSelectedMsg');
+    let anyModelSelected = false;
+    
+    modelCheckboxes.forEach(checkbox => {
+      const model = checkbox.value;
+      appRangeFields.forEach(field => {
+        if (field.dataset.model === model) {
+          field.classList.toggle('hidden', !checkbox.checked);
+          if (checkbox.checked) anyModelSelected = true;
+        }
+      });
+    });
+    
+    if (noModelSelectedMsg) {
+      noModelSelectedMsg.classList.toggle('hidden', anyModelSelected);
+    }
+  }
+  
+  // Initialize model selection
+  updateAppRangeVisibility();
+  
+  // Add change event listeners to model checkboxes
+  const modelCheckboxes = document.querySelectorAll('.model-checkbox');
+  modelCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', updateAppRangeVisibility);
+  });
+  
+  // ====== JOB LIST FILTERING ======
+  const searchJobsInput = document.getElementById('searchJobs');
+  const modelFilterSelect = document.getElementById('modelFilter');
+  const analysisTypeFilterSelect = document.getElementById('analysisTypeFilter');
+  const statusFilterSelect = document.getElementById('statusFilter');
+  const clearFiltersBtn = document.getElementById('clearFilters');
+  const jobRows = document.querySelectorAll('.job-row');
+  const visibleJobsCount = document.getElementById('visibleJobsCount');
+  const noJobsRow = document.getElementById('noJobsRow');
+  
+  function filterJobs() {
+    const searchTerm = searchJobsInput?.value.toLowerCase() || '';
+    const selectedModel = modelFilterSelect?.value || 'all';
+    const selectedAnalysisType = analysisTypeFilterSelect?.value || 'all';
+    const selectedStatus = statusFilterSelect?.value || 'all';
+    
+    let visibleCount = 0;
+    
+    jobRows.forEach(row => {
+      const jobName = row.dataset.name?.toLowerCase() || '';
+      const jobModels = (row.dataset.models || '').split(',');
+      const jobAnalysisTypes = (row.dataset.analysisTypes || '').split(',');
+      const jobStatus = row.dataset.status || '';
+      
+      const matchesSearch = searchTerm === '' || jobName.includes(searchTerm);
+      const matchesModel = selectedModel === 'all' || jobModels.includes(selectedModel);
+      const matchesAnalysisType = selectedAnalysisType === 'all' || jobAnalysisTypes.includes(selectedAnalysisType);
+      const matchesStatus = selectedStatus === 'all' || jobStatus === selectedStatus;
+      
+      const isVisible = matchesSearch && matchesModel && matchesAnalysisType && matchesStatus;
+      row.style.display = isVisible ? '' : 'none';
+      
+      if (isVisible) visibleCount++;
+    });
+    
+    // Update visible count and show/hide "no jobs" message
+    if (visibleJobsCount) visibleJobsCount.textContent = visibleCount;
+    if (noJobsRow) noJobsRow.style.display = visibleCount === 0 ? '' : 'none';
+  }
+  
+  // Add event listeners to filtering elements
+  if (searchJobsInput) searchJobsInput.addEventListener('input', filterJobs);
+  if (modelFilterSelect) modelFilterSelect.addEventListener('change', filterJobs);
+  if (analysisTypeFilterSelect) analysisTypeFilterSelect.addEventListener('change', filterJobs);
+  if (statusFilterSelect) statusFilterSelect.addEventListener('change', filterJobs);
+  
+  if (clearFiltersBtn) {
+    clearFiltersBtn.addEventListener('click', function() {
+      if (searchJobsInput) searchJobsInput.value = '';
+      if (modelFilterSelect) modelFilterSelect.value = 'all';
+      if (analysisTypeFilterSelect) analysisTypeFilterSelect.value = 'all';
+      if (statusFilterSelect) statusFilterSelect.value = 'all';
+      filterJobs();
+    });
+  }
+  
+  // ====== RESULT FILTERING ======
+  const searchResultsInput = document.getElementById('searchResults');
+  const resultStatusFilterSelect = document.getElementById('resultStatusFilter');
+  const resultModelFilterSelect = document.getElementById('resultModelFilter');
+  const resultAnalysisTypeFilterSelect = document.getElementById('resultAnalysisTypeFilter');
+  const resultRows = document.querySelectorAll('[data-result-id]');
+  const visibleResultsCount = document.getElementById('visibleResultsCount');
+  const totalResultsCount = document.getElementById('totalResultsCount');
+  const noResultsRow = document.getElementById('noResultsRow');
+  
+  function filterResults() {
+    const searchTerm = searchResultsInput?.value.toLowerCase() || '';
+    const selectedStatus = resultStatusFilterSelect?.value || 'all';
+    const selectedModel = resultModelFilterSelect?.value || 'all';
+    const selectedAnalysisType = resultAnalysisTypeFilterSelect?.value || 'all';
+    
+    let visibleCount = 0;
+    
+    resultRows.forEach(row => {
+      const resultModel = row.dataset.model || '';
+      const resultStatus = row.dataset.status || '';
+      const resultAnalysisType = row.dataset.analysisType || '';
+      const resultText = row.textContent.toLowerCase();
+      
+      const matchesSearch = searchTerm === '' || resultText.includes(searchTerm);
+      const matchesStatus = selectedStatus === 'all' || resultStatus === selectedStatus;
+      const matchesModel = selectedModel === 'all' || resultModel === selectedModel;
+      const matchesAnalysisType = selectedAnalysisType === 'all' || resultAnalysisType === selectedAnalysisType;
+      
+      const isVisible = matchesSearch && matchesStatus && matchesModel && matchesAnalysisType;
+      row.style.display = isVisible ? '' : 'none';
+      
+      if (isVisible) visibleCount++;
+    });
+    
+    // Update visible count and show/hide "no results" message
+    if (visibleResultsCount) visibleResultsCount.textContent = visibleCount;
+    if (noResultsRow) noResultsRow.style.display = visibleCount === 0 ? '' : 'none';
+  }
+  
+  // Add event listeners to result filtering elements
+  if (searchResultsInput) searchResultsInput.addEventListener('input', filterResults);
+  if (resultStatusFilterSelect) resultStatusFilterSelect.addEventListener('change', filterResults);
+  if (resultModelFilterSelect) resultModelFilterSelect.addEventListener('change', filterResults);
+  if (resultAnalysisTypeFilterSelect) resultAnalysisTypeFilterSelect.addEventListener('change', filterResults);
+  
+  // ====== AUTO-REFRESH JOB DETAILS ======
+  const autoRefreshToggle = document.getElementById('autoRefreshToggle');
+  const refreshCountdown = document.getElementById('refreshCountdown');
+  const refreshSpinner = document.getElementById('refreshSpinner');
+  const autoRefreshContainer = document.getElementById('autoRefreshContainer');
+  const jobDetailsStatus = document.getElementById('jobDetailsStatus');
+  
+  let autoRefreshInterval;
+  let countdownTimer;
+  const REFRESH_INTERVAL = 10; // seconds
+  
+  function startAutoRefresh() {
+    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+    if (countdownTimer) clearInterval(countdownTimer);
+    
+    let countdown = REFRESH_INTERVAL;
+    
+    // Update countdown display
+    function updateCountdown() {
+      if (refreshCountdown) refreshCountdown.textContent = countdown;
+      countdown--;
+      
+      if (countdown < 0) {
+        countdown = REFRESH_INTERVAL;
+      }
+    }
+    
+    // Initial update
+    updateCountdown();
+    
+    // Start countdown timer
+    countdownTimer = setInterval(updateCountdown, 1000);
+    
+    // Start auto-refresh interval
+    autoRefreshInterval = setInterval(function() {
+      const jobId = document.querySelector('#jobDetailsView').dataset.jobId;
+      if (!jobId) return;
+      
+      refreshJobStatus(jobId);
+    }, REFRESH_INTERVAL * 1000);
+    
+    // Add spinning animation to refresh icon
+    if (refreshSpinner) refreshSpinner.classList.add('spinning');
+  }
+  
+  function stopAutoRefresh() {
+    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+    if (countdownTimer) clearInterval(countdownTimer);
+    
+    // Remove spinning animation
+    if (refreshSpinner) refreshSpinner.classList.remove('spinning');
+  }
+  
+  // Toggle auto-refresh on checkbox change
+  if (autoRefreshToggle) {
+    autoRefreshToggle.addEventListener('change', function() {
+      if (this.checked) {
+        startAutoRefresh();
+      } else {
+        stopAutoRefresh();
+      }
+    });
+  }
+  
+  // Check if job is in a state that requires auto-refresh
+  function shouldAutoRefresh(status) {
+    return ['running', 'initializing', 'cancelling', 'queued'].includes(status);
+  }
+  
+  // Function to refresh job status via AJAX
+  function refreshJobStatus(jobId) {
+    if (!jobId) return;
+    
+    fetch(`/batch-analysis/job/${jobId}/status`)
+      .then(response => response.json())
+      .then(data => {
+        updateJobDetails(data);
+        
+        // Check if we should stop auto-refreshing
+        const currentStatus = data.job?.status || '';
+        
+        if (!shouldAutoRefresh(currentStatus)) {
+          stopAutoRefresh();
+          if (autoRefreshToggle) autoRefreshToggle.checked = false;
+          if (autoRefreshContainer) autoRefreshContainer.classList.add('hidden');
+          
+          // Show toast notification for completed job
+          const jobName = data.job?.name || `Job ${jobId}`;
+          if (currentStatus === 'completed') {
+            showToast(`${jobName} completed successfully`, 'success');
+          } else if (currentStatus === 'failed') {
+            showToast(`${jobName} failed`, 'error');
+          } else if (currentStatus === 'cancelled') {
+            showToast(`${jobName} was cancelled`, 'warning');
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Error refreshing job status:', error);
+        // Don't stop auto-refresh on temporary errors
+      });
+  }
+  
+  // Function to update job details in the UI
+  function updateJobDetails(data) {
+    if (!data || !data.job) return;
+    
+    const job = data.job;
+    
+    // Update header
+    const jobDetailsHeader = document.getElementById('jobDetailsHeader');
+    if (jobDetailsHeader) {
+      jobDetailsHeader.textContent = `${job.name} (ID: ${job.id})`;
+    }
+    
+    // Update breadcrumb
+    const jobNameDisplay = document.querySelector('.job-name-display');
+    const jobIdDisplay = document.querySelector('.job-id-display');
+    if (jobNameDisplay) jobNameDisplay.textContent = job.name;
+    if (jobIdDisplay) jobIdDisplay.textContent = job.id;
+    
+    // Update job details
+    const jobDetailsId = document.getElementById('jobDetailsId');
+    const jobDetailsName = document.getElementById('jobDetailsName');
+    const jobDetailsDescription = document.getElementById('jobDetailsDescription');
+    const jobDetailsModels = document.getElementById('jobDetailsModels');
+    const jobDetailsCreatedAt = document.getElementById('jobDetailsCreatedAt');
+    const jobDetailsStartedAt = document.getElementById('jobDetailsStartedAt');
+    const jobDetailsCompletedAt = document.getElementById('jobDetailsCompletedAt');
+    const jobDetailsStatus = document.getElementById('jobDetailsStatus');
+    const jobDetailsOptions = document.getElementById('jobDetailsOptions');
+    
+    if (jobDetailsId) jobDetailsId.textContent = job.id;
+    if (jobDetailsName) jobDetailsName.textContent = job.name;
+    if (jobDetailsDescription) jobDetailsDescription.textContent = job.description || 'No description';
+    if (jobDetailsModels) jobDetailsModels.textContent = job.models.join(', ');
+    if (jobDetailsCreatedAt) jobDetailsCreatedAt.textContent = job.created_at_formatted || 'N/A';
+    if (jobDetailsStartedAt) jobDetailsStartedAt.textContent = job.started_at || 'Not started';
+    if (jobDetailsCompletedAt) jobDetailsCompletedAt.textContent = job.completed_at || 'Not completed';
+    
+    if (jobDetailsStatus) {
+      const oldStatus = jobDetailsStatus.dataset.currentStatus;
+      jobDetailsStatus.dataset.currentStatus = job.status;
+      jobDetailsStatus.textContent = job.status;
+      
+      // Update status style
+      jobDetailsStatus.className = 'px-2 py-0.5 rounded-md text-white capitalize';
+      
+      if (job.status === 'running') {
+        jobDetailsStatus.classList.add('bg-green-600');
+      } else if (job.status === 'completed') {
+        jobDetailsStatus.classList.add('bg-blue-600');
+      } else if (job.status === 'pending') {
+        jobDetailsStatus.classList.add('bg-gray-500');
+      } else if (job.status === 'initializing') {
+        jobDetailsStatus.classList.add('bg-indigo-500');
+      } else if (job.status === 'queued') {
+        jobDetailsStatus.classList.add('bg-yellow-500', 'text-yellow-900');
+      } else if (job.status === 'cancelling') {
+        jobDetailsStatus.classList.add('bg-orange-500');
+      } else if (job.status === 'cancelled') {
+        jobDetailsStatus.classList.add('bg-orange-600');
+      } else {
+        jobDetailsStatus.classList.add('bg-red-600');
+      }
+      
+      // Show/hide action buttons based on status
+      updateActionButtons(job.status, job.id);
+    }
+    
+    if (jobDetailsOptions) {
+      jobDetailsOptions.textContent = JSON.stringify(job.analysis_options, null, 2);
+    }
+    
+    // Update progress
+    const jobDetailsProgressBar = document.getElementById('jobDetailsProgressBar');
+    const jobDetailsCompletedTasks = document.getElementById('jobDetailsCompletedTasks');
+    const jobDetailsRuntime = document.getElementById('jobDetailsRuntimeValue');
+    const jobDetailsTasksFailed = document.getElementById('jobDetailsTasksFailed');
+    
+    if (jobDetailsProgressBar) {
+      const progress = data.progress?.percent || 0;
+      jobDetailsProgressBar.style.width = `${progress}%`;
+      jobDetailsProgressBar.textContent = `${Math.round(progress)}%`;
+    }
+    
+    if (jobDetailsCompletedTasks) {
+      jobDetailsCompletedTasks.textContent = `${job.completed_tasks}/${job.total_tasks}`;
+    }
+    
+    if (jobDetailsRuntime) {
+      jobDetailsRuntime.textContent = formatDuration(job.duration_seconds);
+    }
+    
+    if (jobDetailsTasksFailed) {
+      const failedTasks = (job.task_count_by_status?.failed || 0) + (job.task_count_by_status?.timed_out || 0);
+      jobDetailsTasksFailed.textContent = failedTasks;
+    }
+    
+    // Update aggregated results
+    const jobDetailsAggregatedResults = document.getElementById('jobDetailsAggregatedResults');
+    if (jobDetailsAggregatedResults && job.results_summary) {
+      updateAggregatedResults(jobDetailsAggregatedResults, job.results_summary);
+    }
+    
+    // Update errors section
+    const errorsSection = document.getElementById('errorsSection');
+    const errorsList = document.getElementById('errorsList');
+    
+    if (errorsSection && errorsList) {
+      if (job.errors && job.errors.length > 0) {
+        errorsSection.classList.remove('hidden');
+        
+        // Clear and rebuild errors list
+        errorsList.innerHTML = '';
+        job.errors.forEach(error => {
+          const li = document.createElement('li');
+          li.className = 'error-tooltip';
+          li.textContent = error.message;
+          
+          if (error.traceback) {
+            const span = document.createElement('span');
+            span.className = 'tooltip-text';
+            span.textContent = error.traceback;
+            li.appendChild(span);
+          }
+          
+          errorsList.appendChild(li);
+        });
+      } else {
+        errorsSection.classList.add('hidden');
+        errorsList.innerHTML = '<li class="text-gray-500 italic">No job errors reported.</li>';
+      }
+    }
+    
+    // Add code to refresh task results here
+    // This might require a separate API endpoint
+  }
+  
+  function updateAggregatedResults(container, summary) {
+    // This is a simple implementation - in a real app, you'd generate a more detailed summary
+    if (!container || !summary) return;
+    
+    if (Object.keys(summary).length === 0) {
+      container.innerHTML = '<p class="text-xs text-gray-500 text-center">No results available yet</p>';
+      return;
+    }
+    
+    let html = '<div class="text-xs text-gray-700">';
+    html += '<div class="grid grid-cols-2 gap-2">';
+    
+    // Security metrics
+    if (summary.high_total !== undefined) {
+      html += `<div class="border border-gray-200 p-1 rounded-sm bg-red-50">
+        <div class="text-xs text-gray-600">High Issues</div>
+        <div class="font-bold text-red-700">${summary.high_total}</div>
+      </div>`;
+    }
+    
+    if (summary.medium_total !== undefined) {
+      html += `<div class="border border-gray-200 p-1 rounded-sm bg-yellow-50">
+        <div class="text-xs text-gray-600">Medium Issues</div>
+        <div class="font-bold text-yellow-700">${summary.medium_total}</div>
+      </div>`;
+    }
+    
+    if (summary.low_total !== undefined) {
+      html += `<div class="border border-gray-200 p-1 rounded-sm bg-blue-50">
+        <div class="text-xs text-gray-600">Low Issues</div>
+        <div class="font-bold text-blue-700">${summary.low_total}</div>
+      </div>`;
+    }
+    
+    if (summary.issues_total !== undefined) {
+      html += `<div class="border border-gray-200 p-1 rounded-sm bg-gray-50">
+        <div class="text-xs text-gray-600">Total Issues</div>
+        <div class="font-bold">${summary.issues_total}</div>
+      </div>`;
+    }
+    
+    html += '</div>'; // End grid
+    
+    // Results by analysis type
+    if (summary.total_tasks_processed > 0) {
+      html += '<div class="mt-2 pt-2 border-t border-gray-200">';
+      html += '<div class="text-gray-600 font-medium">Results by Analysis Type:</div>';
+      html += '<div class="mt-1 space-y-1">';
+      
+      // Get analysis types by looking for keys ending with _tasks_processed
+      const analysisTypes = Object.keys(summary)
+        .filter(key => key.endsWith('_tasks_processed'))
+        .map(key => key.replace('_tasks_processed', ''));
+      
+      analysisTypes.forEach(type => {
+        const issuesKey = `${type}_issues_total`;
+        const issuesCount = summary[issuesKey] || 0;
+        const displayName = type.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+        
+        html += `<div class="flex justify-between">
+          <span>${displayName}:</span>
+          <span>${issuesCount} issues</span>
+        </div>`;
+      });
+      
+      html += '</div></div>'; // End analysis types section
+    }
+    
+    html += '</div>'; // End container
+    
+    container.innerHTML = html;
+  }
+  
+  function updateActionButtons(status, jobId) {
+    const cancelJobBtn = document.getElementById('cancelJobDetailsBtn');
+    const deleteJobBtn = document.getElementById('deleteJobDetailsBtn');
+    const cancelJobForm = document.getElementById('cancelJobDetailsForm');
+    const deleteJobForm = document.getElementById('deleteJobDetailsForm');
+    
+    // Only show cancel button for running/initializing/queued jobs
+    if (cancelJobBtn && cancelJobForm) {
+      if (['running', 'initializing', 'queued'].includes(status)) {
+        cancelJobForm.classList.remove('hidden');
+        cancelJobForm.action = `/batch-analysis/job/${jobId}/cancel`;
+      } else {
+        cancelJobForm.classList.add('hidden');
+      }
+    }
+    
+    // Only show delete button for completed/failed/canceled jobs
+    if (deleteJobBtn && deleteJobForm) {
+      if (['completed', 'failed', 'cancelled', 'error'].includes(status)) {
+        deleteJobForm.classList.remove('hidden');
+        deleteJobForm.action = `/batch-analysis/job/${jobId}/delete`;
+      } else {
+        deleteJobForm.classList.add('hidden');
+      }
+    }
+  }
+  
+  // ====== UTILITY FUNCTIONS ======
+  function formatDuration(seconds) {
+    if (seconds === null || seconds === undefined || isNaN(seconds) || seconds < 0) {
+      return 'N/A';
+    }
+    
+    seconds = Math.floor(seconds);
+    
+    if (seconds < 60) {
+      return `${seconds}s`;
+    } else if (seconds < 3600) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return `${minutes}m ${remainingSeconds}s`;
+    } else {
+      const hours = Math.floor(seconds / 3600);
+      const remainingMinutes = Math.floor((seconds % 3600) / 60);
+      return `${hours}h ${remainingMinutes}m`;
+    }
+  }
+  
+  function showToast(message, type = 'info') {
+    const toastContainer = document.getElementById('toastContainer');
+    if (!toastContainer) return;
+    
+    const toast = document.createElement('div');
+    toast.className = 'rounded-md shadow-lg p-3 mb-2 text-sm transition-all duration-300 opacity-0 transform translate-x-2';
+    
+    switch(type) {
+      case 'success':
+        toast.classList.add('bg-green-100', 'text-green-800', 'border', 'border-green-300');
+        break;
+      case 'error':
+        toast.classList.add('bg-red-100', 'text-red-800', 'border', 'border-red-300');
+        break;
+      case 'warning':
+        toast.classList.add('bg-yellow-100', 'text-yellow-800', 'border', 'border-yellow-300');
+        break;
+      default:
+        toast.classList.add('bg-blue-100', 'text-blue-800', 'border', 'border-blue-300');
+    }
+    
+    toast.textContent = message;
+    toastContainer.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+      toast.classList.remove('opacity-0', 'translate-x-2');
+    }, 10);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+      toast.classList.add('opacity-0', 'translate-x-2');
+      setTimeout(() => {
+        toast.remove();
+      }, 300);
+    }, 5000);
+  }
+  
+  // ====== INITIALIZATION ======
+  // Start auto-refresh for job status if we're on a job details page and the job is still running
+  if (jobDetailsStatus && shouldAutoRefresh(jobDetailsStatus.dataset.currentStatus)) {
+    if (autoRefreshContainer) autoRefreshContainer.classList.remove('hidden');
+    if (autoRefreshToggle && autoRefreshToggle.checked) {
+      startAutoRefresh();
+    }
+  }
+  
+  // Apply initial filters
+  if (jobRows.length > 0) filterJobs();
+  if (resultRows.length > 0) filterResults();
+  
+  // Set total results count
+  if (totalResultsCount) totalResultsCount.textContent = resultRows.length;
+});
+</script>
 {% endblock %}

@@ -315,5 +315,188 @@
   </aside>
 </div>
 
+<script>
+// Initialize when DOM is ready - Follows initialization pattern in dashboard.js
+$(document).ready(function() {
+  // Try to use the structured App object if available (matches FeatureManager pattern)
+  if (typeof window.dashboardApp !== 'undefined' && window.dashboardApp.featureManager?.securityAnalysisPage) {
+    // Let the feature manager initialize this feature
+    window.dashboardApp.featureManager.securityAnalysisPage.init();
+  } else {
+    // Fallback implementation - SecurityAnalysisPage class methods
+    setupSecurityAnalysis();
+  }
 
+  function setupSecurityAnalysis() {
+    // Methods matching SecurityAnalysisPage class methods
+    setupFilters();
+    setupExpandButtons();
+    setupRefreshButton();
+    setupAiAnalysis();
+  }
+  
+  function setupFilters() {
+    const $searchInput = $('#searchIssues');
+    const $toolFilter = $('#toolFilter');
+    const $severityFilter = $('#severityFilter');
+    const $fileFilter = $('#fileFilter');
+    const $filterStatus = $('#filterStatus');
+    
+    // Apply filters with debounce (similar to UIController's debounce method)
+    const applyFilters = function() {
+      const searchText = $searchInput.val()?.toLowerCase() || '';
+      const selectedTool = $toolFilter.val() || 'all';
+      const selectedSeverity = $severityFilter.val() || 'all';
+      const selectedFile = $fileFilter.val() || 'all';
+      
+      let visibleCount = 0;
+      let toolCounts = {};
+      let severityCounts = { high: 0, medium: 0, low: 0 };
+      
+      $('#issueList > div').each(function() {
+        const $issue = $(this);
+        const tool = $issue.data('tool');
+        const severity = $issue.data('severity');
+        const file = $issue.data('file');
+        const searchable = $issue.data('searchable')?.toLowerCase() || '';
+        
+        const isVisible = (selectedTool === 'all' || tool === selectedTool) && 
+                          (selectedSeverity === 'all' || severity === selectedSeverity) && 
+                          (selectedFile === 'all' || file === selectedFile) && 
+                          (!searchText || searchable.includes(searchText));
+        
+        $issue.toggle(isVisible);
+        
+        if (isVisible) {
+          visibleCount++;
+          toolCounts[tool] = (toolCounts[tool] || 0) + 1;
+          if (severity in severityCounts) {
+            severityCounts[severity]++;
+          }
+        }
+      });
+      
+      // Update filter status indicator
+      if (selectedTool !== 'all' || selectedSeverity !== 'all' || selectedFile !== 'all' || searchText) {
+        const filterDetails = [
+          `${visibleCount} filtered issues`,
+          Object.entries(toolCounts).map(([tool, count]) => `${tool}: ${count}`).join(', '),
+          Object.entries(severityCounts).filter(([_, count]) => count > 0)
+                .map(([sev, count]) => `${sev}: ${count}`).join(', ')
+        ].filter(Boolean).join(' | ');
+        
+        $filterStatus.text(`Showing ${filterDetails}`);
+        $filterStatus.removeClass('hidden');
+      } else {
+        $filterStatus.addClass('hidden');
+      }
+    };
+    
+    // Use debounce pattern from UtilityService
+    let searchTimeout;
+    $searchInput.on('input', function() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(applyFilters, 300);
+    });
+    
+    $toolFilter.on('change', applyFilters);
+    $severityFilter.on('change', applyFilters);
+    $fileFilter.on('change', applyFilters);
+  }
+  
+  function setupExpandButtons() {
+    $('.expand-btn').on('click', function() {
+      const $details = $(this).closest('div').next().find('.issue-details');
+      $details.toggleClass('hidden');
+      $(this).text($details.hasClass('hidden') ? 'Expand' : 'Collapse');
+    });
+  }
+  
+  function setupRefreshButton() {
+    $('#refreshAnalysis').on('click', function() {
+      const $btn = $(this);
+      $btn.prop('disabled', true);
+      $btn.html(`
+        <svg class="animate-spin w-3 h-3 inline mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>Analyzing...`);
+      window.location.reload();
+    });
+  }
+  
+  function setupAiAnalysis() {
+    const $aiAnalyzeBtn = $('#aiAnalyzeBtn');
+    const $aiResponse = $('#aiResponse');
+    const $aiContent = $('#aiContent');
+    const $closeAiResponse = $('#closeAiResponse');
+    
+    $aiAnalyzeBtn.on('click', function() {
+      const aiModel = $('#aiModel').val() || 'claude-3-opus-20240229';
+      
+      // Button loading state - Similar to UIController loading indicator
+      const originalText = $aiAnalyzeBtn.text();
+      $aiAnalyzeBtn.prop('disabled', true);
+      $aiAnalyzeBtn.text('Analyzing...');
+      
+      // Collect visible issues for analysis - Filter based on current state
+      const issueData = $('#issueList > div:visible').map(function() {
+        const $issue = $(this);
+        return {
+          type: $issue.find('.font-bold').text() || 'Unknown',
+          text: $issue.find('.text-gray-600').text() || '',
+          severity: $issue.data('severity') || 'unknown',
+          tool: $issue.data('tool') || 'unknown',
+          file: $issue.data('file') || 'unknown',
+          code: $issue.find('code').text() || ''
+        };
+      }).get();
+      
+      if (issueData.length === 0) {
+        // Show error toast - Similar to UIController.showToast method
+        alert('No issues found to analyze');
+        $aiAnalyzeBtn.prop('disabled', false);
+        $aiAnalyzeBtn.text(originalText);
+        return;
+      }
+      
+      // Call API for analysis - Uses ApiService pattern
+      $.ajax({
+        url: '/api/analyze-security',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          issues: issueData,
+          model: aiModel
+        })
+      })
+      .done(function(analysis) {
+        $aiContent.html(analysis.response.replace(/\n/g, '<br>'));
+        $aiResponse.removeClass('hidden');
+      })
+      .fail(function(jqXHR) {
+        // Error handling - Similar to UtilityService.logError
+        let errorMsg = jqXHR.responseJSON?.error || 'Analysis failed';
+        if (errorMsg.includes('quota')) {
+          errorMsg = 'API quota exceeded. Please try again later or use a different model.';
+        } else if (errorMsg.includes('rate limit')) {
+          errorMsg = 'Too many requests. Please wait a moment and try again.';
+        }
+        
+        $aiContent.text('Error: ' + errorMsg);
+        $aiResponse.removeClass('hidden');
+      })
+      .always(function() {
+        // Reset button state
+        $aiAnalyzeBtn.prop('disabled', false);
+        $aiAnalyzeBtn.text(originalText);
+      });
+    });
+    
+    $closeAiResponse.on('click', function() {
+      $aiResponse.addClass('hidden');
+    });
+  }
+});
+</script>
 {% endblock %}

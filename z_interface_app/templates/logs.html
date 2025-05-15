@@ -92,6 +92,168 @@
   </div>
 </div>
 {% block extra_scripts %}
+<script>
+/**
+ * LogsViewFeature - Manages log viewing functionality
+ * Follows FeatureManager pattern in dashboard.js
+ */
+class LogsViewFeature {
+  constructor(dashboard) {
+    this.dashboard = dashboard;
+    this.refreshTimer = null;
+    this.logContentCache = {};
+    
+    this.selectors = {
+      refreshButton: '#refreshLogs',
+      refreshInterval: '#refreshInterval',
+      logLevel: '#logLevel',
+      copyButtons: '.copy-logs-btn',
+      logContainers: '[data-logs-type]'
+    };
+  }
 
+  init() {
+    this.cacheLogContents();
+    this.setupEventListeners();
+    this.initAutoRefresh();
+  }
+
+  cacheLogContents() {
+    $(this.selectors.logContainers).each((i, container) => {
+      const $container = $(container);
+      const type = $container.data('logs-type');
+      this.logContentCache[type] = $container.find('pre code').text();
+    });
+  }
+
+  setupEventListeners() {
+    $(this.selectors.refreshButton).on('click', () => this.refreshLogs());
+    $(this.selectors.refreshInterval).on('change', e => this.updateRefreshInterval($(e.target).val()));
+    $(this.selectors.logLevel).on('change', e => this.filterLogs($(e.target).val()));
+    $(this.selectors.copyButtons).on('click', e => this.copyLogs($(e.currentTarget).data('target')));
+    $(document).on('visibilitychange', () => this.handleVisibilityChange());
+  }
+
+  initAutoRefresh() {
+    const interval = parseInt($(this.selectors.refreshInterval).val(), 10);
+    if (interval > 0) {
+      this.startAutoRefresh(interval);
+    }
+  }
+
+  startAutoRefresh(interval) {
+    this.stopAutoRefresh();
+    if (interval > 0) {
+      this.refreshTimer = setInterval(() => this.refreshLogs(), interval);
+    }
+  }
+
+  stopAutoRefresh() {
+    if (this.refreshTimer) {
+      clearInterval(this.refreshTimer);
+      this.refreshTimer = null;
+    }
+  }
+
+  updateRefreshInterval(interval) {
+    this.startAutoRefresh(parseInt(interval, 10));
+  }
+
+  handleVisibilityChange() {
+    if (document.hidden) {
+      this.stopAutoRefresh();
+    } else {
+      const interval = parseInt($(this.selectors.refreshInterval).val(), 10);
+      this.startAutoRefresh(interval);
+    }
+  }
+
+  filterLogs(level) {
+    level = level.toLowerCase();
+    
+    $(this.selectors.logContainers).each((i, container) => {
+      const $container = $(container);
+      const type = $container.data('logs-type');
+      const $code = $container.find('pre code');
+      
+      if (level === 'all') {
+        $code.text(this.logContentCache[type] || '');
+      } else {
+        const lines = this.logContentCache[type].split('\n');
+        const filtered = lines.filter(line => line.toLowerCase().includes(level));
+        $code.text(filtered.join('\n'));
+      }
+    });
+  }
+
+  refreshLogs() {
+    $.ajax({
+      url: window.location.href,
+      method: 'GET',
+      cache: false
+    })
+    .done(html => {
+      const $parsedHtml = $(html);
+      
+      $(this.selectors.logContainers).each((i, container) => {
+        const $container = $(container);
+        const type = $container.data('logs-type');
+        const selector = `#${$container.attr('id')} pre code`;
+        
+        // Update cache with new content
+        this.logContentCache[type] = $parsedHtml.find(selector).text();
+        
+        // Apply current filter
+        this.filterLogs($(this.selectors.logLevel).val());
+      });
+    })
+    .fail(error => {
+      console.error('Error refreshing logs:', error);
+      if (this.dashboard.utilityService) {
+        this.dashboard.utilityService.logError({
+          message: 'Failed to refresh logs',
+          error
+        });
+      }
+    });
+  }
+
+  copyLogs(targetId) {
+    const text = $(`#${targetId} pre code`).text();
+    
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        const $notification = $(`#${targetId} .copy-notification`);
+        $notification.removeClass('hidden');
+        setTimeout(() => $notification.addClass('hidden'), 2000);
+      })
+      .catch(err => {
+        console.error('Failed to copy logs:', err);
+        if (this.dashboard.utilityService) {
+          this.dashboard.utilityService.logError({
+            message: 'Failed to copy logs to clipboard',
+            error: err
+          });
+        }
+      });
+  }
+}
+
+// Initialize when DOM is ready - Matches Dashboard initialization pattern
+$(document).ready(function() {
+  // Create a minimal dashboard instance for the LogsViewFeature
+  const dashboardConfig = {
+    utilityService: {
+      logError: function(data) {
+        console.error('Error:', data.message, data.error);
+      }
+    }
+  };
+  
+  // Initialize logs feature
+  window.logsFeature = new LogsViewFeature(dashboardConfig);
+  window.logsFeature.init();
+});
+</script>
 {% endblock %}
 {% endblock %}

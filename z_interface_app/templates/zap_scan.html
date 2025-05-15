@@ -439,7 +439,430 @@
   </aside>
 </div>
 
-
+<script>
+// ZapScan integration - Structure matches ZapScan class in dashboard.js
+$(document).ready(function() {
+  // Use dashboard.js Feature Manager integration if available
+  if (typeof App !== 'undefined' && App.Features && App.Features.zapScan) {
+    App.Features.zapScan.init();
+  } else {
+    // Fallback implementation
+    const zapScan = {
+      pollingActive: false,
+      pollingErrorCount: 0,
+      scanStartTimestamp: null,
+      durationInterval: null,
+      filterTimeout: null,
+      
+      init: function() {
+        this.updateTargetUrl();
+        this.setupEventListeners();
+        this.initializeData();
+        this.appendToLog('ZAP Scanner interface ready. Click "Start Scan" to begin security assessment.');
+      },
+      
+      setupEventListeners: function() {
+        // Main control buttons
+        $('#startScan').on('click', this.startScan.bind(this));
+        $('#stopScan').on('click', this.stopScan.bind(this));
+        $('#clearLog').on('click', () => $('#progressLog').text(''));
+        
+        // Filter elements
+        $('#searchIssues').on('input', () => {
+          clearTimeout(this.filterTimeout);
+          this.filterTimeout = setTimeout(this.applyFilters.bind(this), 300);
+        });
+        $('#riskFilter, #confidenceFilter, #codeFilter').on('change', this.applyFilters.bind(this));
+        
+        // Stats toggle
+        $('#toggleStats').on('click', () => {
+          $('#statsContent').slideToggle(200, function() {
+            const isVisible = $(this).is(':visible');
+            $('#toggleStatsText').text(isVisible ? 'Collapse' : 'Expand');
+            $('#toggleStatsIcon').html(isVisible ? 
+              '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />' : 
+              '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />');
+          });
+        });
+        
+        // Expand buttons for alert details
+        $('.expand-btn').on('click', function() {
+          const $details = $(this).closest('div').next().find('.alert-details');
+          $details.toggleClass('hidden');
+          $(this).text($details.hasClass('hidden') ? 'Expand' : 'Collapse');
+        });
+      },
+      
+      updateTargetUrl: function() {
+        const urlParts = window.location.pathname.split('/');
+        const model = urlParts[urlParts.length - 2] || '';
+        const appNum = parseInt(urlParts[urlParts.length - 1]) || 1;
+        const port = this.calculatePort(model, appNum);
+        $('#targetUrl').text(`http://localhost:${port}`);
+      },
+      
+      calculatePort: function(model, appNum) {
+        // Constants matching those in PortManager
+        const BASE_FRONTEND_PORT = 5501;
+        const PORTS_PER_APP = 2;
+        const BUFFER_PORTS = 20;
+        const APPS_PER_MODEL = 30;
+        const TOTAL_PORTS_PER_MODEL = APPS_PER_MODEL * PORTS_PER_APP + BUFFER_PORTS;
+        
+        // AI_MODELS array for model indexing
+        const AI_MODELS = ["Llama", "Mistral", "DeepSeek", "GPT4o", "Claude", "Gemini", "Grok", "R1", "O3"];
+        
+        let modelIdx = AI_MODELS.indexOf(model);
+        if (modelIdx === -1) {
+          console.warn(`Model "${model}" not found in AI_MODELS list. Using default index 0.`);
+          modelIdx = 0;
+        }
+        
+        const frontendPortRangeStart = BASE_FRONTEND_PORT + (modelIdx * TOTAL_PORTS_PER_MODEL);
+        return frontendPortRangeStart + ((appNum - 1) * PORTS_PER_APP);
+      },
+      
+      initializeData: function() {
+        // Initialize counters and statistics
+        this.updateCodeCounter();
+        this.initVulnerabilityChart();
+        
+        // Set estimated values if this is a completed scan
+        if ($('#scanStatus').text() === 'Complete') {
+          if ($('#urlsDiscovered').text() === '-') $('#urlsDiscovered').text('50+');
+          if ($('#requestsSent').text() === '-') $('#requestsSent').text('2000+');
+          if ($('#spiderTime').text() === '-') $('#spiderTime').text('~1m 30s');
+          if ($('#passiveScanTime').text() === '-') $('#passiveScanTime').text('~2m 15s');
+          if ($('#activeScanTime').text() === '-') $('#activeScanTime').text('~10m');
+          if ($('#totalDuration').text() === '-') {
+            const durationText = $('#scanDuration').text();
+            $('#totalDuration').text(durationText !== '-' ? durationText : '~15m');
+          }
+        }
+      },
+      
+      updateCodeCounter: function() {
+        let withCodeCount = 0;
+        $('.alert-item').each(function() {
+          if ($(this).data('has-code')) withCodeCount++;
+        });
+        $('#alertsWithCode').text(withCodeCount);
+      },
+      
+      initVulnerabilityChart: function() {
+        if (typeof Chart === 'undefined' || !document.getElementById('vulnerabilityChart')) return;
+        
+        const highCount = parseInt($('#highCount').text()) || 0;
+        const mediumCount = parseInt($('#mediumCount').text()) || 0;
+        const lowCount = parseInt($('#lowCount').text()) || 0;
+        const infoCount = parseInt($('#infoCount').text()) || 0;
+        
+        new Chart(document.getElementById('vulnerabilityChart'), {
+          type: 'bar',
+          data: {
+            labels: ['High', 'Medium', 'Low', 'Info'],
+            datasets: [{
+              label: 'Vulnerabilities',
+              data: [highCount, mediumCount, lowCount, infoCount],
+              backgroundColor: ['rgba(220, 38, 38, 0.7)', 'rgba(252, 211, 77, 0.7)', 'rgba(59, 130, 246, 0.7)', 'rgba(156, 163, 175, 0.7)'],
+              borderColor: ['rgba(185, 28, 28, 1)', 'rgba(217, 119, 6, 1)', 'rgba(37, 99, 235, 1)', 'rgba(107, 114, 128, 1)'],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+            plugins: { legend: { display: false } }
+          }
+        });
+      },
+      
+      applyFilters: function() {
+        const searchTerm = $('#searchIssues').val().toLowerCase();
+        const selectedRisk = $('#riskFilter').val();
+        const selectedConfidence = $('#confidenceFilter').val();
+        const codeFilter = $('#codeFilter').val();
+        
+        let visibleCount = 0;
+        let withCodeCount = 0;
+        
+        $('.alert-item').each(function() {
+          const $alert = $(this);
+          const risk = $alert.data('risk');
+          const confidence = $alert.data('confidence');
+          const hasCode = $alert.data('has-code');
+          const searchText = $alert.data('searchable').toLowerCase();
+          
+          const riskMatch = selectedRisk === 'all' || risk === selectedRisk;
+          const confidenceMatch = selectedConfidence === 'all' || confidence === selectedConfidence;
+          const searchMatch = !searchTerm || searchText.includes(searchTerm);
+          const codeMatch = codeFilter === 'all' || (codeFilter === 'hasCode' && hasCode) || (codeFilter === 'noCode' && !hasCode);
+          
+          const isVisible = riskMatch && confidenceMatch && searchMatch && codeMatch;
+          $alert.toggle(isVisible);
+          
+          if (isVisible) {
+            visibleCount++;
+            if (hasCode) withCodeCount++;
+          }
+        });
+        
+        $('#alertsWithCode').text(withCodeCount);
+      },
+      
+      appendToLog: function(message) {
+        const timestamp = new Date().toLocaleTimeString();
+        const logElem = $('#progressLog');
+        logElem.append(`[${timestamp}] ${message}\n`);
+        logElem.scrollTop(logElem[0].scrollHeight);
+      },
+      
+      formatDuration: function(totalSeconds) {
+        if (!totalSeconds) return "-";
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        
+        if (hours > 0) return `${hours}h ${minutes}m ${seconds}s`;
+        else if (minutes > 0) return `${minutes}m ${seconds}s`;
+        else return `${seconds}s`;
+      },
+      
+      updateDuration: function() {
+        if (!this.scanStartTimestamp) return;
+        const durationSeconds = Math.floor((new Date() - this.scanStartTimestamp) / 1000);
+        $('#scanDuration').text(this.formatDuration(durationSeconds));
+      },
+      
+      startScan: function() {
+        // Get model and app from URL
+        const urlParts = window.location.pathname.split('/');
+        const model = urlParts[urlParts.length - 2] || '';
+        const appNum = urlParts[urlParts.length - 1] || '';
+        
+        // Update UI state
+        $('#startScan').prop('disabled', true);
+        $('#stopScan').removeClass('hidden');
+        $('#scanProgress').removeClass('hidden');
+        $('#scanStatus').text('Starting...');
+        
+        // Reset progress elements
+        $('#progressPercentage').text('0%');
+        $('#progressBar').css('width', '0%');
+        $('#spiderProgress, #passiveProgress, #activeProgress').text('0%');
+        $('#spiderProgressBar, #passiveProgressBar, #activeProgressBar').css('width', '0%');
+        
+        // Reset counters
+        $('#highCount, #mediumCount, #lowCount, #infoCount, #totalAlerts, #alertsWithCode').text('0');
+        
+        // Track timing
+        this.scanStartTimestamp = new Date();
+        const startTimeStr = this.scanStartTimestamp.toLocaleString();
+        $('#scanStartTime').text(startTimeStr);
+        $('#scanDuration').text('0s');
+        
+        if (this.durationInterval) clearInterval(this.durationInterval);
+        this.durationInterval = setInterval(this.updateDuration.bind(this), 1000);
+        
+        this.appendToLog(`Starting comprehensive scan of target: http://localhost:${this.calculatePort(model, appNum)}`);
+        
+        // Send request to server
+        $.ajax({
+          url: `/zap/scan/${model}/${appNum}`,
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({})
+        })
+        .done(() => {
+          this.appendToLog('Scan initiated successfully. Starting spider phase...');
+          this.pollProgress(model, appNum);
+        })
+        .fail((jqXHR) => {
+          const errorMsg = jqXHR.responseJSON?.error || `HTTP ${jqXHR.status}: ${jqXHR.statusText}`;
+          this.appendToLog(`Error: ${errorMsg}`);
+          
+          // Reset UI
+          $('#startScan').prop('disabled', false);
+          $('#stopScan').addClass('hidden');
+          $('#scanStatus').text('Error');
+          
+          if (this.durationInterval) {
+            clearInterval(this.durationInterval);
+            this.durationInterval = null;
+          }
+        });
+      },
+      
+      stopScan: function() {
+        const urlParts = window.location.pathname.split('/');
+        const model = urlParts[urlParts.length - 2] || '';
+        const appNum = urlParts[urlParts.length - 1] || '';
+        
+        this.appendToLog('Stopping scan...');
+        
+        $.ajax({
+          url: `/zap/scan/${model}/${appNum}/stop`,
+          method: 'POST'
+        })
+        .done(() => {
+          this.pollingActive = false;
+          $('#stopScan').addClass('hidden');
+          $('#startScan').prop('disabled', false);
+          $('#scanStatus').text('Stopped');
+          
+          if (this.durationInterval) {
+            clearInterval(this.durationInterval);
+            this.durationInterval = null;
+          }
+          
+          this.appendToLog('Scan stopped successfully');
+        })
+        .fail((jqXHR) => {
+          const errorMsg = jqXHR.responseJSON?.error || `HTTP ${jqXHR.status}: ${jqXHR.statusText}`;
+          this.appendToLog(`Error stopping scan: ${errorMsg}`);
+        });
+      },
+      
+      pollProgress: function(model, appNum) {
+        if (this.pollingActive) return;
+        this.pollingActive = true;
+        this.pollingErrorCount = 0;
+        
+        // Phase timing tracking
+        const phaseStartTimes = { spider: null, passive: null, active: null, code: null };
+        
+        const updateUI = () => {
+          $.ajax({
+            url: `/zap/scan/${model}/${appNum}/status`,
+            method: 'GET'
+          })
+          .done((data) => {
+            // Update progress
+            const progress = Math.min(Math.max(data.progress || 0, 0), 100);
+            $('#progressBar').css('width', `${progress}%`);
+            $('#progressPercentage').text(`${progress}%`);
+            
+            // Update detailed progress
+            if (data.spider_progress !== undefined) {
+              const spiderProgress = Math.min(Math.max(data.spider_progress || 0, 0), 100);
+              const passiveProgress = Math.min(Math.max(data.passive_progress || 0, 0), 100);
+              const activeProgress = Math.min(Math.max(data.active_progress || 0, 0), 100);
+              
+              $('#spiderProgress').text(`${spiderProgress}%`);
+              $('#passiveProgress').text(`${passiveProgress}%`);
+              $('#activeProgress').text(`${activeProgress}%`);
+              
+              $('#spiderProgressBar').css('width', `${spiderProgress}%`);
+              $('#passiveProgressBar').css('width', `${passiveProgress}%`);
+              $('#activeProgressBar').css('width', `${activeProgress}%`);
+            }
+            
+            // Update status
+            $('#scanStatus').text(data.status || 'Unknown');
+            
+            // Update counts
+            $('#highCount').text(data.high_count || 0);
+            $('#mediumCount').text(data.medium_count || 0);
+            $('#lowCount').text(data.low_count || 0);
+            $('#infoCount').text(data.info_count || 0);
+            
+            const total = (parseInt(data.high_count) || 0) + 
+                          (parseInt(data.medium_count) || 0) + 
+                          (parseInt(data.low_count) || 0) + 
+                          (parseInt(data.info_count) || 0);
+            $('#totalAlerts').text(total);
+            
+            // Track phase timings
+            const prevStatus = $('#scanStatus').data('prev-status');
+            if (data.status !== prevStatus) {
+              this.appendToLog(`Status changed to: ${data.status}`);
+              $('#scanStatus').data('prev-status', data.status);
+              
+              // Process phase transition
+              const now = new Date();
+              this.handlePhaseTransition(prevStatus, data.status, phaseStartTimes, now);
+            }
+            
+            // Check completion
+            if (data.status === 'Complete') {
+              this.pollingActive = false;
+              $('#stopScan').addClass('hidden');
+              $('#startScan').prop('disabled', false);
+              $('#lastScanTime').text(new Date().toLocaleString());
+              
+              if (this.durationInterval) {
+                clearInterval(this.durationInterval);
+                this.durationInterval = null;
+              }
+              
+              this.appendToLog('Scan completed successfully. Reloading page to show results...');
+              setTimeout(() => window.location.reload(), 2000);
+              return;
+            }
+            
+            // Continue polling
+            if (this.pollingActive) setTimeout(updateUI, 2000);
+          })
+          .fail((jqXHR) => {
+            this.appendToLog(`Error updating status: ${jqXHR.responseJSON?.error || jqXHR.statusText}`);
+            this.pollingErrorCount++;
+            
+            if (this.pollingErrorCount >= 3) {
+              this.pollingActive = false;
+              this.appendToLog('Stopped polling due to repeated errors');
+              return;
+            }
+            
+            if (this.pollingActive) setTimeout(updateUI, 5000);
+          });
+        };
+        
+        updateUI();
+      },
+      
+      handlePhaseTransition: function(prevStatus, newStatus, phaseStartTimes, now) {
+        // End timing for previous phase if applicable
+        if (prevStatus) {
+          if (prevStatus.includes('Spider') && phaseStartTimes.spider) {
+            const spiderTime = Math.round((now - phaseStartTimes.spider) / 1000);
+            $('#spiderTime').text(this.formatDuration(spiderTime));
+            this.appendToLog(`Spider phase completed in ${this.formatDuration(spiderTime)}`);
+          } else if (prevStatus.includes('Passive') && phaseStartTimes.passive) {
+            const passiveTime = Math.round((now - phaseStartTimes.passive) / 1000);
+            $('#passiveScanTime').text(this.formatDuration(passiveTime));
+            this.appendToLog(`Passive scan phase completed in ${this.formatDuration(passiveTime)}`);
+          } else if (prevStatus.includes('Active') && phaseStartTimes.active) {
+            const activeTime = Math.round((now - phaseStartTimes.active) / 1000);
+            $('#activeScanTime').text(this.formatDuration(activeTime));
+            this.appendToLog(`Active scan phase completed in ${this.formatDuration(activeTime)}`);
+          }
+        }
+        
+        // Start timing for new phase
+        if (newStatus.includes('Spider')) {
+          phaseStartTimes.spider = now;
+          this.appendToLog('Spider phase started - discovering web content...');
+          $('#urlsDiscovered').text('Discovering...');
+        } else if (newStatus.includes('Passive')) {
+          phaseStartTimes.passive = now;
+          this.appendToLog('Passive scanning in progress - analyzing responses...');
+        } else if (newStatus.includes('Active')) {
+          phaseStartTimes.active = now;
+          this.appendToLog('Active scanning in progress - testing for vulnerabilities...');
+          $('#requestsSent').text('~1000+');
+        } else if (newStatus.includes('Code')) {
+          phaseStartTimes.code = now;
+          this.appendToLog('Code analysis in progress - identifying affected source code...');
+        }
+      }
+    };
+    
+    // Initialize ZAP Scan
+    zapScan.init();
+  }
+});
+</script>
 
 <style>
 .code-block { font-family: 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; tab-size: 4; }
