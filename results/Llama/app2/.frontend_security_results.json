@@ -1,0 +1,186 @@
+{
+  "issues": [
+    {
+      "filename": "C:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\models\\Llama\\app2\\frontend\\src\\App.jsx",
+      "line_number": 1,
+      "issue_text": "[no-unused-vars] 'React' is defined but never used.",
+      "severity": "HIGH",
+      "confidence": "MEDIUM",
+      "issue_type": "no-unused-vars",
+      "line_range": [
+        1
+      ],
+      "code": "N/A",
+      "tool": "eslint",
+      "fix_suggestion": null
+    },
+    {
+      "filename": "C:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\models\\Llama\\app2\\frontend\\src\\App.jsx",
+      "line_number": 5,
+      "issue_text": "[no-unused-vars] 'App' is defined but never used.",
+      "severity": "HIGH",
+      "confidence": "MEDIUM",
+      "issue_type": "no-unused-vars",
+      "line_range": [
+        5
+      ],
+      "code": "N/A",
+      "tool": "eslint",
+      "fix_suggestion": null
+    },
+    {
+      "filename": "C:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\models\\Llama\\app2\\frontend\\src\\App.jsx",
+      "line_number": 7,
+      "issue_text": "[no-unused-vars] 'onlineStatus' is assigned a value but never used.",
+      "severity": "HIGH",
+      "confidence": "MEDIUM",
+      "issue_type": "no-unused-vars",
+      "line_range": [
+        7
+      ],
+      "code": "N/A",
+      "tool": "eslint",
+      "fix_suggestion": null
+    },
+    {
+      "filename": "package-lock.json",
+      "line_number": 0,
+      "issue_text": "N/A (Package: @vitejs/plugin-react, Version(s): 2.0.0-alpha.0 - 3.0.0-beta.0)",
+      "severity": "MEDIUM",
+      "confidence": "HIGH",
+      "issue_type": "dependency_vuln_@vitejs/plugin-react",
+      "line_range": [
+        0
+      ],
+      "code": "@vitejs/plugin-react@2.0.0-alpha.0 - 3.0.0-beta.0",
+      "tool": "npm-audit",
+      "fix_suggestion": "Update @vitejs/plugin-react to version 4.4.1"
+    },
+    {
+      "filename": "package-lock.json",
+      "line_number": 0,
+      "issue_text": "esbuild enables any website to send any requests to the development server and read the response (Package: esbuild, Version(s): <=0.24.2)",
+      "severity": "MEDIUM",
+      "confidence": "HIGH",
+      "issue_type": "dependency_vuln_esbuild",
+      "line_range": [
+        0
+      ],
+      "code": "esbuild@<=0.24.2",
+      "tool": "npm-audit",
+      "fix_suggestion": "Update esbuild to version 6.3.5"
+    },
+    {
+      "filename": "package-lock.json",
+      "line_number": 0,
+      "issue_text": "Websites were able to send any requests to the development server and read the response in vite (Package: vite, Version(s): <=6.1.6)",
+      "severity": "MEDIUM",
+      "confidence": "HIGH",
+      "issue_type": "dependency_vuln_vite",
+      "line_range": [
+        0
+      ],
+      "code": "vite@<=6.1.6",
+      "tool": "npm-audit",
+      "fix_suggestion": "Update vite to version 6.3.5"
+    },
+    {
+      "filename": "src\\App.jsx",
+      "line_number": 6,
+      "issue_text": "[] Missing \"use strict\" statement.",
+      "severity": "LOW",
+      "confidence": "MEDIUM",
+      "issue_type": "jshint_unknown",
+      "line_range": [
+        6
+      ],
+      "code": "N/A (Check file)",
+      "tool": "jshint",
+      "fix_suggestion": "Review code."
+    },
+    {
+      "filename": "src\\App.jsx",
+      "line_number": 77,
+      "issue_text": "[] Unclosed regular expression.",
+      "severity": "LOW",
+      "confidence": "MEDIUM",
+      "issue_type": "jshint_unknown",
+      "line_range": [
+        77
+      ],
+      "code": "N/A (Check file)",
+      "tool": "jshint",
+      "fix_suggestion": "Review code."
+    },
+    {
+      "filename": "src\\App.jsx",
+      "line_number": 77,
+      "issue_text": "[] Unrecoverable syntax error. (76% scanned).",
+      "severity": "LOW",
+      "confidence": "MEDIUM",
+      "issue_type": "jshint_unknown",
+      "line_range": [
+        77
+      ],
+      "code": "N/A (Check file)",
+      "tool": "jshint",
+      "fix_suggestion": "Review code."
+    },
+    {
+      "filename": "vite.config.js",
+      "line_number": 1,
+      "issue_text": "[] Missing semicolon.",
+      "severity": "LOW",
+      "confidence": "MEDIUM",
+      "issue_type": "jshint_unknown",
+      "line_range": [
+        1
+      ],
+      "code": "N/A (Check file)",
+      "tool": "jshint",
+      "fix_suggestion": "Review code."
+    },
+    {
+      "filename": "vite.config.js",
+      "line_number": 2,
+      "issue_text": "[] Missing semicolon.",
+      "severity": "LOW",
+      "confidence": "MEDIUM",
+      "issue_type": "jshint_unknown",
+      "line_range": [
+        2
+      ],
+      "code": "N/A (Check file)",
+      "tool": "jshint",
+      "fix_suggestion": "Review code."
+    },
+    {
+      "filename": "vite.config.js",
+      "line_number": 18,
+      "issue_text": "[] Missing semicolon.",
+      "severity": "LOW",
+      "confidence": "MEDIUM",
+      "issue_type": "jshint_unknown",
+      "line_range": [
+        18
+      ],
+      "code": "N/A (Check file)",
+      "tool": "jshint",
+      "fix_suggestion": "Review code."
+    }
+  ],
+  "tool_status": {
+    "jshint": "\u26a0\ufe0f Found 6 issues (Errors reported)",
+    "eslint": "\u26a0\ufe0f Found 3 issues (Errors reported)",
+    "npm-audit": "\u26a0\ufe0f Found 3 issues",
+    "snyk": "\u2705 No issues found"
+  },
+  "tool_outputs": {
+    "jshint": "STDOUT:\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<checkstyle version=\"4.3\">\n\t<file name=\"vite.config.js\">\n\t\t<error line=\"1\" column=\"36\" severity=\"warning\" message=\"Missing semicolon.\" source=\"jshint.W033\" />\n\t\t<error line=\"2\" column=\"41\" severity=\"warning\" message=\"Missing semicolon.\" source=\"jshint.W033\" />\n\t\t<error line=\"18\" column=\"3\" severity=\"warning\" message=\"Missing semicolon.\" source=\"jshint.W033\" />\n\t</file>\n\t<file name=\"src\\App.jsx\">\n\t\t<error line=\"6\" column=\"3\" severity=\"error\" message=\"Missing &quot;use strict&quot; statement.\" source=\"jshint.E007\" />\n\t\t<error line=\"77\" column=\"28\" severity=\"error\" message=\"Unclosed regular expression.\" source=\"jshint.E015\" />\n\t\t<error line=\"77\" column=\"28\" severity=\"error\" message=\"Unrecoverable syntax error. (76% scanned).\" source=\"jshint.E041\" />\n\t</file>\n</checkstyle>\n\nSTDERR:\n",
+    "eslint": "STDOUT:\n[{\"filePath\":\"C:\\\\Users\\\\grabowmar\\\\Desktop\\\\ThesisAppsSvelte\\\\models\\\\Llama\\\\app2\\\\frontend\\\\src\\\\App.jsx\",\"messages\":[{\"ruleId\":\"no-unused-vars\",\"severity\":2,\"message\":\"'React' is defined but never used.\",\"line\":1,\"column\":8,\"nodeType\":\"Identifier\",\"messageId\":\"unusedVar\",\"endLine\":1,\"endColumn\":13},{\"ruleId\":\"no-unused-vars\",\"severity\":2,\"message\":\"'App' is defined but never used.\",\"line\":5,\"column\":10,\"nodeType\":\"Identifier\",\"messageId\":\"unusedVar\",\"endLine\":5,\"endColumn\":13},{\"ruleId\":\"no-unused-vars\",\"severity\":2,\"message\":\"'onlineStatus' is assigned a value but never used.\",\"line\":7,\"column\":10,\"nodeType\":\"Identifier\",\"messageId\":\"unusedVar\",\"endLine\":7,\"endColumn\":22}],\"suppressedMessages\":[],\"errorCount\":3,\"fatalErrorCount\":0,\"warningCount\":0,\"fixableErrorCount\":0,\"fixableWarningCount\":0,\"source\":\"import React, { useState, useEffect } from 'react';\\r\\nimport ReactDOM from 'react-dom/client';\\r\\nimport axios from 'axios';\\r\\n\\r\\nfunction App() {\\r\\n  const [username, setUsername] = useState('');\\r\\n  const [onlineStatus, setOnlineStatus] = useState(false);\\r\\n  const [chatRoom, setChatRoom] = useState('');\\r\\n  const [message, setMessage] = useState('');\\r\\n  const [messages, setMessages] = useState([]);\\r\\n\\r\\n  useEffect(() => {\\r\\n    axios.get('/api/get_chat_rooms')\\r\\n      .then(response => {\\r\\n        console.log(response.data);\\r\\n      })\\r\\n      .catch(error => {\\r\\n        console.error(error);\\r\\n      });\\r\\n  }, []);\\r\\n\\r\\n  const handleLogin = () => {\\r\\n    axios.post('/api/login', { username: username })\\r\\n      .then(response => {\\r\\n        console.log(response.data);\\r\\n        setOnlineStatus(true);\\r\\n      })\\r\\n      .catch(error => {\\r\\n        console.error(error);\\r\\n      });\\r\\n  };\\r\\n\\r\\n  const handleLogout = () => {\\r\\n    axios.post('/api/logout', { username: username })\\r\\n      .then(response => {\\r\\n        console.log(response.data);\\r\\n        setOnlineStatus(false);\\r\\n      })\\r\\n      .catch(error => {\\r\\n        console.error(error);\\r\\n      });\\r\\n  };\\r\\n\\r\\n  const handleSendMessage = () => {\\r\\n    axios.post('/api/send_message', { sender_username: username, receiver_username: chatRoom, message: message })\\r\\n      .then(response => {\\r\\n        console.log(response.data);\\r\\n      })\\r\\n      .catch(error => {\\r\\n        console.error(error);\\r\\n      });\\r\\n  };\\r\\n\\r\\n  const handleGetMessages = () => {\\r\\n    axios.post('/api/get_messages', { sender_username: username, receiver_username: chatRoom })\\r\\n      .then(response => {\\r\\n        console.log(response.data);\\r\\n        setMessages(response.data);\\r\\n      })\\r\\n      .catch(error => {\\r\\n        console.error(error);\\r\\n      });\\r\\n  };\\r\\n\\r\\n  const handleCreateChatRoom = () => {\\r\\n    axios.post('/api/create_chat_room', { room_name: chatRoom })\\r\\n      .then(response => {\\r\\n        console.log(response.data);\\r\\n      })\\r\\n      .catch(error => {\\r\\n        console.error(error);\\r\\n      });\\r\\n  };\\r\\n\\r\\n  return (\\r\\n    <div>\\r\\n      <h1>Chat Application</h1>\\r\\n      <input type=\\\"text\\\" value={username} onChange={(e) => setUsername(e.target.value)} placeholder=\\\"Username\\\" />\\r\\n      <button onClick={handleLogin}>Login</button>\\r\\n      <button onClick={handleLogout}>Logout</button>\\r\\n      <input type=\\\"text\\\" value={chatRoom} onChange={(e) => setChatRoom(e.target.value)} placeholder=\\\"Chat Room\\\" />\\r\\n      <input type=\\\"text\\\" value={message} onChange={(e) => setMessage(e.target.value)} placeholder=\\\"Message\\\" />\\r\\n      <button onClick={handleSendMessage}>Send Message</button>\\r\\n      <button onClick={handleGetMessages}>Get Messages</button>\\r\\n      <button onClick={handleCreateChatRoom}>Create Chat Room</button>\\r\\n      <ul>\\r\\n        {messages.map((message, index) => (\\r\\n          <li key={index}>{message.sender_username}: {message.message}</li>\\r\\n        ))}\\r\\n      </ul>\\r\\n    </div>\\r\\n  );\\r\\n}\\r\\n\\r\\nconst root = ReactDOM.createRoot(document.getElementById('root'));\\r\\nroot.render(\\r\\n  <React.StrictMode>\\r\\n    <App />\\r\\n  </React.StrictMode>\\r\\n);\\r\\n\",\"usedDeprecatedRules\":[{\"ruleId\":\"no-extra-semi\",\"replacedBy\":[]},{\"ruleId\":\"no-mixed-spaces-and-tabs\",\"replacedBy\":[]}]}]\n\nSTDERR:\n",
+    "npm-audit": "STDOUT:\n{\n  \"auditReportVersion\": 2,\n  \"vulnerabilities\": {\n    \"@vitejs/plugin-react\": {\n      \"name\": \"@vitejs/plugin-react\",\n      \"severity\": \"moderate\",\n      \"isDirect\": true,\n      \"via\": [\n        \"vite\"\n      ],\n      \"effects\": [],\n      \"range\": \"2.0.0-alpha.0 - 3.0.0-beta.0\",\n      \"nodes\": [\n        \"node_modules/@vitejs/plugin-react\"\n      ],\n      \"fixAvailable\": {\n        \"name\": \"@vitejs/plugin-react\",\n        \"version\": \"4.4.1\",\n        \"isSemVerMajor\": true\n      }\n    },\n    \"esbuild\": {\n      \"name\": \"esbuild\",\n      \"severity\": \"moderate\",\n      \"isDirect\": false,\n      \"via\": [\n        {\n          \"source\": 1102341,\n          \"name\": \"esbuild\",\n          \"dependency\": \"esbuild\",\n          \"title\": \"esbuild enables any website to send any requests to the development server and read the response\",\n          \"url\": \"https://github.com/advisories/GHSA-67mh-4wv8-2f99\",\n          \"severity\": \"moderate\",\n          \"cwe\": [\n            \"CWE-346\"\n          ],\n          \"cvss\": {\n            \"score\": 5.3,\n            \"vectorString\": \"CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N\"\n          },\n          \"range\": \"<=0.24.2\"\n        }\n      ],\n      \"effects\": [\n        \"vite\"\n      ],\n      \"range\": \"<=0.24.2\",\n      \"nodes\": [\n        \"node_modules/esbuild\"\n      ],\n      \"fixAvailable\": {\n        \"name\": \"vite\",\n        \"version\": \"6.3.5\",\n        \"isSemVerMajor\": true\n      }\n    },\n    \"vite\": {\n      \"name\": \"vite\",\n      \"severity\": \"moderate\",\n      \"isDirect\": true,\n      \"via\": [\n        {\n          \"source\": 1102436,\n          \"name\": \"vite\",\n          \"dependency\": \"vite\",\n          \"title\": \"Websites were able to send any requests to the development server and read the response in vite\",\n          \"url\": \"https://github.com/advisories/GHSA-vg6x-rcgg-rjx6\",\n          \"severity\": \"moderate\",\n          \"cwe\": [\n            \"CWE-346\",\n            \"CWE-350\",\n            \"CWE-1385\"\n          ],\n          \"cvss\": {\n            \"score\": 6.5,\n            \"vectorString\": \"CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:N/A:N\"\n          },\n          \"range\": \"<=4.5.5\"\n        },\n        {\n          \"source\": 1103516,\n          \"name\": \"vite\",\n          \"dependency\": \"vite\",\n          \"title\": \"Vite bypasses server.fs.deny when using ?raw??\",\n          \"url\": \"https://github.com/advisories/GHSA-x574-m823-4x7w\",\n          \"severity\": \"moderate\",\n          \"cwe\": [\n            \"CWE-200\",\n            \"CWE-284\"\n          ],\n          \"cvss\": {\n            \"score\": 5.3,\n            \"vectorString\": \"CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N\"\n          },\n          \"range\": \"<4.5.10\"\n        },\n        {\n          \"source\": 1103627,\n          \"name\": \"vite\",\n          \"dependency\": \"vite\",\n          \"title\": \"Vite has a `server.fs.deny` bypassed for `inline` and `raw` with `?import` query\",\n          \"url\": \"https://github.com/advisories/GHSA-4r4m-qw57-chr8\",\n          \"severity\": \"moderate\",\n          \"cwe\": [\n            \"CWE-200\",\n            \"CWE-284\"\n          ],\n          \"cvss\": {\n            \"score\": 5.3,\n            \"vectorString\": \"CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N\"\n          },\n          \"range\": \"<4.5.11\"\n        },\n        {\n          \"source\": 1103883,\n          \"name\": \"vite\",\n          \"dependency\": \"vite\",\n          \"title\": \"Vite has an `server.fs.deny` bypass with an invalid `request-target`\",\n          \"url\": \"https://github.com/advisories/GHSA-356w-63v5-8wf4\",\n          \"severity\": \"moderate\",\n          \"cwe\": [\n            \"CWE-200\"\n          ],\n          \"cvss\": {\n            \"score\": 0,\n            \"vectorString\": null\n          },\n          \"range\": \"<4.5.13\"\n        },\n        {\n          \"source\": 1104172,\n          \"name\": \"vite\",\n          \"dependency\": \"vite\",\n          \"title\": \"Vite's server.fs.deny bypassed with /. for files under project root\",\n          \"url\": \"https://github.com/advisories/GHSA-859w-5945-r5v3\",\n          \"severity\": \"moderate\",\n          \"cwe\": [\n            \"CWE-22\"\n          ],\n          \"cvss\": {\n            \"score\": 0,\n            \"vectorString\": null\n          },\n          \"range\": \"<=4.5.13\"\n        },\n        {\n          \"source\": 1104201,\n          \"name\": \"vite\",\n          \"dependency\": \"vite\",\n          \"title\": \"Vite allows server.fs.deny to be bypassed with .svg or relative paths\",\n          \"url\": \"https://github.com/advisories/GHSA-xcj6-pq6g-qj4x\",\n          \"severity\": \"moderate\",\n          \"cwe\": [\n            \"CWE-200\",\n            \"CWE-284\"\n          ],\n          \"cvss\": {\n            \"score\": 5.3,\n            \"vectorString\": \"CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N\"\n          },\n          \"range\": \"<4.5.12\"\n        },\n        \"esbuild\"\n      ],\n      \"effects\": [\n        \"@vitejs/plugin-react\"\n      ],\n      \"range\": \"<=6.1.6\",\n      \"nodes\": [\n        \"node_modules/vite\"\n      ],\n      \"fixAvailable\": {\n        \"name\": \"vite\",\n        \"version\": \"6.3.5\",\n        \"isSemVerMajor\": true\n      }\n    }\n  },\n  \"metadata\": {\n    \"vulnerabilities\": {\n      \"info\": 0,\n      \"low\": 0,\n      \"moderate\": 3,\n      \"high\": 0,\n      \"critical\": 0,\n      \"total\": 3\n    },\n    \"dependencies\": {\n      \"prod\": 29,\n      \"dev\": 82,\n      \"optional\": 23,\n      \"peer\": 0,\n      \"peerOptional\": 0,\n      \"total\": 110\n    }\n  }\n}\n\nSTDERR:\n",
+    "snyk": "STDOUT:\n\nTesting C:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\models\\Llama\\app2\\frontend...\n\nOrganization:      dump.fakeowski\nPackage manager:   npm\nTarget file:       package-lock.json\nProject name:      chat-app\nOpen source:       no\nProject path:      C:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\models\\Llama\\app2\\frontend\nLicenses:          enabled\n\n\u2714 Tested 28 dependencies for known issues, no vulnerable paths found.\n\nNext steps:\n- Run `snyk monitor` to be notified about new related vulnerabilities.\n- Run `snyk test` as part of your CI/test.\n\n\n\nSTDERR:\n"
+  },
+  "analysis_timestamp": "2025-05-15T23:52:23.056986",
+  "scan_time": "2025-05-15T23:52:23.057984"
+}

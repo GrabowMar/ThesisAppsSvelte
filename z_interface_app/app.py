@@ -1,17 +1,16 @@
+import http
 import logging
 import os
 import time
-import http
+import threading
 from pathlib import Path
 from typing import Optional, Dict, Any, Tuple, Union, List, Set, TypeVar, Type, Callable
-from threading import Lock
 
 from flask import Flask, request, render_template, jsonify, Response, current_app, g
-from werkzeug.exceptions import HTTPException
+from werkzeug.exceptions import BadRequest, HTTPException, NotFound
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-
-# Constants - consider moving to AppConfig
+# Constants
 AJAX_HEADER_NAME = "X-Requested-With"
 AJAX_HEADER_VALUE = "XMLHttpRequest"
 
@@ -22,22 +21,28 @@ try:
 except ImportError:
     HAS_BATCH_ANALYSIS = False
 
+# Import all required modules
 from backend_security_analysis import BackendSecurityAnalyzer
 from frontend_security_analysis import FrontendSecurityAnalyzer
 from gpt4all_analysis import GPT4AllAnalyzer
 from performance_analysis import LocustPerformanceTester
-from zap_scanner import create_scanner
 from logging_service import initialize_logging, create_logger_for_component
-from services import DockerManager, SystemHealthMonitor, ScanManager, PortManager
-from utils import AppConfig, CustomJSONEncoder, stop_zap_scanners
+from services import (
+    DockerManager, SystemHealthMonitor, ScanManager, PortManager,
+    create_scanner as create_zap_scanner
+)
+from utils import (
+    AppConfig, CustomJSONEncoder, AIModel, AI_MODELS, stop_zap_scanners,
+    APIResponse
+)
 from routes import (
     main_bp, api_bp, analysis_bp, performance_bp,
     gpt4all_bp, zap_bp
 )
 
 # Locks for thread safety
-INIT_LOCK = Lock()
-CLEANUP_LOCK = Lock()
+INIT_LOCK = threading.RLock()
+CLEANUP_LOCK = threading.RLock()
 
 # Generic service type for initialization
 ServiceType = TypeVar('ServiceType')
@@ -122,6 +127,20 @@ def register_error_handlers(app: Flask) -> None:
         return generate_error_response(
             app, http.HTTPStatus.INTERNAL_SERVER_ERROR, error_name,
             error_description, error, error_logger
+        )
+
+    @app.errorhandler(BadRequest)
+    def handle_bad_request(error: BadRequest) -> Tuple[Union[Response, str], int]:
+        error_logger.warning(f"Bad request: {request.path} - {error.description}")
+        return generate_error_response(
+            app, http.HTTPStatus.BAD_REQUEST, error.name, error.description, error, error_logger
+        )
+
+    @app.errorhandler(NotFound)
+    def handle_not_found(error: NotFound) -> Tuple[Union[Response, str], int]:
+        error_logger.warning(f"Resource not found: {request.path} - {error.description}")
+        return generate_error_response(
+            app, http.HTTPStatus.NOT_FOUND, error.name, error.description, error, error_logger
         )
 
     @app.errorhandler(Exception)
@@ -231,12 +250,46 @@ def register_request_hooks(app: Flask) -> None:
 
 def initialize_analyzers(app: Flask, base_path: Path, base_dir: Path) -> None:
     """Initialize all analyzers used by the application."""
-    app.backend_security_analyzer = BackendSecurityAnalyzer(base_path)
-    app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
-    app.gpt4all_analyzer = GPT4AllAnalyzer(base_dir)
-    app.performance_tester = LocustPerformanceTester(base_path)
-    app.zap_scanner = create_scanner(base_dir)
-    app.config["ZAP_SCANS"] = {}
+    logger = create_logger_for_component('init.analyzers')
+    
+    try:
+        logger.info("Initializing backend security analyzer")
+        app.backend_security_analyzer = BackendSecurityAnalyzer(base_path)
+    except Exception as e:
+        logger.exception(f"Failed to initialize backend security analyzer: {e}")
+        app.backend_security_analyzer = None
+        
+    try:
+        logger.info("Initializing frontend security analyzer")
+        app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
+    except Exception as e:
+        logger.exception(f"Failed to initialize frontend security analyzer: {e}")
+        app.frontend_security_analyzer = None
+        
+    try:
+        logger.info("Initializing GPT4All analyzer")
+        app.gpt4all_analyzer = GPT4AllAnalyzer(base_dir)
+    except Exception as e:
+        logger.exception(f"Failed to initialize GPT4All analyzer: {e}")
+        app.gpt4all_analyzer = None
+        
+    try:
+        logger.info("Initializing performance tester")
+        app.performance_tester = LocustPerformanceTester(base_path)
+    except Exception as e:
+        logger.exception(f"Failed to initialize performance tester: {e}")
+        app.performance_tester = None
+        
+    try:
+        logger.info("Initializing ZAP scanner")
+        app.zap_scanner = create_zap_scanner(base_dir)
+        app.config["ZAP_SCANS"] = {}
+    except Exception as e:
+        logger.exception(f"Failed to initialize ZAP scanner: {e}")
+        app.zap_scanner = None
+        app.config["ZAP_SCANS"] = {}
+    
+    logger.info("All analyzers initialized")
 
 
 def initialize_service(
@@ -270,7 +323,7 @@ def initialize_service(
 def initialize_services(app: Flask, logger: logging.Logger) -> None:
     """Initialize all services used by the application."""
     # Initialize Docker manager
-    initialize_service(
+    docker_manager = initialize_service(
         app, 
         DockerManager, 
         "docker_manager", 
@@ -284,24 +337,30 @@ def initialize_services(app: Flask, logger: logging.Logger) -> None:
         ScanManager, 
         "", 
         logger,
-        "Batch analysis requiring it may fail."
+        "Scan manager initialization failed. ZAP-related batch tasks may fail."
     )
     
-    # Set the PortManager class
-    app.port_manager = PortManager
+    # Initialize PortManager model index cache
+    try:
+        model_index_map = {model.name: idx for idx, model in enumerate(AI_MODELS)}
+        PortManager.set_model_index_cache(model_index_map)
+        logger.info(f"Initialized PortManager with {len(model_index_map)} model indices")
+    except Exception as e:
+        logger.error(f"Failed to initialize PortManager model index cache: {e}")
 
 
 def register_blueprints(app: Flask) -> None:
     """Register all blueprints for the application."""
-    logger = create_logger_for_component('app')
+    logger = create_logger_for_component('app.blueprints')
 
     # Register main blueprints
     app.register_blueprint(main_bp)
-    app.register_blueprint(api_bp, url_prefix="/api")
+    app.register_blueprint(api_bp)
     app.register_blueprint(analysis_bp)
-    app.register_blueprint(performance_bp, url_prefix="/performance")
-    app.register_blueprint(gpt4all_bp, url_prefix="/gpt4all")
-    app.register_blueprint(zap_bp, url_prefix="/zap")
+    app.register_blueprint(performance_bp)
+    app.register_blueprint(gpt4all_bp)
+    app.register_blueprint(zap_bp)
+    logger.info("Core blueprints registered successfully")
 
     # Conditionally register batch analysis blueprint
     register_batch_analysis_blueprint(app, logger)
@@ -310,10 +369,10 @@ def register_blueprints(app: Flask) -> None:
 def register_batch_analysis_blueprint(app: Flask, logger: logging.Logger) -> None:
     """Register the batch analysis blueprint if available."""
     # Check if batch analysis is available and scan manager is initialized
-    if HAS_BATCH_ANALYSIS and getattr(app, 'scan_manager', None) is not None:
+    if HAS_BATCH_ANALYSIS and hasattr(app, 'scan_manager') and app.scan_manager is not None:
         try:
             init_batch_analysis(app)
-            app.register_blueprint(batch_analysis_bp, url_prefix="/batch-analysis")
+            app.register_blueprint(batch_analysis_bp)
             logger.info("Batch analysis module initialized and registered")
         except Exception as e:
             logger.exception(f"Failed to initialize batch analysis module: {e}")
@@ -440,11 +499,17 @@ def initialize_app_components(
         if should_initialize_components(app, app_config):
             app_logger.info("Initializing components and services")
             try:
-                initialize_analyzers(app, base_path, app_config.BASE_DIR)
+                # Initialize services first (they're required by analyzers)
                 initialize_services(app, app_logger)
+                
+                # Then initialize analyzers
+                initialize_analyzers(app, base_path, app_config.BASE_DIR)
+                
                 app.config['IS_INITIALIZED'] = True
+                app_logger.info("Application components initialized successfully")
             except Exception as e:
                 app_logger.exception(f"Error during initialization: {e}")
+                app.config['IS_INITIALIZED'] = False
                 raise RuntimeError(f"Failed to initialize application: {e}") from e
         else:
             # Log skipping initialization
@@ -452,7 +517,7 @@ def initialize_app_components(
             is_initialized = app.config.get('IS_INITIALIZED', False)
             app_logger.info(f"Skipping initialization ({process_type}, initialized={is_initialized})")
             
-            # Set up minimal initialization for services if not initialized
+            # Set up minimal initialization if not already initialized
             if not is_initialized:
                 app.config["docker_manager"] = None
                 app.scan_manager = None

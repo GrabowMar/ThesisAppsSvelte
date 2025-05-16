@@ -8,13 +8,16 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union, cast, TypeVar, Callable
-from dataclasses import dataclass  # Add this import
+from dataclasses import dataclass
 
 import docker
 from docker.errors import NotFound
+from docker.models.containers import Container
 
-from zap_scanner import create_scanner
 from logging_service import create_logger_for_component
+
+# Define TypeVar for generic functions
+T = TypeVar('T')
 
 # Define DockerStatus locally to break circular import
 @dataclass
@@ -72,6 +75,7 @@ class Config:
 
 class ScanStatus(enum.Enum):
     """Enum representing the status of a security scan."""
+    NOT_RUN = "Not Run"
     STARTING = "Starting"
     SPIDERING = "Spidering"
     SCANNING = "Scanning"
@@ -87,9 +91,11 @@ class DockerManager:
         self.logger = create_logger_for_component('docker')
         self.client = client or self._create_docker_client()
         self._cache: Dict[str, Tuple[float, DockerStatus]] = {}
+        self._cache_lock = threading.RLock()
         self._cache_duration = Config.CACHE_DURATION_SECONDS
         self._last_cleanup_time = 0.0
         self._cleanup_interval = Config.CONTAINER_CLEANUP_INTERVAL_MINUTES * 60
+        self._get_container_lock = threading.RLock()
 
         if self.client:
             self.logger.info(
@@ -111,21 +117,38 @@ class DockerManager:
                 f"Creating Docker client with host: {docker_host}, timeout: {timeout}s"
             )
             client = docker.DockerClient(base_url=docker_host, timeout=timeout)
-            client.ping()
-            self.logger.info("Docker client created and connection verified.")
-            return client
+            
+            # Verify connection with ping
+            ping_success = False
+            try:
+                client.ping()
+                ping_success = True
+            except Exception as ping_err:
+                self.logger.error(f"Docker ping failed: {ping_err}")
+                
+            if ping_success:
+                self.logger.info("Docker client created and connection verified.")
+                return client
+            else:
+                self.logger.error("Docker client created but connection verification failed.")
+                return None
         except Exception as e:
-            self.logger.exception(f"Docker client creation or connection failed: {e}")
+            self.logger.exception(f"Docker client creation failed: {e}")
             return None
 
     def get_container_status(self, container_name: str) -> DockerStatus:
         """Get status for a container with caching for efficiency."""
-        now = time.time()
-        if container_name in self._cache:
-            timestamp, status = self._cache[container_name]
-            if now - timestamp < self._cache_duration:
-                self.logger.debug(f"Using cached status for {container_name}")
-                return status
+        if not container_name or not isinstance(container_name, str):
+            self.logger.warning(f"Invalid container name: {container_name}")
+            return DockerStatus(exists=False, status="invalid", details="Invalid container name")
+        
+        with self._cache_lock:
+            now = time.time()
+            if container_name in self._cache:
+                timestamp, status = self._cache[container_name]
+                if now - timestamp < self._cache_duration:
+                    self.logger.debug(f"Using cached status for {container_name}")
+                    return status
         
         # Handle the case of an unavailable Docker client
         if not self.client:
@@ -134,14 +157,19 @@ class DockerManager:
         else:
             status = self._fetch_container_status(container_name)
             
-        self._cache[container_name] = (now, status)
+        with self._cache_lock:
+            self._cache[container_name] = (now, status)
         return status
 
     def _fetch_container_status(self, container_name: str) -> DockerStatus:
         """Fetch the current status of a container from Docker."""
         try:
             self.logger.debug(f"Fetching status for container: {container_name}")
-            container = self.client.containers.get(container_name)
+            
+            with self._get_container_lock:
+                container = self.client.containers.get(container_name)
+                
+            # Get container attributes and status
             container_status_str = container.status
             is_running = container_status_str == "running"
             state = container.attrs.get("State", {})
@@ -173,19 +201,35 @@ class DockerManager:
             self.logger.exception(f"Docker error fetching status for {container_name}: {e}")
             return DockerStatus(exists=False, status="error", details=str(e))
 
+    def get_container(self, container_name: str) -> Optional[Container]:
+        """Get a container object by name, with error handling."""
+        if not self.client:
+            self.logger.warning(f"Docker client unavailable when getting container {container_name}")
+            return None
+        
+        try:
+            with self._get_container_lock:
+                return self.client.containers.get(container_name)
+        except NotFound:
+            self.logger.debug(f"Container not found: {container_name}")
+            return None
+        except Exception as e:
+            self.logger.exception(f"Error getting container {container_name}: {e}")
+            return None
+
     def get_container_logs(self, container_name: str, tail: int = 100) -> str:
         """Retrieve logs from a container."""
         if not self.client:
             self.logger.warning(f"Docker client unavailable when fetching logs for {container_name}")
             return "Docker client unavailable"
+        
+        container = self.get_container(container_name)
+        if not container:
+            return f"Error: Container '{container_name}' not found."
+        
         try:
-            container = self.client.containers.get(container_name)
-            self.logger.debug(f"Retrieving {tail} log lines from {container_name}")
             logs = container.logs(tail=tail).decode("utf-8", errors="replace")
             return logs
-        except NotFound:
-            self.logger.warning(f"Cannot get logs, container not found: {container_name}")
-            return f"Error: Container '{container_name}' not found."
         except Exception as e:
             self.logger.exception(f"Log retrieval failed for {container_name}: {e}")
             return f"Log retrieval error: {e}"
@@ -206,21 +250,52 @@ class DockerManager:
         try:
             filter_duration = Config.CONTAINER_PRUNE_FILTER_HOURS
             self.logger.info(f"Cleaning up stopped containers older than {filter_duration}")
-            result = self.client.containers.prune(filters={"until": filter_duration})
-            containers_deleted = result.get('ContainersDeleted', [])
-            space_reclaimed = result.get('SpaceReclaimed', 0)
             
-            if containers_deleted:
-                self.logger.info(
-                    f"Removed {len(containers_deleted)} containers, "
-                    f"reclaimed approx {space_reclaimed or 0} bytes."
-                )
-            else:
-                self.logger.info("No containers found matching the cleanup criteria.")
+            try:
+                result = self.client.containers.prune(filters={"until": filter_duration})
+                containers_deleted = result.get('ContainersDeleted', [])
+                space_reclaimed = result.get('SpaceReclaimed', 0)
+                
+                if containers_deleted:
+                    self.logger.info(
+                        f"Removed {len(containers_deleted)} containers, "
+                        f"reclaimed approx {space_reclaimed or 0} bytes."
+                    )
+                else:
+                    self.logger.info("No containers found matching the cleanup criteria.")
+            except Exception as prune_error:
+                self.logger.exception(f"Error during container prune operation: {prune_error}")
+                
+            # Also clear the status cache after cleanup
+            with self._cache_lock:
+                self._cache.clear()
                 
             self._last_cleanup_time = now
         except Exception as e:
             self.logger.exception(f"Container cleanup failed: {e}")
+
+    def restart_container(self, container_name: str, timeout: int = 10) -> Tuple[bool, str]:
+        """Restart a container with proper error handling."""
+        if not self.client:
+            return False, "Docker client unavailable"
+        
+        container = self.get_container(container_name)
+        if not container:
+            return False, f"Container '{container_name}' not found"
+        
+        try:
+            container.restart(timeout=timeout)
+            self.logger.info(f"Container {container_name} restarted successfully")
+            
+            # Clear cache entry for this container
+            with self._cache_lock:
+                if container_name in self._cache:
+                    del self._cache[container_name]
+                    
+            return True, f"Container {container_name} restarted successfully"
+        except Exception as e:
+            self.logger.exception(f"Error restarting container {container_name}: {e}")
+            return False, f"Error restarting container: {str(e)}"
 
 
 class CleanupScheduler:
@@ -237,7 +312,7 @@ class CleanupScheduler:
             self.logger.warning("Cleanup scheduler already running")
             return
         self._stop_event.clear()
-        self._thread = threading.Thread(target=self._scheduler_loop)
+        self._thread = threading.Thread(target=self._scheduler_loop, name="CleanupScheduler")
         self._thread.daemon = True
         self._thread.start()
         self.logger.info("Cleanup scheduler started")
@@ -258,11 +333,12 @@ class CleanupScheduler:
         while not self._stop_event.is_set():
             try:
                 self.docker_manager.cleanup_containers(force=True)
+                # Use event.wait instead of sleep for more responsive shutdown
                 self._stop_event.wait(interval_seconds)
             except Exception as e:
                 self.logger.exception(f"Error in cleanup scheduler: {e}")
                 # Wait a shorter time on error before retrying
-                time.sleep(10)
+                self._stop_event.wait(10)
 
 
 class SystemHealthMonitor:
@@ -420,6 +496,7 @@ class SystemHealthMonitor:
 class PortManager:
     """Manage port allocation for applications across multiple models."""
     _logger = create_logger_for_component('port_manager')
+    _model_index_cache = {}
 
     @classmethod
     def get_port_range(cls, model_idx: int) -> Dict[str, Dict[str, int]]:
@@ -459,22 +536,33 @@ class PortManager:
         if not (rng["backend"]["start"] <= backend_port < rng["backend"]["end"] and
                 rng["frontend"]["start"] <= frontend_port < rng["frontend"]["end"]):
             cls._logger.error(
-                # f"Calculated starting ports for model {model_idx}, app {app_num} "
+                f"Calculated starting ports for model {model_idx}, app {app_num} "
                 f"are out of range: BE={backend_port}, FE={frontend_port}. "
                 f"Range: BE[{rng['backend']['start']}-{rng['backend']['end']}), "
                 f"FE[{rng['frontend']['start']}-{rng['frontend']['end']})"
             )
             raise ValueError(
-                # f"Calculated starting ports for app {app_num} are outside "
-                # f"the allocated range for model index {model_idx}."
+                f"Calculated starting ports for app {app_num} are outside "
+                f"the allocated range for model index {model_idx}."
             )
             
         ports = {"backend": backend_port, "frontend": frontend_port}
-        # cls._logger.debug(
-        #     f"Calculated starting ports for model_idx={model_idx}, app_num={app_num}: {ports}"
-        #     f" (App block uses {Config.PORTS_PER_APP} ports)"
-        # )
+        cls._logger.debug(
+            f"Calculated starting ports for model_idx={model_idx}, app_num={app_num}: {ports}"
+            f" (App block uses {Config.PORTS_PER_APP} ports)"
+        )
         return ports
+
+    @classmethod
+    def set_model_index_cache(cls, model_name_to_index: Dict[str, int]) -> None:
+        """Set the model index cache for more efficient lookups."""
+        cls._model_index_cache = model_name_to_index.copy()
+        cls._logger.debug(f"Model index cache updated with {len(model_name_to_index)} entries")
+
+    @classmethod
+    def get_model_index(cls, model_name: str) -> Optional[int]:
+        """Get the index for a model name from the cache."""
+        return cls._model_index_cache.get(model_name)
 
 
 class ScanManager:
@@ -899,22 +987,16 @@ def initialize_application() -> Dict[str, Any]:
     }
 
 
-def teardown() -> None:
-    """Clean up resources when the application is shutting down."""
-    logger = create_logger_for_component('teardown')
-    logger.debug("Performing resource cleanup during teardown")
-    
-    # Actually do some cleanup rather than just logging
+def create_scanner(base_path: Path):
+    """Import and create ZAP scanner with proper error handling."""
+    logger = create_logger_for_component('zap_init')
     try:
-        # Clean up any resources that need explicit cleanup
-        from services import DockerManager
-        
-        # Try to stop any running Docker containers
-        docker_manager = DockerManager()
-        if docker_manager.client:
-            logger.info("Attempting to clean up Docker resources")
-            docker_manager.cleanup_containers(force=True)
-            
-        logger.info("Resource cleanup complete")
+        from zap_scanner import create_scanner as zap_create_scanner
+        logger.info(f"Creating ZAP scanner with base path: {base_path}")
+        return zap_create_scanner(base_path)
+    except ImportError as e:
+        logger.error(f"Failed to import ZAP scanner module: {e}")
+        return None
     except Exception as e:
-        logger.exception(f"Error during resource cleanup: {e}")
+        logger.exception(f"Error creating ZAP scanner: {e}")
+        return None

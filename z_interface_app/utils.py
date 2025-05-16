@@ -4,27 +4,32 @@ import logging
 import os
 import subprocess
 import time
-from dataclasses import asdict, dataclass, field
+import threading
+import shutil
+from dataclasses import asdict, dataclass, field, is_dataclass
 from datetime import datetime
 from functools import wraps
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union, cast
+from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union, Set, cast, Type
 
 from flask import (
-    Response, current_app, jsonify, render_template, request
+    Response, current_app, flash, jsonify, redirect, render_template, request, 
+    url_for
 )
-from werkzeug.exceptions import HTTPException
+from werkzeug.exceptions import BadRequest, HTTPException, NotFound
 
 from logging_service import create_logger_for_component
-from services import DockerManager, PortManager
+from services import DockerManager, DockerStatus, PortManager, SystemHealthMonitor
 
+# Type variable for generic functions
+T = TypeVar('T')
+
+# Constants
 _AJAX_REQUEST_HEADER_NAME = 'X-Requested-With'
 _AJAX_REQUEST_HEADER_VALUE = 'XMLHttpRequest'
 _DEFAULT_MODEL_COLOR = "#666666"
 
-T = TypeVar('T')
-
-logger = create_logger_for_component('app')
+logger = create_logger_for_component('utils')
 
 
 def safe_int_env(key: str, default: int) -> int:
@@ -41,6 +46,7 @@ def safe_int_env(key: str, default: int) -> int:
 
 @dataclass
 class AppConfig:
+    """Configuration class for application settings."""
     DEBUG: bool = os.getenv("FLASK_ENV", "development") != "production"
     SECRET_KEY: str = os.getenv("FLASK_SECRET_KEY", "your-secret-key-here")
     BASE_DIR: Path = Path(__file__).parent
@@ -71,32 +77,24 @@ class AppConfig:
 
     @classmethod
     def from_env(cls) -> "AppConfig":
+        """Create configuration instance from environment variables."""
         return cls()
 
 
 @dataclass
 class AIModel:
+    """Class representing an AI model."""
     name: str
     color: str = _DEFAULT_MODEL_COLOR
 
     def to_dict(self) -> Dict[str, Any]:
-        return asdict(self)
-
-
-@dataclass
-class DockerStatus:
-    exists: bool = False
-    running: bool = False
-    health: str = "unknown"
-    status: str = "unknown"
-    details: str = ""
-
-    def to_dict(self) -> Dict[str, Any]:
+        """Convert model to dictionary."""
         return asdict(self)
 
 
 @dataclass
 class APIResponse:
+    """Standard API response format."""
     success: bool = True
     message: Optional[str] = None
     data: Any = None
@@ -104,6 +102,7 @@ class APIResponse:
     code: int = http.HTTPStatus.OK
 
     def to_response(self) -> Tuple[Response, int]:
+        """Convert to Flask response."""
         response_data = {"success": self.success}
         if self.message is not None:
             response_data["message"] = self.message
@@ -114,6 +113,7 @@ class APIResponse:
         return jsonify(response_data), self.code
 
 
+# List of available AI models with their colors
 AI_MODELS: List[AIModel] = [
     AIModel("Llama", "#f97316"),
     AIModel("Mistral", "#9333ea"),
@@ -128,6 +128,7 @@ AI_MODELS: List[AIModel] = [
 
 
 class CustomJSONEncoder(json.JSONEncoder):
+    """Custom JSON encoder to handle complex types."""
     def default(self, obj: Any) -> Any:
         if hasattr(obj, 'to_dict') and callable(obj.to_dict):
             return obj.to_dict()
@@ -142,8 +143,160 @@ class CustomJSONEncoder(json.JSONEncoder):
         return super().default(obj)
 
 
+class JsonResultsManager:
+    """Standardized manager for JSON result saving and loading across modules."""
+    
+    def __init__(self, base_path: Path, module_name: str):
+        """
+        Initialize the JSON results manager.
+        
+        Args:
+            base_path: Base path for storing results
+            module_name: Name of the module using this manager (for logging)
+        """
+        self.base_path = Path(base_path)
+        self.logger = create_logger_for_component(f'{module_name}.json')
+        
+    def ensure_directory(self, directory: Path) -> Path:
+        """Ensure a directory exists and return its Path."""
+        directory.mkdir(parents=True, exist_ok=True)
+        return directory
+        
+    def save_results(
+        self, 
+        model: str, 
+        app_num: int, 
+        results: Any, 
+        file_name: str = ".results.json",
+        maintain_legacy: bool = True,
+        legacy_path: Optional[Path] = None
+    ) -> Path:
+        """
+        Save analysis results to JSON file.
+        
+        Args:
+            model: Model name
+            app_num: Application number
+            results: Results object/dict to save
+            file_name: Filename to use (with dot prefix for hidden files)
+            maintain_legacy: Whether to maintain legacy file paths
+            legacy_path: Optional explicit legacy path
+            
+        Returns:
+            Path where results were saved
+        """
+        # Create standard results directory
+        results_dir = self.ensure_directory(self.base_path / "results" / model / f"app{app_num}")
+        results_path = results_dir / file_name
+        
+        # Prepare data based on type
+        if hasattr(results, 'to_dict') and callable(results.to_dict):
+            data = results.to_dict()
+        elif is_dataclass(results):
+            data = asdict(results)
+        elif isinstance(results, (dict, list)):
+            data = results
+        else:
+            raise TypeError(f"Unsupported results type: {type(results)}")
+            
+        # Add metadata if dict
+        if isinstance(data, dict) and "scan_time" not in data:
+            data["scan_time"] = datetime.now().isoformat()
+        
+        # Save to file
+        try:
+            self.logger.info(f"Saving results to {results_path}")
+            with open(results_path, "w", encoding='utf-8') as f:
+                json.dump(data, f, indent=2)
+                
+            # Handle legacy path if needed
+            if maintain_legacy and legacy_path is None:
+                # Default legacy path
+                legacy_path = self.base_path / model / f"app{app_num}" / file_name
+                
+            if maintain_legacy and legacy_path:
+                self._maintain_legacy_file(results_path, legacy_path)
+                
+            return results_path
+        except Exception as e:
+            self.logger.error(f"Error saving results to {results_path}: {e}")
+            raise
+    
+    def _maintain_legacy_file(self, source_path: Path, legacy_path: Path) -> None:
+        """Create a legacy file link or copy for backward compatibility."""
+        try:
+            legacy_path.parent.mkdir(parents=True, exist_ok=True)
+            if hasattr(os, 'symlink'):
+                # Use symlink if available
+                if legacy_path.exists():
+                    legacy_path.unlink()
+                relative_path = os.path.relpath(source_path, legacy_path.parent)
+                os.symlink(relative_path, legacy_path)
+                self.logger.info(f"Created symlink from legacy path to new file")
+            else:
+                # Fall back to copy
+                shutil.copy2(source_path, legacy_path)
+                self.logger.info(f"Copied file to legacy path for compatibility")
+        except Exception as e:
+            self.logger.warning(f"Failed to maintain legacy file compatibility: {e}")
+    
+    def load_results(
+        self, 
+        model: str, 
+        app_num: int, 
+        file_name: str = ".results.json",
+        result_class: Optional[Type[T]] = None,
+        check_legacy: bool = True
+    ) -> Optional[Union[Dict[str, Any], List[Any], T]]:
+        """
+        Load analysis results from JSON file.
+        
+        Args:
+            model: Model name
+            app_num: Application number
+            file_name: Filename to load (with dot prefix for hidden files)
+            result_class: Optional class to instantiate with the data
+            check_legacy: Whether to check legacy file paths
+            
+        Returns:
+            Loaded results, or None if not found
+        """
+        # Standard path
+        results_path = self.base_path / "results" / model / f"app{app_num}" / file_name
+        
+        # Check standard path
+        if not results_path.exists() and check_legacy:
+            # Check legacy path
+            legacy_path = self.base_path / model / f"app{app_num}" / file_name
+            if legacy_path.exists():
+                results_path = legacy_path
+                self.logger.info(f"Using legacy results file: {legacy_path}")
+                
+        if not results_path.exists():
+            self.logger.warning(f"Results file not found: {results_path}")
+            return None
+            
+        try:
+            with open(results_path, "r", encoding='utf-8') as f:
+                data = json.load(f)
+                
+            if result_class is not None:
+                if hasattr(result_class, 'from_dict') and callable(getattr(result_class, 'from_dict')):
+                    return result_class.from_dict(data)
+                else:
+                    return result_class(**data)
+            return data
+        except json.JSONDecodeError as e:
+            self.logger.error(f"Error parsing JSON from {results_path}: {e}")
+            return None
+        except Exception as e:
+            self.logger.error(f"Error loading results from {results_path}: {e}")
+            return None
+
+
 def log_and_handle_exception(func_name: str, e: Exception,
                              logger_name: str = 'error') -> Tuple[str, int]:
+    """Log an exception and return appropriate error message and code."""
     error_logger = create_logger_for_component(logger_name)
     if isinstance(e, HTTPException):
         error_code = e.code or http.HTTPStatus.INTERNAL_SERVER_ERROR
@@ -169,6 +322,7 @@ def log_and_handle_exception(func_name: str, e: Exception,
 
 
 def ajax_compatible(f: Callable[..., Any]) -> Callable[..., Any]:
+    """Decorator to make routes compatible with AJAX requests."""
     @wraps(f)
     def wrapped(*args: Any, **kwargs: Any) -> Any:
         function_logger = create_logger_for_component(f'ajax.{f.__name__}')
@@ -183,6 +337,7 @@ def ajax_compatible(f: Callable[..., Any]) -> Callable[..., Any]:
 
 def _format_ajax_response(result: Any, is_ajax: bool,
                           logger: Optional[logging.Logger] = None) -> Any:
+    """Format response for AJAX or regular requests."""
     if isinstance(result, tuple) and len(result) == 2 and isinstance(result[0], Response):
         return result
     if isinstance(result, APIResponse):
@@ -204,6 +359,7 @@ def _format_ajax_response(result: Any, is_ajax: bool,
 
 def _handle_ajax_exception(e: Exception, is_ajax: bool, func_name: str,
                            logger: Optional[logging.Logger] = None) -> Any:
+    """Handle exceptions in AJAX-compatible route handlers."""
     error_message, error_code = log_and_handle_exception(func_name, e)
     if is_ajax:
         error_response = APIResponse(
@@ -430,6 +586,48 @@ def get_all_apps() -> List[Dict[str, Any]]:
     return all_apps
 
 
+def get_docker_manager() -> DockerManager:
+    """
+    Get the Docker manager instance from the Flask app.
+    
+    Returns:
+        DockerManager instance
+        
+    Raises:
+        RuntimeError: If Docker manager is not available
+    """
+    docker_manager = current_app.config.get("docker_manager")
+    if not docker_manager:
+        error_msg = "Docker manager is not available"
+        logger.error(error_msg)
+        raise RuntimeError(error_msg)
+    return docker_manager
+
+
+def get_safe_path(base_dir: Path, *path_parts: str) -> Path:
+    """
+    Get a safe path within a base directory.
+    
+    Args:
+        base_dir: Base directory
+        *path_parts: Path parts to join
+        
+    Returns:
+        Safe path within base_dir
+        
+    Raises:
+        ValueError: If the resolved path is outside the base directory
+    """
+    base_dir = base_dir.resolve()
+    path = base_dir.joinpath(*path_parts)
+    resolved_path = path.resolve()
+    if not str(resolved_path).startswith(str(base_dir)):
+        error_msg = f"Path '{resolved_path}' is outside base directory '{base_dir}'"
+        logger.error(error_msg)
+        raise ValueError(error_msg)
+    return resolved_path
+
+
 def run_docker_compose(
     command: List[str],
     model: str,
@@ -463,15 +661,17 @@ def run_docker_compose(
                 break
                 
         if not compose_file_path:
-            msg = f"No docker-compose.yml or docker-compose.yaml file found in {app_dir}"
-            compose_logger.error(msg)
-            return False, msg
+            error_msg = f"No docker-compose.yml or docker-compose.yaml file found in {app_dir}"
+            compose_logger.error(error_msg)
+            return False, error_msg
             
         project_name = f"{model.lower()}_app{app_num}"
         project_name = "".join(c if c.isalnum() or c == '_' else '_' for c in project_name)
         cmd = ["docker-compose", "-p", project_name, "-f", str(compose_file_path)] + command
         
         compose_logger.info(f"Running command: {' '.join(cmd)} in {app_dir} (timeout: {timeout}s)")
+        create_no_window = subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
+        
         result = subprocess.run(
             cmd,
             cwd=str(app_dir),
@@ -481,6 +681,7 @@ def run_docker_compose(
             encoding='utf-8',
             errors='replace',
             timeout=timeout,
+            creationflags=create_no_window
         )
         
         output = result.stdout
@@ -501,21 +702,24 @@ def run_docker_compose(
         return success, output.strip()
         
     except FileNotFoundError:
-        compose_logger.exception("`docker-compose` command not found. Is Docker Compose installed?")
-        return False, "`docker-compose` command not found."
+        error_msg = "`docker-compose` command not found. Is Docker Compose installed?"
+        compose_logger.exception(error_msg)
+        return False, error_msg
     except subprocess.TimeoutExpired:
-        compose_logger.error(f"Command timed out after {timeout}s")
-        return False, f"Command timed out after {timeout}s"
+        error_msg = f"Command timed out after {timeout}s"
+        compose_logger.error(error_msg)
+        return False, error_msg
     except subprocess.CalledProcessError as e:
         output = e.stdout + ("\n" + e.stderr if e.stderr else "")
+        error_msg = f"Command failed with code {e.returncode}: {' '.join(e.cmd)}"
         compose_logger.error(
-            f"Command failed with code {e.returncode}: {' '.join(e.cmd)}\n"
-            f"Output: {output[:1000]}..." if len(output) > 1000 else output
+            f"{error_msg}\nOutput: {output[:1000]}..." if len(output) > 1000 else output
         )
         return False, output.strip()
     except Exception as e:
+        error_msg = f"An unexpected error occurred: {e}"
         compose_logger.exception(f"Error running docker-compose: {e}")
-        return False, f"An unexpected error occurred: {e}"
+        return False, error_msg
 
 
 def handle_docker_action(action: str, model: str, app_num: int) -> Tuple[bool, str]:
@@ -531,6 +735,13 @@ def handle_docker_action(action: str, model: str, app_num: int) -> Tuple[bool, s
         Tuple of (success, message)
     """
     docker_logger = create_logger_for_component(f'docker.action.{action}')
+    
+    if action not in {"start", "stop", "restart", "build", "rebuild", "health-check"}:
+        error_msg = f"Invalid docker action requested: {action}"
+        docker_logger.error(error_msg)
+        return False, error_msg
+    
+    # Define action configurations
     commands_config = {
         "start": [ (["up", "-d", "--remove-orphans"], True, 90) ],
         "stop": [ (["down"], True, 60) ],
@@ -543,10 +754,18 @@ def handle_docker_action(action: str, model: str, app_num: int) -> Tuple[bool, s
         ],
     }
     
-    if action not in commands_config:
-        docker_logger.error(f"Invalid docker action requested: {action}")
-        return False, f"Invalid action: {action}"
-        
+    # Handle health check separately
+    if action == "health-check":
+        try:
+            docker_logger.info(f"Performing health check for {model}/app{app_num}")
+            docker_manager = get_docker_manager()
+            healthy, message = verify_container_health(docker_manager, model, app_num)
+            return healthy, message
+        except Exception as e:
+            error_msg = f"Health check failed: {str(e)}"
+            docker_logger.exception(error_msg)
+            return False, error_msg
+            
     docker_logger.info(f"Initiating docker action '{action}' for {model}/app{app_num}")
     steps = commands_config[action]
     full_output = []
@@ -645,6 +864,98 @@ def verify_container_health(
     return False, message
 
 
+def get_app_container_statuses(
+    model: str, app_num: int, docker_manager: DockerManager
+) -> Dict[str, Any]:
+    """
+    Get container statuses for a specific application.
+    
+    Args:
+        model: Model name
+        app_num: Application number
+        docker_manager: Docker manager instance
+        
+    Returns:
+        Dictionary with container statuses
+    """
+    statuses = {"backend": {}, "frontend": {}, "error": None}
+    
+    try:
+        b_name, f_name = get_container_names(model, app_num)
+        statuses["backend"] = docker_manager.get_container_status(b_name).to_dict()
+        statuses["frontend"] = docker_manager.get_container_status(f_name).to_dict()
+    except ValueError as e:
+        statuses["error"] = str(e)
+        logger.error(f"Could not get container names: {e}")
+    except Exception as e:
+        statuses["error"] = f"Failed to get container statuses: {e}"
+        logger.exception(f"Failed to get container statuses: {e}")
+        
+    return statuses
+
+
+def stop_zap_scanners(scans: Dict[str, Any]) -> None:
+    """
+    Stop active ZAP scanners.
+    
+    Args:
+        scans: Dictionary of active scanners
+    """
+    zap_logger = create_logger_for_component('zap_scanner.stop')
+    stopped_count = 0
+    scan_keys = list(scans.keys())
+    
+    for scan_key in scan_keys:
+        scanner = scans.get(scan_key)
+        if not scanner:
+            continue
+            
+        if hasattr(scanner, "stop_scan") and callable(scanner.stop_scan):
+            try:
+                model = "unknown"
+                app_num = 0
+                
+                try:
+                    parts = scan_key.split("-")
+                    if len(parts) >= 2:
+                        model = parts[0]
+                        app_num = int(parts[1])
+                except (ValueError, IndexError):
+                    pass
+                    
+                log_prefix = f"{model}/app{app_num}" if model != "unknown" else scan_key
+                zap_logger.info(f"Stopping ZAP scan for {log_prefix}")
+                scanner.stop_scan(model=model, app_num=app_num)
+                stopped_count += 1
+            except Exception as e:
+                zap_logger.exception(f"Error stopping scan: {e}")
+        else:
+            zap_logger.warning(
+                f"Item for key {scan_key} is not a valid scanner instance "
+                f"(Type: {type(scanner).__name__})"
+            )
+            
+    if stopped_count > 0:
+        zap_logger.info(f"Stopped {stopped_count} ZAP scans")
+    else:
+        zap_logger.info("No active ZAP scans found to stop")
+
+
+def get_scan_manager():
+    """
+    Get or initialize the scan manager on the current application.
+    
+    Returns:
+        ScanManager instance
+    """
+    if not hasattr(current_app, 'scan_manager'):
+        # Import here to avoid circular imports
+        from services import ScanManager
+        logger.info("Initializing ScanManager on app context")
+        current_app.scan_manager = ScanManager()
+    return current_app.scan_manager
+
+
 def process_security_analysis(
     template: str,
     analyzer: Any,
@@ -719,94 +1030,3 @@ def process_security_analysis(
         tool_status=tool_status,
         tool_output_details=tool_output_details,
     )
-
-
-def get_app_container_statuses(
-    model: str, app_num: int, docker_manager: DockerManager
-) -> Dict[str, Any]:
-    """
-    Get container statuses for a specific application.
-    
-    Args:
-        model: Model name
-        app_num: Application number
-        docker_manager: Docker manager instance
-        
-    Returns:
-        Dictionary with container statuses
-    """
-    statuses = {"backend": None, "frontend": None, "error": None}
-    
-    try:
-        b_name, f_name = get_container_names(model, app_num)
-        statuses["backend"] = docker_manager.get_container_status(b_name).to_dict()
-        statuses["frontend"] = docker_manager.get_container_status(f_name).to_dict()
-    except ValueError as e:
-        statuses["error"] = str(e)
-        logger.error(f"Could not get container names: {e}")
-    except Exception as e:
-        statuses["error"] = f"Failed to get container statuses: {e}"
-        logger.exception(f"Failed to get container statuses: {e}")
-        
-    return statuses
-
-
-def stop_zap_scanners(scans: Dict[str, Any]) -> None:
-    """
-    Stop active ZAP scanners.
-    
-    Args:
-        scans: Dictionary of active scanners
-    """
-    zap_logger = create_logger_for_component('zap_scanner.stop')
-    stopped_count = 0
-    scan_keys = list(scans.keys())
-    
-    for scan_key in scan_keys:
-        scanner = scans.get(scan_key)
-        if not scanner:
-            continue
-            
-        if hasattr(scanner, "stop_scan") and callable(scanner.stop_scan):
-            try:
-                model = "unknown"
-                app_num = 0
-                
-                try:
-                    parts = scan_key.split("-")
-                    if len(parts) >= 2:
-                        model = parts[0]
-                        app_num = int(parts[1])
-                except (ValueError, IndexError):
-                    pass
-                    
-                log_prefix = f"{model}/app{app_num}" if model != "unknown" else scan_key
-                zap_logger.info(f"Stopping ZAP scan for {log_prefix}")
-                scanner.stop_scan(model=model, app_num=app_num)
-                stopped_count += 1
-            except Exception as e:
-                zap_logger.exception(f"Error stopping scan: {e}")
-        else:
-            zap_logger.warning(
-                f"Item for key {scan_key} is not a valid scanner instance "
-                f"(Type: {type(scanner).__name__})"
-            )
-            
-    if stopped_count > 0:
-        zap_logger.info(f"Stopped {stopped_count} ZAP scans")
-    else:
-        zap_logger.info("No active ZAP scans found to stop")
-
-
-def get_scan_manager():
-    """
-    Get or initialize the scan manager on the current application.
-    
-    Returns:
-        ScanManager instance
-    """
-    from services import ScanManager
-    if not hasattr(current_app, 'scan_manager'):
-        logger.info("Initializing ScanManager on app context")
-        current_app.scan_manager = ScanManager()
-    return current_app.scan_manager
