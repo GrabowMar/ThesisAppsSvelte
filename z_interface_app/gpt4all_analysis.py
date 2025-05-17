@@ -8,6 +8,9 @@ from typing import List, Dict, Optional, Tuple, Any, Union, Set
 
 import requests
 
+# Import JsonResultsManager from utils.py
+from utils import JsonResultsManager
+
 try:
     from logging_service import create_logger_for_component
     logger = create_logger_for_component('gpt4all')
@@ -42,6 +45,23 @@ class RequirementCheck:
             "requirement": self.requirement,
             "result": asdict(self.result)
         }
+        
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'RequirementCheck':
+        """Create a RequirementCheck instance from a dictionary."""
+        result_data = data.get("result", {})
+        result = RequirementResult(
+            met=result_data.get("met", False),
+            confidence=result_data.get("confidence", "LOW"),
+            explanation=result_data.get("explanation", ""),
+            error=result_data.get("error"),
+            frontend_analysis=result_data.get("frontend_analysis"),
+            backend_analysis=result_data.get("backend_analysis")
+        )
+        return cls(
+            requirement=data.get("requirement", ""),
+            result=result
+        )
 
 
 class GPT4AllClient:
@@ -52,6 +72,7 @@ class GPT4AllClient:
         self.timeout = int(os.getenv("GPT4ALL_TIMEOUT", "30"))
         self.last_check_time = 0
         self.is_available = False
+        self.logger = logger  # Use the module-level logger
         logger.info(f"GPT4All client initialized with URL: {self.api_url}")
 
     def check_server(self) -> bool:
@@ -528,7 +549,13 @@ class GPT4AllAnalyzer:
     def __init__(self, base_path: Union[Path, str] = None):
         self.base_path = Path(base_path) if base_path else Path.cwd()
         self.client = GPT4AllClient()
+        
+        # Initialize JsonResultsManager
+        self.results_manager = JsonResultsManager(base_path=self.base_path, module_name="gpt4all")
+        
+        # Cache for quick lookup of previously analyzed requirements
         self.requirements_cache = {}
+        
         logger.info(f"GPT4All analyzer initialized with base path: {self.base_path}")
 
     def find_app_directory(self, model: str, app_num: int) -> Path:
@@ -715,62 +742,245 @@ class GPT4AllAnalyzer:
             except Exception as e: logger.error(f"Error loading application data from {path}: {e}")
         return {}
 
-    def check_requirements(self, model: str, app_num: int, requirements: List[str] = None) -> List[RequirementCheck]:
+    # Add method to save requirements analysis results
+    def save_requirements(self, model: str, app_num: int, results: List[RequirementCheck]) -> Optional[Path]:
+        """
+        Save requirement check results to a JSON file.
+        
+        Args:
+            model: Model name
+            app_num: Application number
+            results: List of RequirementCheck objects
+            
+        Returns:
+            Path where results were saved or None if error
+        """
+        try:
+            # Prepare data for saving
+            results_data = {
+                "requirements": [check.to_dict() for check in results],
+                "metadata": {
+                    "model": model,
+                    "app_num": app_num,
+                    "total_checks": len(results),
+                    "met_count": sum(1 for check in results if check.result.met),
+                    "scan_time": time.time()
+                }
+            }
+            
+            # Save using JsonResultsManager
+            file_name = ".gpt4all_requirements.json"
+            results_path = self.results_manager.save_results(
+                model=model,
+                app_num=app_num,
+                results=results_data,
+                file_name=file_name,
+                maintain_legacy=True
+            )
+            
+            logger.info(f"Saved requirements analysis results to {results_path}")
+            return results_path
+        except Exception as e:
+            logger.error(f"Error saving requirements analysis results: {e}")
+            return None
+    
+    # Add method to load requirements analysis results
+    def load_requirements(self, model: str, app_num: int) -> Optional[List[RequirementCheck]]:
+        """
+        Load requirement check results from a JSON file.
+        
+        Args:
+            model: Model name
+            app_num: Application number
+            
+        Returns:
+            List of RequirementCheck objects or None if not found
+        """
+        try:
+            file_name = ".gpt4all_requirements.json"
+            data = self.results_manager.load_results(
+                model=model,
+                app_num=app_num,
+                file_name=file_name
+            )
+            
+            if not data or not isinstance(data, dict) or "requirements" not in data:
+                logger.warning(f"No valid requirements data found for {model}/app{app_num}")
+                return None
+                
+            requirements_data = data.get("requirements", [])
+            
+            if not requirements_data:
+                logger.warning(f"Empty requirements data found for {model}/app{app_num}")
+                return None
+                
+            logger.info(f"Loaded {len(requirements_data)} requirements checks from saved data for {model}/app{app_num}")
+            return [RequirementCheck.from_dict(item) for item in requirements_data]
+        except Exception as e:
+            logger.error(f"Error loading requirements for {model}/app{app_num}: {e}")
+            return None
+
+    def check_requirements(self, model: str, app_num: int, requirements: List[str] = None, force_rerun: bool = False) -> List[RequirementCheck]:
+        """
+        Check multiple requirements against both frontend and backend code.
+        
+        Args:
+            model: Model name
+            app_num: Application number
+            requirements: List of requirements to check (if None, loads from a config)
+            force_rerun: Whether to force rerun the analysis instead of using cached results
+            
+        Returns:
+            List of RequirementCheck objects
+        """
+        # Check if the GPT4All server is available
         if not self.client.check_server():
             logger.error("GPT4All server is not available")
-            return self._create_error_checks(requirements or ["Server unavailable"],"GPT4All server is not available")
+            return self._create_error_checks(requirements or ["Server unavailable"], "GPT4All server is not available")
+        
+        # Try to load saved results if not forcing a rerun
+        if not force_rerun:
+            saved_checks = self.load_requirements(model, app_num)
+            if saved_checks and (not requirements or len(saved_checks) == len(requirements)):
+                logger.info(f"Using saved analysis results for {model}/app{app_num}")
+                return saved_checks
+        
+        # Find the application directory
         directory = self.find_app_directory(model, app_num)
         if not directory.exists():
             logger.error(f"App directory not found: {directory}")
-            return self._create_error_checks(requirements or ["Directory not found"],f"App directory not found: {directory}")
-        if not requirements: requirements, _ = self.get_requirements_for_app(app_num)
+            return self._create_error_checks(requirements or ["Directory not found"], f"App directory not found: {directory}")
+        
+        # Load requirements if not provided
+        if not requirements:
+            requirements, _ = self.get_requirements_for_app(app_num)
+        
+        # Collect and read code files
         frontend_files, backend_files = self.collect_code_files(directory)
         frontend_code = self.read_code_from_files(frontend_files)
         backend_code = self.read_code_from_files(backend_files)
+        
         if not frontend_code and not backend_code:
             logger.error(f"No code files found in {directory}")
-            return self._create_error_checks(requirements,"No code files found")
+            return self._create_error_checks(requirements, "No code files found")
+        
+        # Check each requirement
         results = []
         for req in requirements:
             check = RequirementCheck(requirement=req)
             result = RequirementResult()
+            
+            # Analyze frontend code
             frontend_analysis = None
             if frontend_code:
                 logger.info(f"Analyzing frontend code for requirement: {req}")
                 frontend_analysis = self.client.analyze_code(req, frontend_code, is_frontend=True)
                 result.frontend_analysis = frontend_analysis
-            else: result.frontend_analysis = {"met": False, "confidence": "HIGH", "explanation": "No frontend code found"}
+            else:
+                result.frontend_analysis = {"met": False, "confidence": "HIGH", "explanation": "No frontend code found"}
+            
+            # Analyze backend code
             backend_analysis = None
             if backend_code:
                 logger.info(f"Analyzing backend code for requirement: {req}")
                 backend_analysis = self.client.analyze_code(req, backend_code, is_frontend=False)
                 result.backend_analysis = backend_analysis
-            else: result.backend_analysis = {"met": False, "confidence": "HIGH", "explanation": "No backend code found"}
+            else:
+                result.backend_analysis = {"met": False, "confidence": "HIGH", "explanation": "No backend code found"}
+            
+            # Determine overall requirement status
             frontend_met = frontend_analysis.get("met", False) if frontend_code else False
             backend_met = backend_analysis.get("met", False) if backend_code else False
             result.met = frontend_met or backend_met
+            
+            # Determine confidence level
             frontend_confidence = frontend_analysis.get("confidence", "LOW") if frontend_code else "LOW"
             backend_confidence = backend_analysis.get("confidence", "LOW") if backend_code else "LOW"
             confidence_levels = {"HIGH": 3, "MEDIUM": 2, "LOW": 1}
             frontend_score = confidence_levels.get(frontend_confidence, 1)
             backend_score = confidence_levels.get(backend_confidence, 1)
             result.confidence = "HIGH" if max(frontend_score, backend_score) == 3 else "MEDIUM" if max(frontend_score, backend_score) == 2 else "LOW"
+            
+            # Combine explanations
             frontend_explanation = frontend_analysis.get("explanation", "") if frontend_code else "No frontend code found"
             backend_explanation = backend_analysis.get("explanation", "") if backend_code else "No backend code found"
             combined_explanation = ""
-            if frontend_explanation: combined_explanation += f"Frontend: {frontend_explanation}"
+            if frontend_explanation:
+                combined_explanation += f"Frontend: {frontend_explanation}"
             if backend_explanation:
-                if combined_explanation: combined_explanation += "\n\nBackend: "
-                else: combined_explanation += "Backend: "
+                if combined_explanation:
+                    combined_explanation += "\n\nBackend: "
+                else:
+                    combined_explanation += "Backend: "
                 combined_explanation += backend_explanation
+            
             result.explanation = combined_explanation
             check.result = result
             results.append(check)
+        
+        # Save the results using JsonResultsManager
+        self.save_requirements(model, app_num, results)
+        
         logger.info(f"Completed requirement checks: {len(results)} requirements checked")
         return results
 
+    def get_analysis_summary(self, model: str, app_num: int, results: List[RequirementCheck] = None) -> Dict[str, Any]:
+        """
+        Generate a summary of the requirements analysis results.
+        
+        Args:
+            model: Model name
+            app_num: Application number
+            results: List of RequirementCheck objects (if None, tries to load from saved results)
+            
+        Returns:
+            Dictionary with summary information
+        """
+        # If results not provided, try to load from saved data
+        if results is None:
+            results = self.load_requirements(model, app_num)
+            if not results:
+                logger.warning(f"No saved results found for {model}/app{app_num} to generate summary")
+                return {
+                    "model": model,
+                    "app_num": app_num,
+                    "total_requirements": 0,
+                    "met_count": 0,
+                    "completion_percentage": 0,
+                    "error": "No analysis results available"
+                }
+        
+        # Calculate summary metrics
+        summary = {
+            "model": model,
+            "app_num": app_num,
+            "total_requirements": len(results),
+            "met_count": sum(1 for check in results if check.result.met),
+            "confidence_counts": {
+                "HIGH": sum(1 for check in results if check.result.confidence == "HIGH"),
+                "MEDIUM": sum(1 for check in results if check.result.confidence == "MEDIUM"),
+                "LOW": sum(1 for check in results if check.result.confidence == "LOW"),
+            },
+            "frontend_met": sum(1 for check in results 
+                              if check.result.frontend_analysis and 
+                              check.result.frontend_analysis.get("met", False)),
+            "backend_met": sum(1 for check in results 
+                             if check.result.backend_analysis and 
+                             check.result.backend_analysis.get("met", False)),
+            "scan_time": time.time(),
+            "requirements_list": [check.requirement for check in results]
+        }
+        
+        # Calculate completion percentage
+        if results:
+            summary["completion_percentage"] = round((summary["met_count"] / summary["total_requirements"]) * 100)
+        else:
+            summary["completion_percentage"] = 0
+            
+        return summary
+
     def _create_error_checks(self, requirements: List[str], error_message: str) -> List[RequirementCheck]:
-        return [RequirementCheck(requirement=req,result=RequirementResult(met=False,confidence="HIGH",explanation="Could not analyze requirement",error=error_message)) for req in requirements]
+        return [RequirementCheck(requirement=req, result=RequirementResult(met=False, confidence="HIGH", explanation="Could not analyze requirement", error=error_message)) for req in requirements]
 
 
 def apply_logging_fixes():

@@ -24,7 +24,7 @@ except ImportError:
             print(f"Warning: JsonResultsManager initialized without a proper logger for {module_name}")
 
         def save_results(self, model: str, app_num: int, results: Any, file_name: str = ".backend_security_results.json", **kwargs) -> Path:
-            results_dir = self.base_path / "results" / model / f"app{app_num}"
+            results_dir = self.base_path / "z_interface_app" / "results" / model / f"app{app_num}"
             results_dir.mkdir(parents=True, exist_ok=True)
             results_path = results_dir / file_name
             data_to_save = results

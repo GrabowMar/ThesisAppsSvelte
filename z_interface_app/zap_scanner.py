@@ -16,6 +16,9 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Union, Callable
 import requests
 from zapv2 import ZAPv2
 
+# Import JsonResultsManager from utils
+from utils import JsonResultsManager
+
 # Configuration constants moved to a central location
 class ZAPConfig:
     DEFAULT_API_KEY = os.getenv('ZAP_API_KEY', '5tjkc409k4oaacd69qob5p6uri')
@@ -209,6 +212,10 @@ class ZAPScanner:
         self.firefox_binary_path = None
         self.oast_service_configured = False
         self.callback_port = None
+        
+        # Initialize JsonResultsManager for standardized JSON handling
+        self.results_manager = JsonResultsManager(base_path=self.base_path, module_name="zap_scanner")
+        
         logger.info(f"ZAPScanner initialized with base path: {self.base_path}")
         logger.info(f"ZAP proxy configuration: {self.proxy_host}:{self.proxy_port}")
 
@@ -1130,6 +1137,138 @@ class ZAPScanner:
         frontend_port = frontend_port_start + ((app_num - 1) * ZAPConfig.PORTS_PER_APP)
         return f"http://localhost:{frontend_port}"
 
+    def save_scan_results(self, model: str, app_num: int, vulnerabilities: List[ZapVulnerability], summary: Dict) -> Optional[Path]:
+        """
+        Save scan results to a JSON file using JsonResultsManager.
+        
+        Args:
+            model: Model name
+            app_num: Application number
+            vulnerabilities: List of ZapVulnerability objects
+            summary: Dictionary with scan summary information
+        
+        Returns:
+            Path where results were saved or None if there was an error
+        """
+        try:
+            # Prepare data for saving
+            results_dict = {
+                "alerts": [],
+                "summary": summary,
+                "scan_time": datetime.now().isoformat()
+            }
+            
+            # Convert vulnerabilities to dictionaries
+            for vuln in vulnerabilities:
+                vuln_dict = asdict(vuln)
+                if vuln.affected_code:
+                    vuln_dict['affected_code'] = asdict(vuln.affected_code)
+                results_dict['alerts'].append(vuln_dict)
+            
+            # Use JsonResultsManager to save the results
+            file_name = ".zap_results.json"
+            results_path = self.results_manager.save_results(
+                model=model,
+                app_num=app_num,
+                results=results_dict,
+                file_name=file_name,
+                maintain_legacy=True
+            )
+            
+            logger.info(f"Saved scan results to {results_path}")
+            return results_path
+        except Exception as e:
+            logger.error(f"Error saving scan results: {e}")
+            return None
+
+    def load_scan_results(self, model: str, app_num: int) -> Optional[Dict[str, Any]]:
+        """
+        Load scan results from a JSON file using JsonResultsManager.
+        
+        Args:
+            model: Model name
+            app_num: Application number
+        
+        Returns:
+            Dictionary containing scan results or None if not found
+        """
+        try:
+            file_name = ".zap_results.json"
+            data = self.results_manager.load_results(
+                model=model,
+                app_num=app_num,
+                file_name=file_name
+            )
+            
+            if data:
+                logger.info(f"Successfully loaded scan results for {model}/app{app_num}")
+                return data
+            else:
+                logger.warning(f"No scan results found for {model}/app{app_num}")
+                return None
+        except Exception as e:
+            logger.error(f"Error loading scan results for {model}/app{app_num}: {e}")
+            return None
+
+    def get_scan_vulnerabilities(self, model: str, app_num: int) -> List[ZapVulnerability]:
+        """
+        Load scan vulnerabilities from results and reconstruct ZapVulnerability objects.
+        
+        Args:
+            model: Model name
+            app_num: Application number
+        
+        Returns:
+            List of ZapVulnerability objects
+        """
+        results = self.load_scan_results(model, app_num)
+        vulnerabilities = []
+        
+        if not results or 'alerts' not in results:
+            return vulnerabilities
+            
+        try:
+            for alert in results['alerts']:
+                # Create CodeContext object if present
+                affected_code = None
+                if 'affected_code' in alert and alert['affected_code']:
+                    ac_data = alert['affected_code']
+                    affected_code = CodeContext(
+                        snippet=ac_data.get('snippet', ''),
+                        line_number=ac_data.get('line_number'),
+                        file_path=ac_data.get('file_path'),
+                        start_line=ac_data.get('start_line', 0),
+                        end_line=ac_data.get('end_line', 0),
+                        vulnerable_lines=ac_data.get('vulnerable_lines', []),
+                        highlight_positions=ac_data.get('highlight_positions', [])
+                    )
+                
+                # Create ZapVulnerability object
+                vuln = ZapVulnerability(
+                    url=alert.get('url', ''),
+                    name=alert.get('name', ''),
+                    alert=alert.get('alert', ''),
+                    risk=alert.get('risk', ''),
+                    confidence=alert.get('confidence', ''),
+                    description=alert.get('description', ''),
+                    solution=alert.get('solution', ''),
+                    reference=alert.get('reference', ''),
+                    evidence=alert.get('evidence'),
+                    cwe_id=alert.get('cwe_id'),
+                    parameter=alert.get('parameter'),
+                    attack=alert.get('attack'),
+                    wascid=alert.get('wascid'),
+                    affected_code=affected_code,
+                    source_file=alert.get('source_file')
+                )
+                vulnerabilities.append(vuln)
+                
+            logger.info(f"Loaded {len(vulnerabilities)} vulnerabilities for {model}/app{app_num}")
+            return vulnerabilities
+        except Exception as e:
+            logger.error(f"Error processing scan results for {model}/app{app_num}: {e}")
+            return []
+
     @log_operation("Target scan")
     def scan_target(self, target_url: str, quick_scan: bool = False) -> Tuple[List[ZapVulnerability], Dict]:
         scan_start_time = datetime.now()
@@ -1414,26 +1553,24 @@ class ZAPScanner:
                     f.write(report_content)
                 logger.info(f"Saved affected code report to: {output_path}")
                 
-                # Create legacy file links/copies for compatibility
+                # Use JsonResultsManager for legacy file links/copies
                 if "zap_reports" in str(output_path):
                     path_parts = Path(output_file).parts
                     if len(path_parts) >= 4 and path_parts[-4] == "zap_reports":
                         model = path_parts[-3]
                         app_num_str = path_parts[-2]
                         if app_num_str.startswith("app") and app_num_str[3:].isdigit():
-                            legacy_path = self.base_path / model / app_num_str / ".zap_code_report.md"
-                            try:
-                                legacy_path.parent.mkdir(parents=True, exist_ok=True)
-                                if hasattr(os, 'symlink'):
-                                    if legacy_path.exists(): 
-                                        legacy_path.unlink()
-                                    os.symlink(os.path.relpath(output_path, legacy_path.parent), legacy_path)
-                                    logger.info(f"Created symlink from legacy code report path to new file")
-                                else:
-                                    shutil.copy2(output_path, legacy_path)
-                                    logger.info(f"Copied code report to legacy path for compatibility")
-                            except Exception as legacy_err:
-                                logger.warning(f"Could not maintain legacy code report compatibility: {legacy_err}")
+                            app_num = int(app_num_str[3:])
+                            
+                            # Save the markdown report using JsonResultsManager
+                            self.results_manager.save_results(
+                                model=model,
+                                app_num=app_num,
+                                results=report_content,  # Simple string content
+                                file_name=".zap_code_report.md",
+                                maintain_legacy=True
+                            )
+                            logger.info(f"Saved code report with JsonResultsManager for {model}/app{app_num}")
             except Exception as e:
                 logger.error(f"Error saving report to {output_file}: {str(e)}")
                 
@@ -1488,40 +1625,9 @@ class ZAPScanner:
             # Run the scan
             vulnerabilities, summary = self.scan_target(target_url, quick_scan)
             
-            # Ensure report directory exists
-            zap_reports_dir = FileUtils.ensure_directory(self.base_path / "zap_reports" / model / f"app{app_num}")
-            results_path = zap_reports_dir / ".zap_results.json"
+            # Save results using JsonResultsManager
+            self.save_scan_results(model, app_num, vulnerabilities, summary)
             
-            # Save results
-            logger.info(f"Saving scan results to {results_path}")
-            with open(results_path, "w") as f:
-                results_dict = {
-                    "alerts": [], 
-                    "summary": summary, 
-                    "scan_time": datetime.now().isoformat()
-                }
-                for vuln in vulnerabilities:
-                    vuln_dict = asdict(vuln)
-                    if vuln.affected_code: 
-                        vuln_dict['affected_code'] = asdict(vuln.affected_code)
-                    results_dict['alerts'].append(vuln_dict)
-                json.dump(results_dict, f, indent=2)
-                
-            # Create legacy results file for compatibility
-            legacy_results_path = self.base_path / f"{model}/app{app_num}/.zap_results.json"
-            try:
-                legacy_results_path.parent.mkdir(parents=True, exist_ok=True)
-                if hasattr(os, 'symlink'):
-                    if legacy_results_path.exists(): 
-                        legacy_results_path.unlink()
-                    os.symlink(os.path.relpath(results_path, legacy_results_path.parent), legacy_results_path)
-                    logger.info(f"Created symlink from legacy path to new results file")
-                else:
-                    shutil.copy2(results_path, legacy_results_path)
-                    logger.info(f"Copied results to legacy path for compatibility")
-            except Exception as legacy_err:
-                logger.warning(f"Could not maintain legacy file compatibility: {legacy_err}")
-                
             # Update scan status
             scan_status.status = "Complete"
             scan_status.progress = 100

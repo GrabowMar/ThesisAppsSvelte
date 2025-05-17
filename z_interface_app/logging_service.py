@@ -159,16 +159,31 @@ class HandlerFactory:
         filters: Optional[List[logging.Filter]] = None,
         max_bytes: int = LogConfig.MAX_BYTES,
         backup_count: int = LogConfig.BACKUP_COUNT
-    ) -> logging.handlers.RotatingFileHandler:
-        """Create a rotating file handler with the specified configuration."""
+    ) -> Union[logging.handlers.RotatingFileHandler, logging.handlers.WatchedFileHandler]:
+        """Create an appropriate file handler with the specified configuration."""
         filename.parent.mkdir(parents=True, exist_ok=True)
         
-        handler = logging.handlers.RotatingFileHandler(
-            filename=filename,
-            maxBytes=max_bytes,
-            backupCount=backup_count,
-            encoding='utf-8'
-        )
+        # Use WatchedFileHandler on Windows to avoid file locking issues during rotation
+        if os.name == 'nt':
+            # On Windows, use WatchedFileHandler instead of RotatingFileHandler
+            # This handler doesn't try to rename files, avoiding the locking issues
+            handler = logging.handlers.WatchedFileHandler(
+                filename=str(filename),
+                encoding='utf-8'
+            )
+            # Since we're not using rotation directly, implement a basic size check
+            # and manual rotation logic if needed in the future
+            logging.info(f"Using WatchedFileHandler for Windows for log file: {filename}")
+        else:
+            # On Unix-like systems, continue using RotatingFileHandler
+            handler = logging.handlers.RotatingFileHandler(
+                filename=filename,
+                maxBytes=max_bytes,
+                backupCount=backup_count,
+                encoding='utf-8',
+                delay=True  # Only open the file when first record is emitted
+            )
+        
         handler.setFormatter(formatter)
         handler.setLevel(level)
         

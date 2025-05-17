@@ -18,6 +18,9 @@ import gevent
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# Import JsonResultsManager from utils.py for standardized file handling
+from utils import JsonResultsManager
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -51,6 +54,7 @@ class ErrorStats:
 class GraphInfo(TypedDict):
     name: str
     url: str
+
 
 @dataclass
 class PerformanceResult:
@@ -144,21 +148,127 @@ class LocustPerformanceTester:
         self.current_test_dir: Optional[Path] = None
         self.environment: Optional[Environment] = None
         self.runner: Optional[Runner] = None
+        
+        # Initialize JsonResultsManager for standardized results handling
+        self.results_manager = JsonResultsManager(base_path=self.output_dir, module_name="performance")
 
     def _save_consolidated_results(self,
                                    result: PerformanceResult,
                                    model: str,
                                    app_num: int) -> str:
+        """
+        Save performance results using JsonResultsManager.
+        
+        Args:
+            result: The performance result to save
+            model: Model name
+            app_num: Application number
+            
+        Returns:
+            Path to the saved results file
+        """
         try:
-            base_reports_dir = self.output_dir / "z_interface_app" / "performance_reports"
-            app_dir = base_reports_dir / model / f"app{app_num}"
-            app_dir.mkdir(parents=True, exist_ok=True)
-            result_file = app_dir / ".locust_result.json"
-            result.save_json(result_file)
-            return str(result_file)
+            # Use JsonResultsManager to save results
+            file_name = ".locust_result.json"
+            results_path = self.results_manager.save_results(
+                model=model,
+                app_num=app_num,
+                results=result,
+                file_name=file_name,
+                maintain_legacy=True
+            )
+            logger.info(f"Saved consolidated performance results for {model}/app{app_num} using JsonResultsManager")
+            return str(results_path)
         except Exception as e:
             logger.exception(f"Error saving consolidated results for {model}/app{app_num}: {e}")
             return ""
+
+    def load_performance_results(self, model: str, app_num: int) -> Optional[PerformanceResult]:
+        """
+        Load performance test results for a specific model and app number.
+        
+        Args:
+            model: Model name
+            app_num: Application number
+            
+        Returns:
+            PerformanceResult object or None if results not found
+        """
+        try:
+            file_name = ".locust_result.json"
+            data = self.results_manager.load_results(
+                model=model,
+                app_num=app_num,
+                file_name=file_name
+            )
+            
+            if not data:
+                logger.warning(f"No performance results found for {model}/app{app_num}")
+                return None
+                
+            # Convert dictionary back to PerformanceResult object
+            result = PerformanceResult(
+                total_requests=data.get('total_requests', 0),
+                total_failures=data.get('total_failures', 0),
+                avg_response_time=data.get('avg_response_time', 0.0),
+                median_response_time=data.get('median_response_time', 0.0),
+                requests_per_sec=data.get('requests_per_sec', 0.0),
+                start_time=data.get('start_time', ''),
+                end_time=data.get('end_time', ''),
+                duration=data.get('duration', 0),
+                user_count=data.get('user_count', 0),
+                spawn_rate=data.get('spawn_rate', 0),
+                test_name=data.get('test_name', ''),
+                host=data.get('host', '')
+            )
+            
+            # Load endpoints
+            if 'endpoints' in data:
+                result.endpoints = [
+                    EndpointStats(**endpoint) for endpoint in data['endpoints']
+                ]
+            
+            # Load errors
+            if 'errors' in data:
+                result.errors = [
+                    ErrorStats(**error) for error in data['errors']
+                ]
+            
+            # Load other fields
+            result.percentile_95 = data.get('percentile_95', 0.0)
+            result.percentile_99 = data.get('percentile_99', 0.0)
+            result.graph_urls = data.get('graph_urls', [])
+            
+            logger.info(f"Successfully loaded performance results for {model}/app{app_num}")
+            return result
+        except Exception as e:
+            logger.error(f"Error loading performance results for {model}/app{app_num}: {e}")
+            return None
+            
+    def get_latest_test_result(self, model: str, port: int) -> Optional[PerformanceResult]:
+        """
+        Get the latest test result for a specific model and port.
+        
+        Args:
+            model: Model name
+            port: Application port
+            
+        Returns:
+            PerformanceResult object or None if not found
+        """
+        try:
+            # Determine app_num from port
+            from utils import get_app_info
+            app_info = get_app_info(port)
+            if not app_info or 'app_num' not in app_info:
+                logger.warning(f"Could not determine app_num from port {port}")
+                return None
+                
+            app_num = app_info['app_num']
+            return self.load_performance_results(model, app_num)
+        except Exception as e:
+            logger.error(f"Error getting latest test result for {model}/port{port}: {e}")
+            return None
 
     def _setup_test_directory(self, test_name: str) -> Path:
         safe_test_name = re.sub(r'[<>:"/\\|?*\s]+', '_', test_name)
@@ -186,11 +296,42 @@ class LocustPerformanceTester:
         tags: Optional[List[str]] = None,
         html_report: bool = True,
         model: Optional[str] = None,
-        app_num: Optional[int] = None
+        app_num: Optional[int] = None,
+        force_rerun: bool = False
     ) -> Optional[PerformanceResult]:
+        """
+        Run a Locust performance test using the CLI.
+        
+        Args:
+            test_name: Name for the test
+            host: Target host URL
+            locustfile_path: Path to Locust file (optional)
+            endpoints: List of endpoint configurations (used if no locustfile_path)
+            user_count: Number of users to simulate
+            spawn_rate: Rate at which to spawn users
+            run_time: Test duration as string (e.g. "30s", "5m")
+            headless: Whether to run in headless mode
+            workers: Number of worker processes
+            tags: Tags to filter tasks
+            html_report: Whether to generate HTML report
+            model: Optional model name for result organization
+            app_num: Optional app number for result organization
+            force_rerun: Whether to force rerun the test
+            
+        Returns:
+            PerformanceResult object with test results or None if test fails
+        """
         import subprocess
         import csv
+        
+        # Check for cached results if model and app_num are provided and not forcing rerun
+        if model and app_num and not force_rerun:
+            cached_result = self.load_performance_results(model, app_num)
+            if cached_result:
+                logger.info(f"Using cached performance results for {model}/app{app_num}")
+                return cached_result
 
+        # Generate full test name with timestamp if needed
         if not re.search(r'_\d{8}_\d{6}$', test_name):
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             full_test_name = f"{test_name}_{timestamp}"
@@ -285,6 +426,7 @@ class LocustPerformanceTester:
             graph_infos = self._generate_graphs_from_csv(history_file, test_dir)
             result.graph_urls = graph_infos
 
+            # Save results using JsonResultsManager if model and app_num are provided
             if model and app_num:
                 self._save_consolidated_results(result, model, app_num)
 
@@ -392,8 +534,37 @@ class LocustPerformanceTester:
         on_start_callback: Optional[Callable[[Environment], None]] = None,
         on_stop_callback: Optional[Callable[[Environment], None]] = None,
         model: Optional[str] = None,
-        app_num: Optional[int] = None
+        app_num: Optional[int] = None,
+        force_rerun: bool = False
     ) -> PerformanceResult:
+        """
+        Run a Locust performance test using the library API.
+        
+        Args:
+            test_name: Name for the test
+            host: Target host URL
+            user_class: Optional user class for the test
+            endpoints: List of endpoint configurations (required if user_class not provided)
+            user_count: Number of users to simulate
+            spawn_rate: Rate at which to spawn users
+            run_time: Test duration in seconds
+            generate_graphs: Whether to generate performance graphs
+            on_start_callback: Optional callback when test starts
+            on_stop_callback: Optional callback when test ends
+            model: Optional model name for result organization
+            app_num: Optional app number for result organization
+            force_rerun: Whether to force rerun the test instead of using cached results
+            
+        Returns:
+            PerformanceResult object with test results
+        """
+        # Check for cached results if model and app_num are provided and not forcing rerun
+        if model and app_num and not force_rerun:
+            cached_result = self.load_performance_results(model, app_num)
+            if cached_result:
+                logger.info(f"Using cached performance results for {model}/app{app_num}")
+                return cached_result
+        
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         full_test_name = f"{test_name}_{timestamp}"
         test_dir = self._setup_test_directory(full_test_name)
@@ -489,6 +660,7 @@ class LocustPerformanceTester:
                 logger.error(f"Failed to generate graphs for test '{full_test_name}': {graph_err}", exc_info=True)
                 result.graph_urls = []
 
+        # Save results using JsonResultsManager if model and app_num are provided
         if model is not None and app_num is not None:
             self._save_consolidated_results(result, model, app_num)
 
@@ -590,7 +762,20 @@ class DynamicHttpUser(HttpUser):
                         percentile_95 = p95_val
                         percentile_99 = p99_val
                     else:
-                        endpoint_stats = EndpointStats(name=row.get('Name', 'Unknown Endpoint'), method=row.get('Type', 'Unknown Method'), num_requests=int(row.get('Request Count', 0)), num_failures=int(row.get('Failure Count', 0)), median_response_time=row.get('Median Response Time', 0.0), avg_response_time=row.get('Average Response Time', 0.0), min_response_time=row.get('Min Response Time', 0.0), max_response_time=row.get('Max Response Time', 0.0), avg_content_length=row.get('Average Content Size', 0.0), current_rps=row.get('Requests/s', 0.0), current_fail_per_sec=row.get('Failures/s', 0.0), percentiles=percentiles_dict)
+                        endpoint_stats = EndpointStats(
+                            name=row.get('Name', 'Unknown Endpoint'),
+                            method=row.get('Type', 'Unknown Method'),
+                            num_requests=int(row.get('Request Count', 0)),
+                            num_failures=int(row.get('Failure Count', 0)),
+                            median_response_time=row.get('Median Response Time', 0.0),
+                            avg_response_time=row.get('Average Response Time', 0.0),
+                            min_response_time=row.get('Min Response Time', 0.0),
+                            max_response_time=row.get('Max Response Time', 0.0),
+                            avg_content_length=row.get('Average Content Size', 0.0),
+                            current_rps=row.get('Requests/s', 0.0),
+                            current_fail_per_sec=row.get('Failures/s', 0.0),
+                            percentiles=percentiles_dict
+                        )
                         endpoints.append(endpoint_stats)
             else:
                 logger.error(f"Stats CSV file not found or is empty: {stats_file}. Cannot parse results.")
@@ -601,13 +786,34 @@ class DynamicHttpUser(HttpUser):
                 df_failures = pd.read_csv(failures_file)
                 df_failures['Occurrences'] = pd.to_numeric(df_failures['Occurrences'], errors='coerce').fillna(0).astype(int)
                 for _, row in df_failures.iterrows():
-                    error_stats = ErrorStats(method=row.get('Method', 'N/A'), endpoint=row.get('Name', 'N/A'), error_type=row.get('Error', 'Unknown Error'), count=int(row.get('Occurrences', 0)), description=row.get('Error', ''))
+                    error_stats = ErrorStats(
+                        method=row.get('Method', 'N/A'),
+                        endpoint=row.get('Name', 'N/A'),
+                        error_type=row.get('Error', 'Unknown Error'),
+                        count=int(row.get('Occurrences', 0)),
+                        description=row.get('Error', '')
+                    )
                     errors.append(error_stats)
             else:
                 logger.warning(f"Failures CSV file not found or is empty: {failures_file}")
 
             duration = max((end_time - start_time).total_seconds(), 0.1)
-            result = PerformanceResult(total_requests=total_requests, total_failures=total_failures, avg_response_time=avg_response_time, median_response_time=median_response_time, requests_per_sec=requests_per_sec, start_time=start_time.strftime("%Y-%m-%d %H:%M:%S"), end_time=end_time.strftime("%Y-%m-%d %H:%M:%S"), duration=int(duration), endpoints=endpoints, errors=errors, percentile_95=percentile_95, percentile_99=percentile_99, user_count=user_count, spawn_rate=spawn_rate)
+            result = PerformanceResult(
+                total_requests=total_requests,
+                total_failures=total_failures,
+                avg_response_time=avg_response_time,
+                median_response_time=median_response_time,
+                requests_per_sec=requests_per_sec,
+                start_time=start_time.strftime("%Y-%m-%d %H:%M:%S"),
+                end_time=end_time.strftime("%Y-%m-%d %H:%M:%S"),
+                duration=int(duration),
+                endpoints=endpoints,
+                errors=errors,
+                percentile_95=percentile_95,
+                percentile_99=percentile_99,
+                user_count=user_count,
+                spawn_rate=spawn_rate
+            )
             logger.info(f"Successfully parsed CSV results for test ending {result.end_time}")
             return result
         except pd.errors.EmptyDataError as e:
@@ -783,3 +989,61 @@ class DynamicHttpUser(HttpUser):
         except Exception as e:
             logger.error(f"Error generating graphs from CSV '{history_csv_path}': {e}", exc_info=True)
             return []
+
+    def get_performance_summary(self, result: PerformanceResult) -> Dict[str, Any]:
+        """
+        Generate a summary of performance test results.
+        
+        Args:
+            result: PerformanceResult object
+            
+        Returns:
+            Dictionary with summary information
+        """
+        # Define base results directory
+        results_dir = self.base_path / "results"
+        
+        summary = {
+            "total_requests": result.total_requests,
+            "total_failures": result.total_failures,
+            "failure_rate": round((result.total_failures / result.total_requests * 100) if result.total_requests else 0, 2),
+            "avg_response_time": round(result.avg_response_time, 2),
+            "median_response_time": round(result.median_response_time, 2),
+            "percentile_95": round(result.percentile_95, 2),
+            "percentile_99": round(result.percentile_99, 2),
+            "requests_per_sec": round(result.requests_per_sec, 2),
+            "user_count": result.user_count,
+            "duration": result.duration,
+            "test_name": result.test_name,
+            "start_time": result.start_time,
+            "end_time": result.end_time,
+            "results_path": str(results_dir),  # Add results directory path
+            "top_endpoints": [],
+            "error_count": len(result.errors),
+            "scan_time": datetime.now().isoformat()
+        }
+        
+        # Add top 5 endpoints by request count
+        sorted_endpoints = sorted(result.endpoints, key=lambda e: e.num_requests, reverse=True)
+        summary["top_endpoints"] = [
+            {
+                "name": endpoint.name,
+                "method": endpoint.method,
+                "requests": endpoint.num_requests,
+                "failures": endpoint.num_failures,
+                "avg_response_time": round(endpoint.avg_response_time, 2)
+            }
+            for endpoint in sorted_endpoints[:5]
+        ]
+        
+        # Add performance rating based on response time and failure rate
+        if result.avg_response_time < 100 and summary["failure_rate"] < 1:
+            summary["performance_rating"] = "Excellent"
+        elif result.avg_response_time < 300 and summary["failure_rate"] < 5:
+            summary["performance_rating"] = "Good"
+        elif result.avg_response_time < 1000 and summary["failure_rate"] < 10:
+            summary["performance_rating"] = "Fair"
+        else:
+            summary["performance_rating"] = "Poor"
+            
+        return summary

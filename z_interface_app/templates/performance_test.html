@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="space-y-2">
     <div class="bg-gray-200 border border-gray-400 p-1 rounded-sm">
@@ -9,225 +8,227 @@
                 <button id="runTest" class="action-btn h-6 px-2 text-xs rounded-sm">Run Test</button>
                 <button id="stopTest" class="action-btn h-6 px-2 text-xs hidden rounded-sm">Stop Test</button>
             </div>
-
-            <div class="flex items-center space-x-2">
-                <div class="flex items-center space-x-1">
-                    <label for="numUsers" class="text-xs">Users:</label>
-                    <input type="number" id="numUsers" value="10" min="1" max="500" class="h-6 px-2 text-xs border border-gray-300 w-16 rounded-sm">
-                </div>
-                <div class="flex items-center space-x-1">
-                    <label for="duration" class="text-xs">Duration (s):</label>
-                    <input type="number" id="duration" value="30" min="5" max="600" class="h-6 px-2 text-xs border border-gray-300 w-16 rounded-sm">
-                </div>
-                <div class="flex items-center space-x-1">
-                    <label for="spawnRate" class="text-xs">Spawn Rate:</label>
-                    <input type="number" id="spawnRate" value="1" min="1" max="100" class="h-6 px-2 text-xs border border-gray-300 w-16 rounded-sm">
-                </div>
+        <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-1">
+                <label for="numUsers" class="text-xs">Users:</label>
+                <input type="number" id="numUsers" value="10" min="1" max="500" class="h-6 px-2 text-xs border border-gray-300 w-16 rounded-sm">
             </div>
-        </div>
-    </div>
-
-    <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-            <h2 class="font-bold text-sm">Test Information</h2>
-        </div>
-        <div class="p-2">
-            <div class="grid grid-cols-5 gap-2">
-                <div class="border border-gray-300 p-2 rounded-sm">
-                    <div class="text-xs text-gray-600">Model</div>
-                    <div class="text-xs font-bold">{{ model }}</div>
-                </div>
-                <div class="border border-gray-300 p-2 rounded-sm">
-                    <div class="text-xs text-gray-600">Port</div>
-                    <div class="text-xs font-bold">{{ port }}</div>
-                </div>
-                <div class="border border-gray-300 p-2 rounded-sm">
-                    <div class="text-xs text-gray-600">Last Run</div>
-                    <div class="text-xs font-bold" id="lastRun">Never</div>
-                </div>
-                <div class="border border-gray-300 p-2 rounded-sm">
-                    <div class="text-xs text-gray-600">Status</div>
-                    <div class="text-xs font-bold" id="testStatus">Not Started</div>
-                </div>
-                <div class="border border-gray-300 p-2 rounded-sm">
-                    <div class="text-xs text-gray-600">Progress</div>
-                    <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
-                        <div id="progressBar" class="bg-blue-600 rounded-full h-2 transition-all duration-500" style="width: 0%"></div>
-                    </div>
-                </div>
+            <div class="flex items-center space-x-1">
+                <label for="duration" class="text-xs">Duration (s):</label>
+                <input type="number" id="duration" value="30" min="5" max="600" class="h-6 px-2 text-xs border border-gray-300 w-16 rounded-sm">
             </div>
-        </div>
-    </div>
-
-    <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-            <h2 class="font-bold text-sm">Test Results</h2>
-        </div>
-        <div class="p-2">
-            <div class="grid grid-cols-3 gap-2">
-                <div class="border border-gray-300 p-2 rounded-sm">
-                    <div class="text-xs text-gray-600">Total Requests</div>
-                    <div class="text-xs font-bold" id="totalRequests">-</div>
-                </div>
-                <div class="border border-gray-300 p-2 rounded-sm">
-                    <div class="text-xs text-gray-600">Failures</div>
-                    <div class="text-xs font-bold" id="totalFailures">-</div>
-                </div>
-                <div class="border border-gray-300 p-2 rounded-sm">
-                    <div class="text-xs text-gray-600">Requests Per Second</div>
-                    <div class="text-xs font-bold" id="requestsPerSec">-</div>
-                </div>
+            <div class="flex items-center space-x-1">
+                <label for="spawnRate" class="text-xs">Spawn Rate:</label>
+                <input type="number" id="spawnRate" value="1" min="1" max="100" class="h-6 px-2 text-xs border border-gray-300 w-16 rounded-sm">
             </div>
-
-            <div class="grid grid-cols-4 gap-2 mt-2">
-                <div class="border border-gray-300 p-2 rounded-sm">
-                    <div class="text-xs text-gray-600">Avg Response Time</div>
-                    <div class="text-xs font-bold" id="avgResponseTime">-</div>
-                </div>
-                <div class="border border-gray-300 p-2 rounded-sm">
-                    <div class="text-xs text-gray-600">Median Response Time</div>
-                    <div class="text-xs font-bold" id="medianResponseTime">-</div>
-                </div>
-                <div class="border border-gray-300 p-2 rounded-sm">
-                    <div class="text-xs text-gray-600">95th Percentile</div>
-                    <div class="text-xs font-bold" id="percentile95">-</div>
-                </div>
-                <div class="border border-gray-300 p-2 rounded-sm">
-                    <div class="text-xs text-gray-600">99th Percentile</div>
-                    <div class="text-xs font-bold" id="percentile99">-</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-            <h2 class="font-bold text-sm">Endpoint Details</h2>
-        </div>
-        <div class="p-2">
-            <div class="overflow-x-auto">
-                <table class="min-w-full border border-gray-300 rounded-sm text-xs"> <thead>
-                        <tr class="bg-gray-100">
-                            <th class="border border-gray-300 px-2 py-1 text-xs text-left">Endpoint</th>
-                            <th class="border border-gray-300 px-2 py-1 text-xs text-left">Method</th>
-                            <th class="border border-gray-300 px-2 py-1 text-xs text-right">Requests</th>
-                            <th class="border border-gray-300 px-2 py-1 text-xs text-right">Failures</th>
-                            <th class="border border-gray-300 px-2 py-1 text-xs text-right">Median (ms)</th>
-                            <th class="border border-gray-300 px-2 py-1 text-xs text-right">Average (ms)</th>
-                            <th class="border border-gray-300 px-2 py-1 text-xs text-right">Min (ms)</th>
-                            <th class="border border-gray-300 px-2 py-1 text-xs text-right">Max (ms)</th>
-                            <th class="border border-gray-300 px-2 py-1 text-xs text-right">RPS</th>
-                        </tr>
-                    </thead>
-                    <tbody id="endpointTableBody">
-                        <tr>
-                            <td colspan="9" class="border border-gray-300 px-2 py-1 text-xs text-center text-gray-500">Run a test to see results</td> </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div id="errorSection" class="border border-gray-400 bg-white hidden rounded-sm shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-            <h2 class="font-bold text-sm">Error Details</h2>
-        </div>
-        <div class="p-2">
-            <div class="overflow-x-auto">
-                <table class="min-w-full border border-gray-300 rounded-sm text-xs"> <thead>
-                        <tr class="bg-gray-100">
-                            <th class="border border-gray-300 px-2 py-1 text-xs text-left">Error Type</th>
-                            <th class="border border-gray-300 px-2 py-1 text-xs text-right">Count</th>
-                            <th class="border border-gray-300 px-2 py-1 text-xs text-left">Endpoint</th>
-                            <th class="border border-gray-300 px-2 py-1 text-xs text-left">Method</th>
-                            <th class="border border-gray-300 px-2 py-1 text-xs text-left">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody id="errorTableBody">
-                        </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div id="graphsSection" class="border border-gray-400 bg-white hidden rounded-sm shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
-            <h2 class="font-bold text-sm">Performance Graphs</h2>
-        </div>
-        <div class="p-2">
-            <div id="graphsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 <p class="text-xs text-center text-gray-500 col-span-1 md:col-span-2">Graphs will appear here after the test completes.</p> </div>
-        </div>
-    </div>
-
-    <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
-            <h2 class="font-bold text-sm">Endpoints to Test</h2>
-            <button id="addEndpoint" class="action-btn h-6 px-2 text-xs rounded-sm">Add Endpoint</button>
-        </div>
-        <div class="p-2">
-            <div id="endpointsContainer" class="space-y-2">
-                <div class="endpoint-row flex items-center space-x-2">
-                    <div class="flex-grow">
-                        <input type="text" name="endpoint_path" value="/" placeholder="Path (e.g., /api/users)"
-                               class="w-full h-6 px-2 text-xs border border-gray-300 rounded-sm">
-                    </div>
-                    <div>
-                        <select name="endpoint_method" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
-                            <option value="GET">GET</option>
-                            <option value="POST">POST</option>
-                            <option value="PUT">PUT</option>
-                            <option value="DELETE">DELETE</option>
-                            <option value="HEAD">HEAD</option>
-                            <option value="OPTIONS">OPTIONS</option>
-                            <option value="PATCH">PATCH</option>
-                        </select>
-                    </div>
-                    <div>
-                        <input type="number" name="endpoint_weight" value="1" min="1" max="100"
-                               class="h-6 px-2 text-xs border border-gray-300 w-16 rounded-sm" placeholder="Weight">
-                    </div>
-                    <div>
-                        <button class="remove-endpoint action-btn h-6 px-2 text-xs rounded-sm">Remove</button>
-                    </div>
-                </div>
-                </div>
-        </div>
-    </div>
-
-    <div class="border border-gray-400 bg-white rounded-sm shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
-            <h2 class="font-bold text-sm">Test Log</h2>
-            <div class="flex space-x-2">
-                 <button id="viewLatestReportData" class="action-btn h-6 px-2 text-xs hidden rounded-sm">View Latest Data</button>
-                <button id="viewReports" class="action-btn h-6 px-2 text-xs rounded-sm">View All Reports</button>
-                <button id="clearLog" class="action-btn h-6 px-2 text-xs rounded-sm">Clear Log</button>
-            </div>
-        </div>
-        <div class="p-2">
-            <pre id="outputLog" class="text-xs font-mono bg-gray-50 p-2 border border-gray-300 h-48 overflow-auto whitespace-pre-wrap rounded-sm"></pre>
-        </div>
-    </div>
-
-    <div id="reportsSection" class="border border-gray-400 bg-white hidden rounded-sm shadow-sm">
-        <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
-            <h2 class="font-bold text-sm">Previous Reports</h2>
-            <button id="hideReports" class="action-btn h-6 px-2 text-xs rounded-sm">Hide Reports</button>
-        </div>
-        <div class="p-2">
-            <div id="reportsContainer" class="space-y-2">
-                <p class="text-xs text-center text-gray-500">Loading reports...</p> </div>
         </div>
     </div>
 </div>
 
+<div class="border border-gray-400 bg-white rounded-sm shadow-sm">
+    <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+        <h2 class="font-bold text-sm">Test Information</h2>
+    </div>
+    <div class="p-2">
+        <div class="grid grid-cols-5 gap-2">
+            <div class="border border-gray-300 p-2 rounded-sm">
+                <div class="text-xs text-gray-600">Model</div>
+                <div class="text-xs font-bold">{{ model }}</div>
+            </div>
+            <div class="border border-gray-300 p-2 rounded-sm">
+                <div class="text-xs text-gray-600">Port</div>
+                <div class="text-xs font-bold">{{ port }}</div>
+            </div>
+            <div class="border border-gray-300 p-2 rounded-sm">
+                <div class="text-xs text-gray-600">Last Run</div>
+                <div class="text-xs font-bold" id="lastRun">Never</div>
+            </div>
+            <div class="border border-gray-300 p-2 rounded-sm">
+                <div class="text-xs text-gray-600">Status</div>
+                <div class="text-xs font-bold" id="testStatus">Not Started</div>
+            </div>
+            <div class="border border-gray-300 p-2 rounded-sm">
+                <div class="text-xs text-gray-600">Progress</div>
+                <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                    <div id="progressBar" class="bg-blue-600 rounded-full h-2 transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="border border-gray-400 bg-white rounded-sm shadow-sm">
+    <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+        <h2 class="font-bold text-sm">Test Results</h2>
+    </div>
+    <div class="p-2">
+        <div class="grid grid-cols-3 gap-2">
+            <div class="border border-gray-300 p-2 rounded-sm">
+                <div class="text-xs text-gray-600">Total Requests</div>
+                <div class="text-xs font-bold" id="totalRequests">-</div>
+            </div>
+            <div class="border border-gray-300 p-2 rounded-sm">
+                <div class="text-xs text-gray-600">Failures</div>
+                <div class="text-xs font-bold" id="totalFailures">-</div>
+            </div>
+            <div class="border border-gray-300 p-2 rounded-sm">
+                <div class="text-xs text-gray-600">Requests Per Second</div>
+                <div class="text-xs font-bold" id="requestsPerSec">-</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-4 gap-2 mt-2">
+            <div class="border border-gray-300 p-2 rounded-sm">
+                <div class="text-xs text-gray-600">Avg Response Time</div>
+                <div class="text-xs font-bold" id="avgResponseTime">-</div>
+            </div>
+            <div class="border border-gray-300 p-2 rounded-sm">
+                <div class="text-xs text-gray-600">Median Response Time</div>
+                <div class="text-xs font-bold" id="medianResponseTime">-</div>
+            </div>
+            <div class="border border-gray-300 p-2 rounded-sm">
+                <div class="text-xs text-gray-600">95th Percentile</div>
+                <div class="text-xs font-bold" id="percentile95">-</div>
+            </div>
+            <div class="border border-gray-300 p-2 rounded-sm">
+                <div class="text-xs text-gray-600">99th Percentile</div>
+                <div class="text-xs font-bold" id="percentile99">-</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="border border-gray-400 bg-white rounded-sm shadow-sm">
+    <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+        <h2 class="font-bold text-sm">Endpoint Details</h2>
+    </div>
+    <div class="p-2">
+        <div class="overflow-x-auto">
+            <table class="min-w-full border border-gray-300 rounded-sm text-xs">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border border-gray-300 px-2 py-1 text-xs text-left">Endpoint</th>
+                        <th class="border border-gray-300 px-2 py-1 text-xs text-left">Method</th>
+                        <th class="border border-gray-300 px-2 py-1 text-xs text-right">Requests</th>
+                        <th class="border border-gray-300 px-2 py-1 text-xs text-right">Failures</th>
+                        <th class="border border-gray-300 px-2 py-1 text-xs text-right">Median (ms)</th>
+                        <th class="border border-gray-300 px-2 py-1 text-xs text-right">Average (ms)</th>
+                        <th class="border border-gray-300 px-2 py-1 text-xs text-right">Min (ms)</th>
+                        <th class="border border-gray-300 px-2 py-1 text-xs text-right">Max (ms)</th>
+                        <th class="border border-gray-300 px-2 py-1 text-xs text-right">RPS</th>
+                    </tr>
+                </thead>
+                <tbody id="endpointTableBody">
+                    <tr>
+                        <td colspan="9" class="border border-gray-300 px-2 py-1 text-xs text-center text-gray-500">Run a test to see results</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="errorSection" class="border border-gray-400 bg-white hidden rounded-sm shadow-sm">
+    <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+        <h2 class="font-bold text-sm">Error Details</h2>
+    </div>
+    <div class="p-2">
+        <div class="overflow-x-auto">
+            <table class="min-w-full border border-gray-300 rounded-sm text-xs">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border border-gray-300 px-2 py-1 text-xs text-left">Error Type</th>
+                        <th class="border border-gray-300 px-2 py-1 text-xs text-right">Count</th>
+                        <th class="border border-gray-300 px-2 py-1 text-xs text-left">Endpoint</th>
+                        <th class="border border-gray-300 px-2 py-1 text-xs text-left">Method</th>
+                        <th class="border border-gray-300 px-2 py-1 text-xs text-left">Description</th>
+                    </tr>
+                </thead>
+                <tbody id="errorTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="graphsSection" class="border border-gray-400 bg-white hidden rounded-sm shadow-sm">
+    <div class="bg-gray-100 border-b border-gray-400 px-2 py-1">
+        <h2 class="font-bold text-sm">Performance Graphs</h2>
+    </div>
+    <div class="p-2">
+        <div id="graphsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <p class="text-xs text-center text-gray-500 col-span-1 md:col-span-2">Graphs will appear here after the test completes.</p>
+        </div>
+    </div>
+</div>
+
+<div class="border border-gray-400 bg-white rounded-sm shadow-sm">
+    <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
+        <h2 class="font-bold text-sm">Endpoints to Test</h2>
+        <button id="addEndpoint" class="action-btn h-6 px-2 text-xs rounded-sm">Add Endpoint</button>
+    </div>
+    <div class="p-2">
+        <div id="endpointsContainer" class="space-y-2">
+            <div class="endpoint-row flex items-center space-x-2">
+                <div class="flex-grow">
+                    <input type="text" name="endpoint_path" value="/" placeholder="Path (e.g., /api/users)"
+                           class="w-full h-6 px-2 text-xs border border-gray-300 rounded-sm">
+                </div>
+                <div>
+                    <select name="endpoint_method" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                        <option value="HEAD">HEAD</option>
+                        <option value="OPTIONS">OPTIONS</option>
+                        <option value="PATCH">PATCH</option>
+                    </select>
+                </div>
+                <div>
+                    <input type="number" name="endpoint_weight" value="1" min="1" max="100"
+                           class="h-6 px-2 text-xs border border-gray-300 w-16 rounded-sm" placeholder="Weight">
+                </div>
+                <div>
+                    <button class="remove-endpoint action-btn h-6 px-2 text-xs rounded-sm">Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="border border-gray-400 bg-white rounded-sm shadow-sm">
+    <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
+        <h2 class="font-bold text-sm">Test Log</h2>
+        <div class="flex space-x-2">
+            <button id="viewLatestReportData" class="action-btn h-6 px-2 text-xs hidden rounded-sm">View Latest Data</button>
+            <button id="viewReports" class="action-btn h-6 px-2 text-xs rounded-sm">View All Reports</button>
+            <button id="clearLog" class="action-btn h-6 px-2 text-xs rounded-sm">Clear Log</button>
+        </div>
+    </div>
+    <div class="p-2">
+        <pre id="outputLog" class="text-xs font-mono bg-gray-50 p-2 border border-gray-300 h-48 overflow-auto whitespace-pre-wrap rounded-sm"></pre>
+    </div>
+</div>
+
+<div id="reportsSection" class="border border-gray-400 bg-white hidden rounded-sm shadow-sm">
+    <div class="bg-gray-100 border-b border-gray-400 px-2 py-1 flex justify-between items-center">
+        <h2 class="font-bold text-sm">Previous Reports</h2>
+        <button id="hideReports" class="action-btn h-6 px-2 text-xs rounded-sm">Hide Reports</button>
+    </div>
+    <div class="p-2">
+        <div id="reportsContainer" class="space-y-2">
+            <p class="text-xs text-center text-gray-500">Loading reports...</p>
+        </div>
+    </div>
+</div>
+</div>
 <script>
 // Self-contained Performance Test Module
 $(document).ready(function() {
     // Initialize standalone performance test implementation
     const PerformanceTest = {
         // State
-        // reportPath: '', // No longer the primary way to view results
         latestReportId: null, // Store the ID of the last run test
         testRunning: false,
         progressTimer: null,
@@ -238,7 +239,7 @@ $(document).ready(function() {
             runTestBtn: $('#runTest'),
             stopTestBtn: $('#stopTest'),
             clearLogBtn: $('#clearLog'),
-            viewLatestReportBtn: $('#viewLatestReportData'), // Use the new button ID
+            viewLatestReportBtn: $('#viewLatestReportData'),
             viewReportsBtn: $('#viewReports'),
             hideReportsBtn: $('#hideReports'),
             addEndpointBtn: $('#addEndpoint'),
@@ -278,17 +279,17 @@ $(document).ready(function() {
             const initialResultData = {{ last_result | tojson | safe if last_result else 'null' }};
 
             if (initialResultData) {
-                 if (isViewingReport) {
-                     this.appendToLog(`Viewing historical report data for: ${initialResultData.test_name || 'Unknown Test'}`);
-                     $('#runTest, #stopTest, #addEndpoint, #endpointsContainer input, #endpointsContainer select').prop('disabled', true).addClass('opacity-50'); // Disable controls when viewing history
-                 } else {
-                     this.appendToLog('Loaded previous run results.');
-                 }
-                 this.updateStatistics(initialResultData); // Display last saved/viewed results
-                 this.latestReportId = initialResultData.test_name; // Store its ID
-                 if (this.latestReportId && !isViewingReport) { // Show button only if it's the latest *and* not currently viewing history
-                     this.elements.viewLatestReportBtn.removeClass('hidden');
-                 }
+                if (isViewingReport) {
+                    this.appendToLog(`Viewing historical report data for: ${initialResultData.test_name || 'Unknown Test'}`);
+                    $('#runTest, #stopTest, #addEndpoint, #endpointsContainer input, #endpointsContainer select').prop('disabled', true).addClass('opacity-50'); // Disable controls when viewing history
+                } else {
+                    this.appendToLog('Loaded previous run results.');
+                }
+                this.updateStatistics(initialResultData); // Display last saved/viewed results
+                this.latestReportId = initialResultData.test_name; // Store its ID
+                if (this.latestReportId && !isViewingReport) { // Show button only if it's the latest *and* not currently viewing history
+                    this.elements.viewLatestReportBtn.removeClass('hidden');
+                }
             } else {
                 // Set initial placeholders if no data is loaded
                 this.elements.endpointTableBody.html('<tr><td colspan="9" class="border border-gray-300 px-2 py-1 text-xs text-center text-gray-500">Run a test to see results</td></tr>');
@@ -302,14 +303,14 @@ $(document).ready(function() {
             this.elements.runTestBtn.on('click', this.handleRunTest.bind(this));
             this.elements.stopTestBtn.on('click', this.handleStopTest.bind(this));
             this.elements.clearLogBtn.on('click', this.handleClearLog.bind(this));
-            this.elements.viewLatestReportBtn.on('click', this.handleViewLatestReport.bind(this)); // Use new ID
+            this.elements.viewLatestReportBtn.on('click', this.handleViewLatestReport.bind(this));
             this.elements.viewReportsBtn.on('click', this.handleViewReports.bind(this));
             this.elements.hideReportsBtn.on('click', this.handleHideReports.bind(this));
             this.elements.addEndpointBtn.on('click', this.handleAddEndpoint.bind(this));
             this.elements.endpointsContainer.on('click', '.remove-endpoint', this.handleRemoveEndpoint.bind(this));
         },
 
-        // Log handling (no changes)
+        // Log handling
         appendToLog: function(message) {
             if (!this.elements.outputLog.length) return;
             const timestamp = new Date().toLocaleTimeString();
@@ -321,8 +322,7 @@ $(document).ready(function() {
             this.elements.outputLog.scrollTop(this.elements.outputLog[0].scrollHeight);
         },
 
-
-        // Progress simulation (no changes)
+        // Progress simulation
         updateProgress: function(percentage) {
             if (!this.elements.progressBar.length) return;
             this.elements.progressBar.css('width', `${Math.min(Math.max(percentage, 0), 100)}%`);
@@ -350,59 +350,58 @@ $(document).ready(function() {
             return this.progressTimer;
         },
 
-        // Handle endpoint controls (no changes)
+        // Handle endpoint controls
         handleAddEndpoint: function() {
-             const newEndpoint = `
-                 <div class="endpoint-row flex items-center space-x-2">
-                     <div class="flex-grow">
-                         <input type="text" name="endpoint_path" value="/" placeholder="Path (e.g., /api/users)"
-                                class="w-full h-6 px-2 text-xs border border-gray-300 rounded-sm">
-                     </div>
-                     <div>
-                         <select name="endpoint_method" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
-                             <option value="GET">GET</option>
-                             <option value="POST">POST</option>
-                             <option value="PUT">PUT</option>
-                             <option value="DELETE">DELETE</option>
-                             <option value="HEAD">HEAD</option>
-                             <option value="OPTIONS">OPTIONS</option>
-                             <option value="PATCH">PATCH</option>
-                         </select>
-                     </div>
-                     <div>
-                         <input type="number" name="endpoint_weight" value="1" min="1" max="100"
-                                class="h-6 px-2 text-xs border border-gray-300 w-16 rounded-sm" placeholder="Weight">
-                     </div>
-                     <div>
-                         <button class="remove-endpoint action-btn h-6 px-2 text-xs rounded-sm">Remove</button>
-                     </div>
-                 </div>
-             `;
-             this.elements.endpointsContainer.append(newEndpoint);
-         },
+            const newEndpoint = `
+                <div class="endpoint-row flex items-center space-x-2">
+                    <div class="flex-grow">
+                        <input type="text" name="endpoint_path" value="/" placeholder="Path (e.g., /api/users)"
+                               class="w-full h-6 px-2 text-xs border border-gray-300 rounded-sm">
+                    </div>
+                    <div>
+                        <select name="endpoint_method" class="h-6 px-2 text-xs border border-gray-300 rounded-sm">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="DELETE">DELETE</option>
+                            <option value="HEAD">HEAD</option>
+                            <option value="OPTIONS">OPTIONS</option>
+                            <option value="PATCH">PATCH</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input type="number" name="endpoint_weight" value="1" min="1" max="100"
+                               class="h-6 px-2 text-xs border border-gray-300 w-16 rounded-sm" placeholder="Weight">
+                    </div>
+                    <div>
+                        <button class="remove-endpoint action-btn h-6 px-2 text-xs rounded-sm">Remove</button>
+                    </div>
+                </div>
+            `;
+            this.elements.endpointsContainer.append(newEndpoint);
+        },
         handleRemoveEndpoint: function(e) {
-             if (this.elements.endpointsContainer.find('.endpoint-row').length > 1) {
-                 $(e.target).closest('.endpoint-row').remove();
-             } else {
-                 this.appendToLog('Cannot remove the last endpoint');
-             }
-         },
+            if (this.elements.endpointsContainer.find('.endpoint-row').length > 1) {
+                $(e.target).closest('.endpoint-row').remove();
+            } else {
+                this.appendToLog('Cannot remove the last endpoint');
+            }
+        },
         collectEndpoints: function() {
-             const endpoints = [];
-             this.elements.endpointsContainer.find('.endpoint-row').each(function() {
-                 const $row = $(this);
-                 const path = $row.find('input[name="endpoint_path"]').val().trim();
-                 const method = $row.find('select[name="endpoint_method"]').val();
-                 const weight = parseInt($row.find('input[name="endpoint_weight"]').val()) || 1;
-                 if (path) {
-                     endpoints.push({ path: path, method: method, weight: Math.max(1, weight) });
-                 }
-             });
-             return endpoints;
-         },
+            const endpoints = [];
+            this.elements.endpointsContainer.find('.endpoint-row').each(function() {
+                const $row = $(this);
+                const path = $row.find('input[name="endpoint_path"]').val().trim();
+                const method = $row.find('select[name="endpoint_method"]').val();
+                const weight = parseInt($row.find('input[name="endpoint_weight"]').val()) || 1;
+                if (path) {
+                    endpoints.push({ path: path, method: method, weight: Math.max(1, weight) });
+                }
+            });
+            return endpoints;
+        },
 
-
-        // Run test - Modified AJAX handler
+        // Run test
         handleRunTest: function() {
             const numUsers = parseInt($('#numUsers').val()) || 10;
             const duration = parseInt($('#duration').val()) || 30;
@@ -430,7 +429,6 @@ $(document).ready(function() {
             // Reset result fields to placeholders
             this.resetResultFields();
 
-
             if (this.elements.testStatusElement.length) {
                 this.elements.testStatusElement.text('Starting...');
             }
@@ -457,16 +455,16 @@ $(document).ready(function() {
             .done((result) => { // result should contain { status: 'success', data: PerformanceResultDict }
                 // Note: testRunning might be set false by stop button earlier
                 if (!this.testRunning) {
-                     this.appendToLog("Test was stopped before completion signal received.");
-                     // Status might already be 'Stopped', leave it
-                     return; // Don't process results if manually stopped
-                 }
+                    this.appendToLog("Test was stopped before completion signal received.");
+                    // Status might already be 'Stopped', leave it
+                    return; // Don't process results if manually stopped
+                }
                 this.testRunning = false; // Mark as finished
                 clearInterval(this.progressTimer); // Ensure timer stops
 
                 if (result.status === 'success' && result.data) {
                     this.updateProgress(100);
-                    this.updateStatistics(result.data); // *** Update UI with direct data ***
+                    this.updateStatistics(result.data); // Update UI with direct data
                     this.appendToLog(`Test '${result.data.test_name || 'Unnamed'}' completed successfully`);
                     this.latestReportId = result.data.test_name; // Store the ID of this run
                     if (this.elements.viewLatestReportBtn && this.latestReportId) {
@@ -478,21 +476,21 @@ $(document).ready(function() {
                         this.loadReports();
                     }
                 } else {
-                     // Test finished but backend reported an error
+                    // Test finished but backend reported an error
                     this.appendToLog(`Test finished with error: ${result.error || result.message || 'Unknown error in response'}`);
                     this.updateProgress(0); // Show 0 progress on failure
                     if (this.elements.testStatusElement.length) {
                         this.elements.testStatusElement.text('Failed');
                     }
-                     this.resetResultFields(); // Clear stale results on failure
+                    this.resetResultFields(); // Clear stale results on failure
                 }
             })
             .fail((jqXHR, textStatus, errorThrown) => {
-                 // Only process failure if the test wasn't manually stopped
-                 if (!this.testRunning) {
-                      this.appendToLog("Test stopped, ignoring AJAX failure.");
-                      return;
-                  }
+                // Only process failure if the test wasn't manually stopped
+                if (!this.testRunning) {
+                    this.appendToLog("Test stopped, ignoring AJAX failure.");
+                    return;
+                }
                 this.testRunning = false;
                 if (this.progressTimer) clearInterval(this.progressTimer);
                 this.updateProgress(0);
@@ -502,59 +500,58 @@ $(document).ready(function() {
                 }
 
                 let errorMsg = 'Unknown error occurred';
-                 if (textStatus === 'timeout') {
-                     errorMsg = 'Request timed out. The test might be running long or the server is unresponsive.';
-                 } else if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
+                if (textStatus === 'timeout') {
+                    errorMsg = 'Request timed out. The test might be running long or the server is unresponsive.';
+                } else if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
                     errorMsg = jqXHR.responseJSON.error;
                 } else if (jqXHR.statusText && jqXHR.status !== 0) { // Ignore status 0 which can happen on page unload/stop
-                     errorMsg = jqXHR.statusText;
+                    errorMsg = jqXHR.statusText;
                 } else if (errorThrown) {
-                     errorMsg = errorThrown;
+                    errorMsg = errorThrown;
                 }
-                 if (jqXHR.status && jqXHR.status !== 0) {
-                     errorMsg = `[${jqXHR.status}] ${errorMsg}`;
-                 }
+                if (jqXHR.status && jqXHR.status !== 0) {
+                    errorMsg = `[${jqXHR.status}] ${errorMsg}`;
+                }
 
                 this.appendToLog(`Error: ${errorMsg}`);
-                 this.resetResultFields(); // Clear stale results on failure
+                this.resetResultFields(); // Clear stale results on failure
                 console.error('AJAX Error:', jqXHR.status, errorMsg, jqXHR.responseText);
             })
             .always(() => {
                 // Ensure buttons are re-enabled unless test is still somehow marked as running
                 if (!this.testRunning) {
-                     this.elements.runTestBtn.prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+                    this.elements.runTestBtn.prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
                     this.elements.stopTestBtn.addClass('hidden');
                 }
                 if (this.progressTimer) clearInterval(this.progressTimer); // Ensure cleanup
             });
         },
 
-         // Helper to reset result fields
-         resetResultFields: function() {
-             const resultsEls = this.elements.resultsElements;
-             resultsEls.totalRequests.text('-');
-             resultsEls.totalFailures.text('-');
-             resultsEls.requestsPerSec.text('-');
-             resultsEls.avgResponseTime.text('-');
-             resultsEls.medianResponseTime.text('-');
-             resultsEls.percentile95.text('-');
-             resultsEls.percentile99.text('-');
-             // Don't reset Last Run time, keep the previous one
-             this.elements.endpointTableBody.html('<tr><td colspan="9" class="border border-gray-300 px-2 py-1 text-xs text-center text-gray-500">Run a test to see results</td></tr>');
-             this.elements.errorTableBody.html('<tr><td colspan="5" class="border border-gray-300 px-2 py-1 text-xs text-center text-gray-500">No errors reported</td></tr>');
-             this.elements.errorSection.addClass('hidden');
-             this.elements.graphsContainer.html('<p class="text-xs text-center text-gray-500 col-span-1 md:col-span-2">Graphs will appear here after the test completes.</p>');
-             this.elements.graphsSection.addClass('hidden');
-         },
+        // Helper to reset result fields
+        resetResultFields: function() {
+            const resultsEls = this.elements.resultsElements;
+            resultsEls.totalRequests.text('-');
+            resultsEls.totalFailures.text('-');
+            resultsEls.requestsPerSec.text('-');
+            resultsEls.avgResponseTime.text('-');
+            resultsEls.medianResponseTime.text('-');
+            resultsEls.percentile95.text('-');
+            resultsEls.percentile99.text('-');
+            // Don't reset Last Run time, keep the previous one
+            this.elements.endpointTableBody.html('<tr><td colspan="9" class="border border-gray-300 px-2 py-1 text-xs text-center text-gray-500">Run a test to see results</td></tr>');
+            this.elements.errorTableBody.html('<tr><td colspan="5" class="border border-gray-300 px-2 py-1 text-xs text-center text-gray-500">No errors reported</td></tr>');
+            this.elements.errorSection.addClass('hidden');
+            this.elements.graphsContainer.html('<p class="text-xs text-center text-gray-500 col-span-1 md:col-span-2">Graphs will appear here after the test completes.</p>');
+            this.elements.graphsSection.addClass('hidden');
+        },
 
-        // Stop test - attempts to call backend stop endpoint
+        // Stop test
         handleStopTest: function() {
             this.appendToLog('Attempting to stop the test...');
             this.testRunning = false; // Assume stop will work, prevents processing results later
             if (this.progressTimer) clearInterval(this.progressTimer);
             this.elements.testStatusElement.text('Stopping...');
             this.elements.stopTestBtn.prop('disabled', true).addClass('opacity-50'); // Disable stop btn while processing
-
 
             $.ajax({
                 url: `${window.location.pathname}/stop`, // POST to stop route
@@ -568,21 +565,21 @@ $(document).ready(function() {
                 const errorMsg = jqXHR.responseJSON?.error || 'Failed to send stop request';
                 this.appendToLog(`Error stopping test: ${errorMsg}`);
                 // Might still be stopped, or maybe not. Status is uncertain.
-                 this.elements.testStatusElement.text('Stop Failed'); // Indicate uncertainty
+                this.elements.testStatusElement.text('Stop Failed'); // Indicate uncertainty
             })
             .always(() => {
-                 // Re-enable run button, keep stop button hidden and disabled
-                 this.elements.runTestBtn.prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
-                 this.elements.stopTestBtn.addClass('hidden').prop('disabled', false).removeClass('opacity-50');
-                 this.updateProgress(0); // Reset progress bar on stop
+                // Re-enable run button, keep stop button hidden and disabled
+                this.elements.runTestBtn.prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+                this.elements.stopTestBtn.addClass('hidden').prop('disabled', false).removeClass('opacity-50');
+                this.updateProgress(0); // Reset progress bar on stop
             });
         },
 
-        // Clear log (no changes)
+        // Clear log
         handleClearLog: function() {
             if (this.elements.outputLog.length) {
                 this.elements.outputLog.text('');
-                 this.appendToLog('Log cleared.'); // Add confirmation message
+                this.appendToLog('Log cleared.'); // Add confirmation message
             }
         },
 
@@ -598,18 +595,16 @@ $(document).ready(function() {
             }
         },
 
-
-        // Handle reports view (no changes)
+        // Handle reports view
         handleViewReports: function() {
             this.elements.reportsSection.removeClass('hidden');
             this.loadReports(); // Load reports when section is shown
-         },
+        },
         handleHideReports: function() {
             this.elements.reportsSection.addClass('hidden');
         },
 
-
-        // Load reports list - Modified to handle new structure
+        // Load reports list
         loadReports: function() {
             const $container = this.elements.reportsContainer;
             if (!$container.length) return;
@@ -621,21 +616,24 @@ $(document).ready(function() {
                 method: 'GET',
                 cache: false // Prevent caching of the report list
             })
-            .done((result) => { // Expecting { status: 'success', data: { reports: [...] } }
-                const reports = result.data.reports; // Access reports array
+            .done((result) => {
+                const reports = result.reports || []; // Get reports directly from response
 
                 if (reports && reports.length > 0) {
                     $container.empty();
                     reports.forEach((report) => {
-                         // Link to view the report data (which renders the template)
-                         const viewUrl = `/performance/${this.elements.modelName}/${this.elements.portNumber}/reports/${report.id}`;
-                         // Link to view raw JSON result data
-                         const resultsJsonUrl = report.results_url; // Use URL from backend if available
+                        // Link to view the report data (which renders the template)
+                        const viewUrl = `/performance/${this.elements.modelName}/${this.elements.portNumber}/reports/${report.id}`;
+                        // Link to view raw JSON result data
+                        const resultsJsonUrl = report.results_url || null;
 
                         const $reportItem = $(`
                             <div class="report-item border border-gray-300 p-2 rounded-sm text-xs mb-2">
                                 <div class="flex justify-between items-center mb-1">
-                                    <span class="font-semibold break-all" title="${report.id}">${report.created}</span> <div class="flex space-x-2 flex-shrink-0 ml-2"> <a href="${viewUrl}" target="_blank" class="action-btn h-6 px-2 text-xs rounded-sm whitespace-nowrap">View Data</a> <button class="action-btn h-6 px-2 text-xs rounded-sm delete-report" data-id="${report.id}">Delete</button>
+                                    <span class="font-semibold break-all" title="${report.id}">${report.created}</span>
+                                    <div class="flex space-x-2 flex-shrink-0 ml-2">
+                                        <a href="${viewUrl}" target="_blank" class="action-btn h-6 px-2 text-xs rounded-sm whitespace-nowrap">View Data</a>
+                                        <button class="action-btn h-6 px-2 text-xs rounded-sm delete-report" data-id="${report.id}">Delete</button>
                                     </div>
                                 </div>
                                 ${report.graphs && report.graphs.length > 0 ?
@@ -648,9 +646,9 @@ $(document).ready(function() {
                                         </div>
                                     </div>` : '<div class="text-gray-500 text-xs mt-1 italic">No graphs generated for this run.</div>'}
                                 ${resultsJsonUrl ?
-                                     `<div class="mt-1 border-t border-gray-200 pt-1">
-                                          <a href="${resultsJsonUrl}" target="_blank" class="text-blue-600 hover:underline text-xs">View Raw JSON Result</a>
-                                      </div>`: ''}
+                                    `<div class="mt-1 border-t border-gray-200 pt-1">
+                                        <a href="${resultsJsonUrl}" target="_blank" class="text-blue-600 hover:underline text-xs">View Raw JSON Result</a>
+                                    </div>`: ''}
                             </div>
                         `);
 
@@ -673,17 +671,15 @@ $(document).ready(function() {
             });
         },
 
-
-        // Delete a report - Modified URL
+        // Delete a report
         deleteReport: function(reportId) {
             if (!confirm(`Are you sure you want to delete the report directory '${reportId}' and its contents?\nThis action cannot be undone.`)) {
                 return;
             }
 
             // Visually indicate deletion attempt
-             const $reportItem = this.elements.reportsContainer.find(`.delete-report[data-id="${reportId}"]`).closest('.report-item');
-             $reportItem.addClass('opacity-50');
-
+            const $reportItem = this.elements.reportsContainer.find(`.delete-report[data-id="${reportId}"]`).closest('.report-item');
+            $reportItem.addClass('opacity-50');
 
             $.ajax({
                 url: `${window.location.pathname}/reports/${reportId}/delete`, // POST to delete route
@@ -692,25 +688,25 @@ $(document).ready(function() {
             .done((result) => {
                 this.appendToLog(`Report deleted: ${reportId} (${result.message || 'Success'})`);
                 $reportItem.remove(); // Remove item directly on success
-                 // Check if container is empty now
-                 if (this.elements.reportsContainer.children().length === 0) {
-                      this.elements.reportsContainer.html('<p class="text-xs text-center text-gray-500">No past reports found.</p>');
-                  }
-                 // If the deleted report was the latest one, update state
-                 if (this.latestReportId === reportId) {
-                     this.latestReportId = null;
-                     this.elements.viewLatestReportBtn.addClass('hidden');
-                 }
+                // Check if container is empty now
+                if (this.elements.reportsContainer.children().length === 0) {
+                    this.elements.reportsContainer.html('<p class="text-xs text-center text-gray-500">No past reports found.</p>');
+                }
+                // If the deleted report was the latest one, update state
+                if (this.latestReportId === reportId) {
+                    this.latestReportId = null;
+                    this.elements.viewLatestReportBtn.addClass('hidden');
+                }
             })
             .fail((jqXHR) => {
-                 $reportItem.removeClass('opacity-50'); // Remove visual indicator on failure
+                $reportItem.removeClass('opacity-50'); // Remove visual indicator on failure
                 const errorMsg = jqXHR.responseJSON?.error || 'Failed to delete report';
                 this.appendToLog(`Error deleting report ${reportId}: ${errorMsg}`);
                 alert(`Error deleting report ${reportId}: ${errorMsg}`); // Show alert as well
             });
         },
 
-        // Update UI with test statistics - Reworked for direct data
+        // Update UI with test statistics
         updateStatistics: function(data) { // data is the PerformanceResult dictionary
             if (!data) {
                 this.appendToLog('Warning: No result data received or data is invalid.');
@@ -727,7 +723,7 @@ $(document).ready(function() {
                 resultsEls.totalRequests.text(totalRequests.toLocaleString());
                 const failureCount = data.total_failures || 0;
                 const failureRate = (totalRequests > 0) ? (failureCount / totalRequests * 100).toFixed(1) : '0.0'; // One decimal place for rate
-                 resultsEls.totalFailures.text(`${failureCount.toLocaleString()} (${failureRate}%)`).toggleClass('text-red-600', failureCount > 0); // Highlight failures
+                resultsEls.totalFailures.text(`${failureCount.toLocaleString()} (${failureRate}%)`).toggleClass('text-red-600', failureCount > 0); // Highlight failures
 
                 resultsEls.requestsPerSec.text(data.requests_per_sec ? data.requests_per_sec.toFixed(2) : '0.00');
                 resultsEls.avgResponseTime.text(data.avg_response_time ? data.avg_response_time.toFixed(1) + ' ms' : '-');
@@ -749,8 +745,8 @@ $(document).ready(function() {
                 // Update error table
                 this.updateErrorTable(data.errors || []);
 
-                 // Update graphs
-                 this.updateGraphs(data.graph_urls || []); // Pass graph URLs
+                // Update graphs
+                this.updateGraphs(data.graph_urls || []); // Pass graph URLs
 
             } catch (error) {
                 console.error('Error updating statistics UI:', error, data);
@@ -758,40 +754,39 @@ $(document).ready(function() {
             }
         },
 
-        // Update graphs section (no logic changes)
+        // Update graphs section
         updateGraphs: function(graphUrls) {
-             const $graphsContainer = this.elements.graphsContainer;
-             const $graphsSection = this.elements.graphsSection;
+            const $graphsContainer = this.elements.graphsContainer;
+            const $graphsSection = this.elements.graphsSection;
 
-             if (!$graphsContainer.length || !$graphsSection.length) return;
-             $graphsContainer.empty(); // Clear previous graphs
+            if (!$graphsContainer.length || !$graphsSection.length) return;
+            $graphsContainer.empty(); // Clear previous graphs
 
-             if (graphUrls && graphUrls.length > 0) {
-                 this.appendToLog(`Displaying ${graphUrls.length} graphs.`);
-                 graphUrls.forEach(graph => {
-                     // Basic check for valid URL structure (starts with / or http)
-                     if (graph.url && (graph.url.startsWith('/') || graph.url.startsWith('http'))) {
-                         const $graphItem = $(`
-                             <div class="graph-item border border-gray-300 p-2 rounded-sm shadow-sm">
-                                 <h3 class="text-xs font-semibold text-center mb-2 truncate" title="${graph.name || 'Graph'}">${graph.name || 'Graph'}</h3>
-                                 <a href="${graph.url}" target="_blank" title="Click to open graph image in new tab">
-                                     <img src="${graph.url}" alt="${graph.name || 'Performance Graph'}" class="w-full h-auto object-contain max-h-80 hover:opacity-80 transition-opacity">
-                                 </a>
-                             </div>
-                         `);
-                         $graphsContainer.append($graphItem);
-                     } else {
-                          this.appendToLog(`Skipping invalid graph URL: ${graph.url}`);
-                      }
-                 });
-                 $graphsSection.removeClass('hidden'); // Show the section
-             } else {
-                 this.appendToLog('No graphs were generated or found for this test run.');
-                 $graphsContainer.html('<p class="text-xs text-center text-gray-500 col-span-1 md:col-span-2">No graphs available.</p>');
-                 $graphsSection.removeClass('hidden'); // Show section even if no graphs, container shows message
-             }
-         },
-
+            if (graphUrls && graphUrls.length > 0) {
+                this.appendToLog(`Displaying ${graphUrls.length} graphs.`);
+                graphUrls.forEach(graph => {
+                    // Basic check for valid URL structure (starts with / or http)
+                    if (graph.url && (graph.url.startsWith('/') || graph.url.startsWith('http'))) {
+                        const $graphItem = $(`
+                            <div class="graph-item border border-gray-300 p-2 rounded-sm shadow-sm">
+                                <h3 class="text-xs font-semibold text-center mb-2 truncate" title="${graph.name || 'Graph'}">${graph.name || 'Graph'}</h3>
+                                <a href="${graph.url}" target="_blank" title="Click to open graph image in new tab">
+                                    <img src="${graph.url}" alt="${graph.name || 'Performance Graph'}" class="w-full h-auto object-contain max-h-80 hover:opacity-80 transition-opacity">
+                                </a>
+                            </div>
+                        `);
+                        $graphsContainer.append($graphItem);
+                    } else {
+                        this.appendToLog(`Skipping invalid graph URL: ${graph.url}`);
+                    }
+                });
+                $graphsSection.removeClass('hidden'); // Show the section
+            } else {
+                this.appendToLog('No graphs were generated or found for this test run.');
+                $graphsContainer.html('<p class="text-xs text-center text-gray-500 col-span-1 md:col-span-2">No graphs available.</p>');
+                $graphsSection.removeClass('hidden'); // Show section even if no graphs, container shows message
+            }
+        },
 
         // Update endpoint table
         updateEndpointTable: function(endpoints) {
@@ -800,17 +795,18 @@ $(document).ready(function() {
             $tableBody.empty();
 
             if (endpoints && endpoints.length > 0) {
-                // Sort endpoints, e.g., by name or requests descending
-                 endpoints.sort((a, b) => (b.num_requests || 0) - (a.num_requests || 0));
+                // Sort endpoints by requests descending
+                endpoints.sort((a, b) => (b.num_requests || 0) - (a.num_requests || 0));
 
                 endpoints.forEach((endpoint) => {
                     const failures = endpoint.num_failures || 0;
-                     const failureRate = (endpoint.num_requests > 0) ? (failures / endpoint.num_requests * 100).toFixed(1) : '0.0';
-                     const failureClass = failures > 0 ? 'text-red-600 font-semibold' : ''; // Highlight failures
+                    const failureRate = (endpoint.num_requests > 0) ? (failures / endpoint.num_requests * 100).toFixed(1) : '0.0';
+                    const failureClass = failures > 0 ? 'text-red-600 font-semibold' : ''; // Highlight failures
 
                     const $row = $('<tr>');
                     $row.html(`
-                        <td class="border border-gray-300 px-2 py-1 text-xs break-all" title="${endpoint.name || ''}">${endpoint.name || ''}</td> <td class="border border-gray-300 px-2 py-1 text-xs">${endpoint.method || ''}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs break-all" title="${endpoint.name || ''}">${endpoint.name || ''}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs">${endpoint.method || ''}</td>
                         <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.num_requests || 0).toLocaleString()}</td>
                         <td class="border border-gray-300 px-2 py-1 text-xs text-right ${failureClass}">${failures.toLocaleString()} (${failureRate}%)</td>
                         <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(endpoint.median_response_time || 0).toFixed(1)}</td>
@@ -822,8 +818,8 @@ $(document).ready(function() {
                     $tableBody.append($row);
                 });
             } else {
-                 // Use the placeholder only if not actively running a test
-                 const placeholderMsg = this.testRunning ? "Waiting for data..." : "No endpoint data available";
+                // Use the placeholder only if not actively running a test
+                const placeholderMsg = this.testRunning ? "Waiting for data..." : "No endpoint data available";
                 $tableBody.html(`<tr><td colspan="9" class="border border-gray-300 px-2 py-1 text-xs text-center text-gray-500">${placeholderMsg}</td></tr>`);
             }
         },
@@ -837,15 +833,18 @@ $(document).ready(function() {
             if (errors && errors.length > 0) {
                 $errorSection.removeClass('hidden');
                 $errorTable.empty();
-                 // Sort errors by count descending
-                 errors.sort((a, b) => (b.count || 0) - (a.count || 0));
+                // Sort errors by count descending
+                errors.sort((a, b) => (b.count || 0) - (a.count || 0));
 
                 errors.forEach((error) => {
                     const $row = $('<tr>');
                     $row.html(`
-                        <td class="border border-gray-300 px-2 py-1 text-xs text-red-600 break-words" title="${error.error_type || 'Unknown'}">${error.error_type || 'Unknown'}</td> <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(error.count || 0).toLocaleString()}</td>
-                        <td class="border border-gray-300 px-2 py-1 text-xs break-all" title="${error.endpoint || ''}">${error.endpoint || ''}</td> <td class="border border-gray-300 px-2 py-1 text-xs">${error.method || ''}</td>
-                        <td class="border border-gray-300 px-2 py-1 text-xs break-words" title="${error.description || ''}">${error.description || ''}</td> `);
+                        <td class="border border-gray-300 px-2 py-1 text-xs text-red-600 break-words" title="${error.error_type || 'Unknown'}">${error.error_type || 'Unknown'}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs text-right">${(error.count || 0).toLocaleString()}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs break-all" title="${error.endpoint || ''}">${error.endpoint || ''}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs">${error.method || ''}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs break-words" title="${error.description || ''}">${error.description || ''}</td>
+                    `);
                     $errorTable.append($row);
                 });
             } else {
