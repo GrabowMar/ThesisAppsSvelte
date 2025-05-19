@@ -550,6 +550,10 @@ class GPT4AllAnalyzer:
         self.base_path = Path(base_path) if base_path else Path.cwd()
         self.client = GPT4AllClient()
         
+        if "z_interface_app" in str(self.base_path):
+            self.base_path = self.base_path.parent
+        else:
+            self.base_path = self.base_path
         # Initialize JsonResultsManager
         self.results_manager = JsonResultsManager(base_path=self.base_path, module_name="gpt4all")
         
@@ -775,9 +779,8 @@ class GPT4AllAnalyzer:
                 app_num=app_num,
                 results=results_data,
                 file_name=file_name,
-                maintain_legacy=True
+                maintain_legacy=False
             )
-            
             logger.info(f"Saved requirements analysis results to {results_path}")
             return results_path
         except Exception as e:

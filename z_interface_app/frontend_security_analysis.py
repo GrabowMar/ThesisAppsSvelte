@@ -990,7 +990,7 @@ class FrontendSecurityAnalyzer: #
                     "tool_outputs": tool_outputs, # Consider truncating long outputs if needed #
                     "analysis_timestamp": datetime.now().isoformat() #
                 }
-                self.results_manager.save_results(model, app_num, results_to_save, file_name=results_filename) #
+                self.results_manager.save_results(model, app_num, results_to_save, file_name=results_filename, maintain_legacy=False) #
                 logger.info(f"Saved frontend security analysis results for {model}/app{app_num} to {results_filename}") #
             else:
                 logger.info(f"Results for non-full frontend scan of {model}/app{app_num} were not saved.")

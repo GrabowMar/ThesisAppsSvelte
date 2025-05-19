@@ -175,7 +175,7 @@ class LocustPerformanceTester:
                 app_num=app_num,
                 results=result,
                 file_name=file_name,
-                maintain_legacy=True
+                maintain_legacy=False
             )
             logger.info(f"Saved consolidated performance results for {model}/app{app_num} using JsonResultsManager")
             return str(results_path)

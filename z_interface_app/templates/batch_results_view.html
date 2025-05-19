@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Batch Results: {{ batch_id }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-8 px-4">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Batch Analysis Results</h1>
+        <a href="{{ url_for('batch_analysis.batch_dashboard') }}" class="text-blue-600 hover:text-blue-800">&larr; Back to Batch Dashboard</a>
+    </div>
+    <p class="text-xl text-gray-600 mb-4">Batch ID: <span class="font-semibold">{{ batch_id }}</span></p>
+
+    {% include '_flash_messages.html' %}
+
+    {% if app_results %}
+    <div class="space-y-6">
+        {% for app_result in app_results %}
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-3">
+                <a href="{{ url_for('main.index') }}#{{ app_result.model }}-app{{ app_result.app_num }}" class="hover:underline">
+                    {{ app_result.model }} / App {{ app_result.app_num }}
+                </a>
+            </h2>
+            <p class="mb-1"><span class="font-medium">Overall App Status:</span>
+                <span class="font-semibold px-2 py-1 rounded-full text-xs
+                    {% if app_result.status == 'completed' %} text-green-700 bg-green-100
+                    {% elif app_result.status == 'completed_from_file' %} text-green-700 bg-green-100
+                    {% elif app_result.status == 'completed_with_errors' %} text-yellow-700 bg-yellow-100
+                    {% elif app_result.status in ['error', 'error_loading_summary'] %} text-red-700 bg-red-100
+                    {% elif app_result.status in ['in_progress', 'starting'] %} text-blue-700 bg-blue-100
+                    {% else %} text-gray-700 bg-gray-100
+                    {% endif %}">
+                    {{ app_result.status | replace('_', ' ') | title }}
+                </span>
+            </p>
+            <p class="mb-3 text-sm text-gray-500"><span class="font-medium">Summary Timestamp:</span> {{ app_result.timestamp | format_datetime if app_result.timestamp else 'N/A' }}</p>
+
+            {% if app_result.overall_error %}
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 mb-3 text-sm" role="alert">
+                <p class="font-bold">Overall Error for this App in Batch:</p>
+                <p>{{ app_result.overall_error }}</p>
+            </div>
+            {% endif %}
+
+            <h3 class="text-lg font-medium text-gray-600 mt-4 mb-2">Analysis Details:</h3>
+            {% if app_result.analyses %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full leading-normal text-sm">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2 border text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Analysis Type</th>
+                            <th class="px-4 py-2 border text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-4 py-2 border text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Details/Link</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white">
+                        {% for analysis_type, details in app_result.analyses.items() %}
+                        <tr>
+                            <td class="px-4 py-2 border">{{ analysis_type | replace('_', ' ') | title }}</td>
+                            <td class="px-4 py-2 border">
+                                <span class="font-semibold px-1.5 py-0.5 rounded-full text-xs
+                                    {% if details.status == 'completed' %} text-green-700 bg-green-100
+                                    {% elif details.status == 'failed' %} text-red-700 bg-red-100
+                                    {% elif details.status == 'skipped' %} text-gray-700 bg-gray-100
+                                    {% elif details.status == 'pending' %} text-blue-700 bg-blue-100
+                                    {% else %} text-yellow-700 bg-yellow-100
+                                    {% endif %}">
+                                    {{ details.status | title }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-2 border">
+                                {% if details.error %}
+                                    <span class="text-red-600" title="{{ details.error }}">{{ details.error | truncate(70) }}</span>
+                                {% elif details.reason %}
+                                    <span class="text-gray-600">{{ details.reason }}</span>
+                                {% elif details.tool_status %}
+                                    <small class="text-gray-500" title="{{ details.tool_status | tojson }}">Tool Status (hover)</small>
+                                {% elif details.scan_id %}
+                                    <small class="text-gray-500">ZAP Scan ID: {{ details.scan_id }}</small>
+                                {% else %}
+                                    {% if details.status == 'completed' %}
+                                        {% if analysis_type == 'backend_security' %}
+                                            <a href="{{ url_for('analysis.security_analysis', model=app_result.model, app_num=app_result.app_num) }}?full=true" class="text-indigo-600 hover:text-indigo-800">View Report</a>
+                                        {% elif analysis_type == 'frontend_security' %}
+                                            <a href="{{ url_for('analysis.frontend_security_analysis', model=app_result.model, app_num=app_result.app_num) }}?full=true" class="text-indigo-600 hover:text-indigo-800">View Report</a>
+                                        {% elif analysis_type == 'performance' %}
+                                            <a href="{{ url_for('performance.performance_test', model=app_result.model, port= (5500 + get_model_index(app_result.model) * 100 + (app_result.app_num-1)*2 + 1) ) }}" class="text-indigo-600 hover:text-indigo-800">View Test Page</a>
+                                        {% elif analysis_type == 'zap' %}
+                                            <a href="{{ url_for('zap.zap_scan_page', model=app_result.model, app_num=app_result.app_num) }}" class="text-indigo-600 hover:text-indigo-800">View ZAP Report</a>
+                                        {% elif analysis_type == 'gpt4all' %}
+                                            <a href="{{ url_for('gpt4all.gpt4all_analysis', model=app_result.model, app_num=app_result.app_num) }}" class="text-indigo-600 hover:text-indigo-800">View Requirements</a>
+                                        {% else %}
+                                        N/A
+                                        {% endif %}
+                                    {% else %}
+                                    N/A
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-sm text-gray-500">No specific analysis details available for this app in the batch summary.</p>
+            {% endif %}
+            <div class="mt-4">
+                 <a href="{{ url_for('main.index') }}#{{ app_result.model }}-app{{ app_result.app_num }}" class="text-blue-500 hover:text-blue-700 text-sm">View App on Main Dashboard &rarr;</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
+        <p class="font-bold">No Results</p>
+        <p>No application analysis summaries found for this batch run ID.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{# Add specific JS for this page if needed #}
+{% endblock %}

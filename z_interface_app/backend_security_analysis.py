@@ -814,7 +814,7 @@ class BackendSecurityAnalyzer: #
                     "tool_outputs": tool_outputs, #
                     "analysis_timestamp": datetime.now().isoformat() #
                 }
-                self.results_manager.save_results(model, app_num, results_to_save, file_name=results_filename) #
+                self.results_manager.save_results(model, app_num, results_to_save, file_name=results_filename, maintain_legacy=False) #
                 logger.info(f"Saved backend security analysis results for {model}/app{app_num} to {results_filename}") #
             else:
                 logger.info(f"Results for non-full backend scan of {model}/app{app_num} were not saved.")

@@ -213,6 +213,11 @@ class ZAPScanner:
         self.oast_service_configured = False
         self.callback_port = None
         
+
+        if "z_interface_app" in str(self.base_path):
+            self.base_path = self.base_path.parent
+        else:
+            self.base_path = self.base_path
         # Initialize JsonResultsManager for standardized JSON handling
         self.results_manager = JsonResultsManager(base_path=self.base_path, module_name="zap_scanner")
         
@@ -1172,7 +1177,7 @@ class ZAPScanner:
                 app_num=app_num,
                 results=results_dict,
                 file_name=file_name,
-                maintain_legacy=True
+                maintain_legacy=False
             )
             
             logger.info(f"Saved scan results to {results_path}")

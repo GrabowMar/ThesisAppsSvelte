@@ -2924,3 +2924,28 @@ Traceback (most recent call last):
 AttributeError: 'ajaxSpider' object has no attribute 'set_option_element_id'. Did you mean: 'set_option_event_wait'?
 2025-05-17 21:08:17 [ERROR] [-] client_errors.client_errors.log_client_error:730 - ClientError: Unknown error | URL: http://localhost:5000/performance/Llama/5503 | File: N/A:N/A:N/A | UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36
 2025-05-18 00:52:19 [ERROR] [-] client_errors.client_errors.log_client_error:730 - ClientError: Unknown error | URL: http://localhost:5000/performance/Llama/5503 | File: N/A:N/A:N/A | UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36
+2025-05-18 01:06:17 [ERROR] [-] zap_scanner.zap_scanner._run_ajax_spider:1100 - Unexpected error running AJAX Spider: 'ajaxSpider' object has no attribute 'set_option_element_id'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\zap_scanner.py", line 1067, in _run_ajax_spider
+    self.zap.ajaxSpider.set_option_element_id(None)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ajaxSpider' object has no attribute 'set_option_element_id'. Did you mean: 'set_option_event_wait'?
+2025-05-18 01:49:01 [ERROR] [-] client_errors.client_errors.log_client_error:730 - ClientError: Unknown error | URL: http://localhost:5000/performance/Llama/5503 | File: N/A:N/A:N/A | UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36
+2025-05-18 01:57:42 [ERROR] [-] zap_scanner.zap_scanner._run_ajax_spider:1100 - Unexpected error running AJAX Spider: 'ajaxSpider' object has no attribute 'set_option_element_id'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\zap_scanner.py", line 1067, in _run_ajax_spider
+    self.zap.ajaxSpider.set_option_element_id(None)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ajaxSpider' object has no attribute 'set_option_element_id'. Did you mean: 'set_option_event_wait'?
+2025-05-18 02:06:48 [ERROR] [-] zap_scanner.zap_scanner._run_ajax_spider:1105 - Unexpected error running AJAX Spider: 'ajaxSpider' object has no attribute 'set_option_element_id'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\zap_scanner.py", line 1072, in _run_ajax_spider
+    self.zap.ajaxSpider.set_option_element_id(None)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ajaxSpider' object has no attribute 'set_option_element_id'. Did you mean: 'set_option_event_wait'?
+2025-05-18 02:10:38 [ERROR] [-] zap_scanner.zap_scanner._run_ajax_spider:1105 - Unexpected error running AJAX Spider: 'ajaxSpider' object has no attribute 'set_option_element_id'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\zap_scanner.py", line 1072, in _run_ajax_spider
+    self.zap.ajaxSpider.set_option_element_id(None)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ajaxSpider' object has no attribute 'set_option_element_id'. Did you mean: 'set_option_event_wait'?
