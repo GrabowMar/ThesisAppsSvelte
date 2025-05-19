@@ -535,7 +535,7 @@ def get_apps_for_model(model_name: str) -> List[Dict[str, Any]]:
         models_base_dir = get_models_base_dir(config)
         model_base_dir = models_base_dir / model_name
         
-        util_logger.debug(f"Scanning for apps in model base directory: {model_base_dir}")
+        # util_logger.debug(f"Scanning for apps in model base directory: {model_base_dir}")
         if not model_base_dir.exists() or not model_base_dir.is_dir():
             util_logger.warning(f"Model base directory does not exist: {model_base_dir}")
             return []

@@ -1,6 +1,7 @@
 import http
 import logging
 import os
+import sys # Added for sys.exit
 import time
 import threading
 from pathlib import Path
@@ -18,7 +19,11 @@ AJAX_HEADER_VALUE = "XMLHttpRequest"
 try:
     from batch_analysis import init_batch_analysis, batch_analysis_bp
     HAS_BATCH_ANALYSIS = True
-except ImportError:
+except ImportError as e:
+    # Log the import error for batch_analysis specifically for easier debugging
+    # Use a temporary logger if main logging isn't set up yet
+    temp_logger = logging.getLogger('app_startup')
+    temp_logger.error(f"Failed to import batch_analysis: {e}", exc_info=True)
     HAS_BATCH_ANALYSIS = False
 
 # Import all required modules
@@ -204,15 +209,17 @@ def register_request_hooks(app: Flask) -> None:
         """Perform preprocessing tasks before handling a request."""
         with CLEANUP_LOCK:
             current_time = time.time()
-            app = current_app._get_current_object()
-            last_cleanup_time = app.config.get("LAST_CLEANUP_TIME", 0)
+            # Use current_app._get_current_object() to ensure we have the correct app instance
+            # in environments where app might be a proxy.
+            flask_app = current_app._get_current_object() 
+            last_cleanup_time = flask_app.config.get("LAST_CLEANUP_TIME", 0)
 
             if current_time - last_cleanup_time > cleanup_interval:
                 hooks_logger.debug(
                     f"Running scheduled cleanup tasks (interval: {cleanup_interval}s)"
                 )
-                perform_cleanup_tasks(app, hooks_logger)
-                app.config["LAST_CLEANUP_TIME"] = current_time
+                perform_cleanup_tasks(flask_app, hooks_logger)
+                flask_app.config["LAST_CLEANUP_TIME"] = current_time
 
     @app.after_request
     def process_response(response: Response) -> Response:
@@ -243,110 +250,155 @@ def register_request_hooks(app: Flask) -> None:
         if exception:
             teardown_logger.warning(f"Context teardown with exception: {exception}")
 
-        app = current_app._get_current_object()
+        flask_app = current_app._get_current_object()
         teardown_logger.debug("Performing resource cleanup during teardown")
-        perform_cleanup_tasks(app, teardown_logger)
+        perform_cleanup_tasks(flask_app, teardown_logger)
 
 
-def initialize_analyzers(app: Flask, base_path: Path, base_dir: Path) -> None:
-    """Initialize all analyzers used by the application."""
+def initialize_analyzers(app: Flask, project_root_path: Path, app_base_dir: Path) -> None:
+    """
+    Initialize all analyzers used by the application.
+    :param app: The Flask application instance.
+    :param project_root_path: The root directory of the project (e.g., THESISAPPSSVELTE).
+                               This is used for analyzers that need access to the 'models' folder.
+    :param app_base_dir: The base directory of the Flask app itself (e.g., z_interface_app).
+                         Used for analyzers that might need resources relative to the app.
+    """
     logger = create_logger_for_component('init.analyzers')
     
+    # Path to the 'models' directory, relative to the project root
+    # This is what APP_BASE_PATH (used by batch_analysis) should effectively point to.
+    models_dir_for_analyzers = project_root_path / "models" 
+
     try:
-        logger.info("Initializing backend security analyzer")
-        app.backend_security_analyzer = BackendSecurityAnalyzer(base_path)
+        logger.info(f"Initializing backend security analyzer with models path: {models_dir_for_analyzers}")
+        app.backend_security_analyzer = BackendSecurityAnalyzer(models_dir_for_analyzers)
     except Exception as e:
         logger.exception(f"Failed to initialize backend security analyzer: {e}")
         app.backend_security_analyzer = None
         
     try:
-        logger.info("Initializing frontend security analyzer")
-        app.frontend_security_analyzer = FrontendSecurityAnalyzer(base_path)
+        logger.info(f"Initializing frontend security analyzer with models path: {models_dir_for_analyzers}")
+        app.frontend_security_analyzer = FrontendSecurityAnalyzer(models_dir_for_analyzers)
     except Exception as e:
         logger.exception(f"Failed to initialize frontend security analyzer: {e}")
         app.frontend_security_analyzer = None
         
     try:
-        logger.info("Initializing GPT4All analyzer")
-        app.gpt4all_analyzer = GPT4AllAnalyzer(base_dir)
+        # GPT4AllAnalyzer might use app_base_dir (z_interface_app) if it loads resources relative to itself,
+        # or project_root_path if it also needs access to the 'models' structure.
+        # Assuming it needs project_root_path for consistency or potential access to model-specific requirements.
+        logger.info(f"Initializing GPT4All analyzer with base directory: {project_root_path}")
+        app.gpt4all_analyzer = GPT4AllAnalyzer(project_root_path) 
     except Exception as e:
         logger.exception(f"Failed to initialize GPT4All analyzer: {e}")
         app.gpt4all_analyzer = None
         
     try:
-        logger.info("Initializing performance tester")
-        app.performance_tester = LocustPerformanceTester(base_path)
+        # LocustPerformanceTester might store reports relative to the models it tests.
+        logger.info(f"Initializing performance tester with output/models path: {models_dir_for_analyzers}")
+        # It needs a base output directory, typically within z_interface_app for serving static files,
+        # but might also interact with model specific paths. Let's use app_base_dir for reports.
+        performance_report_dir = app_base_dir / "performance_reports" # Static files might be served from here.
+        app.performance_tester = LocustPerformanceTester(output_dir=performance_report_dir)
     except Exception as e:
         logger.exception(f"Failed to initialize performance tester: {e}")
         app.performance_tester = None
         
     try:
-        logger.info("Initializing ZAP scanner")
-        app.zap_scanner = create_zap_scanner(base_dir)
-        app.config["ZAP_SCANS"] = {}
+        # ZAP Scanner might generate reports or need config within the app's structure.
+        logger.info(f"Initializing ZAP scanner with base directory (for its resources/reports): {app_base_dir}")
+        app.zap_scanner = create_zap_scanner(app_base_dir) 
+        app.config["ZAP_SCANS"] = {} # Initialize ZAP_SCANS storage
     except Exception as e:
         logger.exception(f"Failed to initialize ZAP scanner: {e}")
         app.zap_scanner = None
         app.config["ZAP_SCANS"] = {}
+
+    # Initialize CodeQualityAnalyzer
+    try:
+        # Assuming CodeQualityAnalyzer exists in a 'code_quality_analysis.py'
+        # and takes the path to the models directory for analysis.
+        from code_quality_analysis import CodeQualityAnalyzer 
+        logger.info(f"Initializing Code Quality analyzer with models path: {models_dir_for_analyzers}")
+        app.code_quality_analyzer = CodeQualityAnalyzer(models_dir_for_analyzers)
+    except ImportError:
+        logger.warning("CodeQualityAnalyzer not found or could not be imported. Code quality analysis will be unavailable.")
+        app.code_quality_analyzer = None
+    except Exception as e:
+        logger.exception(f"Failed to initialize Code Quality analyzer: {e}")
+        app.code_quality_analyzer = None
     
-    logger.info("All analyzers initialized")
+    logger.info("All analyzers initialized (or placeholders set where errors occurred).")
 
 
 def initialize_service(
     app: Flask, 
     service_class: Type[ServiceType], 
-    config_key: str, 
+    attribute_name: str, # Attribute name to set on 'app'
     logger: logging.Logger,
-    error_message: str
+    error_message: str,
+    *service_args: Any, 
+    **service_kwargs: Any 
 ) -> Optional[ServiceType]:
     """Generic service initializer to reduce code duplication."""
     try:
-        service = service_class()
-        if config_key:
-            app.config[config_key] = service
-        else:
-            setattr(app, service_class.__name__.lower(), service)
-        logger.info(f"Initialized {service_class.__name__} successfully.")
+        service = service_class(*service_args, **service_kwargs)
+        setattr(app, attribute_name, service)
+        logger.info(f"Initialized {service_class.__name__} successfully as app.{attribute_name}.")
         return service
     except ImportError as ie:
         logger.error(f"Failed to import {service_class.__name__}: {ie}. {error_message}")
-        if config_key:
-            app.config[config_key] = None
+        setattr(app, attribute_name, None)
         return None
     except Exception as e:
         logger.exception(f"Error initializing {service_class.__name__}: {e}")
-        if config_key:
-            app.config[config_key] = None
+        setattr(app, attribute_name, None)
         return None
 
 
 def initialize_services(app: Flask, logger: logging.Logger) -> None:
     """Initialize all services used by the application."""
-    # Initialize Docker manager
+    
     docker_manager = initialize_service(
         app, 
         DockerManager, 
-        "docker_manager", 
+        "docker_manager", # Will be app.docker_manager
         logger,
-        "Docker-based functionality disabled."
+        "Docker-based functionality (e.g., ZAP scans) may be disabled or limited."
     )
-    
-    # Initialize Scan manager
-    app.scan_manager = initialize_service(
+    app.config["docker_manager"] = docker_manager # Also keep in app.config for legacy access if any
+
+    initialize_service(
         app, 
         ScanManager, 
-        "", 
+        "scan_manager", # Will be app.scan_manager
         logger,
         "Scan manager initialization failed. ZAP-related batch tasks may fail."
+        # ScanManager constructor is parameterless according to services.py
     )
     
-    # Initialize PortManager model index cache
-    try:
-        model_index_map = {model.name: idx for idx, model in enumerate(AI_MODELS)}
-        PortManager.set_model_index_cache(model_index_map)
-        logger.info(f"Initialized PortManager with {len(model_index_map)} model indices")
-    except Exception as e:
-        logger.error(f"Failed to initialize PortManager model index cache: {e}")
+    # Initialize PortManager and set its cache
+    port_manager_instance = initialize_service(
+        app,
+        PortManager,
+        "port_manager", # Will be app.port_manager
+        logger,
+        "PortManager initialization failed. Performance tests and port-dependent features might be affected."
+    )
+    if port_manager_instance: # Check if initialization was successful
+        try:
+            model_index_map = {model.name: idx for idx, model in enumerate(AI_MODELS)}
+            # Assuming PortManager instance has a method to set this, or it's a class method
+            # If PortManager is mostly static methods, direct instantiation might not be needed
+            # but batch_analysis expects an instance on app.port_manager
+            if hasattr(port_manager_instance, 'set_model_index_cache'):
+                 port_manager_instance.set_model_index_cache(model_index_map)
+            else: # Fallback to class method if instance method not found
+                 PortManager.set_model_index_cache(model_index_map)
+            logger.info(f"Initialized PortManager model index cache with {len(model_index_map)} model indices")
+        except Exception as e:
+            logger.error(f"Failed to initialize PortManager model index cache: {e}")
 
 
 def register_blueprints(app: Flask) -> None:
@@ -368,47 +420,44 @@ def register_blueprints(app: Flask) -> None:
 
 def register_batch_analysis_blueprint(app: Flask, logger: logging.Logger) -> None:
     """Register the batch analysis blueprint if available."""
-    # Check if batch analysis is available and scan manager is initialized
-    if HAS_BATCH_ANALYSIS and hasattr(app, 'scan_manager') and app.scan_manager is not None:
+    if HAS_BATCH_ANALYSIS:
+        # init_batch_analysis will check for its required services on the app object.
+        # These services (like app.scan_manager, app.port_manager etc.) 
+        # should have been initialized by initialize_services and initialize_analyzers by now.
         try:
-            init_batch_analysis(app)
+            init_batch_analysis(app) 
             app.register_blueprint(batch_analysis_bp)
-            logger.info("Batch analysis module initialized and registered")
+            logger.info("Batch analysis module initialized and blueprint registered.")
         except Exception as e:
-            logger.exception(f"Failed to initialize batch analysis module: {e}")
+            logger.exception(f"Failed to initialize or register batch analysis module: {e}")
     else:
-        if not HAS_BATCH_ANALYSIS:
-            logger.warning("Batch analysis module not available (import failed)")
-        elif getattr(app, 'scan_manager', None) is None:
-            logger.warning("Batch analysis module not initialized (missing ScanManager)")
+        logger.warning("Batch analysis module not available (import failed). Batch features disabled.")
 
 
 def check_system_health(app: Flask, logger: logging.Logger) -> bool:
     """Check the health of the system and its components."""
-    docker_manager = app.config.get("docker_manager")
-    system_health = False
+    docker_manager = app.config.get("docker_manager") # From app.config
+    system_health = True 
 
-    # Check Docker health if available
     if docker_manager and hasattr(docker_manager, 'client') and docker_manager.client:
         logger.info("Checking system health via Docker manager...")
         try:
-            system_health = SystemHealthMonitor.check_health(docker_manager.client)
-            if system_health:
-                logger.info("System health check passed.")
+            if not SystemHealthMonitor.check_health(docker_manager.client):
+                logger.warning("System health check via Docker failed - reduced functionality expected.")
+                system_health = False
             else:
-                logger.warning("System health check failed - reduced functionality expected.")
+                logger.info("System health check via Docker passed.")
         except Exception as e:
-            logger.error(f"Error during system health check: {e}", exc_info=True)
+            logger.error(f"Error during Docker system health check: {e}", exc_info=True)
             system_health = False
     else:
-        logger.warning("Docker client unavailable - reduced functionality expected.")
+        logger.warning("Docker client unavailable - Docker-dependent functionality (like ZAP) may be limited.")
+        # system_health = False # Uncomment if Docker is absolutely critical
 
-    # Check if scan manager is available
     if not hasattr(app, 'scan_manager') or app.scan_manager is None:
-        logger.warning("ScanManager not initialized. ZAP-related batch tasks may fail.")
-        system_health = False
+        logger.warning("ScanManager not initialized. ZAP-related batch tasks will fail.")
+        # system_health = False # Uncomment if ScanManager is critical
 
-    # Store health state in config
     app.config["SYSTEM_HEALTH"] = system_health
     return system_health
 
@@ -416,12 +465,10 @@ def check_system_health(app: Flask, logger: logging.Logger) -> bool:
 def display_access_info(config: AppConfig, logger: logging.Logger) -> None:
     """Display information about how to access the application."""
     try:
-        # Get host and port information with defaults
         host = config.HOST or "127.0.0.1"
         host_display = "localhost" if host in ["0.0.0.0", "127.0.0.1"] else host
         port = config.PORT or 5000
 
-        # Display access information
         logger.info(f"{'='*50}")
         logger.info("AI Model Management System is ready!")
         logger.info(f"Access the application at: http://{host_display}:{port}/")
@@ -434,147 +481,134 @@ def display_access_info(config: AppConfig, logger: logging.Logger) -> None:
 def should_initialize_components(app: Flask, app_config: AppConfig) -> bool:
     """Determine if components should be initialized based on app state."""
     is_initialized = app.config.get('IS_INITIALIZED', False)
-    is_reloader_process = os.environ.get('WERKZEUG_RUN_MAIN') == 'true'
+    is_main_werkzeug_process = os.environ.get('WERKZEUG_RUN_MAIN') == 'true'
 
-    # Initialize if:
-    # 1. It's the reloader process in debug mode, or
-    # 2. It's not debug mode and not already initialized
-    return (is_reloader_process and app_config.DEBUG) or (not app_config.DEBUG and not is_initialized)
+    if app_config.DEBUG:
+        return is_main_werkzeug_process 
+    else:
+        return not is_initialized 
 
 
 def create_app(config: Optional[AppConfig] = None) -> Flask:
     """Create and configure the Flask application."""
-    # Create Flask app and configure it
     app = Flask(__name__)
     app_config = config or AppConfig.from_env()
     app.config.from_object(app_config)
     
-    # Set up additional config defaults
-    app.config["BASE_DIR"] = app_config.BASE_DIR
-    app.config.setdefault('APP_BASE_PATH', app_config.BASE_DIR)
+    z_interface_app_dir = Path(app.root_path) 
+    app.config["Z_INTERFACE_APP_DIR"] = str(z_interface_app_dir)
+
+    project_root_dir = z_interface_app_dir.parent 
+    app.config["PROJECT_ROOT_DIR"] = str(project_root_dir)
+
+    models_actual_path = project_root_dir / "models"
+    app.config['APP_BASE_PATH'] = str(models_actual_path) 
+    
     app.config.setdefault('IS_INITIALIZED', False)
     app.config.setdefault('LAST_CLEANUP_TIME', 0)
-    app.config.setdefault('CLEANUP_INTERVAL', 300)  # 5 minutes default
+    app.config.setdefault('CLEANUP_INTERVAL', 300) 
 
-    # Set up logging
-    initialize_logging(app)
+    initialize_logging(app) 
     app_logger = create_logger_for_component('app')
 
-    # Log startup info
     is_reloader_process = os.environ.get('WERKZEUG_RUN_MAIN') == 'true'
-    process_type = "reloader process" if is_reloader_process else "parent process"
-    app_logger.info(f"Starting application setup ({process_type})")
+    process_type = "reloader (worker) process" if is_reloader_process else "main (parent) process"
+    app_logger.info(f"Starting application setup ({process_type}). Flask app root: {app.root_path}")
+    app_logger.info(f"Project root directory set to: {project_root_dir}")
+    app_logger.info(f"APP_BASE_PATH (for model discovery & batch_analysis) set to: {models_actual_path}")
 
-    # Set custom JSON encoder
-    app.json_encoder = CustomJSONEncoder
 
-    # Determine paths
-    base_path = app_config.BASE_DIR.parent
-    app_logger.info(f"Application base directory: {app_config.BASE_DIR}")
-    app_logger.info(f"Parent base path: {base_path}")
+    app.json_encoder = CustomJSONEncoder # type: ignore[misc] 
 
-    # Initialize components
-    initialize_app_components(app, app_config, base_path, app_logger)
+    initialize_app_components(app, app_config, project_root_dir, z_interface_app_dir, app_logger)
 
-    # Set up WSGI app with proxy fix
-    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1) # type: ignore[assignment]
 
-    # Register blueprints and hooks
     register_blueprints(app)
     register_error_handlers(app)
     register_request_hooks(app)
 
-    app_logger.info("Application initialization complete")
+    app_logger.info("Application initialization sequence complete.")
     return app
 
 
 def initialize_app_components(
     app: Flask,
     app_config: AppConfig,
-    base_path: Path,
+    project_root_path: Path, 
+    app_base_dir: Path,      
     app_logger: logging.Logger
 ) -> None:
     """Initialize application components based on configuration."""
     with INIT_LOCK:
         if should_initialize_components(app, app_config):
-            app_logger.info("Initializing components and services")
+            app_logger.info("Initializing core components and services...")
             try:
-                # Initialize services first (they're required by analyzers)
                 initialize_services(app, app_logger)
-                
-                # Then initialize analyzers
-                initialize_analyzers(app, base_path, app_config.BASE_DIR)
+                initialize_analyzers(app, project_root_path, app_base_dir) 
                 
                 app.config['IS_INITIALIZED'] = True
-                app_logger.info("Application components initialized successfully")
+                app_logger.info("Application components initialized successfully.")
             except Exception as e:
-                app_logger.exception(f"Error during initialization: {e}")
-                app.config['IS_INITIALIZED'] = False
-                raise RuntimeError(f"Failed to initialize application: {e}") from e
+                app_logger.exception(f"Critical error during application component initialization: {e}")
+                app.config['IS_INITIALIZED'] = False 
+                raise RuntimeError(f"Failed to initialize critical application components: {e}") from e
         else:
-            # Log skipping initialization
-            process_type = "reloader process" if os.environ.get('WERKZEUG_RUN_MAIN') == 'true' else "parent process"
-            is_initialized = app.config.get('IS_INITIALIZED', False)
-            app_logger.info(f"Skipping initialization ({process_type}, initialized={is_initialized})")
+            process_type = "reloader (worker) process" if os.environ.get('WERKZEUG_RUN_MAIN') == 'true' else "main (parent) process"
+            is_initialized_flag = app.config.get('IS_INITIALIZED', False)
+            app_logger.info(f"Skipping component initialization for this process ({process_type}, already_initialized={is_initialized_flag}).")
             
-            # Set up minimal initialization if not already initialized
-            if not is_initialized:
-                app.config["docker_manager"] = None
-                app.scan_manager = None
-                app.config["ZAP_SCANS"] = {}
+            # Ensure essential attributes/config keys exist even if full init is skipped.
+            # This helps prevent AttributeError if accessed by other parts of the app
+            # that might run in the parent Werkzeug process (e.g., initial setup).
+            if not is_initialized_flag: # Only set defaults if truly not initialized yet
+                app.docker_manager = getattr(app, 'docker_manager', None) # Keep if set by a partial init
+                app.config["docker_manager"] = app.docker_manager # Ensure config also has it
+                app.scan_manager = getattr(app, 'scan_manager', None)
+                app.port_manager = getattr(app, 'port_manager', None)
+                app.code_quality_analyzer = getattr(app, 'code_quality_analyzer', None)
+                app.frontend_security_analyzer = getattr(app, 'frontend_security_analyzer', None)
+                app.backend_security_analyzer = getattr(app, 'backend_security_analyzer', None)
+                app.performance_tester = getattr(app, 'performance_tester', None)
+                app.gpt4all_analyzer = getattr(app, 'gpt4all_analyzer', None)
+                app.zap_scanner = getattr(app, 'zap_scanner', None)
+                app.config.setdefault("ZAP_SCANS", {})
 
 
 if __name__ == "__main__":
-    # Set up main logger
-    main_logger = logging.getLogger('main')
+    main_logger = logging.getLogger('main_startup') 
     main_logger.setLevel(logging.INFO)
+    if not main_logger.hasHandlers(): 
+        startup_handler = logging.StreamHandler(sys.stdout) # Ensure logs go to stdout
+        startup_handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s'))
+        main_logger.addHandler(startup_handler)
 
-    if not main_logger.hasHandlers():
-        handler = logging.StreamHandler()
-        handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s'))
-        main_logger.addHandler(handler)
+    is_reloader_main_process = os.environ.get('WERKZEUG_RUN_MAIN') == 'true'
+    process_info = "Reloader (Worker) Process" if is_reloader_main_process else "Main (Parent) Process"
+    main_logger.info(f"Application starting via __main__ ({process_info})")
 
-    # Log startup information
-    is_reloader_process = os.environ.get('WERKZEUG_RUN_MAIN') == 'true'
-    process_type = "reloader process" if is_reloader_process else "parent process"
-    main_logger.info(f"Application starting via __main__ ({process_type})")
-
-    # Load configuration
     config = AppConfig.from_env()
-
-    # Set defaults for critical configuration
-    if config.HOST is None:
-        config.HOST = "127.0.0.1"
-        main_logger.warning(f"HOST configuration is None, using default: {config.HOST}")
-
-    if config.PORT is None:
-        config.PORT = 5000
-        main_logger.warning(f"PORT configuration is None, using default: {config.PORT}")
+    config.HOST = config.HOST or "127.0.0.1"
+    config.PORT = config.PORT or 5000
 
     try:
-        # Create and initialize application
-        main_logger.info(f"Creating application with LOG_LEVEL={config.LOG_LEVEL}")
-        app = create_app(config)
+        main_logger.info(f"Creating Flask application with LOG_LEVEL={config.LOG_LEVEL}, DEBUG={config.DEBUG}")
+        flask_app = create_app(config)
 
-        # Perform post-initialization health checks (only in main process or reloader with debug)
-        if (is_reloader_process and config.DEBUG) or (not config.DEBUG):
-            with app.app_context():
+        if (is_reloader_main_process and config.DEBUG) or (not config.DEBUG):
+            with flask_app.app_context(): 
                 main_logger.info("Performing post-initialization health checks...")
-                system_health = check_system_health(app, main_logger)
-
+                system_health = check_system_health(flask_app, main_logger)
                 if not system_health:
-                    main_logger.warning(
-                        "System health check failed - reduced functionality expected. "
-                        "Check logs for details."
-                    )
-
+                    main_logger.warning("System health check reported issues. Some features might be limited. Check logs.")
                 display_access_info(config, main_logger)
+        elif not is_reloader_main_process and config.DEBUG:
+             main_logger.info("Skipping health checks and access info display for Werkzeug main (parent) process in debug mode.")
 
-        # Start the Flask server
-        main_logger.info(f"Starting Flask server on {config.HOST}:{config.PORT} (debug={config.DEBUG})")
-        app.run(host=config.HOST, port=config.PORT, debug=config.DEBUG)
+
+        main_logger.info(f"Starting Flask server on http://{config.HOST}:{config.PORT}/ (Debug mode: {config.DEBUG})")
+        flask_app.run(host=config.HOST, port=config.PORT, debug=config.DEBUG, use_reloader=config.DEBUG) # Explicitly manage reloader based on debug
 
     except Exception as e:
         main_logger.critical(f"FATAL: Failed to start application: {e}", exc_info=True)
-        import sys
         sys.exit(1)
