@@ -16,7 +16,8 @@ services:
             - "{frontend_port}:{frontend_port}"
         environment:
             - PORT={frontend_port}
+            - VITE_BACKEND_API_TARGET=http://backend:{backend_port}
+            - VITE_FRONTEND_PORT={frontend_port}
         restart: always
         depends_on:
             - backend
-

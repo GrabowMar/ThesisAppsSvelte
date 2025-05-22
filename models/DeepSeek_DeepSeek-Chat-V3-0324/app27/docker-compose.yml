@@ -16,7 +16,8 @@ services:
             - "6833:6833"
         environment:
             - PORT=6833
+            - VITE_BACKEND_API_TARGET=http://backend:6333
+            - VITE_FRONTEND_PORT=6833
         restart: always
         depends_on:
             - backend
-

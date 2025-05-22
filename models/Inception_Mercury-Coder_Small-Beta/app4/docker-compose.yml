@@ -16,7 +16,8 @@ services:
             - "6307:6307"
         environment:
             - PORT=6307
+            - VITE_BACKEND_API_TARGET=http://backend:5807
+            - VITE_FRONTEND_PORT=6307
         restart: always
         depends_on:
             - backend
-

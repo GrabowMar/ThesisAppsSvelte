@@ -95,23 +95,31 @@ if __name__ == '__main__':
 
 #### Vite (vite.config.js)
 ```js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig, loadEnv } from 'vite';
+import react from '@vitejs/plugin-react';
 
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    host: true,
-    port: XXXX,
-    strictPort: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:port: YYYY',
-        changeOrigin: true,
-        secure: false,
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), 'VITE_');
+
+  const backendApiTarget = env.VITE_BACKEND_API_TARGET || 'http://localhost:XXXX';
+  const frontendPort = parseInt(env.VITE_FRONTEND_PORT) || YYYY;
+
+  return {
+    plugins: [react()],
+    server: {
+      host: true,
+      port: frontendPort,
+      strictPort: true,
+      proxy: {
+        '/api': {
+          target: backendApiTarget,
+          changeOrigin: true,
+          secure: false,
+        }
       }
     }
-  }
+  };
+});
 
 ```
 #### Main page (index.html)
@@ -133,7 +141,7 @@ export default defineConfig({
 ## Response requirements
 
 1. **Port Configuration Prompt**
-   - Use `XXXX` (backend) and `YYYY` (frontend) ports.
+   - <important> Under no circumstances change `XXXX` (backend) and `YYYY` (frontend), ports placeholders must stay <important>.
 
 2. **Backend Generation Prompt**
    - Must include all specified backend features.

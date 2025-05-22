@@ -1,65 +1,65 @@
-[2025-05-22 09:58:13] Port ranges for Google_Gemini-2.5_Flash-Preview-05-20:
-[2025-05-22 09:58:13]   Backend: 5881-5940 (approx range end)
-[2025-05-22 09:58:13]   Frontend: 6381-6440 (approx range end)
-[2025-05-22 09:58:15] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20
-[2025-05-22 09:58:15] Creating app1 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app1
-[2025-05-22 09:58:15] Application app1 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5881, Frontend Port: 6381)
-[2025-05-22 09:58:15] Creating app2 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app2
-[2025-05-22 09:58:15] Application app2 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5883, Frontend Port: 6383)
-[2025-05-22 09:58:15] Creating app3 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app3
-[2025-05-22 09:58:15] Application app3 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5885, Frontend Port: 6385)
-[2025-05-22 09:58:15] Creating app4 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app4
-[2025-05-22 09:58:15] Application app4 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5887, Frontend Port: 6387)
-[2025-05-22 09:58:15] Creating app5 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app5
-[2025-05-22 09:58:15] Application app5 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5889, Frontend Port: 6389)
-[2025-05-22 09:58:15] Creating app6 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app6
-[2025-05-22 09:58:15] Application app6 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5891, Frontend Port: 6391)
-[2025-05-22 09:58:15] Creating app7 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app7
-[2025-05-22 09:58:15] Application app7 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5893, Frontend Port: 6393)
-[2025-05-22 09:58:15] Creating app8 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app8
-[2025-05-22 09:58:15] Application app8 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5895, Frontend Port: 6395)
-[2025-05-22 09:58:15] Creating app9 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app9
-[2025-05-22 09:58:15] Application app9 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5897, Frontend Port: 6397)
-[2025-05-22 09:58:15] Creating app10 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app10
-[2025-05-22 09:58:15] Application app10 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5899, Frontend Port: 6399)
-[2025-05-22 09:58:15] Creating app11 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app11
-[2025-05-22 09:58:15] Application app11 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5901, Frontend Port: 6401)
-[2025-05-22 09:58:15] Creating app12 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app12
-[2025-05-22 09:58:15] Application app12 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5903, Frontend Port: 6403)
-[2025-05-22 09:58:15] Creating app13 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app13
-[2025-05-22 09:58:15] Application app13 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5905, Frontend Port: 6405)
-[2025-05-22 09:58:15] Creating app14 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app14
-[2025-05-22 09:58:15] Application app14 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5907, Frontend Port: 6407)
-[2025-05-22 09:58:15] Creating app15 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app15
-[2025-05-22 09:58:15] Application app15 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5909, Frontend Port: 6409)
-[2025-05-22 09:58:15] Creating app16 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app16
-[2025-05-22 09:58:15] Application app16 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5911, Frontend Port: 6411)
-[2025-05-22 09:58:15] Creating app17 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app17
-[2025-05-22 09:58:15] Application app17 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5913, Frontend Port: 6413)
-[2025-05-22 09:58:15] Creating app18 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app18
-[2025-05-22 09:58:15] Application app18 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5915, Frontend Port: 6415)
-[2025-05-22 09:58:15] Creating app19 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app19
-[2025-05-22 09:58:15] Application app19 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5917, Frontend Port: 6417)
-[2025-05-22 09:58:15] Creating app20 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app20
-[2025-05-22 09:58:15] Application app20 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5919, Frontend Port: 6419)
-[2025-05-22 09:58:15] Creating app21 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app21
-[2025-05-22 09:58:15] Application app21 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5921, Frontend Port: 6421)
-[2025-05-22 09:58:15] Creating app22 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app22
-[2025-05-22 09:58:15] Application app22 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5923, Frontend Port: 6423)
-[2025-05-22 09:58:15] Creating app23 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app23
-[2025-05-22 09:58:15] Application app23 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5925, Frontend Port: 6425)
-[2025-05-22 09:58:15] Creating app24 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app24
-[2025-05-22 09:58:15] Application app24 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5927, Frontend Port: 6427)
-[2025-05-22 09:58:15] Creating app25 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app25
-[2025-05-22 09:58:15] Application app25 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5929, Frontend Port: 6429)
-[2025-05-22 09:58:15] Creating app26 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app26
-[2025-05-22 09:58:15] Application app26 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5931, Frontend Port: 6431)
-[2025-05-22 09:58:15] Creating app27 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app27
-[2025-05-22 09:58:15] Application app27 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5933, Frontend Port: 6433)
-[2025-05-22 09:58:15] Creating app28 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app28
-[2025-05-22 09:58:15] Application app28 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5935, Frontend Port: 6435)
-[2025-05-22 09:58:15] Creating app29 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app29
-[2025-05-22 09:58:15] Application app29 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5937, Frontend Port: 6437)
-[2025-05-22 09:58:15] Creating app30 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app30
-[2025-05-22 09:58:15] Application app30 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5939, Frontend Port: 6439)
-[2025-05-22 09:58:15] Successfully created all apps for Google_Gemini-2.5_Flash-Preview-05-20.
+[2025-05-22 20:50:37] Port ranges for Google_Gemini-2.5_Flash-Preview-05-20:
+[2025-05-22 20:50:37]   Backend: 5881-5940 (approx range end)
+[2025-05-22 20:50:37]   Frontend: 6381-6440 (approx range end)
+[2025-05-22 20:50:39] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20
+[2025-05-22 20:50:39] Creating app1 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app1
+[2025-05-22 20:50:39] Application app1 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5881, Frontend Port: 6381)
+[2025-05-22 20:50:39] Creating app2 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app2
+[2025-05-22 20:50:39] Application app2 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5883, Frontend Port: 6383)
+[2025-05-22 20:50:39] Creating app3 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app3
+[2025-05-22 20:50:39] Application app3 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5885, Frontend Port: 6385)
+[2025-05-22 20:50:39] Creating app4 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app4
+[2025-05-22 20:50:39] Application app4 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5887, Frontend Port: 6387)
+[2025-05-22 20:50:39] Creating app5 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app5
+[2025-05-22 20:50:39] Application app5 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5889, Frontend Port: 6389)
+[2025-05-22 20:50:39] Creating app6 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app6
+[2025-05-22 20:50:39] Application app6 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5891, Frontend Port: 6391)
+[2025-05-22 20:50:39] Creating app7 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app7
+[2025-05-22 20:50:39] Application app7 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5893, Frontend Port: 6393)
+[2025-05-22 20:50:39] Creating app8 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app8
+[2025-05-22 20:50:39] Application app8 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5895, Frontend Port: 6395)
+[2025-05-22 20:50:39] Creating app9 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app9
+[2025-05-22 20:50:39] Application app9 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5897, Frontend Port: 6397)
+[2025-05-22 20:50:39] Creating app10 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app10
+[2025-05-22 20:50:39] Application app10 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5899, Frontend Port: 6399)
+[2025-05-22 20:50:39] Creating app11 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app11
+[2025-05-22 20:50:39] Application app11 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5901, Frontend Port: 6401)
+[2025-05-22 20:50:39] Creating app12 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app12
+[2025-05-22 20:50:39] Application app12 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5903, Frontend Port: 6403)
+[2025-05-22 20:50:39] Creating app13 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app13
+[2025-05-22 20:50:39] Application app13 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5905, Frontend Port: 6405)
+[2025-05-22 20:50:39] Creating app14 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app14
+[2025-05-22 20:50:39] Application app14 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5907, Frontend Port: 6407)
+[2025-05-22 20:50:39] Creating app15 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app15
+[2025-05-22 20:50:39] Application app15 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5909, Frontend Port: 6409)
+[2025-05-22 20:50:39] Creating app16 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app16
+[2025-05-22 20:50:39] Application app16 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5911, Frontend Port: 6411)
+[2025-05-22 20:50:39] Creating app17 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app17
+[2025-05-22 20:50:39] Application app17 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5913, Frontend Port: 6413)
+[2025-05-22 20:50:39] Creating app18 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app18
+[2025-05-22 20:50:39] Application app18 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5915, Frontend Port: 6415)
+[2025-05-22 20:50:39] Creating app19 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app19
+[2025-05-22 20:50:39] Application app19 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5917, Frontend Port: 6417)
+[2025-05-22 20:50:39] Creating app20 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app20
+[2025-05-22 20:50:39] Application app20 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5919, Frontend Port: 6419)
+[2025-05-22 20:50:39] Creating app21 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app21
+[2025-05-22 20:50:39] Application app21 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5921, Frontend Port: 6421)
+[2025-05-22 20:50:39] Creating app22 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app22
+[2025-05-22 20:50:39] Application app22 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5923, Frontend Port: 6423)
+[2025-05-22 20:50:39] Creating app23 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app23
+[2025-05-22 20:50:39] Application app23 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5925, Frontend Port: 6425)
+[2025-05-22 20:50:39] Creating app24 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app24
+[2025-05-22 20:50:39] Application app24 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5927, Frontend Port: 6427)
+[2025-05-22 20:50:39] Creating app25 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app25
+[2025-05-22 20:50:39] Application app25 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5929, Frontend Port: 6429)
+[2025-05-22 20:50:39] Creating app26 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app26
+[2025-05-22 20:50:39] Application app26 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5931, Frontend Port: 6431)
+[2025-05-22 20:50:39] Creating app27 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app27
+[2025-05-22 20:50:39] Application app27 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5933, Frontend Port: 6433)
+[2025-05-22 20:50:39] Creating app28 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app28
+[2025-05-22 20:50:39] Application app28 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5935, Frontend Port: 6435)
+[2025-05-22 20:50:39] Creating app29 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app29
+[2025-05-22 20:50:39] Application app29 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5937, Frontend Port: 6437)
+[2025-05-22 20:50:39] Creating app30 for Google_Gemini-2.5_Flash-Preview-05-20 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Google_Gemini-2.5_Flash-Preview-05-20\app30
+[2025-05-22 20:50:39] Application app30 created for Google_Gemini-2.5_Flash-Preview-05-20 (Backend Port: 5939, Frontend Port: 6439)
+[2025-05-22 20:50:39] Successfully created all apps for Google_Gemini-2.5_Flash-Preview-05-20.

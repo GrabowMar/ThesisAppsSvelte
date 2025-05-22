@@ -16,7 +16,8 @@ services:
             - "6143:6143"
         environment:
             - PORT=6143
+            - VITE_BACKEND_API_TARGET=http://backend:5643
+            - VITE_FRONTEND_PORT=6143
         restart: always
         depends_on:
             - backend
-

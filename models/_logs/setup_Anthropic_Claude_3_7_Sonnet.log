@@ -1,65 +1,65 @@
-[2025-05-22 09:58:13] Port ranges for Anthropic_Claude_3.7_Sonnet:
-[2025-05-22 09:58:13]   Backend: 5001-5060 (approx range end)
-[2025-05-22 09:58:13]   Frontend: 5501-5560 (approx range end)
-[2025-05-22 09:58:13] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet
-[2025-05-22 09:58:13] Creating app1 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app1
-[2025-05-22 09:58:13] Application app1 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5001, Frontend Port: 5501)
-[2025-05-22 09:58:13] Creating app2 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app2
-[2025-05-22 09:58:13] Application app2 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5003, Frontend Port: 5503)
-[2025-05-22 09:58:13] Creating app3 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app3
-[2025-05-22 09:58:13] Application app3 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5005, Frontend Port: 5505)
-[2025-05-22 09:58:13] Creating app4 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app4
-[2025-05-22 09:58:13] Application app4 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5007, Frontend Port: 5507)
-[2025-05-22 09:58:13] Creating app5 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app5
-[2025-05-22 09:58:13] Application app5 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5009, Frontend Port: 5509)
-[2025-05-22 09:58:13] Creating app6 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app6
-[2025-05-22 09:58:13] Application app6 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5011, Frontend Port: 5511)
-[2025-05-22 09:58:13] Creating app7 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app7
-[2025-05-22 09:58:13] Application app7 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5013, Frontend Port: 5513)
-[2025-05-22 09:58:13] Creating app8 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app8
-[2025-05-22 09:58:13] Application app8 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5015, Frontend Port: 5515)
-[2025-05-22 09:58:13] Creating app9 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app9
-[2025-05-22 09:58:13] Application app9 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5017, Frontend Port: 5517)
-[2025-05-22 09:58:13] Creating app10 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app10
-[2025-05-22 09:58:14] Application app10 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5019, Frontend Port: 5519)
-[2025-05-22 09:58:14] Creating app11 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app11
-[2025-05-22 09:58:14] Application app11 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5021, Frontend Port: 5521)
-[2025-05-22 09:58:14] Creating app12 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app12
-[2025-05-22 09:58:14] Application app12 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5023, Frontend Port: 5523)
-[2025-05-22 09:58:14] Creating app13 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app13
-[2025-05-22 09:58:14] Application app13 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5025, Frontend Port: 5525)
-[2025-05-22 09:58:14] Creating app14 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app14
-[2025-05-22 09:58:14] Application app14 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5027, Frontend Port: 5527)
-[2025-05-22 09:58:14] Creating app15 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app15
-[2025-05-22 09:58:14] Application app15 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5029, Frontend Port: 5529)
-[2025-05-22 09:58:14] Creating app16 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app16
-[2025-05-22 09:58:14] Application app16 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5031, Frontend Port: 5531)
-[2025-05-22 09:58:14] Creating app17 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app17
-[2025-05-22 09:58:14] Application app17 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5033, Frontend Port: 5533)
-[2025-05-22 09:58:14] Creating app18 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app18
-[2025-05-22 09:58:14] Application app18 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5035, Frontend Port: 5535)
-[2025-05-22 09:58:14] Creating app19 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app19
-[2025-05-22 09:58:14] Application app19 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5037, Frontend Port: 5537)
-[2025-05-22 09:58:14] Creating app20 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app20
-[2025-05-22 09:58:14] Application app20 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5039, Frontend Port: 5539)
-[2025-05-22 09:58:14] Creating app21 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app21
-[2025-05-22 09:58:14] Application app21 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5041, Frontend Port: 5541)
-[2025-05-22 09:58:14] Creating app22 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app22
-[2025-05-22 09:58:14] Application app22 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5043, Frontend Port: 5543)
-[2025-05-22 09:58:14] Creating app23 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app23
-[2025-05-22 09:58:14] Application app23 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5045, Frontend Port: 5545)
-[2025-05-22 09:58:14] Creating app24 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app24
-[2025-05-22 09:58:14] Application app24 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5047, Frontend Port: 5547)
-[2025-05-22 09:58:14] Creating app25 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app25
-[2025-05-22 09:58:14] Application app25 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5049, Frontend Port: 5549)
-[2025-05-22 09:58:14] Creating app26 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app26
-[2025-05-22 09:58:14] Application app26 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5051, Frontend Port: 5551)
-[2025-05-22 09:58:14] Creating app27 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app27
-[2025-05-22 09:58:14] Application app27 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5053, Frontend Port: 5553)
-[2025-05-22 09:58:14] Creating app28 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app28
-[2025-05-22 09:58:14] Application app28 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5055, Frontend Port: 5555)
-[2025-05-22 09:58:14] Creating app29 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app29
-[2025-05-22 09:58:14] Application app29 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5057, Frontend Port: 5557)
-[2025-05-22 09:58:14] Creating app30 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app30
-[2025-05-22 09:58:14] Application app30 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5059, Frontend Port: 5559)
-[2025-05-22 09:58:14] Successfully created all apps for Anthropic_Claude_3.7_Sonnet.
+[2025-05-22 20:50:37] Port ranges for Anthropic_Claude_3.7_Sonnet:
+[2025-05-22 20:50:37]   Backend: 5001-5060 (approx range end)
+[2025-05-22 20:50:37]   Frontend: 5501-5560 (approx range end)
+[2025-05-22 20:50:37] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet
+[2025-05-22 20:50:37] Creating app1 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app1
+[2025-05-22 20:50:37] Application app1 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5001, Frontend Port: 5501)
+[2025-05-22 20:50:37] Creating app2 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app2
+[2025-05-22 20:50:37] Application app2 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5003, Frontend Port: 5503)
+[2025-05-22 20:50:37] Creating app3 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app3
+[2025-05-22 20:50:37] Application app3 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5005, Frontend Port: 5505)
+[2025-05-22 20:50:37] Creating app4 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app4
+[2025-05-22 20:50:37] Application app4 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5007, Frontend Port: 5507)
+[2025-05-22 20:50:37] Creating app5 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app5
+[2025-05-22 20:50:37] Application app5 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5009, Frontend Port: 5509)
+[2025-05-22 20:50:37] Creating app6 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app6
+[2025-05-22 20:50:37] Application app6 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5011, Frontend Port: 5511)
+[2025-05-22 20:50:37] Creating app7 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app7
+[2025-05-22 20:50:37] Application app7 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5013, Frontend Port: 5513)
+[2025-05-22 20:50:37] Creating app8 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app8
+[2025-05-22 20:50:37] Application app8 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5015, Frontend Port: 5515)
+[2025-05-22 20:50:37] Creating app9 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app9
+[2025-05-22 20:50:37] Application app9 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5017, Frontend Port: 5517)
+[2025-05-22 20:50:37] Creating app10 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app10
+[2025-05-22 20:50:37] Application app10 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5019, Frontend Port: 5519)
+[2025-05-22 20:50:37] Creating app11 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app11
+[2025-05-22 20:50:37] Application app11 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5021, Frontend Port: 5521)
+[2025-05-22 20:50:37] Creating app12 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app12
+[2025-05-22 20:50:37] Application app12 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5023, Frontend Port: 5523)
+[2025-05-22 20:50:37] Creating app13 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app13
+[2025-05-22 20:50:37] Application app13 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5025, Frontend Port: 5525)
+[2025-05-22 20:50:37] Creating app14 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app14
+[2025-05-22 20:50:37] Application app14 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5027, Frontend Port: 5527)
+[2025-05-22 20:50:37] Creating app15 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app15
+[2025-05-22 20:50:37] Application app15 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5029, Frontend Port: 5529)
+[2025-05-22 20:50:37] Creating app16 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app16
+[2025-05-22 20:50:37] Application app16 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5031, Frontend Port: 5531)
+[2025-05-22 20:50:37] Creating app17 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app17
+[2025-05-22 20:50:37] Application app17 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5033, Frontend Port: 5533)
+[2025-05-22 20:50:37] Creating app18 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app18
+[2025-05-22 20:50:37] Application app18 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5035, Frontend Port: 5535)
+[2025-05-22 20:50:37] Creating app19 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app19
+[2025-05-22 20:50:37] Application app19 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5037, Frontend Port: 5537)
+[2025-05-22 20:50:37] Creating app20 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app20
+[2025-05-22 20:50:37] Application app20 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5039, Frontend Port: 5539)
+[2025-05-22 20:50:37] Creating app21 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app21
+[2025-05-22 20:50:37] Application app21 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5041, Frontend Port: 5541)
+[2025-05-22 20:50:37] Creating app22 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app22
+[2025-05-22 20:50:37] Application app22 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5043, Frontend Port: 5543)
+[2025-05-22 20:50:37] Creating app23 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app23
+[2025-05-22 20:50:37] Application app23 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5045, Frontend Port: 5545)
+[2025-05-22 20:50:37] Creating app24 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app24
+[2025-05-22 20:50:37] Application app24 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5047, Frontend Port: 5547)
+[2025-05-22 20:50:37] Creating app25 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app25
+[2025-05-22 20:50:37] Application app25 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5049, Frontend Port: 5549)
+[2025-05-22 20:50:37] Creating app26 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app26
+[2025-05-22 20:50:37] Application app26 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5051, Frontend Port: 5551)
+[2025-05-22 20:50:37] Creating app27 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app27
+[2025-05-22 20:50:37] Application app27 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5053, Frontend Port: 5553)
+[2025-05-22 20:50:37] Creating app28 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app28
+[2025-05-22 20:50:37] Application app28 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5055, Frontend Port: 5555)
+[2025-05-22 20:50:37] Creating app29 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app29
+[2025-05-22 20:50:37] Application app29 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5057, Frontend Port: 5557)
+[2025-05-22 20:50:37] Creating app30 for Anthropic_Claude_3.7_Sonnet in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app30
+[2025-05-22 20:50:37] Application app30 created for Anthropic_Claude_3.7_Sonnet (Backend Port: 5059, Frontend Port: 5559)
+[2025-05-22 20:50:37] Successfully created all apps for Anthropic_Claude_3.7_Sonnet.

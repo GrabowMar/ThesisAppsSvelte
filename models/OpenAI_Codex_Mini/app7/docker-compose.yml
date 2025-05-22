@@ -16,7 +16,8 @@ services:
             - "6153:6153"
         environment:
             - PORT=6153
+            - VITE_BACKEND_API_TARGET=http://backend:5653
+            - VITE_FRONTEND_PORT=6153
         restart: always
         depends_on:
             - backend
-

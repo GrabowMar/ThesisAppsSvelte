@@ -1,65 +1,65 @@
-[2025-05-22 09:58:13] Port ranges for Meta-Llama_Llama-4_Maverick:
-[2025-05-22 09:58:13]   Backend: 5961-6020 (approx range end)
-[2025-05-22 09:58:13]   Frontend: 6461-6520 (approx range end)
-[2025-05-22 09:58:15] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick
-[2025-05-22 09:58:15] Creating app1 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app1
-[2025-05-22 09:58:15] Application app1 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5961, Frontend Port: 6461)
-[2025-05-22 09:58:15] Creating app2 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app2
-[2025-05-22 09:58:15] Application app2 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5963, Frontend Port: 6463)
-[2025-05-22 09:58:15] Creating app3 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app3
-[2025-05-22 09:58:15] Application app3 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5965, Frontend Port: 6465)
-[2025-05-22 09:58:15] Creating app4 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app4
-[2025-05-22 09:58:15] Application app4 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5967, Frontend Port: 6467)
-[2025-05-22 09:58:15] Creating app5 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app5
-[2025-05-22 09:58:15] Application app5 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5969, Frontend Port: 6469)
-[2025-05-22 09:58:15] Creating app6 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app6
-[2025-05-22 09:58:15] Application app6 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5971, Frontend Port: 6471)
-[2025-05-22 09:58:15] Creating app7 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app7
-[2025-05-22 09:58:15] Application app7 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5973, Frontend Port: 6473)
-[2025-05-22 09:58:15] Creating app8 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app8
-[2025-05-22 09:58:15] Application app8 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5975, Frontend Port: 6475)
-[2025-05-22 09:58:15] Creating app9 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app9
-[2025-05-22 09:58:15] Application app9 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5977, Frontend Port: 6477)
-[2025-05-22 09:58:15] Creating app10 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app10
-[2025-05-22 09:58:15] Application app10 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5979, Frontend Port: 6479)
-[2025-05-22 09:58:15] Creating app11 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app11
-[2025-05-22 09:58:15] Application app11 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5981, Frontend Port: 6481)
-[2025-05-22 09:58:15] Creating app12 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app12
-[2025-05-22 09:58:15] Application app12 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5983, Frontend Port: 6483)
-[2025-05-22 09:58:15] Creating app13 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app13
-[2025-05-22 09:58:15] Application app13 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5985, Frontend Port: 6485)
-[2025-05-22 09:58:15] Creating app14 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app14
-[2025-05-22 09:58:15] Application app14 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5987, Frontend Port: 6487)
-[2025-05-22 09:58:15] Creating app15 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app15
-[2025-05-22 09:58:15] Application app15 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5989, Frontend Port: 6489)
-[2025-05-22 09:58:15] Creating app16 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app16
-[2025-05-22 09:58:15] Application app16 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5991, Frontend Port: 6491)
-[2025-05-22 09:58:15] Creating app17 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app17
-[2025-05-22 09:58:15] Application app17 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5993, Frontend Port: 6493)
-[2025-05-22 09:58:15] Creating app18 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app18
-[2025-05-22 09:58:15] Application app18 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5995, Frontend Port: 6495)
-[2025-05-22 09:58:15] Creating app19 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app19
-[2025-05-22 09:58:15] Application app19 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5997, Frontend Port: 6497)
-[2025-05-22 09:58:15] Creating app20 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app20
-[2025-05-22 09:58:15] Application app20 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5999, Frontend Port: 6499)
-[2025-05-22 09:58:15] Creating app21 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app21
-[2025-05-22 09:58:15] Application app21 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6001, Frontend Port: 6501)
-[2025-05-22 09:58:15] Creating app22 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app22
-[2025-05-22 09:58:15] Application app22 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6003, Frontend Port: 6503)
-[2025-05-22 09:58:15] Creating app23 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app23
-[2025-05-22 09:58:15] Application app23 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6005, Frontend Port: 6505)
-[2025-05-22 09:58:15] Creating app24 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app24
-[2025-05-22 09:58:15] Application app24 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6007, Frontend Port: 6507)
-[2025-05-22 09:58:15] Creating app25 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app25
-[2025-05-22 09:58:15] Application app25 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6009, Frontend Port: 6509)
-[2025-05-22 09:58:15] Creating app26 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app26
-[2025-05-22 09:58:15] Application app26 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6011, Frontend Port: 6511)
-[2025-05-22 09:58:15] Creating app27 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app27
-[2025-05-22 09:58:15] Application app27 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6013, Frontend Port: 6513)
-[2025-05-22 09:58:15] Creating app28 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app28
-[2025-05-22 09:58:15] Application app28 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6015, Frontend Port: 6515)
-[2025-05-22 09:58:15] Creating app29 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app29
-[2025-05-22 09:58:15] Application app29 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6017, Frontend Port: 6517)
-[2025-05-22 09:58:15] Creating app30 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app30
-[2025-05-22 09:58:15] Application app30 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6019, Frontend Port: 6519)
-[2025-05-22 09:58:15] Successfully created all apps for Meta-Llama_Llama-4_Maverick.
+[2025-05-22 20:50:37] Port ranges for Meta-Llama_Llama-4_Maverick:
+[2025-05-22 20:50:37]   Backend: 5961-6020 (approx range end)
+[2025-05-22 20:50:37]   Frontend: 6461-6520 (approx range end)
+[2025-05-22 20:50:39] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick
+[2025-05-22 20:50:39] Creating app1 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app1
+[2025-05-22 20:50:39] Application app1 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5961, Frontend Port: 6461)
+[2025-05-22 20:50:39] Creating app2 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app2
+[2025-05-22 20:50:39] Application app2 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5963, Frontend Port: 6463)
+[2025-05-22 20:50:39] Creating app3 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app3
+[2025-05-22 20:50:39] Application app3 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5965, Frontend Port: 6465)
+[2025-05-22 20:50:39] Creating app4 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app4
+[2025-05-22 20:50:39] Application app4 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5967, Frontend Port: 6467)
+[2025-05-22 20:50:39] Creating app5 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app5
+[2025-05-22 20:50:39] Application app5 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5969, Frontend Port: 6469)
+[2025-05-22 20:50:39] Creating app6 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app6
+[2025-05-22 20:50:39] Application app6 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5971, Frontend Port: 6471)
+[2025-05-22 20:50:39] Creating app7 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app7
+[2025-05-22 20:50:39] Application app7 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5973, Frontend Port: 6473)
+[2025-05-22 20:50:39] Creating app8 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app8
+[2025-05-22 20:50:39] Application app8 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5975, Frontend Port: 6475)
+[2025-05-22 20:50:39] Creating app9 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app9
+[2025-05-22 20:50:39] Application app9 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5977, Frontend Port: 6477)
+[2025-05-22 20:50:39] Creating app10 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app10
+[2025-05-22 20:50:39] Application app10 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5979, Frontend Port: 6479)
+[2025-05-22 20:50:39] Creating app11 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app11
+[2025-05-22 20:50:39] Application app11 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5981, Frontend Port: 6481)
+[2025-05-22 20:50:39] Creating app12 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app12
+[2025-05-22 20:50:39] Application app12 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5983, Frontend Port: 6483)
+[2025-05-22 20:50:39] Creating app13 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app13
+[2025-05-22 20:50:39] Application app13 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5985, Frontend Port: 6485)
+[2025-05-22 20:50:39] Creating app14 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app14
+[2025-05-22 20:50:39] Application app14 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5987, Frontend Port: 6487)
+[2025-05-22 20:50:39] Creating app15 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app15
+[2025-05-22 20:50:39] Application app15 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5989, Frontend Port: 6489)
+[2025-05-22 20:50:39] Creating app16 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app16
+[2025-05-22 20:50:39] Application app16 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5991, Frontend Port: 6491)
+[2025-05-22 20:50:39] Creating app17 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app17
+[2025-05-22 20:50:39] Application app17 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5993, Frontend Port: 6493)
+[2025-05-22 20:50:39] Creating app18 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app18
+[2025-05-22 20:50:39] Application app18 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5995, Frontend Port: 6495)
+[2025-05-22 20:50:39] Creating app19 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app19
+[2025-05-22 20:50:39] Application app19 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5997, Frontend Port: 6497)
+[2025-05-22 20:50:39] Creating app20 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app20
+[2025-05-22 20:50:39] Application app20 created for Meta-Llama_Llama-4_Maverick (Backend Port: 5999, Frontend Port: 6499)
+[2025-05-22 20:50:39] Creating app21 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app21
+[2025-05-22 20:50:39] Application app21 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6001, Frontend Port: 6501)
+[2025-05-22 20:50:39] Creating app22 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app22
+[2025-05-22 20:50:39] Application app22 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6003, Frontend Port: 6503)
+[2025-05-22 20:50:39] Creating app23 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app23
+[2025-05-22 20:50:39] Application app23 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6005, Frontend Port: 6505)
+[2025-05-22 20:50:39] Creating app24 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app24
+[2025-05-22 20:50:39] Application app24 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6007, Frontend Port: 6507)
+[2025-05-22 20:50:39] Creating app25 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app25
+[2025-05-22 20:50:39] Application app25 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6009, Frontend Port: 6509)
+[2025-05-22 20:50:39] Creating app26 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app26
+[2025-05-22 20:50:39] Application app26 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6011, Frontend Port: 6511)
+[2025-05-22 20:50:39] Creating app27 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app27
+[2025-05-22 20:50:39] Application app27 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6013, Frontend Port: 6513)
+[2025-05-22 20:50:39] Creating app28 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app28
+[2025-05-22 20:50:39] Application app28 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6015, Frontend Port: 6515)
+[2025-05-22 20:50:39] Creating app29 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app29
+[2025-05-22 20:50:39] Application app29 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6017, Frontend Port: 6517)
+[2025-05-22 20:50:39] Creating app30 for Meta-Llama_Llama-4_Maverick in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Meta-Llama_Llama-4_Maverick\app30
+[2025-05-22 20:50:39] Application app30 created for Meta-Llama_Llama-4_Maverick (Backend Port: 6019, Frontend Port: 6519)
+[2025-05-22 20:50:39] Successfully created all apps for Meta-Llama_Llama-4_Maverick.

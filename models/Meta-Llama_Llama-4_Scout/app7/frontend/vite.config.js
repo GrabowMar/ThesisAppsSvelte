@@ -1,18 +1,25 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig, loadEnv } from 'vite';
+import react from '@vitejs/plugin-react';
 
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    host: true,
-    port: 6713,  // Changed to match your frontend port
-    strictPort: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:port: {port_b}',
-        changeOrigin: true,
-        secure: false,
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), 'VITE_');
+
+  const backendApiTarget = env.VITE_BACKEND_API_TARGET;
+  const frontendPort = parseInt(env.VITE_FRONTEND_PORT)
+
+  return {
+    plugins: [react()],
+    server: {
+      host: true,
+      port: frontendPort,
+      strictPort: true,
+      proxy: {
+        '/api': {
+          target: backendApiTarget,
+          changeOrigin: true,
+          secure: false,
+        }
       }
     }
-  }
+  };
 });

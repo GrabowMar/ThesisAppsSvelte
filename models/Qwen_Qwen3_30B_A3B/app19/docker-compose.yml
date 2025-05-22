@@ -16,7 +16,8 @@ services:
             - "6097:6097"
         environment:
             - PORT=6097
+            - VITE_BACKEND_API_TARGET=http://backend:5597
+            - VITE_FRONTEND_PORT=6097
         restart: always
         depends_on:
             - backend
-
