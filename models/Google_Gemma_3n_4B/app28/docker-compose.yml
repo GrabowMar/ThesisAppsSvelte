@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: google_gemma_3n_4b_app28_backend_5295
+        ports:
+            - "5295:5295"
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: google_gemma_3n_4b_app28_frontend_5795
+        ports:
+            - "5795:5795"
+        environment:
+            - PORT=5795
+        restart: always
+        depends_on:
+            - backend
+

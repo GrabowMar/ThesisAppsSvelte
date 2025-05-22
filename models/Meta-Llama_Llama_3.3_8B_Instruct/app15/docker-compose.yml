@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: meta_llama_llama_3_3_8b_instruct_app15_backend_5349
+        ports:
+            - "5349:5349"
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: meta_llama_llama_3_3_8b_instruct_app15_frontend_5849
+        ports:
+            - "5849:5849"
+        environment:
+            - PORT=5849
+        restart: always
+        depends_on:
+            - backend
+

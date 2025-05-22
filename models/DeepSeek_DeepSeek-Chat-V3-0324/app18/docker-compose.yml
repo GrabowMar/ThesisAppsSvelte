@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: deepseek_deepseek_chat_v3_0324_app18_backend_6315
+        ports:
+            - "6315:6315"
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: deepseek_deepseek_chat_v3_0324_app18_frontend_6815
+        ports:
+            - "6815:6815"
+        environment:
+            - PORT=6815
+        restart: always
+        depends_on:
+            - backend
+

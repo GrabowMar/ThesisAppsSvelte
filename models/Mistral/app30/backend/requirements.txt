@@ -1,4 +1,0 @@
-Flask
-flask_cors
-flask_sqlalchemy
-flask_bcrypt

@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: nousresearch_deephermes_3_mistral_24b_preview_app28_backend_5455
+        ports:
+            - "5455:5455"
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: nousresearch_deephermes_3_mistral_24b_preview_app28_frontend_5955
+        ports:
+            - "5955:5955"
+        environment:
+            - PORT=5955
+        restart: always
+        depends_on:
+            - backend
+

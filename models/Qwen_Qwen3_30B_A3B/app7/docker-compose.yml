@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: qwen_qwen3_30b_a3b_app7_backend_5573
+        ports:
+            - "5573:5573"
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: qwen_qwen3_30b_a3b_app7_frontend_6073
+        ports:
+            - "6073:6073"
+        environment:
+            - PORT=6073
+        restart: always
+        depends_on:
+            - backend
+

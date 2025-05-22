@@ -1,0 +1,22 @@
+[2025-05-22 10:44:13] INFO: Web prompts table verified/created
+[2025-05-22 10:44:13] INFO: Connected to database: assistant.db
+[2025-05-22 10:44:48] INFO: Database connection closed
+[2025-05-22 10:44:48] INFO: Application shutting down
+[2025-05-22 10:44:56] INFO: Web prompts table verified/created
+[2025-05-22 10:44:56] INFO: Connected to database: assistant.db
+[2025-05-22 10:45:03] INFO: Looking for template for app: app6
+[2025-05-22 10:45:03] INFO: Available presets: []
+[2025-05-22 10:45:03] INFO: No matching template found for app6
+[2025-05-22 10:45:05] INFO: Looking for template for app: app30
+[2025-05-22 10:45:05] INFO: Available presets: []
+[2025-05-22 10:45:05] INFO: No matching template found for app30
+[2025-05-22 10:45:47] INFO: Looking for template for app: app26
+[2025-05-22 10:45:47] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md', 'app_21_recipes.md', 'app_22_learning.md', 'app_23_finance.md', 'app_24_networking.md', 'app_25_health.md', 'app_26_env_tracker.md', 'app_27_team_management.md', 'app_28_art_portfolio.md', 'app_29_event_planner.md', 'app_30_research_collab.md']
+[2025-05-22 10:45:47] INFO: Found matching template: app_26_env_tracker.md
+[2025-05-22 10:45:47] INFO: Loaded and copied template: app_26_env_tracker.md
+[2025-05-22 10:45:49] INFO: Looking for template for app: app30
+[2025-05-22 10:45:49] INFO: Available presets: ['app_1_login.md', 'app_2_chat.md', 'app_3_feedback.md', 'app_4_blog.md', 'app_5_cart.md', 'app_6_notes.md', 'app_7_fileUpload.md', 'app_8_forum.md', 'app_9_crud.md', 'app_10_microblog.md', 'app_11_polling.md', 'app_12_reservation.md', 'app_13_gallery.md', 'app_14_storage.md', 'app_15_kanban.md', 'app_16_iot.md', 'app_17_fitness.md', 'app_18_wiki.md', 'app_19_wallet.md', 'app_20_map.md', 'app_21_recipes.md', 'app_22_learning.md', 'app_23_finance.md', 'app_24_networking.md', 'app_25_health.md', 'app_26_env_tracker.md', 'app_27_team_management.md', 'app_28_art_portfolio.md', 'app_29_event_planner.md', 'app_30_research_collab.md']
+[2025-05-22 10:45:49] INFO: Found matching template: app_30_research_collab.md
+[2025-05-22 10:45:49] INFO: Loaded and copied template: app_30_research_collab.md
+[2025-05-22 10:45:58] INFO: Database connection closed
+[2025-05-22 10:45:58] INFO: Application shutting down

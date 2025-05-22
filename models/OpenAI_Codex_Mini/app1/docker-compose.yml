@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: openai_codex_mini_app1_backend_5641
+        ports:
+            - "5641:5641"
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: openai_codex_mini_app1_frontend_6141
+        ports:
+            - "6141:6141"
+        environment:
+            - PORT=6141
+        restart: always
+        depends_on:
+            - backend
+

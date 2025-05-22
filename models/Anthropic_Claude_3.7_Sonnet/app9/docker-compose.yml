@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: anthropic_claude_3_7_sonnet_app9_backend_5017
+        ports:
+            - "5017:5017"
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: anthropic_claude_3_7_sonnet_app9_frontend_5517
+        ports:
+            - "5517:5517"
+        environment:
+            - PORT=5517
+        restart: always
+        depends_on:
+            - backend
+

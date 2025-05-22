@@ -1,9 +1,0 @@
-flask==2.2.3
-flask-socketio==5.3.3
-python-socketio==5.8.0
-flask-cors==3.0.10
-flask-sqlalchemy==3.0.3
-flask-bcrypt==1.0.1
-pyjwt==2.6.0
-python-dotenv==1.0.0
-eventlet==0.33.3

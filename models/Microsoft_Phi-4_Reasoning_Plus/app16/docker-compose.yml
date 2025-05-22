@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: microsoft_phi_4_reasoning_plus_app16_backend_5511
+        ports:
+            - "5511:5511"
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: microsoft_phi_4_reasoning_plus_app16_frontend_6011
+        ports:
+            - "6011:6011"
+        environment:
+            - PORT=6011
+        restart: always
+        depends_on:
+            - backend
+

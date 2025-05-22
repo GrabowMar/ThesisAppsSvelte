@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: openai_gpt_4_1_app8_backend_5095
+        ports:
+            - "5095:5095"
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: openai_gpt_4_1_app8_frontend_5595
+        ports:
+            - "5595:5595"
+        environment:
+            - PORT=5595
+        restart: always
+        depends_on:
+            - backend
+

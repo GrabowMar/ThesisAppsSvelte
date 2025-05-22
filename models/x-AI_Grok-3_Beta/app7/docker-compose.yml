@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: x_ai_grok_3_beta_app7_backend_5733
+        ports:
+            - "5733:5733"
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: x_ai_grok_3_beta_app7_frontend_6233
+        ports:
+            - "6233:6233"
+        environment:
+            - PORT=6233
+        restart: always
+        depends_on:
+            - backend
+

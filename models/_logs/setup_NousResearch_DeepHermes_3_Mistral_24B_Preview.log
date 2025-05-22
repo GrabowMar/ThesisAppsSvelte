@@ -1,0 +1,65 @@
+[2025-05-22 09:58:13] Port ranges for NousResearch_DeepHermes_3_Mistral_24B_Preview:
+[2025-05-22 09:58:13]   Backend: 5401-5460 (approx range end)
+[2025-05-22 09:58:13]   Frontend: 5901-5960 (approx range end)
+[2025-05-22 09:58:14] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview
+[2025-05-22 09:58:14] Creating app1 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app1
+[2025-05-22 09:58:14] Application app1 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5401, Frontend Port: 5901)
+[2025-05-22 09:58:14] Creating app2 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app2
+[2025-05-22 09:58:14] Application app2 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5403, Frontend Port: 5903)
+[2025-05-22 09:58:14] Creating app3 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app3
+[2025-05-22 09:58:14] Application app3 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5405, Frontend Port: 5905)
+[2025-05-22 09:58:14] Creating app4 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app4
+[2025-05-22 09:58:14] Application app4 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5407, Frontend Port: 5907)
+[2025-05-22 09:58:14] Creating app5 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app5
+[2025-05-22 09:58:14] Application app5 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5409, Frontend Port: 5909)
+[2025-05-22 09:58:14] Creating app6 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app6
+[2025-05-22 09:58:14] Application app6 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5411, Frontend Port: 5911)
+[2025-05-22 09:58:14] Creating app7 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app7
+[2025-05-22 09:58:14] Application app7 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5413, Frontend Port: 5913)
+[2025-05-22 09:58:14] Creating app8 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app8
+[2025-05-22 09:58:14] Application app8 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5415, Frontend Port: 5915)
+[2025-05-22 09:58:14] Creating app9 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app9
+[2025-05-22 09:58:14] Application app9 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5417, Frontend Port: 5917)
+[2025-05-22 09:58:14] Creating app10 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app10
+[2025-05-22 09:58:14] Application app10 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5419, Frontend Port: 5919)
+[2025-05-22 09:58:14] Creating app11 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app11
+[2025-05-22 09:58:14] Application app11 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5421, Frontend Port: 5921)
+[2025-05-22 09:58:14] Creating app12 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app12
+[2025-05-22 09:58:14] Application app12 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5423, Frontend Port: 5923)
+[2025-05-22 09:58:14] Creating app13 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app13
+[2025-05-22 09:58:14] Application app13 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5425, Frontend Port: 5925)
+[2025-05-22 09:58:14] Creating app14 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app14
+[2025-05-22 09:58:14] Application app14 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5427, Frontend Port: 5927)
+[2025-05-22 09:58:14] Creating app15 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app15
+[2025-05-22 09:58:14] Application app15 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5429, Frontend Port: 5929)
+[2025-05-22 09:58:14] Creating app16 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app16
+[2025-05-22 09:58:14] Application app16 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5431, Frontend Port: 5931)
+[2025-05-22 09:58:14] Creating app17 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app17
+[2025-05-22 09:58:14] Application app17 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5433, Frontend Port: 5933)
+[2025-05-22 09:58:14] Creating app18 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app18
+[2025-05-22 09:58:14] Application app18 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5435, Frontend Port: 5935)
+[2025-05-22 09:58:14] Creating app19 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app19
+[2025-05-22 09:58:14] Application app19 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5437, Frontend Port: 5937)
+[2025-05-22 09:58:14] Creating app20 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app20
+[2025-05-22 09:58:14] Application app20 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5439, Frontend Port: 5939)
+[2025-05-22 09:58:14] Creating app21 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app21
+[2025-05-22 09:58:14] Application app21 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5441, Frontend Port: 5941)
+[2025-05-22 09:58:14] Creating app22 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app22
+[2025-05-22 09:58:14] Application app22 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5443, Frontend Port: 5943)
+[2025-05-22 09:58:14] Creating app23 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app23
+[2025-05-22 09:58:14] Application app23 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5445, Frontend Port: 5945)
+[2025-05-22 09:58:14] Creating app24 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app24
+[2025-05-22 09:58:14] Application app24 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5447, Frontend Port: 5947)
+[2025-05-22 09:58:14] Creating app25 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app25
+[2025-05-22 09:58:14] Application app25 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5449, Frontend Port: 5949)
+[2025-05-22 09:58:14] Creating app26 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app26
+[2025-05-22 09:58:14] Application app26 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5451, Frontend Port: 5951)
+[2025-05-22 09:58:14] Creating app27 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app27
+[2025-05-22 09:58:14] Application app27 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5453, Frontend Port: 5953)
+[2025-05-22 09:58:14] Creating app28 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app28
+[2025-05-22 09:58:14] Application app28 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5455, Frontend Port: 5955)
+[2025-05-22 09:58:14] Creating app29 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app29
+[2025-05-22 09:58:14] Application app29 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5457, Frontend Port: 5957)
+[2025-05-22 09:58:14] Creating app30 for NousResearch_DeepHermes_3_Mistral_24B_Preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\NousResearch_DeepHermes_3_Mistral_24B_Preview\app30
+[2025-05-22 09:58:14] Application app30 created for NousResearch_DeepHermes_3_Mistral_24B_Preview (Backend Port: 5459, Frontend Port: 5959)
+[2025-05-22 09:58:14] Successfully created all apps for NousResearch_DeepHermes_3_Mistral_24B_Preview.

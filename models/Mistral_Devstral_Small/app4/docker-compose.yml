@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: mistral_devstral_small_app4_backend_5167
+        ports:
+            - "5167:5167"
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: mistral_devstral_small_app4_frontend_5667
+        ports:
+            - "5667:5667"
+        environment:
+            - PORT=5667
+        restart: always
+        depends_on:
+            - backend
+

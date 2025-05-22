@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: meta_llama_llama_4_maverick_app18_backend_5995
+        ports:
+            - "5995:5995"
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: meta_llama_llama_4_maverick_app18_frontend_6495
+        ports:
+            - "6495:6495"
+        environment:
+            - PORT=6495
+        restart: always
+        depends_on:
+            - backend
+

@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: inception_mercury_coder_small_beta_app26_backend_5851
+        ports:
+            - "5851:5851"
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: inception_mercury_coder_small_beta_app26_frontend_6351
+        ports:
+            - "6351:6351"
+        environment:
+            - PORT=6351
+        restart: always
+        depends_on:
+            - backend
+

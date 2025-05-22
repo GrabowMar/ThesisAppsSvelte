@@ -1,0 +1,65 @@
+[2025-05-22 09:58:13] Port ranges for Qwen_Qwen3_30B_A3B:
+[2025-05-22 09:58:13]   Backend: 5561-5620 (approx range end)
+[2025-05-22 09:58:13]   Frontend: 6061-6120 (approx range end)
+[2025-05-22 09:58:14] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B
+[2025-05-22 09:58:14] Creating app1 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app1
+[2025-05-22 09:58:14] Application app1 created for Qwen_Qwen3_30B_A3B (Backend Port: 5561, Frontend Port: 6061)
+[2025-05-22 09:58:14] Creating app2 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app2
+[2025-05-22 09:58:15] Application app2 created for Qwen_Qwen3_30B_A3B (Backend Port: 5563, Frontend Port: 6063)
+[2025-05-22 09:58:15] Creating app3 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app3
+[2025-05-22 09:58:15] Application app3 created for Qwen_Qwen3_30B_A3B (Backend Port: 5565, Frontend Port: 6065)
+[2025-05-22 09:58:15] Creating app4 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app4
+[2025-05-22 09:58:15] Application app4 created for Qwen_Qwen3_30B_A3B (Backend Port: 5567, Frontend Port: 6067)
+[2025-05-22 09:58:15] Creating app5 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app5
+[2025-05-22 09:58:15] Application app5 created for Qwen_Qwen3_30B_A3B (Backend Port: 5569, Frontend Port: 6069)
+[2025-05-22 09:58:15] Creating app6 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app6
+[2025-05-22 09:58:15] Application app6 created for Qwen_Qwen3_30B_A3B (Backend Port: 5571, Frontend Port: 6071)
+[2025-05-22 09:58:15] Creating app7 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app7
+[2025-05-22 09:58:15] Application app7 created for Qwen_Qwen3_30B_A3B (Backend Port: 5573, Frontend Port: 6073)
+[2025-05-22 09:58:15] Creating app8 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app8
+[2025-05-22 09:58:15] Application app8 created for Qwen_Qwen3_30B_A3B (Backend Port: 5575, Frontend Port: 6075)
+[2025-05-22 09:58:15] Creating app9 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app9
+[2025-05-22 09:58:15] Application app9 created for Qwen_Qwen3_30B_A3B (Backend Port: 5577, Frontend Port: 6077)
+[2025-05-22 09:58:15] Creating app10 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app10
+[2025-05-22 09:58:15] Application app10 created for Qwen_Qwen3_30B_A3B (Backend Port: 5579, Frontend Port: 6079)
+[2025-05-22 09:58:15] Creating app11 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app11
+[2025-05-22 09:58:15] Application app11 created for Qwen_Qwen3_30B_A3B (Backend Port: 5581, Frontend Port: 6081)
+[2025-05-22 09:58:15] Creating app12 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app12
+[2025-05-22 09:58:15] Application app12 created for Qwen_Qwen3_30B_A3B (Backend Port: 5583, Frontend Port: 6083)
+[2025-05-22 09:58:15] Creating app13 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app13
+[2025-05-22 09:58:15] Application app13 created for Qwen_Qwen3_30B_A3B (Backend Port: 5585, Frontend Port: 6085)
+[2025-05-22 09:58:15] Creating app14 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app14
+[2025-05-22 09:58:15] Application app14 created for Qwen_Qwen3_30B_A3B (Backend Port: 5587, Frontend Port: 6087)
+[2025-05-22 09:58:15] Creating app15 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app15
+[2025-05-22 09:58:15] Application app15 created for Qwen_Qwen3_30B_A3B (Backend Port: 5589, Frontend Port: 6089)
+[2025-05-22 09:58:15] Creating app16 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app16
+[2025-05-22 09:58:15] Application app16 created for Qwen_Qwen3_30B_A3B (Backend Port: 5591, Frontend Port: 6091)
+[2025-05-22 09:58:15] Creating app17 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app17
+[2025-05-22 09:58:15] Application app17 created for Qwen_Qwen3_30B_A3B (Backend Port: 5593, Frontend Port: 6093)
+[2025-05-22 09:58:15] Creating app18 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app18
+[2025-05-22 09:58:15] Application app18 created for Qwen_Qwen3_30B_A3B (Backend Port: 5595, Frontend Port: 6095)
+[2025-05-22 09:58:15] Creating app19 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app19
+[2025-05-22 09:58:15] Application app19 created for Qwen_Qwen3_30B_A3B (Backend Port: 5597, Frontend Port: 6097)
+[2025-05-22 09:58:15] Creating app20 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app20
+[2025-05-22 09:58:15] Application app20 created for Qwen_Qwen3_30B_A3B (Backend Port: 5599, Frontend Port: 6099)
+[2025-05-22 09:58:15] Creating app21 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app21
+[2025-05-22 09:58:15] Application app21 created for Qwen_Qwen3_30B_A3B (Backend Port: 5601, Frontend Port: 6101)
+[2025-05-22 09:58:15] Creating app22 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app22
+[2025-05-22 09:58:15] Application app22 created for Qwen_Qwen3_30B_A3B (Backend Port: 5603, Frontend Port: 6103)
+[2025-05-22 09:58:15] Creating app23 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app23
+[2025-05-22 09:58:15] Application app23 created for Qwen_Qwen3_30B_A3B (Backend Port: 5605, Frontend Port: 6105)
+[2025-05-22 09:58:15] Creating app24 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app24
+[2025-05-22 09:58:15] Application app24 created for Qwen_Qwen3_30B_A3B (Backend Port: 5607, Frontend Port: 6107)
+[2025-05-22 09:58:15] Creating app25 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app25
+[2025-05-22 09:58:15] Application app25 created for Qwen_Qwen3_30B_A3B (Backend Port: 5609, Frontend Port: 6109)
+[2025-05-22 09:58:15] Creating app26 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app26
+[2025-05-22 09:58:15] Application app26 created for Qwen_Qwen3_30B_A3B (Backend Port: 5611, Frontend Port: 6111)
+[2025-05-22 09:58:15] Creating app27 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app27
+[2025-05-22 09:58:15] Application app27 created for Qwen_Qwen3_30B_A3B (Backend Port: 5613, Frontend Port: 6113)
+[2025-05-22 09:58:15] Creating app28 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app28
+[2025-05-22 09:58:15] Application app28 created for Qwen_Qwen3_30B_A3B (Backend Port: 5615, Frontend Port: 6115)
+[2025-05-22 09:58:15] Creating app29 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app29
+[2025-05-22 09:58:15] Application app29 created for Qwen_Qwen3_30B_A3B (Backend Port: 5617, Frontend Port: 6117)
+[2025-05-22 09:58:15] Creating app30 for Qwen_Qwen3_30B_A3B in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Qwen_Qwen3_30B_A3B\app30
+[2025-05-22 09:58:15] Application app30 created for Qwen_Qwen3_30B_A3B (Backend Port: 5619, Frontend Port: 6119)
+[2025-05-22 09:58:15] Successfully created all apps for Qwen_Qwen3_30B_A3B.

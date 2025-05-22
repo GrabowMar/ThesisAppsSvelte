@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+    backend:
+        build: ./backend
+        container_name: google_gemini_2_5_flash_preview_05_20_app16_backend_5911
+        ports:
+            - "5911:5911"
+        restart: always
+        environment:
+            - PYTHONUNBUFFERED=1 
+
+    frontend:
+        build: ./frontend
+        container_name: google_gemini_2_5_flash_preview_05_20_app16_frontend_6411
+        ports:
+            - "6411:6411"
+        environment:
+            - PORT=6411
+        restart: always
+        depends_on:
+            - backend
+

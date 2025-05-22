@@ -1,6 +1,0 @@
-Flask
-Flask-Bcrypt
-Flask-Cors
-Flask-SQLAlchemy
-SQLAlchemy
-Werkzeug

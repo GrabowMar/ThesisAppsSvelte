@@ -1,0 +1,65 @@
+[2025-05-22 09:58:13] Port ranges for Inception_Mercury-Coder_Small-Beta:
+[2025-05-22 09:58:13]   Backend: 5801-5860 (approx range end)
+[2025-05-22 09:58:13]   Frontend: 6301-6360 (approx range end)
+[2025-05-22 09:58:15] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta
+[2025-05-22 09:58:15] Creating app1 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app1
+[2025-05-22 09:58:15] Application app1 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5801, Frontend Port: 6301)
+[2025-05-22 09:58:15] Creating app2 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app2
+[2025-05-22 09:58:15] Application app2 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5803, Frontend Port: 6303)
+[2025-05-22 09:58:15] Creating app3 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app3
+[2025-05-22 09:58:15] Application app3 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5805, Frontend Port: 6305)
+[2025-05-22 09:58:15] Creating app4 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app4
+[2025-05-22 09:58:15] Application app4 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5807, Frontend Port: 6307)
+[2025-05-22 09:58:15] Creating app5 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app5
+[2025-05-22 09:58:15] Application app5 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5809, Frontend Port: 6309)
+[2025-05-22 09:58:15] Creating app6 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app6
+[2025-05-22 09:58:15] Application app6 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5811, Frontend Port: 6311)
+[2025-05-22 09:58:15] Creating app7 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app7
+[2025-05-22 09:58:15] Application app7 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5813, Frontend Port: 6313)
+[2025-05-22 09:58:15] Creating app8 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app8
+[2025-05-22 09:58:15] Application app8 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5815, Frontend Port: 6315)
+[2025-05-22 09:58:15] Creating app9 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app9
+[2025-05-22 09:58:15] Application app9 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5817, Frontend Port: 6317)
+[2025-05-22 09:58:15] Creating app10 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app10
+[2025-05-22 09:58:15] Application app10 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5819, Frontend Port: 6319)
+[2025-05-22 09:58:15] Creating app11 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app11
+[2025-05-22 09:58:15] Application app11 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5821, Frontend Port: 6321)
+[2025-05-22 09:58:15] Creating app12 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app12
+[2025-05-22 09:58:15] Application app12 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5823, Frontend Port: 6323)
+[2025-05-22 09:58:15] Creating app13 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app13
+[2025-05-22 09:58:15] Application app13 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5825, Frontend Port: 6325)
+[2025-05-22 09:58:15] Creating app14 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app14
+[2025-05-22 09:58:15] Application app14 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5827, Frontend Port: 6327)
+[2025-05-22 09:58:15] Creating app15 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app15
+[2025-05-22 09:58:15] Application app15 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5829, Frontend Port: 6329)
+[2025-05-22 09:58:15] Creating app16 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app16
+[2025-05-22 09:58:15] Application app16 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5831, Frontend Port: 6331)
+[2025-05-22 09:58:15] Creating app17 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app17
+[2025-05-22 09:58:15] Application app17 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5833, Frontend Port: 6333)
+[2025-05-22 09:58:15] Creating app18 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app18
+[2025-05-22 09:58:15] Application app18 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5835, Frontend Port: 6335)
+[2025-05-22 09:58:15] Creating app19 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app19
+[2025-05-22 09:58:15] Application app19 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5837, Frontend Port: 6337)
+[2025-05-22 09:58:15] Creating app20 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app20
+[2025-05-22 09:58:15] Application app20 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5839, Frontend Port: 6339)
+[2025-05-22 09:58:15] Creating app21 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app21
+[2025-05-22 09:58:15] Application app21 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5841, Frontend Port: 6341)
+[2025-05-22 09:58:15] Creating app22 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app22
+[2025-05-22 09:58:15] Application app22 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5843, Frontend Port: 6343)
+[2025-05-22 09:58:15] Creating app23 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app23
+[2025-05-22 09:58:15] Application app23 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5845, Frontend Port: 6345)
+[2025-05-22 09:58:15] Creating app24 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app24
+[2025-05-22 09:58:15] Application app24 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5847, Frontend Port: 6347)
+[2025-05-22 09:58:15] Creating app25 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app25
+[2025-05-22 09:58:15] Application app25 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5849, Frontend Port: 6349)
+[2025-05-22 09:58:15] Creating app26 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app26
+[2025-05-22 09:58:15] Application app26 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5851, Frontend Port: 6351)
+[2025-05-22 09:58:15] Creating app27 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app27
+[2025-05-22 09:58:15] Application app27 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5853, Frontend Port: 6353)
+[2025-05-22 09:58:15] Creating app28 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app28
+[2025-05-22 09:58:15] Application app28 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5855, Frontend Port: 6355)
+[2025-05-22 09:58:15] Creating app29 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app29
+[2025-05-22 09:58:15] Application app29 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5857, Frontend Port: 6357)
+[2025-05-22 09:58:15] Creating app30 for Inception_Mercury-Coder_Small-Beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\Inception_Mercury-Coder_Small-Beta\app30
+[2025-05-22 09:58:15] Application app30 created for Inception_Mercury-Coder_Small-Beta (Backend Port: 5859, Frontend Port: 6359)
+[2025-05-22 09:58:15] Successfully created all apps for Inception_Mercury-Coder_Small-Beta.
