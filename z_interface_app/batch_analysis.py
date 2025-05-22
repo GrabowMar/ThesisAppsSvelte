@@ -1,16 +1,18 @@
 import datetime
 import enum
 import json
+import logging # Import for BatchJobService fallback logger
 import random
-import threading # DATA_LOCK still needs threading.Lock
+import threading
 import time
 import uuid
 from dataclasses import asdict, dataclass, field
+from pathlib import Path # Import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from flask import (
     Blueprint,
-    current_app, # Added for use in the custom filter
+    current_app,
     flash,
     jsonify,
     redirect,
@@ -18,6 +20,13 @@ from flask import (
     request,
     url_for,
 )
+
+# Assuming these might be needed for interpreting results from analyzers
+# If not, they can be removed. Using string literals for severity keys for now.
+# from backend_security_analysis import Severity as BackendSeverity
+# from frontend_security_analysis import Severity as FrontendSeverity
+
+from utils import get_app_info # For ZAP and Performance target URLs
 
 # --- Enums ---
 class AnalysisType(str, enum.Enum):
@@ -83,7 +92,7 @@ class BatchJob:
     completed_at: Optional[datetime.datetime] = None
     total_tasks: int = 0; completed_tasks: int = 0
     errors: List[Dict[str, Any]] = field(default_factory=list)
-    tasks: List[AnalysisTask] = field(default_factory=list) # Holds task *objects* references
+    tasks: List[AnalysisTask] = field(default_factory=list)
 
     def to_dict(self):
         return {
@@ -92,7 +101,6 @@ class BatchJob:
             "models": self.models, "app_ranges": self.app_ranges,
             "analysis_options": self.analysis_options, "status": str(self.status),
             "created_at": self.created_at.isoformat(),
-            # "created_at_formatted" can be removed if datetimeformat filter is used in template
             "started_at": self.started_at.isoformat() if self.started_at else None,
             "completed_at": self.completed_at.isoformat() if self.completed_at else None,
             "total_tasks": self.total_tasks, "completed_tasks": self.completed_tasks,
@@ -102,78 +110,59 @@ class BatchJob:
 # --- In-memory Storage & Locks ---
 BATCH_JOBS: Dict[str, BatchJob] = {}
 ANALYSIS_TASKS: Dict[str, AnalysisTask] = {}
-DATA_LOCK = threading.Lock() # For all shared data modifications
+DATA_LOCK = threading.Lock()
 
-# --- Dummy Data ---
+# --- Constants ---
 ALL_MODELS = ["Llama", "Mistral", "DeepSeek", "GPT4o", "Claude", "Gemini", "Grok", "R1", "O3"]
 DEFAULT_JOB_NAME_TEMPLATE = "Batch Job - {date}"
 DEFAULT_TASK_TIMEOUT = 1800
 
-# --- Blueprint Definition (ensure this is before filter registration) ---
 batch_analysis_bp = Blueprint(
     "batch_analysis", __name__, template_folder="templates", static_folder="static", url_prefix="/batch-analysis"
 )
 
-# --- Custom Jinja Filter ---
 @batch_analysis_bp.app_template_filter('datetimeformat')
 def format_datetime_filter(value, fmt="%Y-%m-%d %H:%M:%S"):
-    """Formats a datetime object or an ISO format string into a more readable string."""
-    if not value:
-        return "N/A"
-
+    if not value: return "N/A"
     dt_object = None
     if isinstance(value, str):
         try:
-            # This is the logic from the user's provided solution block:
-            # Handles cases with microseconds but no 'Z' (e.g., "2023-10-26T12:30:45.123456")
-            # and cases with 'Z' or no microseconds.
-            if '.' in value and 'Z' not in value:
-                 # Python's fromisoformat before 3.11 might struggle with 'Z' and microseconds.
-                 # This branch handles strings with microseconds but no 'Z'.
-                 # It splits off microseconds; this might be too simple if timezone info followed microseconds.
-                 # However, .isoformat() typically puts timezone at the very end or uses 'Z'.
-                value_no_ms = value.split('.')[0]
-                dt_object = datetime.datetime.fromisoformat(value_no_ms)
-            else:
-                # Handles strings with 'Z' (e.g., "2023-10-26T12:30:45Z" or "2023-10-26T12:30:45.123Z")
-                # or strings without microseconds and no 'Z' (e.g., "2023-10-26T12:30:45+01:00")
-                dt_object = datetime.datetime.fromisoformat(value.replace('Z', '+00:00'))
+            if '.' in value and 'Z' not in value: value_no_ms = value.split('.')[0]; dt_object = datetime.datetime.fromisoformat(value_no_ms)
+            else: dt_object = datetime.datetime.fromisoformat(value.replace('Z', '+00:00'))
         except ValueError:
-            # Fallback: Try parsing with common strptime formats if fromisoformat fails.
-            # This is useful if the string isn't strictly ISO 8601 as expected by fromisoformat,
-            # or if the .to_dict() methods sometimes produce a slightly different format.
-            try:
-                dt_object = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+            try: dt_object = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
             except ValueError:
-                try:
-                    dt_object = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
+                try: dt_object = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
                 except ValueError:
-                    # Use current_app.logger if available and configured
-                    if current_app:
-                        current_app.logger.warning(f"Could not parse date string: {value} using fromisoformat or strptime fallbacks.")
-                    else: # Fallback print if logger not available (e.g. during early init or tests)
-                        print(f"Warning: Could not parse date string: {value}")
-                    return value # Return original string if all parsing fails
-    elif isinstance(value, datetime.datetime):
-        # If it's already a datetime object, use it directly
-        dt_object = value
-
-    if dt_object:
-        # Format the datetime object into the desired string representation
-        return dt_object.strftime(fmt)
-
-    # Fallback: if value is not a string or datetime, or if dt_object is None after logic
+                    if current_app: current_app.logger.warning(f"Could not parse date string: {value}")
+                    else: print(f"Warning: Could not parse date string: {value}")
+                    return value
+    elif isinstance(value, datetime.datetime): dt_object = value
+    if dt_object: return dt_object.strftime(fmt)
     return value
 
-
-# --- Batch Analysis Service ---
 class BatchJobService:
-    def __init__(self):
-        self.logger = current_app.logger.getChild('batch_service')
+    def __init__(self, app_instance=None):
+        if app_instance:
+            self._app = app_instance
+            self.logger = self._app.logger.getChild('batch_service')
+        else:
+            try:
+                self.logger = current_app.logger.getChild('batch_service')
+            except RuntimeError:
+                self.logger = logging.getLogger('batch_service_fallback')
+                self.logger.warning("BatchJobService initialized without Flask app context. Using fallback logger.")
+                if not self.logger.hasHandlers(): # Add a basic handler if none configured
+                    handler = logging.StreamHandler()
+                    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+                    handler.setFormatter(formatter)
+                    self.logger.addHandler(handler)
+                    self.logger.setLevel(logging.INFO)
+
 
     def _generate_id(self): return str(uuid.uuid4())
 
-    def _parse_app_range(self, range_str: str, max_apps: int = 3) -> List[int]: # Reduced max_apps for faster sync test
+    def _parse_app_range(self, range_str: str, max_apps: int = 30) -> List[int]:
         if not range_str: return list(range(1, max_apps + 1))
         apps = set(); parts = range_str.split(',')
         for part in parts:
@@ -182,7 +171,7 @@ class BatchJobService:
             if '-' in part:
                 try:
                     start, end = map(int, part.split('-'))
-                    if start > end: start, end = end, start
+                    if start > end: start, end = end, start # Auto-correct order
                     apps.update(range(start, min(end, max_apps) + 1))
                 except ValueError: self.logger.warning(f"Invalid range part: {part} in {range_str}")
             else:
@@ -193,6 +182,7 @@ class BatchJobService:
         return sorted(list(apps))
 
     def create_job(self, data: Dict[str, Any]) -> BatchJob:
+        # ... (Implementation from previous response - parsing form data, creating Job and Tasks) ...
         with DATA_LOCK:
             job_id = self._generate_id()
             job_name = data.get("name", DEFAULT_JOB_NAME_TEMPLATE.format(date=datetime.datetime.now().strftime("%Y-%m-%d")))
@@ -205,13 +195,40 @@ class BatchJobService:
                 final_analysis_types_str.add(AnalysisType.BACKEND_SECURITY.value)
             analysis_types_enums = [AnalysisType(val) for val in final_analysis_types_str if val]
 
+            analysis_options = {}
+            for key, value in data.items(): # data is request.form (MultiDict)
+                if key.startswith("analysis_opt_"):
+                    parts = key.replace("analysis_opt_", "").split("_", 1)
+                    tool_name_key = parts[0]
+                    option_name_key = parts[1] if len(parts) > 1 else "general_option_" + parts[0]
+
+                    if tool_name_key not in analysis_options: analysis_options[tool_name_key] = {}
+                    
+                    # Handle multiple values for the same option key (e.g., from multiple checkboxes for 'endpoints')
+                    actual_values = data.getlist(key)
+                    processed_value = None
+                    if len(actual_values) > 1:
+                        processed_value = actual_values # Keep as list
+                    elif len(actual_values) == 1:
+                        single_value = actual_values[0]
+                        try: processed_value = int(single_value)
+                        except ValueError:
+                            if single_value.lower() == 'true': processed_value = True
+                            elif single_value.lower() == 'false': processed_value = False
+                            else: processed_value = single_value # Keep as string
+                    
+                    if processed_value is not None:
+                         analysis_options[tool_name_key][option_name_key] = processed_value
+
             job = BatchJob(id=job_id, name=job_name, description=data.get("description"),
                            analysis_types=analysis_types_enums, models=data.getlist("models"),
-                           analysis_options={ # Simplified options
-                               "task_timeout_override": data.get("task_timeout_override")})
+                           analysis_options=analysis_options)
+            
+            apps_per_model_config = current_app.config.get("APPS_PER_MODEL", 30) if current_app else 30
+
             for model_name in job.models:
                 app_range_str = data.get(f"app_range_{model_name}", ""); job.app_ranges[model_name] = app_range_str
-                for app_num in self._parse_app_range(app_range_str):
+                for app_num in self._parse_app_range(app_range_str, max_apps=apps_per_model_config):
                     for at_enum in job.analysis_types:
                         task_id = self._generate_id()
                         task = AnalysisTask(id=task_id, job_id=job_id, model=model_name, app_num=app_num, analysis_type=at_enum)
@@ -219,14 +236,15 @@ class BatchJobService:
             job.total_tasks = len(job.tasks)
             job.status = JobStatus.QUEUED if job.total_tasks > 0 else JobStatus.COMPLETED
             BATCH_JOBS[job_id] = job
-            self.logger.info(f"Created BatchJob '{job.name}' (ID: {job.id}) with {job.total_tasks} tasks. Status: {job.status}")
+            self.logger.info(f"Created BatchJob '{job.name}' (ID: {job.id}) with {job.total_tasks} tasks. Status: {job.status}. Options: {job.analysis_options}")
 
         if job.status == JobStatus.QUEUED:
-            self.logger.info(f"Starting synchronous processing for Job ID: {job_id}")
-            self._execute_job_synchronously(job_id) # Process synchronously
-            self.logger.info(f"Synchronous processing finished for Job ID: {job_id}. Final Status: {job.status}")
+            self.logger.info(f"Starting synchronous processing for Job ID: {job.id}")
+            self._execute_job_synchronously(job_id)
+            self.logger.info(f"Synchronous processing finished for Job ID: {job.id}. Final Status: {job.status}")
         return job
 
+    # ... (get_job, get_all_jobs, get_job_tasks, get_task, _update_job_status, _update_task_status remain as previously defined)
     def get_job(self, job_id: str) -> Optional[BatchJob]:
         with DATA_LOCK: return BATCH_JOBS.get(job_id)
     def get_all_jobs(self) -> List[BatchJob]:
@@ -242,41 +260,24 @@ class BatchJobService:
     def _update_job_status(self, job_id: str, status: JobStatus, errors: Optional[List[Dict]] = None):
         job = BATCH_JOBS.get(job_id)
         if job:
-            old_status = job.status
-            job.status = status
+            old_status = job.status; job.status = status
             if status in [JobStatus.COMPLETED, JobStatus.FAILED, JobStatus.CANCELLED, JobStatus.ERROR] and not job.completed_at:
                 job.completed_at = datetime.datetime.utcnow()
             if errors: job.errors.extend(errors)
-            if old_status != status: 
-                self.logger.info(f"Job {job_id} status updated from {old_status} to {status}")
-        else:
-            self.logger.warning(f"Attempt to update status for non-existent job {job_id}")
-
+            if old_status != status: self.logger.info(f"Job {job_id} status updated from {old_status} to {status}")
+        else: self.logger.warning(f"Attempt to update status for non-existent job {job_id}")
 
     def _update_task_status(self, task_id: str, status: TaskStatus, **kwargs):
         task = ANALYSIS_TASKS.get(task_id)
-        if not task:
-            self.logger.warning(f"Task {task_id} not found for status update.")
-            return
-
+        if not task: self.logger.warning(f"Task {task_id} not found for status update."); return
         task.status = status
-        if 'scan_start_time' in kwargs: task.scan_start_time = kwargs['scan_start_time']
-        if 'scan_end_time' in kwargs: task.scan_end_time = kwargs['scan_end_time']
-        if 'duration_seconds' in kwargs: task.duration_seconds = kwargs['duration_seconds']
-        if 'details' in kwargs: task.details.update(kwargs['details'])
-        
-        if 'error' in kwargs and kwargs['error'] is not None:
-            task.error = kwargs['error']
-            if "error_info" not in task.details and isinstance(kwargs['error'], TaskError):
-                 task.details["error_info"] = kwargs['error'].to_dict()
-        elif status not in [TaskStatus.FAILED, TaskStatus.TIMED_OUT]:
-            task.error = None; task.details.pop("error_info", None)
-
-        for key in ['issues_count', 'high_severity', 'medium_severity', 'low_severity']:
-            if key in kwargs: setattr(task, key, kwargs[key])
-        
-        self.logger.debug(f"Task {task_id} status updated to {status}. Details: {list(kwargs.keys())}")
-
+        for key, value in kwargs.items():
+            if hasattr(task, key): setattr(task, key, value)
+            elif key in ['issues_count', 'high_severity', 'medium_severity', 'low_severity']: setattr(task, key, value)
+            elif key == 'details': task.details.update(value)
+        if 'error' in kwargs and kwargs['error'] is not None: task.error = kwargs['error']
+        elif status not in [TaskStatus.FAILED, TaskStatus.TIMED_OUT]: task.error = None; task.details.pop("error_info", None)
+        self.logger.debug(f"Task {task_id} status updated to {status}.")
         if status in [TaskStatus.COMPLETED, TaskStatus.FAILED, TaskStatus.TIMED_OUT, TaskStatus.CANCELLED, TaskStatus.SKIPPED]:
             job = BATCH_JOBS.get(task.job_id)
             if job:
@@ -288,84 +289,203 @@ class BatchJobService:
                     final_status = JobStatus.COMPLETED
                     if job.status == JobStatus.CANCELLING or job_was_cancelled: final_status = JobStatus.CANCELLED
                     elif job_failed: final_status = JobStatus.FAILED
-                    self._update_job_status(job.id, final_status) 
+                    self._update_job_status(job.id, final_status)
                     self.logger.info(f"Job {job.id} fully processed. Final status: {final_status}")
-            else:
-                self.logger.warning(f"Job {task.job_id} for task {task.id} not found during task completion update.")
-        # Removed else: self.logger.warning(f"Task {task_id} not found in ANALYSIS_TASKS during status update.") as it's redundant with the check at the beginning of the function.
+            else: self.logger.warning(f"Job {task.job_id} for task {task.id} not found during task completion update.")
 
 
-    def _simulate_analysis(self, task: AnalysisTask):
-        self.logger.info(f"SYNC Simulating {task.analysis_type} for {task.model}/app{task.app_num} (Task ID: {task.id})")
+    def _execute_actual_analysis(self, task: AnalysisTask, job_options: Dict[str, Any]):
+        self.logger.info(f"Executing actual analysis for {task.analysis_type} on {task.model}/app{task.app_num} (Task ID: {task.id})")
         start_time = datetime.datetime.utcnow()
         self._update_task_status(task.id, TaskStatus.RUNNING, scan_start_time=start_time)
 
-        simulated_duration = random.randint(1, 2) 
-        time.sleep(simulated_duration)
+        final_task_status = TaskStatus.FAILED # Default
+        task_status_update_kwargs: Dict[str, Any] = {"details": {}} # Ensure details is always a dict
+        error_obj: Optional[TaskError] = None
+        
+        project_root_dir = Path(current_app.config.get("PROJECT_ROOT_DIR", "."))
+
+
+        try:
+            if task.analysis_type == AnalysisType.BACKEND_SECURITY:
+                analyzer = getattr(current_app, 'backend_security_analyzer', None)
+                if analyzer:
+                    opts = job_options.get(AnalysisType.BACKEND_SECURITY.value, {}) # e.g. job_options['backend_security']
+                    use_all_tools = opts.get("use_all_tools", True)
+                    issues, tool_status, _ = analyzer.run_security_analysis(task.model, task.app_num, use_all_tools=use_all_tools, force_rerun=opts.get("force_rerun", False))
+                    summary = analyzer.get_analysis_summary(issues)
+                    task_status_update_kwargs["details"]["summary"] = summary; task_status_update_kwargs["details"]["tool_status"] = tool_status
+                    task_status_update_kwargs["issues_count"] = summary.get("total_issues", 0)
+                    task_status_update_kwargs["high_severity"] = summary.get("severity_counts", {}).get("HIGH", 0)
+                    task_status_update_kwargs["medium_severity"] = summary.get("severity_counts", {}).get("MEDIUM", 0)
+                    task_status_update_kwargs["low_severity"] = summary.get("severity_counts", {}).get("LOW", 0)
+                    final_task_status = TaskStatus.COMPLETED
+                    if any(ts.startswith("❌") for ts in tool_status.values()) and not issues:
+                        final_task_status = TaskStatus.FAILED; error_obj = TaskError(category="BackendSecurityToolFailure", message="One or more tools failed.")
+                else: error_obj = TaskError(category="ConfigError", message="BackendSecurityAnalyzer not available."); final_task_status = TaskStatus.SKIPPED
+
+            elif task.analysis_type == AnalysisType.FRONTEND_SECURITY:
+                analyzer = getattr(current_app, 'frontend_security_analyzer', None)
+                if analyzer:
+                    opts = job_options.get(AnalysisType.FRONTEND_SECURITY.value, {})
+                    use_all_tools = opts.get("use_all_tools", True)
+                    issues, tool_status, _ = analyzer.run_security_analysis(task.model, task.app_num, use_all_tools=use_all_tools, force_rerun=opts.get("force_rerun", False))
+                    summary = analyzer.get_analysis_summary(issues)
+                    task_status_update_kwargs["details"]["summary"] = summary; task_status_update_kwargs["details"]["tool_status"] = tool_status
+                    task_status_update_kwargs["issues_count"] = summary.get("total_issues", 0)
+                    task_status_update_kwargs["high_severity"] = summary.get("severity_counts", {}).get("HIGH", 0)
+                    task_status_update_kwargs["medium_severity"] = summary.get("severity_counts", {}).get("MEDIUM", 0)
+                    task_status_update_kwargs["low_severity"] = summary.get("severity_counts", {}).get("LOW", 0)
+                    final_task_status = TaskStatus.COMPLETED
+                    if any(ts.startswith("❌") for ts in tool_status.values()) and not issues:
+                        final_task_status = TaskStatus.FAILED; error_obj = TaskError(category="FrontendSecurityToolFailure", message="One or more tools failed.")
+                else: error_obj = TaskError(category="ConfigError", message="FrontendSecurityAnalyzer not available."); final_task_status = TaskStatus.SKIPPED
+
+            elif task.analysis_type == AnalysisType.PERFORMANCE:
+                tester = getattr(current_app, 'performance_tester', None)
+                app_info = get_app_info(task.model, task.app_num)
+                if tester and app_info and app_info.get('frontend_url'):
+                    host_url = app_info['frontend_url']
+                    opts = job_options.get(AnalysisType.PERFORMANCE.value, {})
+                    user_count = int(opts.get("user_count", 10))
+                    spawn_rate = int(opts.get("spawn_rate", 1))
+                    run_time_s = int(opts.get("run_time_seconds", 30))
+                    endpoints_cfg = opts.get("endpoints", [{"path": "/", "method": "GET", "weight": 1}])
+                    
+                    perf_result = tester.run_test_library(
+                        test_name=f"batch_{task.model}_{task.app_num}_{int(time.time())}",
+                        host=host_url, endpoints=endpoints_cfg, user_count=user_count,
+                        spawn_rate=spawn_rate, run_time=run_time_s, model=task.model, app_num=task.app_num,
+                        force_rerun=opts.get("force_rerun", False)
+                    )
+                    if perf_result:
+                        task_status_update_kwargs["details"] = perf_result.to_dict()
+                        task_status_update_kwargs["issues_count"] = perf_result.total_failures
+                        final_task_status = TaskStatus.COMPLETED
+                    else: error_obj = TaskError(category="PerformanceError", message="Test run failed/returned no result.")
+                else: error_obj = TaskError(category="ConfigError", message="PerformanceTester/AppInfo not available."); final_task_status = TaskStatus.SKIPPED
+
+            elif task.analysis_type == AnalysisType.ZAP:
+                zap_scanner = getattr(current_app, 'zap_scanner', None)
+                if zap_scanner:
+                    opts = job_options.get(AnalysisType.ZAP.value, {})
+                    quick_scan_opt = opts.get("quick_scan", False)
+                    
+                    actual_app_src_path = project_root_dir / "models" / task.model / f"app{task.app_num}"
+                    if actual_app_src_path.exists():
+                        zap_scanner.set_source_code_root(str(actual_app_src_path))
+                        self.logger.info(f"Set ZAP source code root for task {task.id} to: {actual_app_src_path}")
+                    else:
+                        self.logger.warning(f"ZAP source code path for task {task.id} not found: {actual_app_src_path}. Code context may be limited.")
+
+                    scan_success = zap_scanner.start_scan(task.model, task.app_num, quick_scan=quick_scan_opt) # Assumes start_scan is blocking
+                    
+                    if scan_success:
+                        zap_results_data = zap_scanner.load_scan_results(task.model, task.app_num)
+                        if zap_results_data and "summary" in zap_results_data:
+                            summary = zap_results_data["summary"]
+                            task_status_update_kwargs["issues_count"] = summary.get("total_alerts", 0)
+                            risk_counts = summary.get("risk_counts", {})
+                            task_status_update_kwargs["high_severity"] = risk_counts.get("High", 0)
+                            task_status_update_kwargs["medium_severity"] = risk_counts.get("Medium", 0)
+                            task_status_update_kwargs["low_severity"] = risk_counts.get("Low", 0)
+                            task_status_update_kwargs["details"]["summary"] = summary
+                            task_status_update_kwargs["details"]["alerts_preview"] = zap_results_data.get("alerts", [])[:5]
+                            final_task_status = TaskStatus.COMPLETED
+                        else: error_obj = TaskError(category="ZapResultError", message="Scan completed but results unreadable.")
+                    else: error_obj = TaskError(category="ZapScanError", message="ZAP scan execution failed.")
+                else: error_obj = TaskError(category="ConfigError", message="ZAPScanner not available."); final_task_status = TaskStatus.SKIPPED
+
+            elif task.analysis_type == AnalysisType.GPT4ALL:
+                analyzer = getattr(current_app, 'gpt4all_analyzer', None)
+                if analyzer:
+                    opts = job_options.get(AnalysisType.GPT4ALL.value, {})
+                    custom_reqs = opts.get("requirements")
+                    req_list_to_check, _ = analyzer.get_requirements_for_app(task.app_num)
+                    if custom_reqs and isinstance(custom_reqs, list): req_list_to_check = custom_reqs
+
+                    if not req_list_to_check:
+                        final_task_status = TaskStatus.SKIPPED; task_status_update_kwargs["details"]["message"] = "No requirements for GPT4All."
+                    else:
+                        check_results = analyzer.check_requirements(task.model, task.app_num, req_list_to_check, force_rerun=opts.get("force_rerun", False))
+                        met_count = sum(1 for cr in check_results if cr.result.met)
+                        total_reqs = len(check_results)
+                        task_status_update_kwargs["details"]["summary"] = {"requirements_checked": total_reqs, "met_count": met_count}
+                        task_status_update_kwargs["details"]["results_preview"] = [cr.to_dict() for cr in check_results[:5]]
+                        task_status_update_kwargs["issues_count"] = total_reqs - met_count
+                        task_status_update_kwargs["medium_severity"] = total_reqs - met_count
+                        final_task_status = TaskStatus.COMPLETED
+                else: error_obj = TaskError(category="ConfigError", message="GPT4AllAnalyzer not available."); final_task_status = TaskStatus.SKIPPED
+            
+            elif task.analysis_type == AnalysisType.CODE_QUALITY:
+                analyzer = getattr(current_app, 'code_quality_analyzer', None)
+                if analyzer: # Actual call to CodeQualityAnalyzer
+                    opts = job_options.get(AnalysisType.CODE_QUALITY.value, {})
+                    # Example: cq_results = analyzer.analyze(task.model, task.app_num, options=opts)
+                    # For now, using the placeholder simulation logic:
+                    self.logger.info(f"Simulating Code Quality for {task.model}/app{task.app_num} (Task ID: {task.id}) as actual analyzer call is TBD.")
+                    time.sleep(random.randint(1,2)); sim_lint_errors = random.randint(0,20); sim_complexity = random.uniform(5.0,15.0); sim_duplication = random.uniform(0.0,10.0)
+                    task_status_update_kwargs["details"]["summary"] = {"lint_errors": sim_lint_errors, "average_complexity": round(sim_complexity,1), "duplication_percentage": round(sim_duplication,1), "message":"Placeholder: Simulated code quality."}
+                    task_status_update_kwargs["issues_count"] = sim_lint_errors
+                    if sim_lint_errors > 10: task_status_update_kwargs["high_severity"] = 1
+                    elif sim_lint_errors > 5: task_status_update_kwargs["medium_severity"] = 1
+                    elif sim_lint_errors > 0 : task_status_update_kwargs["low_severity"] = 1
+                    final_task_status = TaskStatus.COMPLETED
+                else: error_obj = TaskError(category="ConfigError", message="CodeQualityAnalyzer not available."); final_task_status = TaskStatus.SKIPPED
+            else:
+                self.logger.warning(f"Unknown analysis type: {task.analysis_type} for task {task.id}")
+                error_obj = TaskError(category="TypeError", message=f"Unknown analysis type: {task.analysis_type}")
+                final_task_status = TaskStatus.SKIPPED
+
+        except FileNotFoundError as fnf_error: # Catch specific path errors from analyzers
+            self.logger.exception(f"FileNotFoundError during actual analysis for task {task.id} ({task.analysis_type}): {fnf_error}")
+            error_obj = TaskError(category="FileNotFoundError", message=str(fnf_error), traceback=str(fnf_error.__traceback__))
+            final_task_status = TaskStatus.FAILED
+        except Exception as e:
+            self.logger.exception(f"Error during actual analysis for task {task.id} ({task.analysis_type}): {e}")
+            error_obj = TaskError(category="AnalysisExecutionError", message=str(e), traceback=str(e.__traceback__))
+            final_task_status = TaskStatus.FAILED
+        
+        if error_obj:
+            task_status_update_kwargs["error"] = error_obj
+            if "details" not in task_status_update_kwargs: task_status_update_kwargs["details"] = {} # Ensure details dict exists
+            task_status_update_kwargs["details"]["error_info"] = error_obj.to_dict()
+
         end_time = datetime.datetime.utcnow()
         duration = int((end_time - start_time).total_seconds())
-        outcome = random.choices([TaskStatus.COMPLETED, TaskStatus.FAILED], weights=[0.9, 0.1])[0]
-        details = {"raw_output_preview": f"SYNC: Simulated output for {task.analysis_type} on {task.model}/app{task.app_num}...", "message": "SYNC Simulation complete."}
-        error_obj, issues_count, high, med, low = None, 0, 0, 0, 0
-
-        if outcome == TaskStatus.FAILED:
-            error_obj = TaskError(category="SyncSimError", message="Task failed (sync sim).", traceback="Sync traceback.")
-            details["error_info"] = error_obj.to_dict()
-        elif outcome == TaskStatus.COMPLETED: 
-            if task.analysis_type in [AnalysisType.FRONTEND_SECURITY, AnalysisType.BACKEND_SECURITY, AnalysisType.ZAP]:
-                issues_count = random.randint(0, 5); high = random.randint(0, issues_count // 2 if issues_count else 0)
-                med = random.randint(0, (issues_count - high) // 2 if (issues_count - high) > 0 else 0); low = issues_count - high - med
-                details["summary"] = {"total_issues": issues_count, "high": high, "medium": med, "low": low}
-                if high > 0: details["issues"] = [{"severity": "HIGH", "issue_type": "SimVuln", "issue_text": "Critical sim vuln."}]
-        self._update_task_status(task.id, outcome, scan_end_time=end_time, duration_seconds=duration,
-                                 details=details, error=error_obj, issues_count=issues_count,
-                                 high_severity=high, medium_severity=med, low_severity=low)
-        self.logger.info(f"SYNC Finished {task.analysis_type} for {task.model}/app{task.app_num}. Status: {outcome}, Duration: {duration}s")
+        task_status_update_kwargs["scan_end_time"] = end_time
+        task_status_update_kwargs["duration_seconds"] = duration
+        
+        self._update_task_status(task.id, final_task_status, **task_status_update_kwargs)
+        self.logger.info(f"Finished {task.analysis_type} for {task.model}/app{task.app_num}. Status: {final_task_status}, Duration: {duration}s")
 
     def _execute_job_synchronously(self, job_id: str):
+        # ... (Implementation from previous response - calls _execute_actual_analysis) ...
         job = self.get_job(job_id) 
-        if not job:
-            self.logger.error(f"SYNC: Job {job_id} not found for synchronous execution.")
-            return
-        
+        if not job: self.logger.error(f"SYNC: Job {job_id} not found for execution."); return
         self.logger.info(f"SYNC: Starting execution for Job {job_id} ({job.name}). Status: {job.status}")
-        if job.status != JobStatus.QUEUED:
-            self.logger.warning(f"SYNC: Job {job_id} is not QUEUED (is {job.status}). Cannot execute.")
-            return
+        if job.status != JobStatus.QUEUED: self.logger.warning(f"SYNC: Job {job_id} not QUEUED (is {job.status}). Cannot execute."); return
 
         with DATA_LOCK: 
-            self._update_job_status(job.id, JobStatus.INITIALIZING)
-            job.started_at = datetime.datetime.utcnow()
+            self._update_job_status(job.id, JobStatus.INITIALIZING); job.started_at = datetime.datetime.utcnow()
             self.logger.info(f"SYNC: Job {job_id} Initializing. Total tasks: {job.total_tasks}")
-        
         time.sleep(0.1) 
-
         with DATA_LOCK:
-            self._update_job_status(job.id, JobStatus.RUNNING)
-            self.logger.info(f"SYNC: Job {job_id} Running.")
-
-            if not job.tasks:
-                self.logger.warning(f"SYNC: Job {job_id} has no tasks.")
+            self._update_job_status(job.id, JobStatus.RUNNING); self.logger.info(f"SYNC: Job {job.id} Running.")
+            if not job.tasks: self.logger.warning(f"SYNC: Job {job_id} has no tasks.")
             else:
                 for task_obj_snapshot in list(job.tasks): 
                     task_id_to_process = task_obj_snapshot.id
                     current_task_version = ANALYSIS_TASKS.get(task_id_to_process) 
-
                     if not current_task_version:
-                        self.logger.warning(f"SYNC: Task {task_id_to_process} not found in global registry for job {job_id}. Skipping.")
-                        job.completed_tasks +=1 
-                        continue
-                    
+                        self.logger.warning(f"SYNC: Task {task_id_to_process} not found. Skipping."); job.completed_tasks +=1; continue
                     if current_task_version.status == TaskStatus.PENDING:
                         current_job_state = BATCH_JOBS.get(job_id) 
                         if current_job_state and current_job_state.status == JobStatus.CANCELLING:
                             self.logger.info(f"SYNC: Job {job_id} CANCELLING. Cancelling task {current_task_version.id}.")
                             self._update_task_status(current_task_version.id, TaskStatus.CANCELLED, details={"skip_reason": "Job was cancelled."})
-                            continue
-                        self._simulate_analysis(current_task_version)
-                    else:
-                        self.logger.info(f"SYNC: Skipping task {current_task_version.id} as status is {current_task_version.status}")
-            
+                        else: self._execute_actual_analysis(current_task_version, job.analysis_options) # Pass job options
+                    else: self.logger.info(f"SYNC: Skipping task {current_task_version.id} as status is {current_task_version.status}")
             if job.completed_tasks >= job.total_tasks and job.status == JobStatus.RUNNING:
                 job_failed = any(ANALYSIS_TASKS[t.id].status in [TaskStatus.FAILED, TaskStatus.TIMED_OUT] for t in job.tasks if t.id in ANALYSIS_TASKS) or bool(job.errors)
                 job_was_cancelled = any(ANALYSIS_TASKS[t.id].status == TaskStatus.CANCELLED for t in job.tasks if t.id in ANALYSIS_TASKS)
@@ -375,6 +495,7 @@ class BatchJobService:
                 self._update_job_status(job.id, final_status)
                 self.logger.info(f"SYNC: Job {job_id} explicitly finalized to {final_status} after loop.")
 
+    # ... (cancel_job, delete_job, archive_job, get_job_stats, get_status_data_for_job_view - keep as previously defined)
     def cancel_job(self, job_id: str) -> bool:
         with DATA_LOCK:
             job = self.get_job(job_id)
@@ -388,11 +509,7 @@ class BatchJobService:
                     self._update_task_status(task.id, TaskStatus.CANCELLED, details={"skip_reason": "Job was cancelled."})
                     tasks_cancelled_count +=1
             self.logger.info(f"Job {job_id} CANCELLING: {tasks_cancelled_count} pending tasks marked CANCELLED.")
-            # Check if all tasks are now in a terminal state (not PENDING or RUNNING)
-            # This logic might need adjustment if tasks can be retried or have other non-terminal states.
-            if all( (ANALYSIS_TASKS.get(t.id) is None or # Task might have been deleted (unlikely in this flow)
-                     ANALYSIS_TASKS[t.id].status not in [TaskStatus.PENDING, TaskStatus.RUNNING])
-                    for t in job.tasks):
+            if all( (ANALYSIS_TASKS.get(t.id) is None or ANALYSIS_TASKS[t.id].status not in [TaskStatus.PENDING, TaskStatus.RUNNING]) for t in job.tasks):
                 self._update_job_status(job_id, JobStatus.CANCELLED)
             return True
 
@@ -415,118 +532,136 @@ class BatchJobService:
     
     def get_job_stats(self) -> Dict[str, Any]: 
         stats: Dict[str, Any] = {s.value: 0 for s in JobStatus}; stats["total"] = 0
-        for job in self.get_all_jobs(): stats["total"] += 1; stats[job.status.value] += 1
+        for job_obj in self.get_all_jobs(): stats["total"] += 1; stats[job_obj.status.value] += 1
         return stats
 
-    def get_status_data_for_job_view(self, job: BatchJob) -> Dict[str, Any]: 
+    def get_status_data_for_job_view(self, job: BatchJob) -> Dict[str, Any]:
+        # (Implementation from previous response, ensuring it uses ANALYSIS_TASKS correctly and handles detailed summaries)
         if not job: return {"progress": {"total": 0, "completed": 0, "percent": 0, "by_status": {}}, "active_tasks_count": 0, "results_summary": {}}
-        with DATA_LOCK: tasks_for_job = [ANALYSIS_TASKS[t.id] for t in job.tasks if t.id in ANALYSIS_TASKS]
+        with DATA_LOCK: tasks_for_job_snap = [ANALYSIS_TASKS[t.id] for t in job.tasks if t.id in ANALYSIS_TASKS]
         progress = {"total": job.total_tasks, "completed": job.completed_tasks,
                     "percent": int((job.completed_tasks / job.total_tasks * 100) if job.total_tasks > 0 else (100 if job.status == JobStatus.COMPLETED else 0)),
                     "by_status": {s.value: 0 for s in TaskStatus}}
         active_tasks_count = 0
-        results_summary = {
-            "high_total": 0, "medium_total": 0, "low_total": 0, "total_issues": 0,
-            "frontend_security_tasks_processed": 0, "backend_security_tasks_processed": 0,
-            "performance_avg_rps": "N/A", "performance_avg_rt": "N/A", "performance_total_failures": 0, "performance_tasks_processed": 0,
-            "gpt4all_reqs_checked_total": 0, "gpt4all_reqs_met_total": 0, "gpt4all_tasks_processed": 0,
-            "zap_issues_total": 0, "zap_tasks_completed": 0, "zap_tasks_processed": 0,
-            "code_quality_lint_errors_total": 0, "code_quality_avg_complexity": "N/A", "code_quality_avg_duplication_percentage": "N/A", "code_quality_tasks_processed": 0,
-        }
-        perf_rps, perf_rt, cq_comp, cq_dupl = [], [], [], []
+        results_summary = {"high_total": 0, "medium_total": 0, "low_total": 0, "total_issues": 0}
+        # Initialize detailed summary fields for each analysis type dynamically based on AnalysisType enum
+        for at_enum in AnalysisType:
+            results_summary[at_enum.value] = {"tasks_processed": 0} # Basic init
+            if at_enum in [AnalysisType.FRONTEND_SECURITY, AnalysisType.BACKEND_SECURITY]:
+                results_summary[at_enum.value]["issues_by_severity"] = {"HIGH":0, "MEDIUM":0, "LOW":0}
+            elif at_enum == AnalysisType.PERFORMANCE:
+                results_summary[at_enum.value].update({"avg_rps": "N/A", "avg_rt": "N/A", "total_failures": 0})
+            elif at_enum == AnalysisType.GPT4ALL:
+                 results_summary[at_enum.value].update({"reqs_checked": 0, "reqs_met": 0})
+            elif at_enum == AnalysisType.ZAP:
+                results_summary[at_enum.value].update({"total_alerts": 0, "alerts_by_risk": {"High":0, "Medium":0, "Low":0, "Informational":0}}) # ZAP uses "Informational"
+            elif at_enum == AnalysisType.CODE_QUALITY:
+                results_summary[at_enum.value].update({"lint_errors": 0, "avg_complexity": "N/A", "avg_duplication": "N/A"})
+        
+        perf_rps_list, perf_rt_list, cq_comp_list, cq_dupl_list = [], [], [], []
 
-        for task in tasks_for_job:
+        for task in tasks_for_job_snap:
             progress["by_status"][task.status.value] += 1
             if task.status == TaskStatus.RUNNING: active_tasks_count += 1
             if task.status == TaskStatus.COMPLETED:
-                if task.analysis_type in [AnalysisType.FRONTEND_SECURITY, AnalysisType.BACKEND_SECURITY, AnalysisType.ZAP]:
-                    results_summary["high_total"] += task.high_severity; results_summary["medium_total"] += task.medium_severity
-                    results_summary["low_total"] += task.low_severity; results_summary["total_issues"] += task.issues_count
-                    if task.analysis_type == AnalysisType.FRONTEND_SECURITY: results_summary["frontend_security_tasks_processed"] += 1
-                    if task.analysis_type == AnalysisType.BACKEND_SECURITY: results_summary["backend_security_tasks_processed"] += 1
-                    if task.analysis_type == AnalysisType.ZAP:
-                        results_summary["zap_tasks_completed"] +=1; results_summary["zap_issues_total"] += task.issues_count
-                        results_summary["zap_tasks_processed"] +=1
-                elif task.analysis_type == AnalysisType.PERFORMANCE:
-                    results_summary["performance_tasks_processed"] += 1
-                    perf_rps.append(task.details.get("requests_per_sec", 0)); perf_rt.append(task.details.get("avg_response_time", 0))
-                    results_summary["performance_total_failures"] += task.details.get("total_failures", 0)
-                elif task.analysis_type == AnalysisType.GPT4ALL:
-                    results_summary["gpt4all_tasks_processed"] += 1
-                    results_summary["gpt4all_reqs_checked_total"] += task.details.get("summary", {}).get("requirements_checked", 0)
-                    results_summary["gpt4all_reqs_met_total"] += task.details.get("summary", {}).get("met_count", 0)
-                elif task.analysis_type == AnalysisType.CODE_QUALITY:
-                    results_summary["code_quality_tasks_processed"] += 1
-                    results_summary["code_quality_lint_errors_total"] += task.details.get("summary", {}).get("lint_errors", 0)
-                    comp = task.details.get("summary", {}).get("complexity_score", "N/A")
-                    if comp not in ["N/A", None] and isinstance(comp, (int,float)): cq_comp.append(float(comp))
-                    dupl = task.details.get("summary", {}).get("duplication_percentage", "N/A")
-                    if dupl not in ["N/A", None] and isinstance(dupl, (int,float)): cq_dupl.append(float(dupl))
-        if perf_rps: results_summary["performance_avg_rps"] = round(sum(perf_rps) / len(perf_rps), 1)
-        if perf_rt: results_summary["performance_avg_rt"] = round(sum(perf_rt) / len(perf_rt), 0)
-        if cq_comp: results_summary["code_quality_avg_complexity"] = round(sum(cq_comp) / len(cq_comp), 1)
-        if cq_dupl: results_summary["code_quality_avg_duplication_percentage"] = round(sum(cq_dupl) / len(cq_dupl), 1)
-        return {"progress": progress, "active_tasks_count": active_tasks_count,
-                "results_summary": results_summary, "job_status_val": job.status.value}
+                results_summary["total_issues"] += task.issues_count
+                results_summary["high_total"] += task.high_severity
+                results_summary["medium_total"] += task.medium_severity
+                results_summary["low_total"] += task.low_severity
+                tool_key = task.analysis_type.value
+                results_summary[tool_key]["tasks_processed"] += 1
+                task_details_summary = task.details.get("summary", {})
+
+                if task.analysis_type in [AnalysisType.FRONTEND_SECURITY, AnalysisType.BACKEND_SECURITY]:
+                    results_summary[tool_key]["issues_by_severity"]["HIGH"] += task_details_summary.get("severity_counts", {}).get("HIGH",0)
+                    results_summary[tool_key]["issues_by_severity"]["MEDIUM"] += task_details_summary.get("severity_counts", {}).get("MEDIUM",0)
+                    results_summary[tool_key]["issues_by_severity"]["LOW"] += task_details_summary.get("severity_counts", {}).get("LOW",0)
+                elif task.analysis_type == AnalysisType.PERFORMANCE: # task.details IS the perf_result dict
+                    perf_rps_list.append(task.details.get("requests_per_sec", 0))
+                    perf_rt_list.append(task.details.get("avg_response_time", 0))
+                    results_summary[tool_key]["total_failures"] += task.details.get("total_failures", 0)
+                elif task.analysis_type == AnalysisType.ZAP and task_details_summary:
+                    results_summary[tool_key]["total_alerts"] += task_details_summary.get("total_alerts",0)
+                    for risk, count in task_details_summary.get("risk_counts", {}).items():
+                         results_summary[tool_key]["alerts_by_risk"][risk] = results_summary[tool_key]["alerts_by_risk"].get(risk,0) + count
+                elif task.analysis_type == AnalysisType.GPT4ALL and task_details_summary:
+                    results_summary[tool_key]["reqs_checked"] += task_details_summary.get("requirements_checked", 0)
+                    results_summary[tool_key]["reqs_met"] += task_details_summary.get("met_count", 0)
+                elif task.analysis_type == AnalysisType.CODE_QUALITY and task_details_summary:
+                    results_summary[tool_key]["lint_errors"] += task_details_summary.get("lint_errors", 0)
+                    if isinstance(task_details_summary.get("average_complexity"), (int, float)): cq_comp_list.append(float(task_details_summary["average_complexity"]))
+                    if isinstance(task_details_summary.get("duplication_percentage"), (int, float)): cq_dupl_list.append(float(task_details_summary["duplication_percentage"]))
+        
+        if perf_rps_list: results_summary[AnalysisType.PERFORMANCE.value]["avg_rps"] = round(sum(perf_rps_list) / len(perf_rps_list), 1)
+        if perf_rt_list: results_summary[AnalysisType.PERFORMANCE.value]["avg_rt"] = round(sum(perf_rt_list) / len(perf_rt_list), 0)
+        if cq_comp_list: results_summary[AnalysisType.CODE_QUALITY.value]["avg_complexity"] = round(sum(cq_comp_list) / len(cq_comp_list), 1)
+        if cq_dupl_list: results_summary[AnalysisType.CODE_QUALITY.value]["avg_duplication"] = round(sum(cq_dupl_list) / len(cq_dupl_list), 1)
+        
+        return {"progress": progress, "active_tasks_count": active_tasks_count, "results_summary": results_summary, "job_status_val": job.status.value}
+
 
 # --- Routes ---
 def _get_batch_service() -> BatchJobService:
     if "batch_service" not in current_app.extensions:
-        current_app.extensions["batch_service"] = BatchJobService()
+        current_app.extensions["batch_service"] = BatchJobService(app_instance=current_app._get_current_object())
     return current_app.extensions["batch_service"]
 
+# ... (batch_dashboard, create_batch_job, view_job, view_result, and API routes remain as previously defined,
+#      ensuring they use the updated BatchJobService correctly) ...
 @batch_analysis_bp.route("/")
 def batch_dashboard():
     service = _get_batch_service()
-    jobs = [job.to_dict() for job in service.get_all_jobs()]
+    jobs_list = service.get_all_jobs()
+    jobs_dict = [job.to_dict() for job in jobs_list] 
+    job_view_data = {job.id: service.get_status_data_for_job_view(job) for job in jobs_list}
     stats = service.get_job_stats()
     default_job_name = DEFAULT_JOB_NAME_TEMPLATE.format(date=datetime.datetime.now().strftime("%Y-%m-%d"))
     submitted_data_json = request.args.get('submitted_data')
     submitted_data = json.loads(submitted_data_json) if submitted_data_json else None
-    return render_template("batch_dashboard.html", jobs=jobs, stats=stats, all_models=ALL_MODELS,
+    return render_template("batch_dashboard.html", jobs=jobs_dict, stats=stats, all_models=ALL_MODELS,
                            default_job_name=default_job_name, batch_service={"default_task_timeout": DEFAULT_TASK_TIMEOUT},
-                           AnalysisType=AnalysisType, JobStatus=JobStatus, submitted_data=submitted_data)
+                           AnalysisType=AnalysisType, JobStatus=JobStatus, submitted_data=submitted_data,
+                           job_view_data=job_view_data)
 
 @batch_analysis_bp.route("/job", methods=["POST"])
 def create_batch_job():
     service = _get_batch_service()
-    form_data = request.form; errors = []
+    form_data = request.form 
+    errors = []
     if not form_data.get("name"): errors.append("Job name is required.")
-    if not form_data.getlist("analysis_types") and not form_data.get("scan_type"): errors.append("At least one analysis type must be selected.")
+    if not form_data.getlist("analysis_types") and not form_data.get("scan_type"): errors.append("At least one analysis type or default scan type must be selected.")
     if not form_data.getlist("models"): errors.append("At least one model must be selected.")
     if errors:
         for error in errors: flash(error, "error")
         return redirect(url_for("batch_analysis.batch_dashboard", submitted_data=json.dumps(dict(form_data))))
     try:
         job = service.create_job(form_data) 
-        flash(f"Batch job '{job.name}' processed synchronously. Final status: {job.status}.", "success" if job.status == JobStatus.COMPLETED else "warning")
+        flash_map = {JobStatus.COMPLETED: "success", JobStatus.FAILED: "error", JobStatus.CANCELLED: "warning"}
+        flash(f"Batch job '{job.name}' processed. Status: {job.status}.", flash_map.get(job.status, "info"))
         return redirect(url_for("batch_analysis.view_job", job_id=job.id))
     except Exception as e:
-        current_app.logger.error(f"Error creating/processing batch job: {e}", exc_info=True)
-        flash(f"Error creating/processing batch job: {str(e)}", "error")
+        current_app.logger.error(f"Error creating batch job: {e}", exc_info=True)
+        flash(f"Error creating batch job: {str(e)}", "error")
         return redirect(url_for("batch_analysis.batch_dashboard", submitted_data=json.dumps(dict(form_data))))
 
 @batch_analysis_bp.route("/job/<job_id>")
 def view_job(job_id: str):
     service = _get_batch_service(); job = service.get_job(job_id)
-    if not job:
-        flash(f"Job with ID {job_id} not found.", "error"); return redirect(url_for("batch_analysis.batch_dashboard"))
-    tasks = service.get_job_tasks(job_id)
+    if not job: flash(f"Job {job_id} not found.", "error"); return redirect(url_for("batch_analysis.batch_dashboard"))
+    tasks_current = [ANALYSIS_TASKS.get(t.id, t) for t in job.tasks] # Get current state from global
     status_data = service.get_status_data_for_job_view(job)
-    return render_template("view_job.html", job=job.to_dict(), results=[task.to_dict() for task in tasks],
+    return render_template("view_job.html", job=job.to_dict(), results=[task.to_dict() for task in tasks_current],
                            status_data=status_data, AnalysisType=AnalysisType, JobStatus=JobStatus, TaskStatus=TaskStatus)
 
 @batch_analysis_bp.route("/result/<result_id>")
 def view_result(result_id: str):
     service = _get_batch_service(); task = service.get_task(result_id)
-    if not task:
-        flash(f"Result {result_id} not found.", "error"); return redirect(url_for("batch_analysis.batch_dashboard"))
+    if not task: flash(f"Result {result_id} not found.", "error"); return redirect(url_for("batch_analysis.batch_dashboard"))
     job = service.get_job(task.job_id)
-    if not job:
-        flash(f"Job {task.job_id} for result {result_id} not found.", "error"); return redirect(url_for("batch_analysis.batch_dashboard"))
-    full_details_json_str = json.dumps(task.details, indent=2, sort_keys=True, default=str)
+    if not job: flash(f"Job {task.job_id} for result {result_id} not found.", "error"); return redirect(url_for("batch_analysis.batch_dashboard"))
+    details_json = json.dumps(task.details, indent=2, sort_keys=True, default=str)
     return render_template("view_result.html", result=task.to_dict(), job=job.to_dict(),
-                           AnalysisType=AnalysisType, TaskStatus=TaskStatus, full_details_json=full_details_json_str)
+                           AnalysisType=AnalysisType, TaskStatus=TaskStatus, full_details_json=details_json)
 
 @batch_analysis_bp.route("/job/<job_id>/status", methods=["GET"])
 def get_job_status_api(job_id: str): 
@@ -539,14 +674,16 @@ def get_job_status_api(job_id: str):
 def get_job_tasks_api(job_id: str): 
     service = _get_batch_service(); job = service.get_job(job_id)
     if not job: return jsonify({"error": "Job not found"}), 404
-    tasks = service.get_job_tasks(job_id)
+    tasks = [ANALYSIS_TASKS.get(t.id, t) for t in job.tasks] # Get current state from global
     return jsonify({"results": [task.to_dict() for task in tasks]})
 
 @batch_analysis_bp.route("/job/<job_id>/cancel", methods=["POST"])
 def cancel_job_api(job_id: str): 
     service = _get_batch_service(); success = service.cancel_job(job_id)
-    if success: return jsonify({"success": True, "message": "Job cancellation initiated."})
-    job = service.get_job(job_id); status_val = job.status.value if job and job.status else "Not Found"
+    if success: 
+        job_status = service.get_job(job_id).status.value if service.get_job(job_id) else "UNKNOWN"
+        return jsonify({"success": True, "message": "Job cancellation initiated.", "job_status": job_status })
+    job = service.get_job(job_id); status_val = job.status.value if job else "Not Found"
     return jsonify({"success": False, "error": f"Failed to cancel job (status: {status_val})."}), 400
 
 @batch_analysis_bp.route("/job/<job_id>/delete", methods=["POST"])
@@ -559,14 +696,28 @@ def delete_job_api(job_id: str):
 def archive_job_api(job_id: str): 
     service = _get_batch_service(); success = service.archive_job(job_id)
     if success: return jsonify({"success": True, "message": "Job archived."})
-    job = service.get_job(job_id); status_val = job.status.value if job and job.status else "Not Found"
+    job = service.get_job(job_id); status_val = job.status.value if job else "Not Found"
     return jsonify({"success": False, "error": f"Failed to archive (status: {status_val})."}), 400
 
-def init_batch_analysis(app):
-    app.register_blueprint(batch_analysis_bp)
+
+def init_batch_analysis(app): # app is the Flask app instance
+    # app.register_blueprint(batch_analysis_bp) # <--- REMOVE THIS LINE
+
     # Ensure the service is initialized if not already present
     if "batch_service" not in app.extensions:
-        # Create the service instance, it will use current_app.logger when methods are called
-        app.extensions["batch_service"] = BatchJobService()
-    app.logger.info("Batch Analysis module (SYNC MODE) initialized, blueprint registered, and custom filter added.")
-
+        # Pass the Flask app instance to the BatchJobService constructor
+        app.extensions["batch_service"] = BatchJobService(app_instance=app)
+    
+    required_analyzers = [
+        'backend_security_analyzer', 'frontend_security_analyzer',
+        'performance_tester', 'gpt4all_analyzer', 'zap_scanner', 
+        'code_quality_analyzer'
+    ]
+    for analyzer_name in required_analyzers:
+        if not hasattr(app, analyzer_name) or getattr(app, analyzer_name) is None:
+            # Use app.logger here as it's available
+            app.logger.warning(
+                f"Batch Analysis Init: Analyzer '{analyzer_name}' not found or not initialized on Flask app. "
+                f"Tasks requiring it may default to SKIPPED or FAILED."
+            )
+    app.logger.info("Batch Analysis module (SYNC MODE - Actual Analyzers) initialized.")
