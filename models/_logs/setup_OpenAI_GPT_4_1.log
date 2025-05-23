@@ -1,65 +1,65 @@
-[2025-05-24 00:19:47] Port ranges for openai/gpt-4.1:
-[2025-05-24 00:19:47]   Backend: 5081-5140
-[2025-05-24 00:19:47]   Frontend: 5581-5640
-[2025-05-24 00:19:47] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1
-[2025-05-24 00:19:47] Creating app1 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app1
-[2025-05-24 00:19:47] Application app1 created for openai/gpt-4.1 (Backend Port: 5081, Frontend Port: 5581)
-[2025-05-24 00:19:47] Creating app2 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app2
-[2025-05-24 00:19:47] Application app2 created for openai/gpt-4.1 (Backend Port: 5083, Frontend Port: 5583)
-[2025-05-24 00:19:47] Creating app3 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app3
-[2025-05-24 00:19:47] Application app3 created for openai/gpt-4.1 (Backend Port: 5085, Frontend Port: 5585)
-[2025-05-24 00:19:47] Creating app4 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app4
-[2025-05-24 00:19:47] Application app4 created for openai/gpt-4.1 (Backend Port: 5087, Frontend Port: 5587)
-[2025-05-24 00:19:47] Creating app5 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app5
-[2025-05-24 00:19:47] Application app5 created for openai/gpt-4.1 (Backend Port: 5089, Frontend Port: 5589)
-[2025-05-24 00:19:47] Creating app6 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app6
-[2025-05-24 00:19:47] Application app6 created for openai/gpt-4.1 (Backend Port: 5091, Frontend Port: 5591)
-[2025-05-24 00:19:47] Creating app7 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app7
-[2025-05-24 00:19:47] Application app7 created for openai/gpt-4.1 (Backend Port: 5093, Frontend Port: 5593)
-[2025-05-24 00:19:47] Creating app8 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app8
-[2025-05-24 00:19:47] Application app8 created for openai/gpt-4.1 (Backend Port: 5095, Frontend Port: 5595)
-[2025-05-24 00:19:47] Creating app9 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app9
-[2025-05-24 00:19:47] Application app9 created for openai/gpt-4.1 (Backend Port: 5097, Frontend Port: 5597)
-[2025-05-24 00:19:47] Creating app10 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app10
-[2025-05-24 00:19:47] Application app10 created for openai/gpt-4.1 (Backend Port: 5099, Frontend Port: 5599)
-[2025-05-24 00:19:47] Creating app11 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app11
-[2025-05-24 00:19:47] Application app11 created for openai/gpt-4.1 (Backend Port: 5101, Frontend Port: 5601)
-[2025-05-24 00:19:47] Creating app12 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app12
-[2025-05-24 00:19:47] Application app12 created for openai/gpt-4.1 (Backend Port: 5103, Frontend Port: 5603)
-[2025-05-24 00:19:47] Creating app13 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app13
-[2025-05-24 00:19:47] Application app13 created for openai/gpt-4.1 (Backend Port: 5105, Frontend Port: 5605)
-[2025-05-24 00:19:47] Creating app14 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app14
-[2025-05-24 00:19:47] Application app14 created for openai/gpt-4.1 (Backend Port: 5107, Frontend Port: 5607)
-[2025-05-24 00:19:47] Creating app15 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app15
-[2025-05-24 00:19:47] Application app15 created for openai/gpt-4.1 (Backend Port: 5109, Frontend Port: 5609)
-[2025-05-24 00:19:47] Creating app16 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app16
-[2025-05-24 00:19:47] Application app16 created for openai/gpt-4.1 (Backend Port: 5111, Frontend Port: 5611)
-[2025-05-24 00:19:47] Creating app17 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app17
-[2025-05-24 00:19:47] Application app17 created for openai/gpt-4.1 (Backend Port: 5113, Frontend Port: 5613)
-[2025-05-24 00:19:47] Creating app18 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app18
-[2025-05-24 00:19:47] Application app18 created for openai/gpt-4.1 (Backend Port: 5115, Frontend Port: 5615)
-[2025-05-24 00:19:47] Creating app19 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app19
-[2025-05-24 00:19:47] Application app19 created for openai/gpt-4.1 (Backend Port: 5117, Frontend Port: 5617)
-[2025-05-24 00:19:47] Creating app20 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app20
-[2025-05-24 00:19:47] Application app20 created for openai/gpt-4.1 (Backend Port: 5119, Frontend Port: 5619)
-[2025-05-24 00:19:47] Creating app21 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app21
-[2025-05-24 00:19:47] Application app21 created for openai/gpt-4.1 (Backend Port: 5121, Frontend Port: 5621)
-[2025-05-24 00:19:47] Creating app22 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app22
-[2025-05-24 00:19:47] Application app22 created for openai/gpt-4.1 (Backend Port: 5123, Frontend Port: 5623)
-[2025-05-24 00:19:47] Creating app23 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app23
-[2025-05-24 00:19:47] Application app23 created for openai/gpt-4.1 (Backend Port: 5125, Frontend Port: 5625)
-[2025-05-24 00:19:47] Creating app24 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app24
-[2025-05-24 00:19:47] Application app24 created for openai/gpt-4.1 (Backend Port: 5127, Frontend Port: 5627)
-[2025-05-24 00:19:47] Creating app25 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app25
-[2025-05-24 00:19:47] Application app25 created for openai/gpt-4.1 (Backend Port: 5129, Frontend Port: 5629)
-[2025-05-24 00:19:47] Creating app26 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app26
-[2025-05-24 00:19:47] Application app26 created for openai/gpt-4.1 (Backend Port: 5131, Frontend Port: 5631)
-[2025-05-24 00:19:47] Creating app27 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app27
-[2025-05-24 00:19:47] Application app27 created for openai/gpt-4.1 (Backend Port: 5133, Frontend Port: 5633)
-[2025-05-24 00:19:47] Creating app28 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app28
-[2025-05-24 00:19:47] Application app28 created for openai/gpt-4.1 (Backend Port: 5135, Frontend Port: 5635)
-[2025-05-24 00:19:47] Creating app29 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app29
-[2025-05-24 00:19:47] Application app29 created for openai/gpt-4.1 (Backend Port: 5137, Frontend Port: 5637)
-[2025-05-24 00:19:47] Creating app30 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app30
-[2025-05-24 00:19:47] Application app30 created for openai/gpt-4.1 (Backend Port: 5139, Frontend Port: 5639)
-[2025-05-24 00:19:47] Successfully created all apps for openai/gpt-4.1.
+[2025-05-24 00:32:28] Port ranges for openai/gpt-4.1:
+[2025-05-24 00:32:28]   Backend: 5081-5140
+[2025-05-24 00:32:28]   Frontend: 5581-5640
+[2025-05-24 00:32:28] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1
+[2025-05-24 00:32:28] Creating app1 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app1
+[2025-05-24 00:32:28] Application app1 created for openai/gpt-4.1 (Backend Port: 5081, Frontend Port: 5581)
+[2025-05-24 00:32:28] Creating app2 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app2
+[2025-05-24 00:32:28] Application app2 created for openai/gpt-4.1 (Backend Port: 5083, Frontend Port: 5583)
+[2025-05-24 00:32:28] Creating app3 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app3
+[2025-05-24 00:32:28] Application app3 created for openai/gpt-4.1 (Backend Port: 5085, Frontend Port: 5585)
+[2025-05-24 00:32:28] Creating app4 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app4
+[2025-05-24 00:32:28] Application app4 created for openai/gpt-4.1 (Backend Port: 5087, Frontend Port: 5587)
+[2025-05-24 00:32:28] Creating app5 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app5
+[2025-05-24 00:32:28] Application app5 created for openai/gpt-4.1 (Backend Port: 5089, Frontend Port: 5589)
+[2025-05-24 00:32:28] Creating app6 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app6
+[2025-05-24 00:32:28] Application app6 created for openai/gpt-4.1 (Backend Port: 5091, Frontend Port: 5591)
+[2025-05-24 00:32:28] Creating app7 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app7
+[2025-05-24 00:32:28] Application app7 created for openai/gpt-4.1 (Backend Port: 5093, Frontend Port: 5593)
+[2025-05-24 00:32:28] Creating app8 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app8
+[2025-05-24 00:32:28] Application app8 created for openai/gpt-4.1 (Backend Port: 5095, Frontend Port: 5595)
+[2025-05-24 00:32:28] Creating app9 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app9
+[2025-05-24 00:32:28] Application app9 created for openai/gpt-4.1 (Backend Port: 5097, Frontend Port: 5597)
+[2025-05-24 00:32:28] Creating app10 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app10
+[2025-05-24 00:32:28] Application app10 created for openai/gpt-4.1 (Backend Port: 5099, Frontend Port: 5599)
+[2025-05-24 00:32:28] Creating app11 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app11
+[2025-05-24 00:32:28] Application app11 created for openai/gpt-4.1 (Backend Port: 5101, Frontend Port: 5601)
+[2025-05-24 00:32:28] Creating app12 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app12
+[2025-05-24 00:32:28] Application app12 created for openai/gpt-4.1 (Backend Port: 5103, Frontend Port: 5603)
+[2025-05-24 00:32:28] Creating app13 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app13
+[2025-05-24 00:32:28] Application app13 created for openai/gpt-4.1 (Backend Port: 5105, Frontend Port: 5605)
+[2025-05-24 00:32:28] Creating app14 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app14
+[2025-05-24 00:32:28] Application app14 created for openai/gpt-4.1 (Backend Port: 5107, Frontend Port: 5607)
+[2025-05-24 00:32:28] Creating app15 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app15
+[2025-05-24 00:32:28] Application app15 created for openai/gpt-4.1 (Backend Port: 5109, Frontend Port: 5609)
+[2025-05-24 00:32:28] Creating app16 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app16
+[2025-05-24 00:32:28] Application app16 created for openai/gpt-4.1 (Backend Port: 5111, Frontend Port: 5611)
+[2025-05-24 00:32:28] Creating app17 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app17
+[2025-05-24 00:32:28] Application app17 created for openai/gpt-4.1 (Backend Port: 5113, Frontend Port: 5613)
+[2025-05-24 00:32:28] Creating app18 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app18
+[2025-05-24 00:32:28] Application app18 created for openai/gpt-4.1 (Backend Port: 5115, Frontend Port: 5615)
+[2025-05-24 00:32:28] Creating app19 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app19
+[2025-05-24 00:32:28] Application app19 created for openai/gpt-4.1 (Backend Port: 5117, Frontend Port: 5617)
+[2025-05-24 00:32:28] Creating app20 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app20
+[2025-05-24 00:32:28] Application app20 created for openai/gpt-4.1 (Backend Port: 5119, Frontend Port: 5619)
+[2025-05-24 00:32:28] Creating app21 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app21
+[2025-05-24 00:32:28] Application app21 created for openai/gpt-4.1 (Backend Port: 5121, Frontend Port: 5621)
+[2025-05-24 00:32:28] Creating app22 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app22
+[2025-05-24 00:32:28] Application app22 created for openai/gpt-4.1 (Backend Port: 5123, Frontend Port: 5623)
+[2025-05-24 00:32:28] Creating app23 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app23
+[2025-05-24 00:32:28] Application app23 created for openai/gpt-4.1 (Backend Port: 5125, Frontend Port: 5625)
+[2025-05-24 00:32:28] Creating app24 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app24
+[2025-05-24 00:32:28] Application app24 created for openai/gpt-4.1 (Backend Port: 5127, Frontend Port: 5627)
+[2025-05-24 00:32:28] Creating app25 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app25
+[2025-05-24 00:32:28] Application app25 created for openai/gpt-4.1 (Backend Port: 5129, Frontend Port: 5629)
+[2025-05-24 00:32:28] Creating app26 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app26
+[2025-05-24 00:32:28] Application app26 created for openai/gpt-4.1 (Backend Port: 5131, Frontend Port: 5631)
+[2025-05-24 00:32:28] Creating app27 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app27
+[2025-05-24 00:32:28] Application app27 created for openai/gpt-4.1 (Backend Port: 5133, Frontend Port: 5633)
+[2025-05-24 00:32:28] Creating app28 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app28
+[2025-05-24 00:32:28] Application app28 created for openai/gpt-4.1 (Backend Port: 5135, Frontend Port: 5635)
+[2025-05-24 00:32:28] Creating app29 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app29
+[2025-05-24 00:32:28] Application app29 created for openai/gpt-4.1 (Backend Port: 5137, Frontend Port: 5637)
+[2025-05-24 00:32:28] Creating app30 for openai/gpt-4.1 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_gpt-4.1\app30
+[2025-05-24 00:32:28] Application app30 created for openai/gpt-4.1 (Backend Port: 5139, Frontend Port: 5639)
+[2025-05-24 00:32:28] Successfully created all apps for openai/gpt-4.1.

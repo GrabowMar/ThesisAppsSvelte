@@ -1,65 +1,65 @@
-[2025-05-24 00:19:47] Port ranges for x-ai/grok-3-beta:
-[2025-05-24 00:19:47]   Backend: 5721-5780
-[2025-05-24 00:19:47]   Frontend: 6221-6280
-[2025-05-24 00:19:48] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta
-[2025-05-24 00:19:48] Creating app1 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app1
-[2025-05-24 00:19:48] Application app1 created for x-ai/grok-3-beta (Backend Port: 5721, Frontend Port: 6221)
-[2025-05-24 00:19:48] Creating app2 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app2
-[2025-05-24 00:19:48] Application app2 created for x-ai/grok-3-beta (Backend Port: 5723, Frontend Port: 6223)
-[2025-05-24 00:19:48] Creating app3 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app3
-[2025-05-24 00:19:48] Application app3 created for x-ai/grok-3-beta (Backend Port: 5725, Frontend Port: 6225)
-[2025-05-24 00:19:48] Creating app4 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app4
-[2025-05-24 00:19:48] Application app4 created for x-ai/grok-3-beta (Backend Port: 5727, Frontend Port: 6227)
-[2025-05-24 00:19:48] Creating app5 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app5
-[2025-05-24 00:19:48] Application app5 created for x-ai/grok-3-beta (Backend Port: 5729, Frontend Port: 6229)
-[2025-05-24 00:19:48] Creating app6 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app6
-[2025-05-24 00:19:48] Application app6 created for x-ai/grok-3-beta (Backend Port: 5731, Frontend Port: 6231)
-[2025-05-24 00:19:48] Creating app7 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app7
-[2025-05-24 00:19:48] Application app7 created for x-ai/grok-3-beta (Backend Port: 5733, Frontend Port: 6233)
-[2025-05-24 00:19:48] Creating app8 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app8
-[2025-05-24 00:19:48] Application app8 created for x-ai/grok-3-beta (Backend Port: 5735, Frontend Port: 6235)
-[2025-05-24 00:19:48] Creating app9 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app9
-[2025-05-24 00:19:48] Application app9 created for x-ai/grok-3-beta (Backend Port: 5737, Frontend Port: 6237)
-[2025-05-24 00:19:48] Creating app10 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app10
-[2025-05-24 00:19:48] Application app10 created for x-ai/grok-3-beta (Backend Port: 5739, Frontend Port: 6239)
-[2025-05-24 00:19:48] Creating app11 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app11
-[2025-05-24 00:19:48] Application app11 created for x-ai/grok-3-beta (Backend Port: 5741, Frontend Port: 6241)
-[2025-05-24 00:19:48] Creating app12 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app12
-[2025-05-24 00:19:48] Application app12 created for x-ai/grok-3-beta (Backend Port: 5743, Frontend Port: 6243)
-[2025-05-24 00:19:48] Creating app13 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app13
-[2025-05-24 00:19:48] Application app13 created for x-ai/grok-3-beta (Backend Port: 5745, Frontend Port: 6245)
-[2025-05-24 00:19:48] Creating app14 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app14
-[2025-05-24 00:19:48] Application app14 created for x-ai/grok-3-beta (Backend Port: 5747, Frontend Port: 6247)
-[2025-05-24 00:19:48] Creating app15 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app15
-[2025-05-24 00:19:48] Application app15 created for x-ai/grok-3-beta (Backend Port: 5749, Frontend Port: 6249)
-[2025-05-24 00:19:48] Creating app16 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app16
-[2025-05-24 00:19:48] Application app16 created for x-ai/grok-3-beta (Backend Port: 5751, Frontend Port: 6251)
-[2025-05-24 00:19:48] Creating app17 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app17
-[2025-05-24 00:19:48] Application app17 created for x-ai/grok-3-beta (Backend Port: 5753, Frontend Port: 6253)
-[2025-05-24 00:19:48] Creating app18 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app18
-[2025-05-24 00:19:48] Application app18 created for x-ai/grok-3-beta (Backend Port: 5755, Frontend Port: 6255)
-[2025-05-24 00:19:48] Creating app19 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app19
-[2025-05-24 00:19:48] Application app19 created for x-ai/grok-3-beta (Backend Port: 5757, Frontend Port: 6257)
-[2025-05-24 00:19:48] Creating app20 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app20
-[2025-05-24 00:19:48] Application app20 created for x-ai/grok-3-beta (Backend Port: 5759, Frontend Port: 6259)
-[2025-05-24 00:19:48] Creating app21 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app21
-[2025-05-24 00:19:48] Application app21 created for x-ai/grok-3-beta (Backend Port: 5761, Frontend Port: 6261)
-[2025-05-24 00:19:48] Creating app22 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app22
-[2025-05-24 00:19:48] Application app22 created for x-ai/grok-3-beta (Backend Port: 5763, Frontend Port: 6263)
-[2025-05-24 00:19:48] Creating app23 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app23
-[2025-05-24 00:19:48] Application app23 created for x-ai/grok-3-beta (Backend Port: 5765, Frontend Port: 6265)
-[2025-05-24 00:19:48] Creating app24 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app24
-[2025-05-24 00:19:48] Application app24 created for x-ai/grok-3-beta (Backend Port: 5767, Frontend Port: 6267)
-[2025-05-24 00:19:48] Creating app25 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app25
-[2025-05-24 00:19:48] Application app25 created for x-ai/grok-3-beta (Backend Port: 5769, Frontend Port: 6269)
-[2025-05-24 00:19:48] Creating app26 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app26
-[2025-05-24 00:19:48] Application app26 created for x-ai/grok-3-beta (Backend Port: 5771, Frontend Port: 6271)
-[2025-05-24 00:19:48] Creating app27 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app27
-[2025-05-24 00:19:48] Application app27 created for x-ai/grok-3-beta (Backend Port: 5773, Frontend Port: 6273)
-[2025-05-24 00:19:48] Creating app28 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app28
-[2025-05-24 00:19:48] Application app28 created for x-ai/grok-3-beta (Backend Port: 5775, Frontend Port: 6275)
-[2025-05-24 00:19:48] Creating app29 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app29
-[2025-05-24 00:19:48] Application app29 created for x-ai/grok-3-beta (Backend Port: 5777, Frontend Port: 6277)
-[2025-05-24 00:19:48] Creating app30 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app30
-[2025-05-24 00:19:48] Application app30 created for x-ai/grok-3-beta (Backend Port: 5779, Frontend Port: 6279)
-[2025-05-24 00:19:48] Successfully created all apps for x-ai/grok-3-beta.
+[2025-05-24 00:32:28] Port ranges for x-ai/grok-3-beta:
+[2025-05-24 00:32:28]   Backend: 5721-5780
+[2025-05-24 00:32:28]   Frontend: 6221-6280
+[2025-05-24 00:32:29] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta
+[2025-05-24 00:32:29] Creating app1 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app1
+[2025-05-24 00:32:29] Application app1 created for x-ai/grok-3-beta (Backend Port: 5721, Frontend Port: 6221)
+[2025-05-24 00:32:29] Creating app2 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app2
+[2025-05-24 00:32:29] Application app2 created for x-ai/grok-3-beta (Backend Port: 5723, Frontend Port: 6223)
+[2025-05-24 00:32:29] Creating app3 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app3
+[2025-05-24 00:32:29] Application app3 created for x-ai/grok-3-beta (Backend Port: 5725, Frontend Port: 6225)
+[2025-05-24 00:32:29] Creating app4 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app4
+[2025-05-24 00:32:29] Application app4 created for x-ai/grok-3-beta (Backend Port: 5727, Frontend Port: 6227)
+[2025-05-24 00:32:29] Creating app5 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app5
+[2025-05-24 00:32:29] Application app5 created for x-ai/grok-3-beta (Backend Port: 5729, Frontend Port: 6229)
+[2025-05-24 00:32:29] Creating app6 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app6
+[2025-05-24 00:32:29] Application app6 created for x-ai/grok-3-beta (Backend Port: 5731, Frontend Port: 6231)
+[2025-05-24 00:32:29] Creating app7 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app7
+[2025-05-24 00:32:29] Application app7 created for x-ai/grok-3-beta (Backend Port: 5733, Frontend Port: 6233)
+[2025-05-24 00:32:29] Creating app8 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app8
+[2025-05-24 00:32:29] Application app8 created for x-ai/grok-3-beta (Backend Port: 5735, Frontend Port: 6235)
+[2025-05-24 00:32:29] Creating app9 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app9
+[2025-05-24 00:32:29] Application app9 created for x-ai/grok-3-beta (Backend Port: 5737, Frontend Port: 6237)
+[2025-05-24 00:32:29] Creating app10 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app10
+[2025-05-24 00:32:29] Application app10 created for x-ai/grok-3-beta (Backend Port: 5739, Frontend Port: 6239)
+[2025-05-24 00:32:29] Creating app11 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app11
+[2025-05-24 00:32:29] Application app11 created for x-ai/grok-3-beta (Backend Port: 5741, Frontend Port: 6241)
+[2025-05-24 00:32:29] Creating app12 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app12
+[2025-05-24 00:32:29] Application app12 created for x-ai/grok-3-beta (Backend Port: 5743, Frontend Port: 6243)
+[2025-05-24 00:32:29] Creating app13 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app13
+[2025-05-24 00:32:29] Application app13 created for x-ai/grok-3-beta (Backend Port: 5745, Frontend Port: 6245)
+[2025-05-24 00:32:29] Creating app14 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app14
+[2025-05-24 00:32:29] Application app14 created for x-ai/grok-3-beta (Backend Port: 5747, Frontend Port: 6247)
+[2025-05-24 00:32:29] Creating app15 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app15
+[2025-05-24 00:32:29] Application app15 created for x-ai/grok-3-beta (Backend Port: 5749, Frontend Port: 6249)
+[2025-05-24 00:32:29] Creating app16 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app16
+[2025-05-24 00:32:29] Application app16 created for x-ai/grok-3-beta (Backend Port: 5751, Frontend Port: 6251)
+[2025-05-24 00:32:29] Creating app17 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app17
+[2025-05-24 00:32:29] Application app17 created for x-ai/grok-3-beta (Backend Port: 5753, Frontend Port: 6253)
+[2025-05-24 00:32:29] Creating app18 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app18
+[2025-05-24 00:32:29] Application app18 created for x-ai/grok-3-beta (Backend Port: 5755, Frontend Port: 6255)
+[2025-05-24 00:32:29] Creating app19 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app19
+[2025-05-24 00:32:29] Application app19 created for x-ai/grok-3-beta (Backend Port: 5757, Frontend Port: 6257)
+[2025-05-24 00:32:29] Creating app20 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app20
+[2025-05-24 00:32:29] Application app20 created for x-ai/grok-3-beta (Backend Port: 5759, Frontend Port: 6259)
+[2025-05-24 00:32:29] Creating app21 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app21
+[2025-05-24 00:32:29] Application app21 created for x-ai/grok-3-beta (Backend Port: 5761, Frontend Port: 6261)
+[2025-05-24 00:32:29] Creating app22 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app22
+[2025-05-24 00:32:29] Application app22 created for x-ai/grok-3-beta (Backend Port: 5763, Frontend Port: 6263)
+[2025-05-24 00:32:29] Creating app23 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app23
+[2025-05-24 00:32:29] Application app23 created for x-ai/grok-3-beta (Backend Port: 5765, Frontend Port: 6265)
+[2025-05-24 00:32:29] Creating app24 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app24
+[2025-05-24 00:32:29] Application app24 created for x-ai/grok-3-beta (Backend Port: 5767, Frontend Port: 6267)
+[2025-05-24 00:32:29] Creating app25 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app25
+[2025-05-24 00:32:29] Application app25 created for x-ai/grok-3-beta (Backend Port: 5769, Frontend Port: 6269)
+[2025-05-24 00:32:29] Creating app26 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app26
+[2025-05-24 00:32:29] Application app26 created for x-ai/grok-3-beta (Backend Port: 5771, Frontend Port: 6271)
+[2025-05-24 00:32:29] Creating app27 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app27
+[2025-05-24 00:32:29] Application app27 created for x-ai/grok-3-beta (Backend Port: 5773, Frontend Port: 6273)
+[2025-05-24 00:32:29] Creating app28 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app28
+[2025-05-24 00:32:29] Application app28 created for x-ai/grok-3-beta (Backend Port: 5775, Frontend Port: 6275)
+[2025-05-24 00:32:29] Creating app29 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app29
+[2025-05-24 00:32:29] Application app29 created for x-ai/grok-3-beta (Backend Port: 5777, Frontend Port: 6277)
+[2025-05-24 00:32:29] Creating app30 for x-ai/grok-3-beta in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\x-ai_grok-3-beta\app30
+[2025-05-24 00:32:29] Application app30 created for x-ai/grok-3-beta (Backend Port: 5779, Frontend Port: 6279)
+[2025-05-24 00:32:29] Successfully created all apps for x-ai/grok-3-beta.

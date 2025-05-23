@@ -1,0 +1,65 @@
+[2025-05-24 00:32:28] Port ranges for google/gemma-3n-e4b-it:
+[2025-05-24 00:32:28]   Backend: 5241-5300
+[2025-05-24 00:32:28]   Frontend: 5741-5800
+[2025-05-24 00:32:28] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it
+[2025-05-24 00:32:28] Creating app1 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app1
+[2025-05-24 00:32:28] Application app1 created for google/gemma-3n-e4b-it (Backend Port: 5241, Frontend Port: 5741)
+[2025-05-24 00:32:28] Creating app2 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app2
+[2025-05-24 00:32:28] Application app2 created for google/gemma-3n-e4b-it (Backend Port: 5243, Frontend Port: 5743)
+[2025-05-24 00:32:28] Creating app3 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app3
+[2025-05-24 00:32:28] Application app3 created for google/gemma-3n-e4b-it (Backend Port: 5245, Frontend Port: 5745)
+[2025-05-24 00:32:28] Creating app4 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app4
+[2025-05-24 00:32:28] Application app4 created for google/gemma-3n-e4b-it (Backend Port: 5247, Frontend Port: 5747)
+[2025-05-24 00:32:28] Creating app5 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app5
+[2025-05-24 00:32:28] Application app5 created for google/gemma-3n-e4b-it (Backend Port: 5249, Frontend Port: 5749)
+[2025-05-24 00:32:28] Creating app6 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app6
+[2025-05-24 00:32:28] Application app6 created for google/gemma-3n-e4b-it (Backend Port: 5251, Frontend Port: 5751)
+[2025-05-24 00:32:28] Creating app7 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app7
+[2025-05-24 00:32:28] Application app7 created for google/gemma-3n-e4b-it (Backend Port: 5253, Frontend Port: 5753)
+[2025-05-24 00:32:28] Creating app8 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app8
+[2025-05-24 00:32:28] Application app8 created for google/gemma-3n-e4b-it (Backend Port: 5255, Frontend Port: 5755)
+[2025-05-24 00:32:28] Creating app9 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app9
+[2025-05-24 00:32:28] Application app9 created for google/gemma-3n-e4b-it (Backend Port: 5257, Frontend Port: 5757)
+[2025-05-24 00:32:28] Creating app10 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app10
+[2025-05-24 00:32:28] Application app10 created for google/gemma-3n-e4b-it (Backend Port: 5259, Frontend Port: 5759)
+[2025-05-24 00:32:28] Creating app11 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app11
+[2025-05-24 00:32:28] Application app11 created for google/gemma-3n-e4b-it (Backend Port: 5261, Frontend Port: 5761)
+[2025-05-24 00:32:28] Creating app12 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app12
+[2025-05-24 00:32:28] Application app12 created for google/gemma-3n-e4b-it (Backend Port: 5263, Frontend Port: 5763)
+[2025-05-24 00:32:28] Creating app13 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app13
+[2025-05-24 00:32:28] Application app13 created for google/gemma-3n-e4b-it (Backend Port: 5265, Frontend Port: 5765)
+[2025-05-24 00:32:28] Creating app14 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app14
+[2025-05-24 00:32:28] Application app14 created for google/gemma-3n-e4b-it (Backend Port: 5267, Frontend Port: 5767)
+[2025-05-24 00:32:28] Creating app15 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app15
+[2025-05-24 00:32:28] Application app15 created for google/gemma-3n-e4b-it (Backend Port: 5269, Frontend Port: 5769)
+[2025-05-24 00:32:28] Creating app16 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app16
+[2025-05-24 00:32:28] Application app16 created for google/gemma-3n-e4b-it (Backend Port: 5271, Frontend Port: 5771)
+[2025-05-24 00:32:28] Creating app17 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app17
+[2025-05-24 00:32:28] Application app17 created for google/gemma-3n-e4b-it (Backend Port: 5273, Frontend Port: 5773)
+[2025-05-24 00:32:28] Creating app18 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app18
+[2025-05-24 00:32:28] Application app18 created for google/gemma-3n-e4b-it (Backend Port: 5275, Frontend Port: 5775)
+[2025-05-24 00:32:28] Creating app19 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app19
+[2025-05-24 00:32:28] Application app19 created for google/gemma-3n-e4b-it (Backend Port: 5277, Frontend Port: 5777)
+[2025-05-24 00:32:28] Creating app20 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app20
+[2025-05-24 00:32:28] Application app20 created for google/gemma-3n-e4b-it (Backend Port: 5279, Frontend Port: 5779)
+[2025-05-24 00:32:28] Creating app21 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app21
+[2025-05-24 00:32:28] Application app21 created for google/gemma-3n-e4b-it (Backend Port: 5281, Frontend Port: 5781)
+[2025-05-24 00:32:28] Creating app22 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app22
+[2025-05-24 00:32:28] Application app22 created for google/gemma-3n-e4b-it (Backend Port: 5283, Frontend Port: 5783)
+[2025-05-24 00:32:28] Creating app23 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app23
+[2025-05-24 00:32:28] Application app23 created for google/gemma-3n-e4b-it (Backend Port: 5285, Frontend Port: 5785)
+[2025-05-24 00:32:28] Creating app24 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app24
+[2025-05-24 00:32:28] Application app24 created for google/gemma-3n-e4b-it (Backend Port: 5287, Frontend Port: 5787)
+[2025-05-24 00:32:28] Creating app25 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app25
+[2025-05-24 00:32:28] Application app25 created for google/gemma-3n-e4b-it (Backend Port: 5289, Frontend Port: 5789)
+[2025-05-24 00:32:28] Creating app26 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app26
+[2025-05-24 00:32:28] Application app26 created for google/gemma-3n-e4b-it (Backend Port: 5291, Frontend Port: 5791)
+[2025-05-24 00:32:28] Creating app27 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app27
+[2025-05-24 00:32:28] Application app27 created for google/gemma-3n-e4b-it (Backend Port: 5293, Frontend Port: 5793)
+[2025-05-24 00:32:28] Creating app28 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app28
+[2025-05-24 00:32:28] Application app28 created for google/gemma-3n-e4b-it (Backend Port: 5295, Frontend Port: 5795)
+[2025-05-24 00:32:28] Creating app29 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app29
+[2025-05-24 00:32:28] Application app29 created for google/gemma-3n-e4b-it (Backend Port: 5297, Frontend Port: 5797)
+[2025-05-24 00:32:28] Creating app30 for google/gemma-3n-e4b-it in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\google_gemma-3n-e4b-it\app30
+[2025-05-24 00:32:28] Application app30 created for google/gemma-3n-e4b-it (Backend Port: 5299, Frontend Port: 5799)
+[2025-05-24 00:32:28] Successfully created all apps for google/gemma-3n-e4b-it.

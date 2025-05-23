@@ -1,0 +1,65 @@
+[2025-05-24 00:32:28] Port ranges for rekaai/reka-flash-3:
+[2025-05-24 00:32:28]   Backend: 6521-6580
+[2025-05-24 00:32:28]   Frontend: 7021-7080
+[2025-05-24 00:32:31] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3
+[2025-05-24 00:32:31] Creating app1 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app1
+[2025-05-24 00:32:31] Application app1 created for rekaai/reka-flash-3 (Backend Port: 6521, Frontend Port: 7021)
+[2025-05-24 00:32:31] Creating app2 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app2
+[2025-05-24 00:32:31] Application app2 created for rekaai/reka-flash-3 (Backend Port: 6523, Frontend Port: 7023)
+[2025-05-24 00:32:31] Creating app3 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app3
+[2025-05-24 00:32:31] Application app3 created for rekaai/reka-flash-3 (Backend Port: 6525, Frontend Port: 7025)
+[2025-05-24 00:32:31] Creating app4 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app4
+[2025-05-24 00:32:31] Application app4 created for rekaai/reka-flash-3 (Backend Port: 6527, Frontend Port: 7027)
+[2025-05-24 00:32:31] Creating app5 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app5
+[2025-05-24 00:32:31] Application app5 created for rekaai/reka-flash-3 (Backend Port: 6529, Frontend Port: 7029)
+[2025-05-24 00:32:31] Creating app6 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app6
+[2025-05-24 00:32:31] Application app6 created for rekaai/reka-flash-3 (Backend Port: 6531, Frontend Port: 7031)
+[2025-05-24 00:32:31] Creating app7 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app7
+[2025-05-24 00:32:31] Application app7 created for rekaai/reka-flash-3 (Backend Port: 6533, Frontend Port: 7033)
+[2025-05-24 00:32:31] Creating app8 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app8
+[2025-05-24 00:32:31] Application app8 created for rekaai/reka-flash-3 (Backend Port: 6535, Frontend Port: 7035)
+[2025-05-24 00:32:31] Creating app9 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app9
+[2025-05-24 00:32:31] Application app9 created for rekaai/reka-flash-3 (Backend Port: 6537, Frontend Port: 7037)
+[2025-05-24 00:32:31] Creating app10 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app10
+[2025-05-24 00:32:31] Application app10 created for rekaai/reka-flash-3 (Backend Port: 6539, Frontend Port: 7039)
+[2025-05-24 00:32:31] Creating app11 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app11
+[2025-05-24 00:32:31] Application app11 created for rekaai/reka-flash-3 (Backend Port: 6541, Frontend Port: 7041)
+[2025-05-24 00:32:31] Creating app12 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app12
+[2025-05-24 00:32:31] Application app12 created for rekaai/reka-flash-3 (Backend Port: 6543, Frontend Port: 7043)
+[2025-05-24 00:32:31] Creating app13 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app13
+[2025-05-24 00:32:31] Application app13 created for rekaai/reka-flash-3 (Backend Port: 6545, Frontend Port: 7045)
+[2025-05-24 00:32:31] Creating app14 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app14
+[2025-05-24 00:32:31] Application app14 created for rekaai/reka-flash-3 (Backend Port: 6547, Frontend Port: 7047)
+[2025-05-24 00:32:31] Creating app15 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app15
+[2025-05-24 00:32:31] Application app15 created for rekaai/reka-flash-3 (Backend Port: 6549, Frontend Port: 7049)
+[2025-05-24 00:32:31] Creating app16 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app16
+[2025-05-24 00:32:31] Application app16 created for rekaai/reka-flash-3 (Backend Port: 6551, Frontend Port: 7051)
+[2025-05-24 00:32:31] Creating app17 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app17
+[2025-05-24 00:32:31] Application app17 created for rekaai/reka-flash-3 (Backend Port: 6553, Frontend Port: 7053)
+[2025-05-24 00:32:31] Creating app18 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app18
+[2025-05-24 00:32:31] Application app18 created for rekaai/reka-flash-3 (Backend Port: 6555, Frontend Port: 7055)
+[2025-05-24 00:32:31] Creating app19 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app19
+[2025-05-24 00:32:31] Application app19 created for rekaai/reka-flash-3 (Backend Port: 6557, Frontend Port: 7057)
+[2025-05-24 00:32:31] Creating app20 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app20
+[2025-05-24 00:32:31] Application app20 created for rekaai/reka-flash-3 (Backend Port: 6559, Frontend Port: 7059)
+[2025-05-24 00:32:31] Creating app21 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app21
+[2025-05-24 00:32:31] Application app21 created for rekaai/reka-flash-3 (Backend Port: 6561, Frontend Port: 7061)
+[2025-05-24 00:32:31] Creating app22 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app22
+[2025-05-24 00:32:31] Application app22 created for rekaai/reka-flash-3 (Backend Port: 6563, Frontend Port: 7063)
+[2025-05-24 00:32:31] Creating app23 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app23
+[2025-05-24 00:32:31] Application app23 created for rekaai/reka-flash-3 (Backend Port: 6565, Frontend Port: 7065)
+[2025-05-24 00:32:31] Creating app24 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app24
+[2025-05-24 00:32:31] Application app24 created for rekaai/reka-flash-3 (Backend Port: 6567, Frontend Port: 7067)
+[2025-05-24 00:32:31] Creating app25 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app25
+[2025-05-24 00:32:31] Application app25 created for rekaai/reka-flash-3 (Backend Port: 6569, Frontend Port: 7069)
+[2025-05-24 00:32:31] Creating app26 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app26
+[2025-05-24 00:32:31] Application app26 created for rekaai/reka-flash-3 (Backend Port: 6571, Frontend Port: 7071)
+[2025-05-24 00:32:31] Creating app27 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app27
+[2025-05-24 00:32:31] Application app27 created for rekaai/reka-flash-3 (Backend Port: 6573, Frontend Port: 7073)
+[2025-05-24 00:32:31] Creating app28 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app28
+[2025-05-24 00:32:31] Application app28 created for rekaai/reka-flash-3 (Backend Port: 6575, Frontend Port: 7075)
+[2025-05-24 00:32:31] Creating app29 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app29
+[2025-05-24 00:32:31] Application app29 created for rekaai/reka-flash-3 (Backend Port: 6577, Frontend Port: 7077)
+[2025-05-24 00:32:31] Creating app30 for rekaai/reka-flash-3 in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\rekaai_reka-flash-3\app30
+[2025-05-24 00:32:31] Application app30 created for rekaai/reka-flash-3 (Backend Port: 6579, Frontend Port: 7079)
+[2025-05-24 00:32:31] Successfully created all apps for rekaai/reka-flash-3.

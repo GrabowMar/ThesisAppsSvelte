@@ -1,0 +1,65 @@
+[2025-05-24 00:32:28] Port ranges for meta-llama/llama-4-scout:
+[2025-05-24 00:32:28]   Backend: 6121-6180
+[2025-05-24 00:32:28]   Frontend: 6621-6680
+[2025-05-24 00:32:30] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout
+[2025-05-24 00:32:30] Creating app1 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app1
+[2025-05-24 00:32:30] Application app1 created for meta-llama/llama-4-scout (Backend Port: 6121, Frontend Port: 6621)
+[2025-05-24 00:32:30] Creating app2 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app2
+[2025-05-24 00:32:30] Application app2 created for meta-llama/llama-4-scout (Backend Port: 6123, Frontend Port: 6623)
+[2025-05-24 00:32:30] Creating app3 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app3
+[2025-05-24 00:32:30] Application app3 created for meta-llama/llama-4-scout (Backend Port: 6125, Frontend Port: 6625)
+[2025-05-24 00:32:30] Creating app4 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app4
+[2025-05-24 00:32:30] Application app4 created for meta-llama/llama-4-scout (Backend Port: 6127, Frontend Port: 6627)
+[2025-05-24 00:32:30] Creating app5 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app5
+[2025-05-24 00:32:30] Application app5 created for meta-llama/llama-4-scout (Backend Port: 6129, Frontend Port: 6629)
+[2025-05-24 00:32:30] Creating app6 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app6
+[2025-05-24 00:32:30] Application app6 created for meta-llama/llama-4-scout (Backend Port: 6131, Frontend Port: 6631)
+[2025-05-24 00:32:30] Creating app7 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app7
+[2025-05-24 00:32:30] Application app7 created for meta-llama/llama-4-scout (Backend Port: 6133, Frontend Port: 6633)
+[2025-05-24 00:32:30] Creating app8 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app8
+[2025-05-24 00:32:30] Application app8 created for meta-llama/llama-4-scout (Backend Port: 6135, Frontend Port: 6635)
+[2025-05-24 00:32:30] Creating app9 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app9
+[2025-05-24 00:32:30] Application app9 created for meta-llama/llama-4-scout (Backend Port: 6137, Frontend Port: 6637)
+[2025-05-24 00:32:30] Creating app10 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app10
+[2025-05-24 00:32:30] Application app10 created for meta-llama/llama-4-scout (Backend Port: 6139, Frontend Port: 6639)
+[2025-05-24 00:32:30] Creating app11 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app11
+[2025-05-24 00:32:30] Application app11 created for meta-llama/llama-4-scout (Backend Port: 6141, Frontend Port: 6641)
+[2025-05-24 00:32:30] Creating app12 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app12
+[2025-05-24 00:32:30] Application app12 created for meta-llama/llama-4-scout (Backend Port: 6143, Frontend Port: 6643)
+[2025-05-24 00:32:30] Creating app13 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app13
+[2025-05-24 00:32:30] Application app13 created for meta-llama/llama-4-scout (Backend Port: 6145, Frontend Port: 6645)
+[2025-05-24 00:32:30] Creating app14 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app14
+[2025-05-24 00:32:30] Application app14 created for meta-llama/llama-4-scout (Backend Port: 6147, Frontend Port: 6647)
+[2025-05-24 00:32:30] Creating app15 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app15
+[2025-05-24 00:32:30] Application app15 created for meta-llama/llama-4-scout (Backend Port: 6149, Frontend Port: 6649)
+[2025-05-24 00:32:30] Creating app16 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app16
+[2025-05-24 00:32:30] Application app16 created for meta-llama/llama-4-scout (Backend Port: 6151, Frontend Port: 6651)
+[2025-05-24 00:32:30] Creating app17 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app17
+[2025-05-24 00:32:30] Application app17 created for meta-llama/llama-4-scout (Backend Port: 6153, Frontend Port: 6653)
+[2025-05-24 00:32:30] Creating app18 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app18
+[2025-05-24 00:32:30] Application app18 created for meta-llama/llama-4-scout (Backend Port: 6155, Frontend Port: 6655)
+[2025-05-24 00:32:30] Creating app19 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app19
+[2025-05-24 00:32:30] Application app19 created for meta-llama/llama-4-scout (Backend Port: 6157, Frontend Port: 6657)
+[2025-05-24 00:32:30] Creating app20 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app20
+[2025-05-24 00:32:30] Application app20 created for meta-llama/llama-4-scout (Backend Port: 6159, Frontend Port: 6659)
+[2025-05-24 00:32:30] Creating app21 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app21
+[2025-05-24 00:32:30] Application app21 created for meta-llama/llama-4-scout (Backend Port: 6161, Frontend Port: 6661)
+[2025-05-24 00:32:30] Creating app22 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app22
+[2025-05-24 00:32:30] Application app22 created for meta-llama/llama-4-scout (Backend Port: 6163, Frontend Port: 6663)
+[2025-05-24 00:32:30] Creating app23 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app23
+[2025-05-24 00:32:30] Application app23 created for meta-llama/llama-4-scout (Backend Port: 6165, Frontend Port: 6665)
+[2025-05-24 00:32:30] Creating app24 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app24
+[2025-05-24 00:32:30] Application app24 created for meta-llama/llama-4-scout (Backend Port: 6167, Frontend Port: 6667)
+[2025-05-24 00:32:30] Creating app25 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app25
+[2025-05-24 00:32:30] Application app25 created for meta-llama/llama-4-scout (Backend Port: 6169, Frontend Port: 6669)
+[2025-05-24 00:32:30] Creating app26 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app26
+[2025-05-24 00:32:30] Application app26 created for meta-llama/llama-4-scout (Backend Port: 6171, Frontend Port: 6671)
+[2025-05-24 00:32:30] Creating app27 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app27
+[2025-05-24 00:32:30] Application app27 created for meta-llama/llama-4-scout (Backend Port: 6173, Frontend Port: 6673)
+[2025-05-24 00:32:30] Creating app28 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app28
+[2025-05-24 00:32:30] Application app28 created for meta-llama/llama-4-scout (Backend Port: 6175, Frontend Port: 6675)
+[2025-05-24 00:32:30] Creating app29 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app29
+[2025-05-24 00:32:30] Application app29 created for meta-llama/llama-4-scout (Backend Port: 6177, Frontend Port: 6677)
+[2025-05-24 00:32:30] Creating app30 for meta-llama/llama-4-scout in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-4-scout\app30
+[2025-05-24 00:32:30] Application app30 created for meta-llama/llama-4-scout (Backend Port: 6179, Frontend Port: 6679)
+[2025-05-24 00:32:30] Successfully created all apps for meta-llama/llama-4-scout.

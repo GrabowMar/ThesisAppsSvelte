@@ -1,0 +1,65 @@
+[2025-05-24 00:32:28] Port ranges for microsoft/phi-4-reasoning-plus:
+[2025-05-24 00:32:28]   Backend: 5481-5540
+[2025-05-24 00:32:28]   Frontend: 5981-6040
+[2025-05-24 00:32:29] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus
+[2025-05-24 00:32:29] Creating app1 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app1
+[2025-05-24 00:32:29] Application app1 created for microsoft/phi-4-reasoning-plus (Backend Port: 5481, Frontend Port: 5981)
+[2025-05-24 00:32:29] Creating app2 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app2
+[2025-05-24 00:32:29] Application app2 created for microsoft/phi-4-reasoning-plus (Backend Port: 5483, Frontend Port: 5983)
+[2025-05-24 00:32:29] Creating app3 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app3
+[2025-05-24 00:32:29] Application app3 created for microsoft/phi-4-reasoning-plus (Backend Port: 5485, Frontend Port: 5985)
+[2025-05-24 00:32:29] Creating app4 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app4
+[2025-05-24 00:32:29] Application app4 created for microsoft/phi-4-reasoning-plus (Backend Port: 5487, Frontend Port: 5987)
+[2025-05-24 00:32:29] Creating app5 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app5
+[2025-05-24 00:32:29] Application app5 created for microsoft/phi-4-reasoning-plus (Backend Port: 5489, Frontend Port: 5989)
+[2025-05-24 00:32:29] Creating app6 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app6
+[2025-05-24 00:32:29] Application app6 created for microsoft/phi-4-reasoning-plus (Backend Port: 5491, Frontend Port: 5991)
+[2025-05-24 00:32:29] Creating app7 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app7
+[2025-05-24 00:32:29] Application app7 created for microsoft/phi-4-reasoning-plus (Backend Port: 5493, Frontend Port: 5993)
+[2025-05-24 00:32:29] Creating app8 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app8
+[2025-05-24 00:32:29] Application app8 created for microsoft/phi-4-reasoning-plus (Backend Port: 5495, Frontend Port: 5995)
+[2025-05-24 00:32:29] Creating app9 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app9
+[2025-05-24 00:32:29] Application app9 created for microsoft/phi-4-reasoning-plus (Backend Port: 5497, Frontend Port: 5997)
+[2025-05-24 00:32:29] Creating app10 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app10
+[2025-05-24 00:32:29] Application app10 created for microsoft/phi-4-reasoning-plus (Backend Port: 5499, Frontend Port: 5999)
+[2025-05-24 00:32:29] Creating app11 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app11
+[2025-05-24 00:32:29] Application app11 created for microsoft/phi-4-reasoning-plus (Backend Port: 5501, Frontend Port: 6001)
+[2025-05-24 00:32:29] Creating app12 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app12
+[2025-05-24 00:32:29] Application app12 created for microsoft/phi-4-reasoning-plus (Backend Port: 5503, Frontend Port: 6003)
+[2025-05-24 00:32:29] Creating app13 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app13
+[2025-05-24 00:32:29] Application app13 created for microsoft/phi-4-reasoning-plus (Backend Port: 5505, Frontend Port: 6005)
+[2025-05-24 00:32:29] Creating app14 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app14
+[2025-05-24 00:32:29] Application app14 created for microsoft/phi-4-reasoning-plus (Backend Port: 5507, Frontend Port: 6007)
+[2025-05-24 00:32:29] Creating app15 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app15
+[2025-05-24 00:32:29] Application app15 created for microsoft/phi-4-reasoning-plus (Backend Port: 5509, Frontend Port: 6009)
+[2025-05-24 00:32:29] Creating app16 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app16
+[2025-05-24 00:32:29] Application app16 created for microsoft/phi-4-reasoning-plus (Backend Port: 5511, Frontend Port: 6011)
+[2025-05-24 00:32:29] Creating app17 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app17
+[2025-05-24 00:32:29] Application app17 created for microsoft/phi-4-reasoning-plus (Backend Port: 5513, Frontend Port: 6013)
+[2025-05-24 00:32:29] Creating app18 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app18
+[2025-05-24 00:32:29] Application app18 created for microsoft/phi-4-reasoning-plus (Backend Port: 5515, Frontend Port: 6015)
+[2025-05-24 00:32:29] Creating app19 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app19
+[2025-05-24 00:32:29] Application app19 created for microsoft/phi-4-reasoning-plus (Backend Port: 5517, Frontend Port: 6017)
+[2025-05-24 00:32:29] Creating app20 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app20
+[2025-05-24 00:32:29] Application app20 created for microsoft/phi-4-reasoning-plus (Backend Port: 5519, Frontend Port: 6019)
+[2025-05-24 00:32:29] Creating app21 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app21
+[2025-05-24 00:32:29] Application app21 created for microsoft/phi-4-reasoning-plus (Backend Port: 5521, Frontend Port: 6021)
+[2025-05-24 00:32:29] Creating app22 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app22
+[2025-05-24 00:32:29] Application app22 created for microsoft/phi-4-reasoning-plus (Backend Port: 5523, Frontend Port: 6023)
+[2025-05-24 00:32:29] Creating app23 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app23
+[2025-05-24 00:32:29] Application app23 created for microsoft/phi-4-reasoning-plus (Backend Port: 5525, Frontend Port: 6025)
+[2025-05-24 00:32:29] Creating app24 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app24
+[2025-05-24 00:32:29] Application app24 created for microsoft/phi-4-reasoning-plus (Backend Port: 5527, Frontend Port: 6027)
+[2025-05-24 00:32:29] Creating app25 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app25
+[2025-05-24 00:32:29] Application app25 created for microsoft/phi-4-reasoning-plus (Backend Port: 5529, Frontend Port: 6029)
+[2025-05-24 00:32:29] Creating app26 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app26
+[2025-05-24 00:32:29] Application app26 created for microsoft/phi-4-reasoning-plus (Backend Port: 5531, Frontend Port: 6031)
+[2025-05-24 00:32:29] Creating app27 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app27
+[2025-05-24 00:32:29] Application app27 created for microsoft/phi-4-reasoning-plus (Backend Port: 5533, Frontend Port: 6033)
+[2025-05-24 00:32:29] Creating app28 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app28
+[2025-05-24 00:32:29] Application app28 created for microsoft/phi-4-reasoning-plus (Backend Port: 5535, Frontend Port: 6035)
+[2025-05-24 00:32:29] Creating app29 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app29
+[2025-05-24 00:32:29] Application app29 created for microsoft/phi-4-reasoning-plus (Backend Port: 5537, Frontend Port: 6037)
+[2025-05-24 00:32:29] Creating app30 for microsoft/phi-4-reasoning-plus in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\microsoft_phi-4-reasoning-plus\app30
+[2025-05-24 00:32:29] Application app30 created for microsoft/phi-4-reasoning-plus (Backend Port: 5539, Frontend Port: 6039)
+[2025-05-24 00:32:29] Successfully created all apps for microsoft/phi-4-reasoning-plus.

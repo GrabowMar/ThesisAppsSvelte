@@ -1,65 +1,65 @@
-[2025-05-24 00:19:47] Port ranges for openai/codex-mini:
-[2025-05-24 00:19:47]   Backend: 5641-5700
-[2025-05-24 00:19:47]   Frontend: 6141-6200
-[2025-05-24 00:19:48] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini
-[2025-05-24 00:19:48] Creating app1 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app1
-[2025-05-24 00:19:48] Application app1 created for openai/codex-mini (Backend Port: 5641, Frontend Port: 6141)
-[2025-05-24 00:19:48] Creating app2 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app2
-[2025-05-24 00:19:48] Application app2 created for openai/codex-mini (Backend Port: 5643, Frontend Port: 6143)
-[2025-05-24 00:19:48] Creating app3 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app3
-[2025-05-24 00:19:48] Application app3 created for openai/codex-mini (Backend Port: 5645, Frontend Port: 6145)
-[2025-05-24 00:19:48] Creating app4 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app4
-[2025-05-24 00:19:48] Application app4 created for openai/codex-mini (Backend Port: 5647, Frontend Port: 6147)
-[2025-05-24 00:19:48] Creating app5 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app5
-[2025-05-24 00:19:48] Application app5 created for openai/codex-mini (Backend Port: 5649, Frontend Port: 6149)
-[2025-05-24 00:19:48] Creating app6 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app6
-[2025-05-24 00:19:48] Application app6 created for openai/codex-mini (Backend Port: 5651, Frontend Port: 6151)
-[2025-05-24 00:19:48] Creating app7 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app7
-[2025-05-24 00:19:48] Application app7 created for openai/codex-mini (Backend Port: 5653, Frontend Port: 6153)
-[2025-05-24 00:19:48] Creating app8 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app8
-[2025-05-24 00:19:48] Application app8 created for openai/codex-mini (Backend Port: 5655, Frontend Port: 6155)
-[2025-05-24 00:19:48] Creating app9 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app9
-[2025-05-24 00:19:48] Application app9 created for openai/codex-mini (Backend Port: 5657, Frontend Port: 6157)
-[2025-05-24 00:19:48] Creating app10 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app10
-[2025-05-24 00:19:48] Application app10 created for openai/codex-mini (Backend Port: 5659, Frontend Port: 6159)
-[2025-05-24 00:19:48] Creating app11 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app11
-[2025-05-24 00:19:48] Application app11 created for openai/codex-mini (Backend Port: 5661, Frontend Port: 6161)
-[2025-05-24 00:19:48] Creating app12 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app12
-[2025-05-24 00:19:48] Application app12 created for openai/codex-mini (Backend Port: 5663, Frontend Port: 6163)
-[2025-05-24 00:19:48] Creating app13 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app13
-[2025-05-24 00:19:48] Application app13 created for openai/codex-mini (Backend Port: 5665, Frontend Port: 6165)
-[2025-05-24 00:19:48] Creating app14 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app14
-[2025-05-24 00:19:48] Application app14 created for openai/codex-mini (Backend Port: 5667, Frontend Port: 6167)
-[2025-05-24 00:19:48] Creating app15 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app15
-[2025-05-24 00:19:48] Application app15 created for openai/codex-mini (Backend Port: 5669, Frontend Port: 6169)
-[2025-05-24 00:19:48] Creating app16 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app16
-[2025-05-24 00:19:48] Application app16 created for openai/codex-mini (Backend Port: 5671, Frontend Port: 6171)
-[2025-05-24 00:19:48] Creating app17 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app17
-[2025-05-24 00:19:48] Application app17 created for openai/codex-mini (Backend Port: 5673, Frontend Port: 6173)
-[2025-05-24 00:19:48] Creating app18 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app18
-[2025-05-24 00:19:48] Application app18 created for openai/codex-mini (Backend Port: 5675, Frontend Port: 6175)
-[2025-05-24 00:19:48] Creating app19 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app19
-[2025-05-24 00:19:48] Application app19 created for openai/codex-mini (Backend Port: 5677, Frontend Port: 6177)
-[2025-05-24 00:19:48] Creating app20 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app20
-[2025-05-24 00:19:48] Application app20 created for openai/codex-mini (Backend Port: 5679, Frontend Port: 6179)
-[2025-05-24 00:19:48] Creating app21 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app21
-[2025-05-24 00:19:48] Application app21 created for openai/codex-mini (Backend Port: 5681, Frontend Port: 6181)
-[2025-05-24 00:19:48] Creating app22 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app22
-[2025-05-24 00:19:48] Application app22 created for openai/codex-mini (Backend Port: 5683, Frontend Port: 6183)
-[2025-05-24 00:19:48] Creating app23 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app23
-[2025-05-24 00:19:48] Application app23 created for openai/codex-mini (Backend Port: 5685, Frontend Port: 6185)
-[2025-05-24 00:19:48] Creating app24 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app24
-[2025-05-24 00:19:48] Application app24 created for openai/codex-mini (Backend Port: 5687, Frontend Port: 6187)
-[2025-05-24 00:19:48] Creating app25 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app25
-[2025-05-24 00:19:48] Application app25 created for openai/codex-mini (Backend Port: 5689, Frontend Port: 6189)
-[2025-05-24 00:19:48] Creating app26 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app26
-[2025-05-24 00:19:48] Application app26 created for openai/codex-mini (Backend Port: 5691, Frontend Port: 6191)
-[2025-05-24 00:19:48] Creating app27 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app27
-[2025-05-24 00:19:48] Application app27 created for openai/codex-mini (Backend Port: 5693, Frontend Port: 6193)
-[2025-05-24 00:19:48] Creating app28 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app28
-[2025-05-24 00:19:48] Application app28 created for openai/codex-mini (Backend Port: 5695, Frontend Port: 6195)
-[2025-05-24 00:19:48] Creating app29 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app29
-[2025-05-24 00:19:48] Application app29 created for openai/codex-mini (Backend Port: 5697, Frontend Port: 6197)
-[2025-05-24 00:19:48] Creating app30 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app30
-[2025-05-24 00:19:48] Application app30 created for openai/codex-mini (Backend Port: 5699, Frontend Port: 6199)
-[2025-05-24 00:19:48] Successfully created all apps for openai/codex-mini.
+[2025-05-24 00:32:28] Port ranges for openai/codex-mini:
+[2025-05-24 00:32:28]   Backend: 5641-5700
+[2025-05-24 00:32:28]   Frontend: 6141-6200
+[2025-05-24 00:32:29] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini
+[2025-05-24 00:32:29] Creating app1 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app1
+[2025-05-24 00:32:29] Application app1 created for openai/codex-mini (Backend Port: 5641, Frontend Port: 6141)
+[2025-05-24 00:32:29] Creating app2 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app2
+[2025-05-24 00:32:29] Application app2 created for openai/codex-mini (Backend Port: 5643, Frontend Port: 6143)
+[2025-05-24 00:32:29] Creating app3 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app3
+[2025-05-24 00:32:29] Application app3 created for openai/codex-mini (Backend Port: 5645, Frontend Port: 6145)
+[2025-05-24 00:32:29] Creating app4 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app4
+[2025-05-24 00:32:29] Application app4 created for openai/codex-mini (Backend Port: 5647, Frontend Port: 6147)
+[2025-05-24 00:32:29] Creating app5 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app5
+[2025-05-24 00:32:29] Application app5 created for openai/codex-mini (Backend Port: 5649, Frontend Port: 6149)
+[2025-05-24 00:32:29] Creating app6 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app6
+[2025-05-24 00:32:29] Application app6 created for openai/codex-mini (Backend Port: 5651, Frontend Port: 6151)
+[2025-05-24 00:32:29] Creating app7 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app7
+[2025-05-24 00:32:29] Application app7 created for openai/codex-mini (Backend Port: 5653, Frontend Port: 6153)
+[2025-05-24 00:32:29] Creating app8 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app8
+[2025-05-24 00:32:29] Application app8 created for openai/codex-mini (Backend Port: 5655, Frontend Port: 6155)
+[2025-05-24 00:32:29] Creating app9 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app9
+[2025-05-24 00:32:29] Application app9 created for openai/codex-mini (Backend Port: 5657, Frontend Port: 6157)
+[2025-05-24 00:32:29] Creating app10 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app10
+[2025-05-24 00:32:29] Application app10 created for openai/codex-mini (Backend Port: 5659, Frontend Port: 6159)
+[2025-05-24 00:32:29] Creating app11 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app11
+[2025-05-24 00:32:29] Application app11 created for openai/codex-mini (Backend Port: 5661, Frontend Port: 6161)
+[2025-05-24 00:32:29] Creating app12 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app12
+[2025-05-24 00:32:29] Application app12 created for openai/codex-mini (Backend Port: 5663, Frontend Port: 6163)
+[2025-05-24 00:32:29] Creating app13 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app13
+[2025-05-24 00:32:29] Application app13 created for openai/codex-mini (Backend Port: 5665, Frontend Port: 6165)
+[2025-05-24 00:32:29] Creating app14 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app14
+[2025-05-24 00:32:29] Application app14 created for openai/codex-mini (Backend Port: 5667, Frontend Port: 6167)
+[2025-05-24 00:32:29] Creating app15 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app15
+[2025-05-24 00:32:29] Application app15 created for openai/codex-mini (Backend Port: 5669, Frontend Port: 6169)
+[2025-05-24 00:32:29] Creating app16 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app16
+[2025-05-24 00:32:29] Application app16 created for openai/codex-mini (Backend Port: 5671, Frontend Port: 6171)
+[2025-05-24 00:32:29] Creating app17 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app17
+[2025-05-24 00:32:29] Application app17 created for openai/codex-mini (Backend Port: 5673, Frontend Port: 6173)
+[2025-05-24 00:32:29] Creating app18 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app18
+[2025-05-24 00:32:29] Application app18 created for openai/codex-mini (Backend Port: 5675, Frontend Port: 6175)
+[2025-05-24 00:32:29] Creating app19 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app19
+[2025-05-24 00:32:29] Application app19 created for openai/codex-mini (Backend Port: 5677, Frontend Port: 6177)
+[2025-05-24 00:32:29] Creating app20 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app20
+[2025-05-24 00:32:29] Application app20 created for openai/codex-mini (Backend Port: 5679, Frontend Port: 6179)
+[2025-05-24 00:32:29] Creating app21 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app21
+[2025-05-24 00:32:29] Application app21 created for openai/codex-mini (Backend Port: 5681, Frontend Port: 6181)
+[2025-05-24 00:32:29] Creating app22 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app22
+[2025-05-24 00:32:29] Application app22 created for openai/codex-mini (Backend Port: 5683, Frontend Port: 6183)
+[2025-05-24 00:32:29] Creating app23 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app23
+[2025-05-24 00:32:29] Application app23 created for openai/codex-mini (Backend Port: 5685, Frontend Port: 6185)
+[2025-05-24 00:32:29] Creating app24 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app24
+[2025-05-24 00:32:29] Application app24 created for openai/codex-mini (Backend Port: 5687, Frontend Port: 6187)
+[2025-05-24 00:32:29] Creating app25 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app25
+[2025-05-24 00:32:29] Application app25 created for openai/codex-mini (Backend Port: 5689, Frontend Port: 6189)
+[2025-05-24 00:32:29] Creating app26 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app26
+[2025-05-24 00:32:29] Application app26 created for openai/codex-mini (Backend Port: 5691, Frontend Port: 6191)
+[2025-05-24 00:32:29] Creating app27 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app27
+[2025-05-24 00:32:29] Application app27 created for openai/codex-mini (Backend Port: 5693, Frontend Port: 6193)
+[2025-05-24 00:32:29] Creating app28 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app28
+[2025-05-24 00:32:29] Application app28 created for openai/codex-mini (Backend Port: 5695, Frontend Port: 6195)
+[2025-05-24 00:32:29] Creating app29 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app29
+[2025-05-24 00:32:29] Application app29 created for openai/codex-mini (Backend Port: 5697, Frontend Port: 6197)
+[2025-05-24 00:32:29] Creating app30 for openai/codex-mini in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\openai_codex-mini\app30
+[2025-05-24 00:32:29] Application app30 created for openai/codex-mini (Backend Port: 5699, Frontend Port: 6199)
+[2025-05-24 00:32:29] Successfully created all apps for openai/codex-mini.

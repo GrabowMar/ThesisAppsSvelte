@@ -17,25 +17,25 @@ class PortManager:
     MODEL_COLORS = {
         "anthropic/claude-3.7-sonnet": "#D97706",
         "openai/gpt-4.1": "#14B8A6",
-        "mistralai/devstral-small:free": "#8B5CF6",
-        "google/gemma-3n-e4b-it:free": "#3B82F6",
-        "meta-llama/llama-3.3-8b-instruct:free": "#F59E0B",
-        "nousresearch/deephermes-3-mistral-24b-preview:free": "#EC4899",
-        "microsoft/phi-4-reasoning-plus:free": "#6366F1",
-        "qwen/qwen3-30b-a3b:free": "#F43F5E",
+        "mistralai/devstral-small": "#8B5CF6",
+        "google/gemma-3n-e4b-it": "#3B82F6",
+        "meta-llama/llama-3.3-8b-instruct": "#F59E0B",
+        "nousresearch/deephermes-3-mistral-24b-preview": "#EC4899",
+        "microsoft/phi-4-reasoning-plus": "#6366F1",
+        "qwen/qwen3-30b-a3b": "#F43F5E",
         "openai/codex-mini": "#22D3EE",
         "x-ai/grok-3-beta": "#EF4444",
         "inception/mercury-coder-small-beta": "#A855F7",
         "google/gemini-2.5-flash-preview-05-20": "#60A5FA",
-        "meta-llama/llama-4-maverick:free": "#FBBF24",
-        "qwen/qwen3-32b:free": "#E11D48",  # Mapped from "Qwen_Qwen3_32B"
-        "meta-llama/llama-4-scout:free": "#FCD34D",
-        "deepseek/deepseek-chat-v3-0324:free": "#F97316",
-        "opengvlab/internvl3-14b:free": "#808080",  # Default color
-        "thudm/glm-4-32b:free": "#808080",  # Default color
-        "agentica-org/deepcoder-14b-preview:free": "#808080",  # Default color
-        "rekaai/reka-flash-3:free": "#808080",  # Default color
-        "open-r1/olympiccoder-32b:free": "#808080",  # Default color
+        "meta-llama/llama-4-maverick": "#FBBF24",
+        "qwen/qwen3-32b": "#E11D48",  # Mapped from "Qwen_Qwen3_32B"
+        "meta-llama/llama-4-scout": "#FCD34D",
+        "deepseek/deepseek-chat-v3-0324": "#F97316",
+        "opengvlab/internvl3-14b": "#808080",  # Default color
+        "thudm/glm-4-32b": "#808080",  # Default color
+        "agentica-org/deepcoder-14b-preview": "#808080",  # Default color
+        "rekaai/reka-flash-3": "#808080",  # Default color
+        "open-r1/olympiccoder-32b": "#808080",  # Default color
     }
 
     @classmethod

@@ -1,0 +1,65 @@
+[2025-05-24 00:32:28] Port ranges for agentica-org/deepcoder-14b-preview:
+[2025-05-24 00:32:28]   Backend: 6441-6500
+[2025-05-24 00:32:28]   Frontend: 6941-7000
+[2025-05-24 00:32:30] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview
+[2025-05-24 00:32:30] Creating app1 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app1
+[2025-05-24 00:32:30] Application app1 created for agentica-org/deepcoder-14b-preview (Backend Port: 6441, Frontend Port: 6941)
+[2025-05-24 00:32:30] Creating app2 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app2
+[2025-05-24 00:32:30] Application app2 created for agentica-org/deepcoder-14b-preview (Backend Port: 6443, Frontend Port: 6943)
+[2025-05-24 00:32:30] Creating app3 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app3
+[2025-05-24 00:32:30] Application app3 created for agentica-org/deepcoder-14b-preview (Backend Port: 6445, Frontend Port: 6945)
+[2025-05-24 00:32:30] Creating app4 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app4
+[2025-05-24 00:32:30] Application app4 created for agentica-org/deepcoder-14b-preview (Backend Port: 6447, Frontend Port: 6947)
+[2025-05-24 00:32:30] Creating app5 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app5
+[2025-05-24 00:32:30] Application app5 created for agentica-org/deepcoder-14b-preview (Backend Port: 6449, Frontend Port: 6949)
+[2025-05-24 00:32:30] Creating app6 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app6
+[2025-05-24 00:32:30] Application app6 created for agentica-org/deepcoder-14b-preview (Backend Port: 6451, Frontend Port: 6951)
+[2025-05-24 00:32:30] Creating app7 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app7
+[2025-05-24 00:32:30] Application app7 created for agentica-org/deepcoder-14b-preview (Backend Port: 6453, Frontend Port: 6953)
+[2025-05-24 00:32:30] Creating app8 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app8
+[2025-05-24 00:32:30] Application app8 created for agentica-org/deepcoder-14b-preview (Backend Port: 6455, Frontend Port: 6955)
+[2025-05-24 00:32:30] Creating app9 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app9
+[2025-05-24 00:32:31] Application app9 created for agentica-org/deepcoder-14b-preview (Backend Port: 6457, Frontend Port: 6957)
+[2025-05-24 00:32:31] Creating app10 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app10
+[2025-05-24 00:32:31] Application app10 created for agentica-org/deepcoder-14b-preview (Backend Port: 6459, Frontend Port: 6959)
+[2025-05-24 00:32:31] Creating app11 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app11
+[2025-05-24 00:32:31] Application app11 created for agentica-org/deepcoder-14b-preview (Backend Port: 6461, Frontend Port: 6961)
+[2025-05-24 00:32:31] Creating app12 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app12
+[2025-05-24 00:32:31] Application app12 created for agentica-org/deepcoder-14b-preview (Backend Port: 6463, Frontend Port: 6963)
+[2025-05-24 00:32:31] Creating app13 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app13
+[2025-05-24 00:32:31] Application app13 created for agentica-org/deepcoder-14b-preview (Backend Port: 6465, Frontend Port: 6965)
+[2025-05-24 00:32:31] Creating app14 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app14
+[2025-05-24 00:32:31] Application app14 created for agentica-org/deepcoder-14b-preview (Backend Port: 6467, Frontend Port: 6967)
+[2025-05-24 00:32:31] Creating app15 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app15
+[2025-05-24 00:32:31] Application app15 created for agentica-org/deepcoder-14b-preview (Backend Port: 6469, Frontend Port: 6969)
+[2025-05-24 00:32:31] Creating app16 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app16
+[2025-05-24 00:32:31] Application app16 created for agentica-org/deepcoder-14b-preview (Backend Port: 6471, Frontend Port: 6971)
+[2025-05-24 00:32:31] Creating app17 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app17
+[2025-05-24 00:32:31] Application app17 created for agentica-org/deepcoder-14b-preview (Backend Port: 6473, Frontend Port: 6973)
+[2025-05-24 00:32:31] Creating app18 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app18
+[2025-05-24 00:32:31] Application app18 created for agentica-org/deepcoder-14b-preview (Backend Port: 6475, Frontend Port: 6975)
+[2025-05-24 00:32:31] Creating app19 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app19
+[2025-05-24 00:32:31] Application app19 created for agentica-org/deepcoder-14b-preview (Backend Port: 6477, Frontend Port: 6977)
+[2025-05-24 00:32:31] Creating app20 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app20
+[2025-05-24 00:32:31] Application app20 created for agentica-org/deepcoder-14b-preview (Backend Port: 6479, Frontend Port: 6979)
+[2025-05-24 00:32:31] Creating app21 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app21
+[2025-05-24 00:32:31] Application app21 created for agentica-org/deepcoder-14b-preview (Backend Port: 6481, Frontend Port: 6981)
+[2025-05-24 00:32:31] Creating app22 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app22
+[2025-05-24 00:32:31] Application app22 created for agentica-org/deepcoder-14b-preview (Backend Port: 6483, Frontend Port: 6983)
+[2025-05-24 00:32:31] Creating app23 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app23
+[2025-05-24 00:32:31] Application app23 created for agentica-org/deepcoder-14b-preview (Backend Port: 6485, Frontend Port: 6985)
+[2025-05-24 00:32:31] Creating app24 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app24
+[2025-05-24 00:32:31] Application app24 created for agentica-org/deepcoder-14b-preview (Backend Port: 6487, Frontend Port: 6987)
+[2025-05-24 00:32:31] Creating app25 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app25
+[2025-05-24 00:32:31] Application app25 created for agentica-org/deepcoder-14b-preview (Backend Port: 6489, Frontend Port: 6989)
+[2025-05-24 00:32:31] Creating app26 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app26
+[2025-05-24 00:32:31] Application app26 created for agentica-org/deepcoder-14b-preview (Backend Port: 6491, Frontend Port: 6991)
+[2025-05-24 00:32:31] Creating app27 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app27
+[2025-05-24 00:32:31] Application app27 created for agentica-org/deepcoder-14b-preview (Backend Port: 6493, Frontend Port: 6993)
+[2025-05-24 00:32:31] Creating app28 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app28
+[2025-05-24 00:32:31] Application app28 created for agentica-org/deepcoder-14b-preview (Backend Port: 6495, Frontend Port: 6995)
+[2025-05-24 00:32:31] Creating app29 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app29
+[2025-05-24 00:32:31] Application app29 created for agentica-org/deepcoder-14b-preview (Backend Port: 6497, Frontend Port: 6997)
+[2025-05-24 00:32:31] Creating app30 for agentica-org/deepcoder-14b-preview in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\agentica-org_deepcoder-14b-preview\app30
+[2025-05-24 00:32:31] Application app30 created for agentica-org/deepcoder-14b-preview (Backend Port: 6499, Frontend Port: 6999)
+[2025-05-24 00:32:31] Successfully created all apps for agentica-org/deepcoder-14b-preview.

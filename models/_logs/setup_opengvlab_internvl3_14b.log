@@ -1,0 +1,65 @@
+[2025-05-24 00:32:28] Port ranges for opengvlab/internvl3-14b:
+[2025-05-24 00:32:28]   Backend: 6281-6340
+[2025-05-24 00:32:28]   Frontend: 6781-6840
+[2025-05-24 00:32:30] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b
+[2025-05-24 00:32:30] Creating app1 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app1
+[2025-05-24 00:32:30] Application app1 created for opengvlab/internvl3-14b (Backend Port: 6281, Frontend Port: 6781)
+[2025-05-24 00:32:30] Creating app2 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app2
+[2025-05-24 00:32:30] Application app2 created for opengvlab/internvl3-14b (Backend Port: 6283, Frontend Port: 6783)
+[2025-05-24 00:32:30] Creating app3 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app3
+[2025-05-24 00:32:30] Application app3 created for opengvlab/internvl3-14b (Backend Port: 6285, Frontend Port: 6785)
+[2025-05-24 00:32:30] Creating app4 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app4
+[2025-05-24 00:32:30] Application app4 created for opengvlab/internvl3-14b (Backend Port: 6287, Frontend Port: 6787)
+[2025-05-24 00:32:30] Creating app5 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app5
+[2025-05-24 00:32:30] Application app5 created for opengvlab/internvl3-14b (Backend Port: 6289, Frontend Port: 6789)
+[2025-05-24 00:32:30] Creating app6 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app6
+[2025-05-24 00:32:30] Application app6 created for opengvlab/internvl3-14b (Backend Port: 6291, Frontend Port: 6791)
+[2025-05-24 00:32:30] Creating app7 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app7
+[2025-05-24 00:32:30] Application app7 created for opengvlab/internvl3-14b (Backend Port: 6293, Frontend Port: 6793)
+[2025-05-24 00:32:30] Creating app8 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app8
+[2025-05-24 00:32:30] Application app8 created for opengvlab/internvl3-14b (Backend Port: 6295, Frontend Port: 6795)
+[2025-05-24 00:32:30] Creating app9 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app9
+[2025-05-24 00:32:30] Application app9 created for opengvlab/internvl3-14b (Backend Port: 6297, Frontend Port: 6797)
+[2025-05-24 00:32:30] Creating app10 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app10
+[2025-05-24 00:32:30] Application app10 created for opengvlab/internvl3-14b (Backend Port: 6299, Frontend Port: 6799)
+[2025-05-24 00:32:30] Creating app11 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app11
+[2025-05-24 00:32:30] Application app11 created for opengvlab/internvl3-14b (Backend Port: 6301, Frontend Port: 6801)
+[2025-05-24 00:32:30] Creating app12 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app12
+[2025-05-24 00:32:30] Application app12 created for opengvlab/internvl3-14b (Backend Port: 6303, Frontend Port: 6803)
+[2025-05-24 00:32:30] Creating app13 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app13
+[2025-05-24 00:32:30] Application app13 created for opengvlab/internvl3-14b (Backend Port: 6305, Frontend Port: 6805)
+[2025-05-24 00:32:30] Creating app14 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app14
+[2025-05-24 00:32:30] Application app14 created for opengvlab/internvl3-14b (Backend Port: 6307, Frontend Port: 6807)
+[2025-05-24 00:32:30] Creating app15 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app15
+[2025-05-24 00:32:30] Application app15 created for opengvlab/internvl3-14b (Backend Port: 6309, Frontend Port: 6809)
+[2025-05-24 00:32:30] Creating app16 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app16
+[2025-05-24 00:32:30] Application app16 created for opengvlab/internvl3-14b (Backend Port: 6311, Frontend Port: 6811)
+[2025-05-24 00:32:30] Creating app17 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app17
+[2025-05-24 00:32:30] Application app17 created for opengvlab/internvl3-14b (Backend Port: 6313, Frontend Port: 6813)
+[2025-05-24 00:32:30] Creating app18 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app18
+[2025-05-24 00:32:30] Application app18 created for opengvlab/internvl3-14b (Backend Port: 6315, Frontend Port: 6815)
+[2025-05-24 00:32:30] Creating app19 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app19
+[2025-05-24 00:32:30] Application app19 created for opengvlab/internvl3-14b (Backend Port: 6317, Frontend Port: 6817)
+[2025-05-24 00:32:30] Creating app20 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app20
+[2025-05-24 00:32:30] Application app20 created for opengvlab/internvl3-14b (Backend Port: 6319, Frontend Port: 6819)
+[2025-05-24 00:32:30] Creating app21 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app21
+[2025-05-24 00:32:30] Application app21 created for opengvlab/internvl3-14b (Backend Port: 6321, Frontend Port: 6821)
+[2025-05-24 00:32:30] Creating app22 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app22
+[2025-05-24 00:32:30] Application app22 created for opengvlab/internvl3-14b (Backend Port: 6323, Frontend Port: 6823)
+[2025-05-24 00:32:30] Creating app23 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app23
+[2025-05-24 00:32:30] Application app23 created for opengvlab/internvl3-14b (Backend Port: 6325, Frontend Port: 6825)
+[2025-05-24 00:32:30] Creating app24 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app24
+[2025-05-24 00:32:30] Application app24 created for opengvlab/internvl3-14b (Backend Port: 6327, Frontend Port: 6827)
+[2025-05-24 00:32:30] Creating app25 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app25
+[2025-05-24 00:32:30] Application app25 created for opengvlab/internvl3-14b (Backend Port: 6329, Frontend Port: 6829)
+[2025-05-24 00:32:30] Creating app26 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app26
+[2025-05-24 00:32:30] Application app26 created for opengvlab/internvl3-14b (Backend Port: 6331, Frontend Port: 6831)
+[2025-05-24 00:32:30] Creating app27 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app27
+[2025-05-24 00:32:30] Application app27 created for opengvlab/internvl3-14b (Backend Port: 6333, Frontend Port: 6833)
+[2025-05-24 00:32:30] Creating app28 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app28
+[2025-05-24 00:32:30] Application app28 created for opengvlab/internvl3-14b (Backend Port: 6335, Frontend Port: 6835)
+[2025-05-24 00:32:30] Creating app29 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app29
+[2025-05-24 00:32:30] Application app29 created for opengvlab/internvl3-14b (Backend Port: 6337, Frontend Port: 6837)
+[2025-05-24 00:32:30] Creating app30 for opengvlab/internvl3-14b in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\opengvlab_internvl3-14b\app30
+[2025-05-24 00:32:30] Application app30 created for opengvlab/internvl3-14b (Backend Port: 6339, Frontend Port: 6839)
+[2025-05-24 00:32:30] Successfully created all apps for opengvlab/internvl3-14b.
