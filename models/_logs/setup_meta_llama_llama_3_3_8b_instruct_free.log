@@ -1,0 +1,65 @@
+[2025-05-24 00:19:47] Port ranges for meta-llama/llama-3.3-8b-instruct:free:
+[2025-05-24 00:19:47]   Backend: 5321-5380
+[2025-05-24 00:19:47]   Frontend: 5821-5880
+[2025-05-24 00:19:47] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free
+[2025-05-24 00:19:47] Creating app1 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app1
+[2025-05-24 00:19:47] Application app1 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5321, Frontend Port: 5821)
+[2025-05-24 00:19:47] Creating app2 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app2
+[2025-05-24 00:19:47] Application app2 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5323, Frontend Port: 5823)
+[2025-05-24 00:19:47] Creating app3 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app3
+[2025-05-24 00:19:47] Application app3 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5325, Frontend Port: 5825)
+[2025-05-24 00:19:47] Creating app4 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app4
+[2025-05-24 00:19:47] Application app4 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5327, Frontend Port: 5827)
+[2025-05-24 00:19:47] Creating app5 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app5
+[2025-05-24 00:19:47] Application app5 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5329, Frontend Port: 5829)
+[2025-05-24 00:19:47] Creating app6 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app6
+[2025-05-24 00:19:47] Application app6 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5331, Frontend Port: 5831)
+[2025-05-24 00:19:47] Creating app7 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app7
+[2025-05-24 00:19:47] Application app7 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5333, Frontend Port: 5833)
+[2025-05-24 00:19:47] Creating app8 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app8
+[2025-05-24 00:19:47] Application app8 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5335, Frontend Port: 5835)
+[2025-05-24 00:19:47] Creating app9 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app9
+[2025-05-24 00:19:47] Application app9 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5337, Frontend Port: 5837)
+[2025-05-24 00:19:47] Creating app10 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app10
+[2025-05-24 00:19:47] Application app10 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5339, Frontend Port: 5839)
+[2025-05-24 00:19:47] Creating app11 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app11
+[2025-05-24 00:19:47] Application app11 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5341, Frontend Port: 5841)
+[2025-05-24 00:19:47] Creating app12 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app12
+[2025-05-24 00:19:47] Application app12 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5343, Frontend Port: 5843)
+[2025-05-24 00:19:47] Creating app13 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app13
+[2025-05-24 00:19:47] Application app13 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5345, Frontend Port: 5845)
+[2025-05-24 00:19:47] Creating app14 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app14
+[2025-05-24 00:19:47] Application app14 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5347, Frontend Port: 5847)
+[2025-05-24 00:19:47] Creating app15 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app15
+[2025-05-24 00:19:47] Application app15 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5349, Frontend Port: 5849)
+[2025-05-24 00:19:47] Creating app16 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app16
+[2025-05-24 00:19:47] Application app16 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5351, Frontend Port: 5851)
+[2025-05-24 00:19:47] Creating app17 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app17
+[2025-05-24 00:19:47] Application app17 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5353, Frontend Port: 5853)
+[2025-05-24 00:19:47] Creating app18 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app18
+[2025-05-24 00:19:47] Application app18 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5355, Frontend Port: 5855)
+[2025-05-24 00:19:47] Creating app19 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app19
+[2025-05-24 00:19:47] Application app19 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5357, Frontend Port: 5857)
+[2025-05-24 00:19:47] Creating app20 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app20
+[2025-05-24 00:19:47] Application app20 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5359, Frontend Port: 5859)
+[2025-05-24 00:19:47] Creating app21 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app21
+[2025-05-24 00:19:47] Application app21 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5361, Frontend Port: 5861)
+[2025-05-24 00:19:47] Creating app22 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app22
+[2025-05-24 00:19:47] Application app22 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5363, Frontend Port: 5863)
+[2025-05-24 00:19:47] Creating app23 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app23
+[2025-05-24 00:19:47] Application app23 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5365, Frontend Port: 5865)
+[2025-05-24 00:19:47] Creating app24 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app24
+[2025-05-24 00:19:47] Application app24 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5367, Frontend Port: 5867)
+[2025-05-24 00:19:47] Creating app25 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app25
+[2025-05-24 00:19:47] Application app25 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5369, Frontend Port: 5869)
+[2025-05-24 00:19:47] Creating app26 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app26
+[2025-05-24 00:19:47] Application app26 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5371, Frontend Port: 5871)
+[2025-05-24 00:19:47] Creating app27 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app27
+[2025-05-24 00:19:47] Application app27 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5373, Frontend Port: 5873)
+[2025-05-24 00:19:47] Creating app28 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app28
+[2025-05-24 00:19:47] Application app28 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5375, Frontend Port: 5875)
+[2025-05-24 00:19:47] Creating app29 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app29
+[2025-05-24 00:19:47] Application app29 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5377, Frontend Port: 5877)
+[2025-05-24 00:19:47] Creating app30 for meta-llama/llama-3.3-8b-instruct:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\meta-llama_llama-3.3-8b-instruct_free\app30
+[2025-05-24 00:19:47] Application app30 created for meta-llama/llama-3.3-8b-instruct:free (Backend Port: 5379, Frontend Port: 5879)
+[2025-05-24 00:19:47] Successfully created all apps for meta-llama/llama-3.3-8b-instruct:free.

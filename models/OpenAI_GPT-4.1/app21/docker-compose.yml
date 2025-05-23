@@ -2,22 +2,22 @@ version: '3.8'
 services:
     backend:
         build: ./backend
-        container_name: openai_gpt_4_1_app21_backend_5121
+        container_name: {model_prefix}_backend_{backend_port}
         ports:
-            - "5121:5121"
+            - "{backend_port}:{backend_port}"
         restart: always
         environment:
             - PYTHONUNBUFFERED=1 
 
     frontend:
         build: ./frontend
-        container_name: openai_gpt_4_1_app21_frontend_5621
+        container_name: {model_prefix}_frontend_{frontend_port}
         ports:
-            - "5621:5621"
+            - "{frontend_port}:{frontend_port}"
         environment:
-            - PORT=5621
-            - VITE_BACKEND_API_TARGET=http://backend:5121
-            - VITE_FRONTEND_PORT=5621
+            - PORT={frontend_port}
+            - VITE_BACKEND_API_TARGET=http://backend:{backend_port}
+            - VITE_FRONTEND_PORT={frontend_port}
         restart: always
         depends_on:
             - backend

@@ -6,7 +6,7 @@ CORS(app)
 
 @app.route('/')
 def home():
-    return jsonify({'message': 'Hello from OpenAI_GPT-4.1 Flask Backend!'})
+    return jsonify({'message': 'Hello from openai/gpt-4.1 Flask Backend!'})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5111)

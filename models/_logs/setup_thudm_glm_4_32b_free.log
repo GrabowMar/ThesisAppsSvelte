@@ -1,0 +1,65 @@
+[2025-05-24 00:19:47] Port ranges for thudm/glm-4-32b:free:
+[2025-05-24 00:19:47]   Backend: 6361-6420
+[2025-05-24 00:19:47]   Frontend: 6861-6920
+[2025-05-24 00:19:49] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free
+[2025-05-24 00:19:49] Creating app1 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app1
+[2025-05-24 00:19:49] Application app1 created for thudm/glm-4-32b:free (Backend Port: 6361, Frontend Port: 6861)
+[2025-05-24 00:19:49] Creating app2 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app2
+[2025-05-24 00:19:49] Application app2 created for thudm/glm-4-32b:free (Backend Port: 6363, Frontend Port: 6863)
+[2025-05-24 00:19:49] Creating app3 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app3
+[2025-05-24 00:19:49] Application app3 created for thudm/glm-4-32b:free (Backend Port: 6365, Frontend Port: 6865)
+[2025-05-24 00:19:49] Creating app4 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app4
+[2025-05-24 00:19:49] Application app4 created for thudm/glm-4-32b:free (Backend Port: 6367, Frontend Port: 6867)
+[2025-05-24 00:19:49] Creating app5 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app5
+[2025-05-24 00:19:49] Application app5 created for thudm/glm-4-32b:free (Backend Port: 6369, Frontend Port: 6869)
+[2025-05-24 00:19:49] Creating app6 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app6
+[2025-05-24 00:19:49] Application app6 created for thudm/glm-4-32b:free (Backend Port: 6371, Frontend Port: 6871)
+[2025-05-24 00:19:49] Creating app7 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app7
+[2025-05-24 00:19:49] Application app7 created for thudm/glm-4-32b:free (Backend Port: 6373, Frontend Port: 6873)
+[2025-05-24 00:19:49] Creating app8 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app8
+[2025-05-24 00:19:49] Application app8 created for thudm/glm-4-32b:free (Backend Port: 6375, Frontend Port: 6875)
+[2025-05-24 00:19:49] Creating app9 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app9
+[2025-05-24 00:19:49] Application app9 created for thudm/glm-4-32b:free (Backend Port: 6377, Frontend Port: 6877)
+[2025-05-24 00:19:49] Creating app10 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app10
+[2025-05-24 00:19:49] Application app10 created for thudm/glm-4-32b:free (Backend Port: 6379, Frontend Port: 6879)
+[2025-05-24 00:19:49] Creating app11 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app11
+[2025-05-24 00:19:49] Application app11 created for thudm/glm-4-32b:free (Backend Port: 6381, Frontend Port: 6881)
+[2025-05-24 00:19:49] Creating app12 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app12
+[2025-05-24 00:19:49] Application app12 created for thudm/glm-4-32b:free (Backend Port: 6383, Frontend Port: 6883)
+[2025-05-24 00:19:49] Creating app13 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app13
+[2025-05-24 00:19:49] Application app13 created for thudm/glm-4-32b:free (Backend Port: 6385, Frontend Port: 6885)
+[2025-05-24 00:19:49] Creating app14 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app14
+[2025-05-24 00:19:49] Application app14 created for thudm/glm-4-32b:free (Backend Port: 6387, Frontend Port: 6887)
+[2025-05-24 00:19:49] Creating app15 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app15
+[2025-05-24 00:19:49] Application app15 created for thudm/glm-4-32b:free (Backend Port: 6389, Frontend Port: 6889)
+[2025-05-24 00:19:49] Creating app16 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app16
+[2025-05-24 00:19:49] Application app16 created for thudm/glm-4-32b:free (Backend Port: 6391, Frontend Port: 6891)
+[2025-05-24 00:19:49] Creating app17 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app17
+[2025-05-24 00:19:49] Application app17 created for thudm/glm-4-32b:free (Backend Port: 6393, Frontend Port: 6893)
+[2025-05-24 00:19:49] Creating app18 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app18
+[2025-05-24 00:19:49] Application app18 created for thudm/glm-4-32b:free (Backend Port: 6395, Frontend Port: 6895)
+[2025-05-24 00:19:49] Creating app19 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app19
+[2025-05-24 00:19:49] Application app19 created for thudm/glm-4-32b:free (Backend Port: 6397, Frontend Port: 6897)
+[2025-05-24 00:19:49] Creating app20 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app20
+[2025-05-24 00:19:49] Application app20 created for thudm/glm-4-32b:free (Backend Port: 6399, Frontend Port: 6899)
+[2025-05-24 00:19:49] Creating app21 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app21
+[2025-05-24 00:19:49] Application app21 created for thudm/glm-4-32b:free (Backend Port: 6401, Frontend Port: 6901)
+[2025-05-24 00:19:49] Creating app22 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app22
+[2025-05-24 00:19:49] Application app22 created for thudm/glm-4-32b:free (Backend Port: 6403, Frontend Port: 6903)
+[2025-05-24 00:19:49] Creating app23 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app23
+[2025-05-24 00:19:49] Application app23 created for thudm/glm-4-32b:free (Backend Port: 6405, Frontend Port: 6905)
+[2025-05-24 00:19:49] Creating app24 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app24
+[2025-05-24 00:19:49] Application app24 created for thudm/glm-4-32b:free (Backend Port: 6407, Frontend Port: 6907)
+[2025-05-24 00:19:49] Creating app25 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app25
+[2025-05-24 00:19:50] Application app25 created for thudm/glm-4-32b:free (Backend Port: 6409, Frontend Port: 6909)
+[2025-05-24 00:19:50] Creating app26 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app26
+[2025-05-24 00:19:50] Application app26 created for thudm/glm-4-32b:free (Backend Port: 6411, Frontend Port: 6911)
+[2025-05-24 00:19:50] Creating app27 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app27
+[2025-05-24 00:19:50] Application app27 created for thudm/glm-4-32b:free (Backend Port: 6413, Frontend Port: 6913)
+[2025-05-24 00:19:50] Creating app28 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app28
+[2025-05-24 00:19:50] Application app28 created for thudm/glm-4-32b:free (Backend Port: 6415, Frontend Port: 6915)
+[2025-05-24 00:19:50] Creating app29 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app29
+[2025-05-24 00:19:50] Application app29 created for thudm/glm-4-32b:free (Backend Port: 6417, Frontend Port: 6917)
+[2025-05-24 00:19:50] Creating app30 for thudm/glm-4-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\thudm_glm-4-32b_free\app30
+[2025-05-24 00:19:50] Application app30 created for thudm/glm-4-32b:free (Backend Port: 6419, Frontend Port: 6919)
+[2025-05-24 00:19:50] Successfully created all apps for thudm/glm-4-32b:free.

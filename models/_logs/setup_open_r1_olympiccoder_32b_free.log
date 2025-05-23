@@ -1,0 +1,65 @@
+[2025-05-24 00:19:47] Port ranges for open-r1/olympiccoder-32b:free:
+[2025-05-24 00:19:47]   Backend: 6601-6660
+[2025-05-24 00:19:47]   Frontend: 7101-7160
+[2025-05-24 00:19:50] Ensured base directory exists: C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free
+[2025-05-24 00:19:50] Creating app1 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app1
+[2025-05-24 00:19:50] Application app1 created for open-r1/olympiccoder-32b:free (Backend Port: 6601, Frontend Port: 7101)
+[2025-05-24 00:19:50] Creating app2 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app2
+[2025-05-24 00:19:50] Application app2 created for open-r1/olympiccoder-32b:free (Backend Port: 6603, Frontend Port: 7103)
+[2025-05-24 00:19:50] Creating app3 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app3
+[2025-05-24 00:19:50] Application app3 created for open-r1/olympiccoder-32b:free (Backend Port: 6605, Frontend Port: 7105)
+[2025-05-24 00:19:50] Creating app4 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app4
+[2025-05-24 00:19:50] Application app4 created for open-r1/olympiccoder-32b:free (Backend Port: 6607, Frontend Port: 7107)
+[2025-05-24 00:19:50] Creating app5 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app5
+[2025-05-24 00:19:50] Application app5 created for open-r1/olympiccoder-32b:free (Backend Port: 6609, Frontend Port: 7109)
+[2025-05-24 00:19:50] Creating app6 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app6
+[2025-05-24 00:19:50] Application app6 created for open-r1/olympiccoder-32b:free (Backend Port: 6611, Frontend Port: 7111)
+[2025-05-24 00:19:50] Creating app7 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app7
+[2025-05-24 00:19:50] Application app7 created for open-r1/olympiccoder-32b:free (Backend Port: 6613, Frontend Port: 7113)
+[2025-05-24 00:19:50] Creating app8 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app8
+[2025-05-24 00:19:50] Application app8 created for open-r1/olympiccoder-32b:free (Backend Port: 6615, Frontend Port: 7115)
+[2025-05-24 00:19:50] Creating app9 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app9
+[2025-05-24 00:19:50] Application app9 created for open-r1/olympiccoder-32b:free (Backend Port: 6617, Frontend Port: 7117)
+[2025-05-24 00:19:50] Creating app10 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app10
+[2025-05-24 00:19:50] Application app10 created for open-r1/olympiccoder-32b:free (Backend Port: 6619, Frontend Port: 7119)
+[2025-05-24 00:19:50] Creating app11 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app11
+[2025-05-24 00:19:50] Application app11 created for open-r1/olympiccoder-32b:free (Backend Port: 6621, Frontend Port: 7121)
+[2025-05-24 00:19:50] Creating app12 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app12
+[2025-05-24 00:19:50] Application app12 created for open-r1/olympiccoder-32b:free (Backend Port: 6623, Frontend Port: 7123)
+[2025-05-24 00:19:50] Creating app13 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app13
+[2025-05-24 00:19:50] Application app13 created for open-r1/olympiccoder-32b:free (Backend Port: 6625, Frontend Port: 7125)
+[2025-05-24 00:19:50] Creating app14 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app14
+[2025-05-24 00:19:50] Application app14 created for open-r1/olympiccoder-32b:free (Backend Port: 6627, Frontend Port: 7127)
+[2025-05-24 00:19:50] Creating app15 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app15
+[2025-05-24 00:19:50] Application app15 created for open-r1/olympiccoder-32b:free (Backend Port: 6629, Frontend Port: 7129)
+[2025-05-24 00:19:50] Creating app16 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app16
+[2025-05-24 00:19:50] Application app16 created for open-r1/olympiccoder-32b:free (Backend Port: 6631, Frontend Port: 7131)
+[2025-05-24 00:19:50] Creating app17 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app17
+[2025-05-24 00:19:50] Application app17 created for open-r1/olympiccoder-32b:free (Backend Port: 6633, Frontend Port: 7133)
+[2025-05-24 00:19:50] Creating app18 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app18
+[2025-05-24 00:19:50] Application app18 created for open-r1/olympiccoder-32b:free (Backend Port: 6635, Frontend Port: 7135)
+[2025-05-24 00:19:50] Creating app19 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app19
+[2025-05-24 00:19:50] Application app19 created for open-r1/olympiccoder-32b:free (Backend Port: 6637, Frontend Port: 7137)
+[2025-05-24 00:19:50] Creating app20 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app20
+[2025-05-24 00:19:50] Application app20 created for open-r1/olympiccoder-32b:free (Backend Port: 6639, Frontend Port: 7139)
+[2025-05-24 00:19:50] Creating app21 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app21
+[2025-05-24 00:19:50] Application app21 created for open-r1/olympiccoder-32b:free (Backend Port: 6641, Frontend Port: 7141)
+[2025-05-24 00:19:50] Creating app22 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app22
+[2025-05-24 00:19:50] Application app22 created for open-r1/olympiccoder-32b:free (Backend Port: 6643, Frontend Port: 7143)
+[2025-05-24 00:19:50] Creating app23 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app23
+[2025-05-24 00:19:50] Application app23 created for open-r1/olympiccoder-32b:free (Backend Port: 6645, Frontend Port: 7145)
+[2025-05-24 00:19:50] Creating app24 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app24
+[2025-05-24 00:19:50] Application app24 created for open-r1/olympiccoder-32b:free (Backend Port: 6647, Frontend Port: 7147)
+[2025-05-24 00:19:50] Creating app25 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app25
+[2025-05-24 00:19:50] Application app25 created for open-r1/olympiccoder-32b:free (Backend Port: 6649, Frontend Port: 7149)
+[2025-05-24 00:19:50] Creating app26 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app26
+[2025-05-24 00:19:50] Application app26 created for open-r1/olympiccoder-32b:free (Backend Port: 6651, Frontend Port: 7151)
+[2025-05-24 00:19:50] Creating app27 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app27
+[2025-05-24 00:19:50] Application app27 created for open-r1/olympiccoder-32b:free (Backend Port: 6653, Frontend Port: 7153)
+[2025-05-24 00:19:50] Creating app28 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app28
+[2025-05-24 00:19:50] Application app28 created for open-r1/olympiccoder-32b:free (Backend Port: 6655, Frontend Port: 7155)
+[2025-05-24 00:19:50] Creating app29 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app29
+[2025-05-24 00:19:50] Application app29 created for open-r1/olympiccoder-32b:free (Backend Port: 6657, Frontend Port: 7157)
+[2025-05-24 00:19:50] Creating app30 for open-r1/olympiccoder-32b:free in C:/Users/grabowmar/Desktop/ThesisAppsSvelte\models\open-r1_olympiccoder-32b_free\app30
+[2025-05-24 00:19:50] Application app30 created for open-r1/olympiccoder-32b:free (Backend Port: 6659, Frontend Port: 7159)
+[2025-05-24 00:19:50] Successfully created all apps for open-r1/olympiccoder-32b:free.

@@ -6,24 +6,24 @@ import logging
 import concurrent.futures
 import platform
 import sys
+import tempfile
+from contextlib import contextmanager, suppress
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
+from enum import Enum
 from pathlib import Path
-import tempfile
+from threading import Lock
 from typing import List, Optional, Tuple, Dict, Any, Union, Callable, Generator, Set, TypedDict
 import xml.etree.ElementTree as ET
-from contextlib import contextmanager
-from enum import Enum
-from threading import Lock # Added Lock
 
 # Attempt to import JsonResultsManager from utils.py
 try:
-    from utils import JsonResultsManager #
+    from utils import JsonResultsManager
 except ImportError:
     # Fallback if utils.py is not in the same directory or path
     class JsonResultsManager:
         def __init__(self, base_path: Path, module_name: str):
-            self.base_path = base_path
+            self.base_path = Path(base_path)
             self.module_name = module_name
             print(f"Warning: JsonResultsManager initialized without a proper logger for {module_name}")
 
@@ -31,18 +31,18 @@ except ImportError:
             results_dir = self.base_path / "z_interface_app" / "results" / model / f"app{app_num}"
             results_dir.mkdir(parents=True, exist_ok=True)
             results_path = results_dir / file_name
+            
             data_to_save = results
             if hasattr(results, 'to_dict'):
                 data_to_save = results.to_dict()
             elif isinstance(results, (list, tuple)) and all(hasattr(item, 'to_dict') for item in results):
-                 data_to_save = [item.to_dict() for item in results]
-
+                data_to_save = [item.to_dict() for item in results]
 
             try:
                 with open(results_path, "w", encoding='utf-8') as f:
                     json.dump(data_to_save, f, indent=2)
                 print(f"Info: [{self.module_name}] Saved results to {results_path}")
-            except Exception as e:
+            except (IOError, OSError) as e:
                 print(f"Error: [{self.module_name}] Error saving results to {results_path}: {e}")
                 raise
             return results_path
@@ -57,1114 +57,1281 @@ except ImportError:
                     data = json.load(f)
                 print(f"Info: [{self.module_name}] Loaded results from {results_path}")
                 return data
-            except Exception as e:
+            except (IOError, OSError, json.JSONDecodeError) as e:
                 print(f"Error: [{self.module_name}] Error loading results from {results_path}: {e}")
                 return None
 
 logger = logging.getLogger(__name__)
 
 # Constants
-TOOL_TIMEOUT = 45 #
-IS_WINDOWS = platform.system() == "Windows" #
-SEVERITY_MAP = { #
-    "critical": "HIGH", #
-    "high": "HIGH", #
-    "moderate": "MEDIUM", #
-    "medium": "MEDIUM", #
-    "low": "LOW", #
-    "info": "LOW" #
+TOOL_TIMEOUT = 45
+IS_WINDOWS = platform.system() == "Windows"
+SEVERITY_MAP = {
+    "critical": "HIGH",
+    "high": "HIGH",
+    "moderate": "MEDIUM",
+    "medium": "MEDIUM",
+    "low": "LOW",
+    "info": "LOW"
 }
-SEVERITY_ORDER = {"HIGH": 0, "MEDIUM": 1, "LOW": 2} #
-CONFIDENCE_ORDER = {"HIGH": 0, "MEDIUM": 1, "LOW": 2} #
-DEFAULT_ORDER_VALUE = 99 #
+SEVERITY_ORDER = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
+CONFIDENCE_ORDER = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
+DEFAULT_ORDER_VALUE = 99
+
+# Tool names as constants
+TOOL_NPM_AUDIT = "npm-audit"
+TOOL_ESLINT = "eslint"
+TOOL_JSHINT = "jshint"
+TOOL_SNYK = "snyk"
+
+# File extensions for frontend files
+FRONTEND_EXTENSIONS = (".js", ".jsx", ".ts", ".tsx", ".vue", ".svelte", ".html", ".css")
+JS_EXTENSIONS = (".js", ".jsx")
+EXCLUDED_DIRS = {"node_modules", ".git", "dist", "build", "coverage", "vendor", "bower_components"}
 
 
-class ToolStatus(str, Enum): #
+class ToolStatus(str, Enum):
     """Status codes for tool execution results."""
-    SUCCESS = "✅ No issues found" #
-    ISSUES_FOUND = "⚠️ Found {count} issues" #
-    ISSUES_WITH_ERRORS = "⚠️ Found {count} issues (Errors reported)" #
-    ERROR = "❌ Error Reported" #
-    AUTH_REQUIRED = "❌ Authentication required" #
-    COMMAND_NOT_FOUND = "❌ {tool} command not found" #
-    NO_FILES = "❌ No files to analyze" #
-    SKIPPED = "⚪ Skipped" #
-    NOT_RUN = "⚠️ Not run" #
-    UNKNOWN = "❓ Unknown State" #
+    SUCCESS = "✅ No issues found"
+    ISSUES_FOUND = "⚠️ Found {count} issues"
+    ISSUES_WITH_ERRORS = "⚠️ Found {count} issues (Errors reported)"
+    ERROR = "❌ Error Reported"
+    AUTH_REQUIRED = "❌ Authentication required"
+    COMMAND_NOT_FOUND = "❌ {tool} command not found"
+    NO_FILES = "❌ No files to analyze"
+    SKIPPED = "⚪ Skipped"
+    NOT_RUN = "⚠️ Not run"
+    UNKNOWN = "❓ Unknown State"
 
 
-class ToolConfig(TypedDict, total=False): #
+class ToolConfig(TypedDict, total=False):
     """Configuration for tool execution."""
-    max_files: int #
-    timeout: int #
-    file_extensions: List[str] #
+    max_files: int
+    timeout: int
+    file_extensions: List[str]
 
 
-def get_executable_path(name: str) -> Optional[str]: #
+def get_executable_path(name: str) -> Optional[str]:
     """Find the executable path for a command."""
-    cmd = f"{name}.cmd" if IS_WINDOWS else name #
-    path = shutil.which(cmd) #
-    if path: #
-        logger.debug(f"Found executable for '{name}' at: {path}") #
-        return path #
-    else: #
-        if IS_WINDOWS: #
-            path = shutil.which(name) #
-            if path: #
-                logger.debug(f"Found executable for '{name}' (no .cmd) at: {path}") #
-                return path #
-        logger.warning(f"Executable '{cmd}' (or '{name}') not found in PATH.") #
-        return None #
+    cmd = f"{name}.cmd" if IS_WINDOWS else name
+    path = shutil.which(cmd)
+    if path:
+        logger.debug(f"Found executable for '{name}' at: {path}")
+        return path
+    
+    # Fallback for Windows without .cmd extension
+    if IS_WINDOWS:
+        path = shutil.which(name)
+        if path:
+            logger.debug(f"Found executable for '{name}' (no .cmd) at: {path}")
+            return path
+    
+    logger.warning(f"Executable '{cmd}' (or '{name}') not found in PATH.")
+    return None
 
 
-def safe_json_loads(data: str) -> Optional[Union[dict, list]]: #
+def safe_json_loads(data: str) -> Optional[Union[dict, list]]:
     """Safely parse JSON data, handling potential issues."""
+    if not data:
+        return None
+    
+    # Remove BOM if present
+    if data.startswith('\ufeff'):
+        data = data[1:]
+    
     try:
-        if data and data.startswith('\ufeff'): #
-            data = data.lstrip('\ufeff') #
-        if not data: #
-            return None #
-        return json.loads(data) #
-    except json.JSONDecodeError as exc: #
-        logger.error(f"Failed to parse JSON: {exc}") #
-        logger.debug(f"Raw JSON output snippet causing error: {data[:300]}...") #
-        return None #
-    except Exception as e: #
-        logger.error(f"Unexpected error during JSON parsing: {e}") #
-        return None #
+        return json.loads(data)
+    except json.JSONDecodeError as exc:
+        logger.error(f"Failed to parse JSON: {exc}")
+        logger.debug(f"Raw JSON output snippet causing error: {data[:300]}...")
+        return None
+    except (ValueError, TypeError) as e:
+        logger.error(f"Unexpected error during JSON parsing: {e}")
+        return None
 
 
-def normalize_path(path: Union[str, Path]) -> Path: #
+def normalize_path(path: Union[str, Path]) -> Path:
     """Normalize a path to an absolute path."""
-    return Path(path).resolve() #
+    return Path(path).resolve()
+
+
+def validate_path_security(base_path: Path, target_path: Path) -> bool:
+    """Validate that target_path is within base_path to prevent traversal attacks."""
+    try:
+        base = base_path.resolve()
+        target = target_path.resolve()
+        return target.is_relative_to(base)
+    except (OSError, ValueError):
+        return False
 
 
 @dataclass
-class SecurityIssue: #
+class SecurityIssue:
     """Represents a security issue found in frontend code."""
-    filename: str #
-    line_number: int #
-    issue_text: str #
-    severity: str #
-    confidence: str #
-    issue_type: str #
-    line_range: List[int] #
-    code: str #
-    tool: str #
-    fix_suggestion: Optional[str] = None #
+    filename: str
+    line_number: int
+    issue_text: str
+    severity: str
+    confidence: str
+    issue_type: str
+    line_range: List[int]
+    code: str
+    tool: str
+    fix_suggestion: Optional[str] = None
 
-    def to_dict(self) -> Dict[str, Any]: #
+    def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
-        return asdict(self) #
+        return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'SecurityIssue': #
-        return cls(**data) #
+    def from_dict(cls, data: Dict[str, Any]) -> 'SecurityIssue':
+        """Create SecurityIssue from dictionary."""
+        return cls(**data)
 
 
-class FrontendSecurityAnalyzer: #
+class FrontendSecurityAnalyzer:
     """Analyzes frontend code for security issues using various tools."""
 
-    def __init__(self, base_path: Union[str, Path]): #
+    def __init__(self, base_path: Union[str, Path]):
         """Initialize the analyzer with the base path for scans."""
-        self.base_path = normalize_path(base_path) #
-        logger.info(f"Initialized FrontendSecurityAnalyzer with base path: {self.base_path}") #
-        self.results_manager = JsonResultsManager(base_path=self.base_path, module_name="frontend_security") #
-        self.analysis_lock = Lock() # Added Lock #
+        self.base_path = normalize_path(base_path)
+        logger.info(f"Initialized FrontendSecurityAnalyzer with base path: {self.base_path}")
+        self.results_manager = JsonResultsManager(base_path=self.base_path, module_name="frontend_security")
+        self.analysis_lock = Lock()
 
-        self.default_tools = ["eslint"] #
-        self.all_tools = ["npm-audit", "eslint", "jshint", "snyk"] #
+        self.default_tools = [TOOL_ESLINT]
+        self.all_tools = [TOOL_NPM_AUDIT, TOOL_ESLINT, TOOL_JSHINT, TOOL_SNYK]
 
         # Default tool configurations
-        self.tool_configs: Dict[str, ToolConfig] = { #
-            "jshint": {"max_files": 30}, #
-            "eslint": {"timeout": TOOL_TIMEOUT}, #
-            "npm-audit": {"timeout": TOOL_TIMEOUT}, #
-            "snyk": {"timeout": 90} #
+        self.tool_configs: Dict[str, ToolConfig] = {
+            TOOL_JSHINT: {"max_files": 30},
+            TOOL_ESLINT: {"timeout": TOOL_TIMEOUT},
+            TOOL_NPM_AUDIT: {"timeout": TOOL_TIMEOUT},
+            TOOL_SNYK: {"timeout": 90}
         }
 
         # Check which tools are available
-        self.available_tools = { #
-            "npm-audit": bool(get_executable_path("npm")), #
-            "eslint": bool(get_executable_path("npx")), # npx is used to run eslint/jshint #
-            "jshint": bool(get_executable_path("npx")), #
-            "snyk": bool(get_executable_path("snyk")) #
+        self.available_tools = {
+            TOOL_NPM_AUDIT: bool(get_executable_path("npm")),
+            TOOL_ESLINT: bool(get_executable_path("npx")),
+            TOOL_JSHINT: bool(get_executable_path("npx")),
+            TOOL_SNYK: bool(get_executable_path("snyk"))
         }
-        logger.info(f"Available tools check: {self.available_tools}") #
+        logger.info(f"Available tools check: {self.available_tools}")
 
     @contextmanager
-    def _create_temp_config(self, prefix: str, config_content: dict, filename: str) -> Generator[Path, None, None]: #
+    def _create_temp_config(self, prefix: str, config_content: dict, filename: str) -> Generator[Path, None, None]:
         """Create a temporary configuration file for a tool."""
-        temp_dir = None #
+        temp_file = None
         try:
-            temp_dir = Path(tempfile.mkdtemp(prefix=prefix)) #
-            config_path = temp_dir / filename #
-
-            with open(config_path, "w") as f: #
-                json.dump(config_content, f, indent=2) #
-
-            logger.info(f"Created temporary configuration at {config_path}") #
-            yield config_path #
-
+            # Use NamedTemporaryFile for atomic creation
+            with tempfile.NamedTemporaryFile(
+                mode='w',
+                prefix=prefix,
+                suffix=f"_{filename}",
+                delete=False,
+                encoding='utf-8'
+            ) as temp_file:
+                json.dump(config_content, temp_file, indent=2)
+                temp_path = Path(temp_file.name)
+            
+            logger.info(f"Created temporary configuration at {temp_path}")
+            yield temp_path
+            
         finally:
-            if temp_dir and temp_dir.exists(): #
-                try:
-                    shutil.rmtree(temp_dir) #
-                    logger.debug(f"Cleaned up temporary directory: {temp_dir}") #
-                except Exception as e: #
-                    logger.warning(f"Failed to remove temporary directory: {e}") #
+            if temp_file and Path(temp_file.name).exists():
+                with suppress(OSError):
+                    Path(temp_file.name).unlink()
+                    logger.debug(f"Cleaned up temporary file: {temp_file.name}")
 
-    def _determine_tool_status(self, tool_name: str, issues: List[SecurityIssue], output: str) -> str: #
+    def _determine_tool_status(self, tool_name: str, issues: List[SecurityIssue], output: str) -> str:
         """Determine the status of a tool execution based on output and issues found."""
-        output_lower = output.lower() #
+        output_lower = output.lower()
 
-        if "authenticate" in output_lower or "auth token" in output_lower: #
-            return ToolStatus.AUTH_REQUIRED.value #
+        if "authenticate" in output_lower or "auth token" in output_lower:
+            return ToolStatus.AUTH_REQUIRED.value
 
-        if "error" in output_lower or "failed" in output_lower: #
-            if not issues and "found 0 vulnerabilities" not in output_lower: # Snyk says "found 0 vulnerabilities" on success #
-                return ToolStatus.ERROR.value #
-            else: #
-                return ToolStatus.ISSUES_WITH_ERRORS.value.format(count=len(issues)) #
+        error_indicators = ["error", "failed", "exception", "traceback"]
+        has_error = any(indicator in output_lower for indicator in error_indicators)
+        
+        if has_error and not issues and "found 0 vulnerabilities" not in output_lower:
+            return ToolStatus.ERROR.value
+        elif has_error and issues:
+            return ToolStatus.ISSUES_WITH_ERRORS.value.format(count=len(issues))
 
+        if issues:
+            return ToolStatus.ISSUES_FOUND.value.format(count=len(issues))
 
-        if issues: #
-            return ToolStatus.ISSUES_FOUND.value.format(count=len(issues)) #
+        return ToolStatus.SUCCESS.value
 
-        return ToolStatus.SUCCESS.value #
-
-    def _find_application_path(self, model: str, app_num: int) -> Optional[Path]: #
+    def _find_application_path(self, model: str, app_num: int) -> Optional[Path]:
         """Find the application directory path for a specific model and app number."""
-        logger.debug(f"Finding application path for {model}/app{app_num}") #
-        # Prioritize `models` subdirectory at the same level as the script's parent (workspace root)
-        workspace_root = self.base_path.parent #
-        base_app_dir = workspace_root / "models" / model / f"app{app_num}" #
+        logger.debug(f"Finding application path for {model}/app{app_num}")
+        
+        # Prioritize `models` subdirectory at the same level as the script's parent
+        workspace_root = self.base_path.parent
+        base_app_dir = workspace_root / "models" / model / f"app{app_num}"
 
+        if not base_app_dir.is_dir():
+            # Fallback to base_path
+            base_app_dir = self.base_path / "models" / model / f"app{app_num}"
+            if not base_app_dir.is_dir():
+                logger.error(f"Base application directory not found: {base_app_dir}")
+                return None
 
-        if not base_app_dir.is_dir(): #
-            # Fallback to base_path if the above doesn't exist (e.g. if base_path is already workspace_root)
-            base_app_dir = self.base_path / "models" / model / f"app{app_num}" #
-            if not base_app_dir.is_dir(): #
-                logger.error(f"Base application directory not found at either preferred or fallback location: {base_app_dir}") #
-                return None #
+        # Security check
+        if not validate_path_security(self.base_path.parent, base_app_dir):
+            logger.error(f"Security violation: {base_app_dir} is outside allowed paths")
+            return None
 
+        # Check for frontend directories
+        candidates_rel = ["frontend", "client", "web", "."]
+        frontend_markers = ["package.json", "vite.config.js", "webpack.config.js", 
+                          "angular.json", "svelte.config.js", "next.config.js"]
 
-        candidates_rel = ["frontend", "client", "web", "."] # "." means base_app_dir itself #
+        for rel_dir in candidates_rel:
+            candidate = (base_app_dir / rel_dir).resolve()
+            if candidate.is_dir() and any((candidate / marker).exists() for marker in frontend_markers):
+                logger.info(f"Identified frontend application directory: {candidate}")
+                return candidate
 
-        for rel_dir in candidates_rel: #
-            candidate = (base_app_dir / rel_dir).resolve() #
-            if candidate.is_dir(): #
-                # Check for common frontend markers
-                if (candidate / "package.json").exists() or \
-                   any((candidate / f).exists() for f in ["vite.config.js", "webpack.config.js", "angular.json", "svelte.config.js", "next.config.js"]): #
-                    logger.info(f"Identified frontend application directory: {candidate}") #
-                    return candidate #
+        logger.warning(f"No specific frontend directory found in {base_app_dir}, using base directory")
+        return base_app_dir
 
-        logger.warning(f"Could not reliably identify a specific frontend subdirectory within {base_app_dir}. " #
-                       f"Proceeding with analysis on {base_app_dir} itself, but results may vary.") #
-        return base_app_dir #
-
-
-    def _check_source_files(self, directory: Path, file_exts: Optional[Tuple[str, ...]] = None) -> Tuple[bool, List[str]]: #
+    def _check_source_files(self, directory: Path, file_exts: Optional[Tuple[str, ...]] = None) -> Tuple[bool, List[str]]:
         """Check for frontend source files in the given directory."""
-        if not directory.is_dir(): #
-            logger.warning(f"Directory does not exist or is not a directory: {directory}") #
-            return False, [] #
+        if not directory.is_dir():
+            logger.warning(f"Directory does not exist or is not a directory: {directory}")
+            return False, []
 
-        exts = file_exts or (".js", ".jsx", ".ts", ".tsx", ".vue", ".svelte", ".html", ".css") #
-        excluded_dirs = {"node_modules", ".git", "dist", "build", "coverage", "vendor", "bower_components"} #
-        found_files: List[str] = [] #
+        exts = file_exts or FRONTEND_EXTENSIONS
+        found_files: List[str] = []
 
         try:
-            for root, dirs, files in os.walk(directory, topdown=True): #
-                # Modify dirs in-place to skip excluded directories
-                dirs[:] = [d for d in dirs if d not in excluded_dirs] #
+            for root, dirs, files in os.walk(directory, topdown=True):
+                # Skip excluded directories
+                dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
 
-                for file in files: #
-                    if file.endswith(exts): #
-                        found_files.append(os.path.join(root, file)) #
+                for file in files:
+                    if file.endswith(exts):
+                        file_path = Path(root) / file
+                        # Security check
+                        if validate_path_security(directory, file_path):
+                            found_files.append(str(file_path))
 
-            count = len(found_files) #
-            logger.info(f"Found {count} frontend source files in {directory}") #
-            return count > 0, found_files #
-        except Exception as e: #
-            logger.error(f"Error checking source files in {directory}: {e}") #
-            return False, [] #
+            count = len(found_files)
+            logger.info(f"Found {count} frontend source files in {directory}")
+            return count > 0, found_files
+            
+        except (OSError, PermissionError) as e:
+            logger.error(f"Error checking source files in {directory}: {e}")
+            return False, []
 
-
-    def _run_frontend_tool( #
+    def _run_frontend_tool(
         self,
-        tool_name: str, #
-        base_command: str, # e.g., "npm", "npx", "snyk" #
-        args: List[str], #
-        working_directory: Path, #
-        parser: Optional[Callable[[str], List[SecurityIssue]]] = None, #
-        input_data: Optional[str] = None, #
-        timeout: int = TOOL_TIMEOUT #
-    ) -> Tuple[List[SecurityIssue], str]: # Returns issues and raw_output #
+        tool_name: str,
+        base_command: str,
+        args: List[str],
+        working_directory: Path,
+        parser: Optional[Callable[[str], List[SecurityIssue]]] = None,
+        input_data: Optional[str] = None,
+        timeout: int = TOOL_TIMEOUT
+    ) -> Tuple[List[SecurityIssue], str]:
         """Run a frontend security analysis tool and parse its output."""
-        issues: List[SecurityIssue] = [] #
-        raw_output = f"{tool_name} execution failed." #
+        issues: List[SecurityIssue] = []
+        raw_output = f"{tool_name} execution failed."
 
-        executable_path = get_executable_path(base_command) #
-        if not executable_path: #
-            raw_output = f"{tool_name} command ('{base_command}') not found in PATH." #
-            logger.error(raw_output) #
-            return issues, raw_output #
+        executable_path = get_executable_path(base_command)
+        if not executable_path:
+            raw_output = f"{tool_name} command ('{base_command}') not found in PATH."
+            logger.error(raw_output)
+            return issues, raw_output
 
-        command = [executable_path] + args #
-        logger.info(f"[{tool_name}] Attempting to run: {' '.join(command)} in '{working_directory}'") #
+        command = [executable_path] + args
+        logger.info(f"[{tool_name}] Running: {' '.join(command)} in '{working_directory}'")
 
         try:
-            proc = subprocess.run( #
-                command, #
-                cwd=str(working_directory), # Ensure cwd is a string #
-                capture_output=True, #
-                text=True, # Get output as string #
-                timeout=timeout, #
-                check=False, # Don't raise exception for non-zero exit codes #
-                encoding='utf-8', # Specify encoding #
-                errors='replace' # Handle encoding errors gracefully #
+            proc = subprocess.run(
+                command,
+                cwd=str(working_directory),
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                check=False,
+                encoding='utf-8',
+                errors='replace'
             )
-            logger.info(f"[{tool_name}] Subprocess finished with return code: {proc.returncode}") #
-            raw_output = f"STDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}" #
+            logger.info(f"[{tool_name}] Process finished with return code: {proc.returncode}")
+            raw_output = f"STDOUT:\n{proc.stdout}\nSTDERR:\n{proc.stderr}"
 
+            if proc.returncode != 0 and proc.stderr:
+                self._log_tool_error(tool_name, proc.returncode, proc.stderr)
 
-            if proc.returncode != 0 and proc.stderr: #
-                stderr_lower = proc.stderr.lower() #
-                if "command not found" in stderr_lower or "not recognized" in stderr_lower: #
-                    logger.error(f"{tool_name} execution failed: Command likely not found or inner command failed. Stderr: {proc.stderr}") #
-                elif "authenticate" in stderr_lower or "auth token" in stderr_lower: #
-                    logger.error(f"{tool_name} execution failed: Authentication required.") #
-                    raw_output += "\nERROR_NOTE: Authentication required." #
-                else: #
-                    logger.warning(f"{tool_name} exited with code {proc.returncode}. Stderr: {proc.stderr}") #
-
-
-            if parser and proc.stdout: #
-                logger.debug(f"[{tool_name}] Attempting to parse stdout...") #
+            if parser and proc.stdout:
                 try:
-                    issues = parser(proc.stdout) #
-                    logger.info(f"{tool_name} found {len(issues)} issues via parser.") #
-                except Exception as e: #
-                    logger.error(f"Failed to parse {tool_name} output: {e}\nOutput:\n{proc.stdout[:500]}...") #
-                    raw_output += f"\nPARSING_ERROR: {str(e)}" #
-            elif proc.stdout: # Log if there's output but no parser #
-                logger.debug(f"[{tool_name}] No parser provided or stdout empty, skipping parsing.") #
+                    issues = parser(proc.stdout)
+                    logger.info(f"{tool_name} found {len(issues)} issues")
+                except (ValueError, KeyError, AttributeError) as e:
+                    logger.error(f"Failed to parse {tool_name} output: {e}")
+                    raw_output += f"\nPARSING_ERROR: {str(e)}"
 
+        except subprocess.TimeoutExpired:
+            logger.error(f"{tool_name} timed out after {timeout} seconds")
+            raw_output = f"{tool_name} timed out after {timeout} seconds"
+        except FileNotFoundError:
+            logger.error(f"{tool_name} executable '{executable_path}' not found")
+            raw_output = f"{tool_name} executable not found: {executable_path}"
+        except OSError as e:
+            logger.error(f"OS error running {tool_name}: {e}")
+            raw_output = f"OS error running {tool_name}: {str(e)}"
 
-        except subprocess.TimeoutExpired: #
-            logger.error(f"{tool_name} timed out after {timeout} seconds.") #
-            raw_output = f"{tool_name} timed out after {timeout} seconds." #
-        except FileNotFoundError: # Should be caught by get_executable_path, but as a fallback #
-            logger.error(f"{tool_name} executable '{executable_path}' not found during run (unexpected).") #
-            raw_output = f"{tool_name} executable not found during run: {executable_path}" #
-        except Exception as e: #
-            logger.exception(f"An unexpected error occurred while running {tool_name}: {e}") #
-            raw_output = f"Unexpected error running {tool_name}: {str(e)}" #
+        return issues, raw_output
 
-        return issues, raw_output #
+    def _log_tool_error(self, tool_name: str, return_code: int, stderr: str):
+        """Log tool-specific error messages."""
+        stderr_lower = stderr.lower()
+        
+        if "command not found" in stderr_lower or "not recognized" in stderr_lower:
+            logger.error(f"{tool_name} command not found or inner command failed")
+        elif "authenticate" in stderr_lower or "auth token" in stderr_lower:
+            logger.error(f"{tool_name} authentication required")
+        else:
+            logger.warning(f"{tool_name} exited with code {return_code}: {stderr[:200]}")
 
-    def _parse_npm_audit(self, stdout: str) -> List[SecurityIssue]: #
+    def _parse_npm_audit(self, stdout: str) -> List[SecurityIssue]:
         """Parse npm audit JSON output into SecurityIssue objects."""
-        issues: List[SecurityIssue] = [] #
-        audit_data = safe_json_loads(stdout.strip()) #
-        if not audit_data: #
-            logger.warning("npm audit: Failed to parse JSON data or output was empty.") #
-            return issues #
+        issues: List[SecurityIssue] = []
+        audit_data = safe_json_loads(stdout.strip())
+        
+        if not audit_data or not isinstance(audit_data, dict):
+            logger.warning("npm audit: Invalid or empty JSON data")
+            return issues
 
-        vulnerabilities = {} #
-        if isinstance(audit_data, dict): #
-            # npm v6 format
-            if "vulnerabilities" in audit_data: #
-                vulnerabilities = audit_data["vulnerabilities"] #
-            # npm v7+ format
-            elif "advisories" in audit_data: # This is how npm v7+ structures it #
-                vulnerabilities = audit_data["advisories"] #
+        # Handle both npm v6 and v7+ formats
+        vulnerabilities = audit_data.get("vulnerabilities", audit_data.get("advisories", {}))
+        
+        if not vulnerabilities:
+            logger.info("npm audit: No vulnerabilities found")
+            return issues
 
+        for key, vuln_info in vulnerabilities.items():
+            if not isinstance(vuln_info, dict):
+                continue
 
-        if not vulnerabilities: #
-            logger.info("npm audit: No vulnerabilities found in JSON.") #
-            return issues #
+            issue = self._create_npm_audit_issue(key, vuln_info)
+            if issue:
+                issues.append(issue)
 
+        return issues
 
-        for key, vuln_info in vulnerabilities.items(): #
-            if not isinstance(vuln_info, dict): continue #
+    def _create_npm_audit_issue(self, key: str, vuln_info: Dict[str, Any]) -> Optional[SecurityIssue]:
+        """Create a SecurityIssue from npm audit vulnerability data."""
+        severity_str = vuln_info.get("severity", "info")
+        name = vuln_info.get("name", vuln_info.get("module_name", key))
+        version = vuln_info.get("range", vuln_info.get("vulnerable_versions", "N/A"))
+        title = vuln_info.get("title", "N/A")
+        
+        # Extract title from nested structure if present
+        via = vuln_info.get("via", [])
+        if isinstance(via, list) and via and isinstance(via[0], dict):
+            title = via[0].get("title", title)
 
-            severity_str = vuln_info.get("severity", "info") #
-            name = vuln_info.get("name", vuln_info.get("module_name", key)) # module_name for npm v7+ #
-            version = vuln_info.get("range", vuln_info.get("vulnerable_versions", "N/A")) #
-            title = vuln_info.get("title", "N/A") #
-            fix_text = vuln_info.get("recommendation", "Review advisory") #
+        # Determine fix suggestion
+        fix_text = self._get_npm_fix_suggestion(vuln_info, name)
+        
+        severity = SEVERITY_MAP.get(severity_str.lower(), "LOW")
+        
+        return SecurityIssue(
+            filename="package-lock.json",
+            line_number=0,
+            issue_text=f"{title} (Package: {name}, Version(s): {version})",
+            severity=severity,
+            confidence="HIGH",
+            issue_type=f"dependency_vuln_{name}",
+            line_range=[0],
+            code=f"{name}@{version}",
+            tool=TOOL_NPM_AUDIT,
+            fix_suggestion=fix_text
+        )
 
-            # Try to get a more specific title if nested
-            if isinstance(vuln_info.get("via"), list) and vuln_info["via"]: #
-                if isinstance(vuln_info["via"][0], dict): # Check if first item is a dict #
-                    title = vuln_info["via"][0].get("title", title) #
+    def _get_npm_fix_suggestion(self, vuln_info: Dict[str, Any], package_name: str) -> str:
+        """Generate fix suggestion for npm vulnerability."""
+        fix_available = vuln_info.get("fixAvailable")
+        
+        if isinstance(fix_available, dict):
+            fix_version = fix_available.get("version")
+            if fix_version:
+                return f"Update {package_name} to version {fix_version}"
+        elif fix_available is False:
+            return "No simple fix available via `npm audit fix`"
+        elif fix_available is True:
+            return "Fix available via `npm audit fix`"
+        
+        return vuln_info.get("recommendation", "Review advisory")
 
-
-            fix_available = vuln_info.get("fixAvailable", None) #
-            if isinstance(fix_available, dict): # npm v7+ often has fixAvailable as an object #
-                fix_ver = fix_available.get("version") #
-                if fix_ver : fix_text = f"Update {name} to version {fix_ver}" #
-            elif fix_available is False: #
-                fix_text = "No simple fix available via `npm audit fix`" #
-            elif fix_available is True: # npm v6 #
-                 fix_text = "Fix available via `npm audit fix`" #
-
-
-            severity = SEVERITY_MAP.get(severity_str, "LOW") #
-            issues.append(SecurityIssue( #
-                filename="package-lock.json", line_number=0, #
-                issue_text=f"{title} (Package: {name}, Version(s): {version})", #
-                severity=severity, confidence="HIGH", #
-                issue_type=f"dependency_vuln_{name}", line_range=[0], #
-                code=f"{name}@{version}", tool="npm-audit", fix_suggestion=fix_text #
-            ))
-        return issues #
-
-    def _parse_eslint(self, stdout: str) -> List[SecurityIssue]: #
+    def _parse_eslint(self, stdout: str) -> List[SecurityIssue]:
         """Parse ESLint JSON output into SecurityIssue objects."""
-        issues: List[SecurityIssue] = [] #
-        parsed = safe_json_loads(stdout.strip()) # safe_json_loads handles potential BOM #
-        if not isinstance(parsed, list): #
-            logger.warning(f"ESLint: Expected a list from JSON output, got {type(parsed)}. Cannot parse.") #
-            return issues #
+        issues: List[SecurityIssue] = []
+        parsed = safe_json_loads(stdout.strip())
+        
+        if not isinstance(parsed, list):
+            logger.warning(f"ESLint: Expected list, got {type(parsed)}")
+            return issues
 
-        security_patterns = ["security", "inject", "prototype", "csrf", "xss", "sanitize", "escape", "auth", "unsafe", "exploit", "vuln"] #
-        for file_result in parsed: #
-            if not isinstance(file_result, dict): continue #
+        security_patterns = {"security", "inject", "prototype", "csrf", "xss", 
+                           "sanitize", "escape", "auth", "unsafe", "exploit", "vuln"}
 
-            file_path = file_result.get("filePath", "unknown") #
-            # Normalize path for consistency (eslint might give absolute paths)
-            rel_path = os.path.normpath(file_path) # Keeps it relative if already relative #
+        for file_result in parsed:
+            if not isinstance(file_result, dict):
+                continue
 
+            file_path = Path(file_result.get("filePath", "unknown"))
+            messages = file_result.get("messages", [])
+            
+            for msg in messages:
+                if not isinstance(msg, dict):
+                    continue
+                
+                issue = self._create_eslint_issue(file_path, msg, security_patterns)
+                if issue:
+                    issues.append(issue)
 
-            for msg in file_result.get("messages", []): #
-                if not isinstance(msg, dict): continue #
+        return issues
 
-                is_fatal = msg.get("fatal", False) #
-                line_num = msg.get("line", 0) #
-                severity_value = msg.get("severity", 1) # 0:off, 1:warn, 2:error #
-                rule_id = msg.get("ruleId", "parsing_error" if is_fatal else "unknown_rule") #
-                message = msg.get("message", "Unknown issue") #
+    def _create_eslint_issue(self, file_path: Path, msg: Dict[str, Any], security_patterns: Set[str]) -> Optional[SecurityIssue]:
+        """Create a SecurityIssue from ESLint message data."""
+        is_fatal = msg.get("fatal", False)
+        line_num = msg.get("line", 0)
+        severity_value = msg.get("severity", 1)
+        rule_id = msg.get("ruleId", "parsing_error" if is_fatal else "unknown_rule")
+        message = msg.get("message", "Unknown issue")
 
-                severity = "HIGH" if severity_value >= 2 or is_fatal else "MEDIUM" #
-                confidence = "HIGH" if is_fatal else "MEDIUM" #
-                issue_type = rule_id #
+        # Determine severity
+        severity = "HIGH" if severity_value >= 2 or is_fatal else "MEDIUM"
+        confidence = "HIGH" if is_fatal else "MEDIUM"
 
+        # Check for security-related patterns
+        combined_text = f"{rule_id} {message}".lower()
+        if any(pattern in combined_text for pattern in security_patterns):
+            severity = "HIGH"
 
-                # Boost severity if security-related keywords are present
-                rule_id_str = str(rule_id).lower() if rule_id else "" #
-                message_str = str(message).lower() #
-                if any(pattern in rule_id_str or pattern in message_str for pattern in security_patterns): #
-                    if severity != "HIGH": # Don't downgrade if already high #
-                        severity = "HIGH" #
+        fix_suggestion = None
+        if "fix" in msg and isinstance(msg["fix"], dict):
+            fix_suggestion = msg["fix"].get("text")
 
+        return SecurityIssue(
+            filename=str(file_path),
+            line_number=line_num,
+            issue_text=f"[{rule_id}] {message}",
+            severity=severity,
+            confidence=confidence,
+            issue_type=rule_id,
+            line_range=[line_num],
+            code=msg.get("source", "N/A"),
+            tool=TOOL_ESLINT,
+            fix_suggestion=fix_suggestion
+        )
 
-                issues.append(SecurityIssue( #
-                    filename=rel_path, line_number=line_num, issue_text=f"[{rule_id}] {message}", #
-                    severity=severity, confidence=confidence, issue_type=issue_type, #
-                    line_range=[line_num], code=msg.get("source", "N/A"), # source might not always be present #
-                    tool="eslint", fix_suggestion=msg.get("fix", {}).get("text") #
-                ))
-        return issues #
-
-    def _parse_jshint(self, stdout: str) -> List[SecurityIssue]: #
+    def _parse_jshint(self, stdout: str) -> List[SecurityIssue]:
         """Parse JSHint XML output into SecurityIssue objects."""
-        issues: List[SecurityIssue] = [] #
+        issues: List[SecurityIssue] = []
+        
         try:
-            root = ET.fromstring(stdout.strip()) # XML output #
-            security_keywords = ["eval", "function(", "settimeout", "setinterval", "innerhtml", "document.write", "prototype", "constructor", "unsafe"] #
-            security_codes = ["W054", "W061"] # 'Function' constructor, 'eval' #
+            root = ET.fromstring(stdout.strip())
+        except ET.ParseError as e:
+            logger.error(f"JSHint: Failed to parse XML: {e}")
+            return issues
 
+        security_keywords = {"eval", "function(", "settimeout", "setinterval", 
+                           "innerhtml", "document.write", "prototype", "constructor", "unsafe"}
+        security_codes = {"W054", "W061"}
 
-            for file_elem in root.findall("file"): #
-                file_path = file_elem.get("name", "unknown") #
-                rel_path = os.path.normpath(file_path) #
+        for file_elem in root.findall("file"):
+            file_path = Path(file_elem.get("name", "unknown"))
+            
+            for error in file_elem.findall("error"):
+                issue = self._create_jshint_issue(file_path, error, security_keywords, security_codes)
+                if issue:
+                    issues.append(issue)
 
-                for error in file_elem.findall("error"): #
-                    line = int(error.get("line", 0)) #
-                    message = error.get("message", "Unknown JSHint issue") #
-                    source_code = error.get("code", "") # 'code' attribute is JSHint error code like W033 #
+        return issues
 
-                    is_security = source_code in security_codes or \
-                                  any(keyword.lower() in message.lower() for keyword in security_keywords) #
+    def _create_jshint_issue(self, file_path: Path, error_elem: ET.Element, 
+                           security_keywords: Set[str], security_codes: Set[str]) -> Optional[SecurityIssue]:
+        """Create a SecurityIssue from JSHint error element."""
+        line = int(error_elem.get("line", 0))
+        message = error_elem.get("message", "Unknown JSHint issue")
+        source_code = error_elem.get("code", "")
 
+        # Check if security-related
+        message_lower = message.lower()
+        is_security = (source_code in security_codes or 
+                      any(keyword in message_lower for keyword in security_keywords))
 
-                    # Default severity/confidence
-                    severity = "LOW"; confidence = "MEDIUM" #
-                    issue_type = f"jshint_{source_code}" if source_code else "jshint_unknown" #
+        # Determine severity
+        if source_code.startswith('E'):
+            severity = "HIGH"
+            confidence = "HIGH"
+        elif source_code.startswith('W'):
+            severity = "HIGH" if is_security else "MEDIUM"
+            confidence = "HIGH" if source_code in security_codes else "MEDIUM"
+        else:
+            severity = "LOW"
+            confidence = "MEDIUM"
 
+        issue_type = f"jshint_security_{source_code}" if is_security else f"jshint_{source_code}"
 
-                    if source_code.startswith('E'): # JSHint Errors #
-                        severity = "HIGH"; confidence = "HIGH" #
-                    elif source_code.startswith('W'): # JSHint Warnings #
-                        severity = "MEDIUM" #
+        return SecurityIssue(
+            filename=str(file_path),
+            line_number=line,
+            issue_text=f"[{source_code}] {message}",
+            severity=severity,
+            confidence=confidence,
+            issue_type=issue_type,
+            line_range=[line],
+            code="N/A (Check file)",
+            tool=TOOL_JSHINT,
+            fix_suggestion="Review code for security implications." if is_security else "Review code."
+        )
 
-                    if is_security: #
-                        severity = "HIGH" # Elevate security-related warnings #
-                        confidence = "HIGH" if source_code in security_codes else "MEDIUM" #
-                        issue_type = f"jshint_security_{source_code}" if source_code else "jshint_security_concern" #
-
-
-                    issues.append(SecurityIssue( #
-                        filename=rel_path, line_number=line, issue_text=f"[{source_code}] {message}", #
-                        severity=severity, confidence=confidence, issue_type=issue_type, #
-                        line_range=[line], code="N/A (Check file)", tool="jshint", # JSHint XML doesn't provide the code line #
-                        fix_suggestion="Review code." #
-                    ))
-        except ET.ParseError as e_xml: #
-            logger.error(f"JSHint: Failed to parse XML output: {e_xml}") #
-        except Exception as e_proc: # Catch other potential errors during processing #
-            logger.error(f"JSHint: Error processing XML output: {e_proc}") #
-        return issues #
-
-    def _parse_snyk(self, stdout: str) -> List[SecurityIssue]: #
+    def _parse_snyk(self, stdout: str) -> List[SecurityIssue]:
         """Parse Snyk JSON output into SecurityIssue objects."""
-        issues: List[SecurityIssue] = [] #
-        snyk_data = safe_json_loads(stdout.strip()) #
-        if not snyk_data: #
-            logger.warning("Snyk: Failed to parse JSON data or output was empty.") #
-            return issues #
+        issues: List[SecurityIssue] = []
+        snyk_data = safe_json_loads(stdout.strip())
+        
+        if not snyk_data:
+            logger.warning("Snyk: Invalid or empty JSON data")
+            return issues
 
-        vulnerabilities = [] #
-        if isinstance(snyk_data, dict): # Single project scan #
-            vulnerabilities = snyk_data.get("vulnerabilities", []) #
-        elif isinstance(snyk_data, list): # Multi-project scan #
-            for project in snyk_data: #
-                if isinstance(project, dict): #
-                    vulnerabilities.extend(project.get("vulnerabilities", [])) #
+        vulnerabilities = self._extract_snyk_vulnerabilities(snyk_data)
+        
+        for vuln in vulnerabilities:
+            if not isinstance(vuln, dict):
+                continue
+            
+            issue = self._create_snyk_issue(vuln)
+            if issue:
+                issues.append(issue)
 
+        return issues
 
-        if not vulnerabilities: #
-            logger.info("Snyk: No vulnerabilities found in JSON.") #
-            return issues #
+    def _extract_snyk_vulnerabilities(self, snyk_data: Union[dict, list]) -> List[Dict[str, Any]]:
+        """Extract vulnerabilities from Snyk data structure."""
+        vulnerabilities = []
+        
+        if isinstance(snyk_data, dict):
+            vulnerabilities = snyk_data.get("vulnerabilities", [])
+        elif isinstance(snyk_data, list):
+            for project in snyk_data:
+                if isinstance(project, dict):
+                    vulnerabilities.extend(project.get("vulnerabilities", []))
+        
+        return vulnerabilities
 
-        for vuln in vulnerabilities: #
-            if not isinstance(vuln, dict): continue #
+    def _create_snyk_issue(self, vuln: Dict[str, Any]) -> Optional[SecurityIssue]:
+        """Create a SecurityIssue from Snyk vulnerability data."""
+        severity = SEVERITY_MAP.get(vuln.get("severity", "low"), "LOW")
+        from_chain = vuln.get("from", ["unknown_dependency"])
+        filename = from_chain[0] if from_chain else "dependency_tree"
+        
+        fix_suggestion = self._get_snyk_fix_suggestion(vuln)
+        
+        package_name = vuln.get("packageName", "N/A")
+        version = vuln.get("version", "N/A")
+        vuln_id = vuln.get("id", "N/A")
+        title = vuln.get("title", "N/A")
+        
+        return SecurityIssue(
+            filename=filename,
+            line_number=0,
+            issue_text=f"{title} ({package_name}@{version}) - ID: {vuln_id}",
+            severity=severity,
+            confidence="HIGH",
+            issue_type=f"snyk_vuln_{vuln_id}",
+            line_range=[0],
+            code=f"{package_name}@{version}",
+            tool=TOOL_SNYK,
+            fix_suggestion=fix_suggestion
+        )
 
-            severity = SEVERITY_MAP.get(vuln.get("severity", "low"), "LOW") #
-            # 'from' is the dependency chain, first element is the direct dependency
-            from_chain = vuln.get("from", ["unknown_dependency"]) #
-            filename = from_chain[0] if from_chain else "dependency_tree" # Report against the direct dep #
+    def _get_snyk_fix_suggestion(self, vuln: Dict[str, Any]) -> str:
+        """Generate fix suggestion for Snyk vulnerability."""
+        if vuln.get("isUpgradable", False):
+            upgrade_path = vuln.get("upgradePath", [])
+            if upgrade_path and isinstance(upgrade_path[0], str):
+                return f"Upgrade direct dependency: {upgrade_path[0]}"
+        elif vuln.get("isPatchable", False):
+            return "Patch available via `snyk wizard` or review Snyk report."
+        
+        return "Review Snyk report for remediation details."
 
-            fix_suggestion = "Review Snyk report for remediation details." #
-            if vuln.get("isUpgradable", False): #
-                upgrade_path = vuln.get("upgradePath", []) # Path to upgrade direct dependency #
-                if upgrade_path and isinstance(upgrade_path[0], str): # Ensure it's a string #
-                    fix_suggestion = f"Upgrade direct dependency: {upgrade_path[0]}" #
-            elif vuln.get("isPatchable", False): #
-                fix_suggestion = "Patch available via `snyk wizard` or review Snyk report." #
-
-
-            issues.append(SecurityIssue( #
-                filename=filename, line_number=0, # Line number not applicable for dep vulns #
-                issue_text=f"{vuln.get('title', 'N/A')} ({vuln.get('packageName', 'N/A')}@{vuln.get('version', 'N/A')}) - ID: {vuln.get('id', 'N/A')}", #
-                severity=severity, confidence="HIGH", issue_type=f"snyk_vuln_{vuln.get('id', 'N/A')}", #
-                line_range=[0], code=f"{vuln.get('packageName', 'N/A')}@{vuln.get('version', 'N/A')}", #
-                tool="snyk", fix_suggestion=fix_suggestion #
-            ))
-        return issues #
-
-    def _run_tool_with_setup( #
+    def _run_tool_with_setup(
         self,
-        tool_name: str, #
-        app_path: Path, #
-        setup_func: Callable[[Path], Tuple[List[str], Optional[Dict], Optional[str]]], #
-        parser_func: Callable[[str], List[SecurityIssue]] #
-    ) -> Tuple[List[SecurityIssue], Dict[str, str], str]: #
+        tool_name: str,
+        app_path: Path,
+        setup_func: Callable[[Path], Tuple[List[str], Optional[Dict], Optional[str]]],
+        parser_func: Callable[[str], List[SecurityIssue]]
+    ) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
         """Generic method to run a tool with customized setup."""
-        status = {tool_name: ToolStatus.NOT_RUN.value} #
-        raw_output = "" #
+        status = {tool_name: ToolStatus.NOT_RUN.value}
+        raw_output = ""
 
         try:
-            args, config_dict, input_data = setup_func(app_path) # config_dict is for runner, not tool config file #
-            if not args: # Setup indicated tool should be skipped (e.g. no files) #
-                # The status should have been set by setup_func if skipping
-                # but ensure it's something if not.
-                if "status" in config_dict: # type: ignore #
-                    status[tool_name] = config_dict["status"] # type: ignore #
-                else: #
-                    status[tool_name] = ToolStatus.SKIPPED.value #
-                raw_output = config_dict.get("output", "") if config_dict else "" # type: ignore #
-                return [], status, raw_output #
+            args, config_dict, input_data = setup_func(app_path)
+            if not args:
+                status[tool_name] = config_dict.get("status", ToolStatus.SKIPPED.value) if config_dict else ToolStatus.SKIPPED.value
+                raw_output = config_dict.get("output", "") if config_dict else ""
+                return [], status, raw_output
 
-            timeout = self.tool_configs.get(tool_name, {}).get("timeout", TOOL_TIMEOUT) #
-            command = args[0] # e.g. "npm", "npx" #
-            command_args = args[1:] #
+            timeout = self.tool_configs.get(tool_name, {}).get("timeout", TOOL_TIMEOUT)
+            command = args[0]
+            command_args = args[1:]
 
-            issues, tool_output = self._run_frontend_tool( #
-                tool_name, command, command_args, app_path, #
-                parser=parser_func, input_data=input_data, #
-                timeout=timeout #
+            issues, tool_output = self._run_frontend_tool(
+                tool_name, command, command_args, app_path,
+                parser=parser_func, input_data=input_data,
+                timeout=timeout
             )
-            raw_output = tool_output #
-            status[tool_name] = self._determine_tool_status(tool_name, issues, raw_output) #
+            raw_output = tool_output
+            status[tool_name] = self._determine_tool_status(tool_name, issues, raw_output)
 
-        except Exception as exc: #
-            status[tool_name] = f"❌ Failed: {exc}" #
-            raw_output = f"{tool_name} runner failed: {exc}" #
-            logger.exception(f"Error running {tool_name}: {exc}") #
+        except Exception as exc:
+            status[tool_name] = f"❌ Failed: {exc}"
+            raw_output = f"{tool_name} runner failed: {exc}"
+            logger.exception(f"Error running {tool_name}: {exc}")
 
-        return issues, status, raw_output #
+        return issues, status, raw_output
 
+    def _setup_npm_audit(self, app_path: Path) -> Tuple[List[str], Optional[Dict], Optional[str]]:
+        """Setup npm audit command."""
+        package_json_path = app_path / "package.json"
+        package_lock_path = app_path / "package-lock.json"
 
-    def _setup_npm_audit(self, app_path: Path) -> Tuple[List[str], Optional[Dict], Optional[str]]: #
-        package_json_path = app_path / "package.json" #
-        package_lock_path = app_path / "package-lock.json" #
+        if not package_json_path.exists():
+            msg = f"No package.json found in {app_path}"
+            logger.warning(msg)
+            return [], {"status": ToolStatus.NO_FILES.value, "output": msg}, None
 
-        if not package_json_path.exists(): #
-            msg = f"No package.json found in {app_path}, skipping npm-audit." #
-            logger.warning(msg) #
-            return [], {"status": ToolStatus.NO_FILES.value, "output": msg }, None # type: ignore #
-
-        raw_output = "" #
-        # Attempt to generate package-lock.json if it doesn't exist
-        if not package_lock_path.exists(): #
-            logger.info(f"No package-lock.json found in {app_path}, generating one...") #
-            # Use --package-lock-only to avoid modifying node_modules, --ignore-scripts for security
-            init_args = ["npm", "install", "--package-lock-only", "--ignore-scripts", "--no-audit"] #
-            _, init_output = self._run_frontend_tool( #
-                "npm-install", "npm", init_args[1:], app_path, timeout=120 # Longer timeout for install #
+        # Generate package-lock.json if missing
+        if not package_lock_path.exists():
+            logger.info(f"Generating package-lock.json in {app_path}")
+            init_args = ["npm", "install", "--package-lock-only", "--ignore-scripts", "--no-audit"]
+            _, init_output = self._run_frontend_tool(
+                "npm-install", "npm", init_args[1:], app_path, timeout=120
             )
-            raw_output = f"--- npm install --package-lock-only ---\n{init_output}\n--- End npm install ---\n\n" #
-            if not package_lock_path.exists(): #
-                logger.warning("Failed to generate package-lock.json. Audit may be inaccurate.") #
-                raw_output += "WARNING: Failed to generate package-lock.json.\n" #
+            if not package_lock_path.exists():
+                logger.warning("Failed to generate package-lock.json")
 
+        return ["npm", "audit", "--json"], None, None
 
-        return ["npm", "audit", "--json"], None, None #
+    def _setup_eslint(self, app_path: Path) -> Tuple[List[str], Optional[Dict], Optional[str]]:
+        """Setup ESLint command."""
+        has_files, _ = self._check_source_files(app_path)
+        if not has_files:
+            msg = f"No relevant frontend files found in {app_path}"
+            logger.warning(msg)
+            return [], {"status": ToolStatus.NO_FILES.value, "output": msg}, None
 
+        scan_dir = "src" if (app_path / "src").is_dir() else "."
+        logger.info(f"ESLint will scan '{scan_dir}' within {app_path}")
 
-    def _setup_eslint(self, app_path: Path) -> Tuple[List[str], Optional[Dict], Optional[str]]: #
-        has_files, _ = self._check_source_files(app_path) # Uses default exts #
-        if not has_files: #
-            msg = f"No relevant frontend files found in {app_path}, skipping eslint." #
-            logger.warning(msg) #
-            return [], {"status": ToolStatus.NO_FILES.value, "output": msg}, None # type: ignore #
+        args = ["npx", "eslint", "--ext", ".js,.jsx,.ts,.tsx,.vue,.svelte", 
+                "--format", "json", "--quiet"]
 
-        scan_dir = "src" if (app_path / "src").is_dir() else "." # Prefer src if exists #
-        logger.info(f"ESLint will scan '{scan_dir}' within {app_path}") #
+        # Check for existing ESLint config
+        eslint_configs = [".eslintrc.js", ".eslintrc.json", ".eslintrc.yaml", 
+                         ".eslintrc.yml", "eslint.config.js"]
+        project_config_exists = any((app_path / config).exists() for config in eslint_configs)
 
-        args = ["npx", "eslint", "--ext", ".js,.jsx,.ts,.tsx,.vue,.svelte", "--format", "json", "--quiet"] #
+        if project_config_exists:
+            logger.info(f"Using existing ESLint configuration in {app_path}")
+            args.append(scan_dir)
+            return args, None, None
+        else:
+            logger.info("No ESLint config found, will create temporary config")
+            return args, {"needs_temp_config": True, "scan_dir": scan_dir}, None
 
-        # Check for project ESLint config
-        project_config_exists = any((app_path / f).exists() for f in #
-                                  [".eslintrc.js", ".eslintrc.json", ".eslintrc.yaml", ".eslintrc.yml", "eslint.config.js"]) #
+    def _setup_jshint(self, app_path: Path) -> Tuple[List[str], Optional[Dict], Optional[str]]:
+        """Setup JSHint command."""
+        has_files, source_files = self._check_source_files(app_path, file_exts=JS_EXTENSIONS)
+        if not has_files:
+            msg = f"No JavaScript/JSX files found in {app_path}"
+            logger.warning(msg)
+            return [], {"status": ToolStatus.NO_FILES.value, "output": msg}, None
 
+        max_files = self.tool_configs.get(TOOL_JSHINT, {}).get("max_files", 30)
+        files_to_scan = source_files[:max_files]
+        files_to_scan_rel = [str(Path(f).relative_to(app_path)) for f in files_to_scan]
 
-        if project_config_exists: #
-            logger.info(f"Using existing ESLint configuration found in {app_path}") #
-            args.append(scan_dir) # Add scan_dir only when using existing config #
-            return args, None, None #
-        else: #
-            logger.info("No project ESLint config found, a basic temporary config will be created.") #
-            # Signal that a temp config is needed, pass scan_dir for context
-            return args, {"needs_temp_config": True, "scan_dir": scan_dir}, None #
+        if len(source_files) > max_files:
+            logger.warning(f"JSHint limited to first {max_files} files")
 
+        args = ["npx", "jshint", "--reporter=checkstyle"]
 
-    def _setup_jshint(self, app_path: Path) -> Tuple[List[str], Optional[Dict], Optional[str]]: #
-        has_files, source_files = self._check_source_files(app_path, file_exts=(".js", ".jsx")) #
-        if not has_files: #
-            msg = f"No JavaScript/JSX files found in {app_path}, skipping jshint." #
-            logger.warning(msg) #
-            return [], {"status": ToolStatus.NO_FILES.value, "output": msg}, None # type: ignore #
+        if (app_path / ".jshintrc").exists():
+            logger.info(f"Using existing JSHint config in {app_path}")
+            args.extend(["--config", ".jshintrc"] + files_to_scan_rel)
+            return args, None, None
+        else:
+            logger.info("No JSHint config found, will create temporary config")
+            return args, {"needs_temp_config": True, "files_to_scan": files_to_scan_rel}, None
 
-        js_files = [f for f in source_files if f.endswith(('.js', '.jsx'))] # Redundant check, but safe #
-        if not js_files: # Should be caught by has_files #
-            msg = f"No JavaScript/JSX files found in {app_path} after filtering, skipping jshint." #
-            logger.warning(msg) #
-            return [], {"status": ToolStatus.NO_FILES.value, "output": msg}, None # type: ignore #
+    def _setup_snyk(self, app_path: Path) -> Tuple[List[str], Optional[Dict], Optional[str]]:
+        """Setup Snyk command."""
+        if not (app_path / "package.json").exists():
+            msg = f"No package.json found in {app_path}"
+            logger.warning(msg)
+            return [], {"status": ToolStatus.NO_FILES.value, "output": msg}, None
 
-        max_jshint_files = self.tool_configs.get("jshint", {}).get("max_files", 30) #
-        files_to_scan_abs = js_files[:max_jshint_files] #
-        # JSHint expects relative paths from its CWD (app_path)
-        files_to_scan_rel = [os.path.relpath(f, str(app_path)) for f in files_to_scan_abs] #
+        return ["snyk", "test"], {"needs_temp_output": True}, None
 
-
-        if len(js_files) > max_jshint_files: #
-            logger.warning(f"JSHint analysis limited to the first {max_jshint_files} JS/JSX files found.") #
-
-        args = ["npx", "jshint", "--reporter=checkstyle"] # XML reporter #
-
-        project_jshintrc = app_path / ".jshintrc" #
-        if project_jshintrc.exists(): #
-            jshintrc_path_used = str(project_jshintrc) # Ensure it's a string for command line #
-            logger.info(f"Using existing project JSHint config: {jshintrc_path_used}") #
-            args.extend(["--config", jshintrc_path_used]) #
-            args.extend(files_to_scan_rel) #
-            return args, None, None #
-        else: #
-            logger.info("No project JSHint config found, a basic temporary config will be created.") #
-            # Signal that a temp config is needed, pass files_to_scan for context
-            return args, {"needs_temp_config": True, "files_to_scan": files_to_scan_rel}, None #
-
-
-    def _setup_snyk(self, app_path: Path) -> Tuple[List[str], Optional[Dict], Optional[str]]: #
-        if not (app_path / "package.json").exists(): #
-            msg = f"No package.json found in {app_path}, skipping snyk." #
-            logger.warning(msg) #
-            return [], {"status": ToolStatus.NO_FILES.value, "output": msg}, None # type: ignore #
-
-        return ["snyk", "test"], {"needs_temp_output": True}, None # Signal for temp output file #
-
-    def _run_npm_audit(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]: #
-        return self._run_tool_with_setup( #
-            "npm-audit", app_path, self._setup_npm_audit, self._parse_npm_audit #
+    def _run_npm_audit(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
+        """Run npm audit tool."""
+        return self._run_tool_with_setup(
+            TOOL_NPM_AUDIT, app_path, self._setup_npm_audit, self._parse_npm_audit
         )
 
-    def _run_eslint(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]: #
-        tool_name = "eslint" #
-        status = {tool_name: ToolStatus.NOT_RUN.value} #
-        raw_output = "" #
-        issues: List[SecurityIssue] = [] #
+    def _run_eslint(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
+        """Run ESLint tool with optional temporary config."""
+        tool_name = TOOL_ESLINT
+        status = {tool_name: ToolStatus.NOT_RUN.value}
+        raw_output = ""
+        issues: List[SecurityIssue] = []
 
-        args, config_dict, _ = self._setup_eslint(app_path) #
-        if not args: # Skipped by setup #
-            return [], config_dict.get("status", status) , config_dict.get("output", raw_output) # type: ignore #
+        args, config_dict, _ = self._setup_eslint(app_path)
+        if not args:
+            return [], config_dict.get("status", {tool_name: status[tool_name]}), config_dict.get("output", raw_output)
 
-
-        if config_dict and config_dict.get("needs_temp_config"): #
-            scan_dir = config_dict.get("scan_dir", ".") #
-            eslint_config = { # Basic ESLint config #
-                "root": True, "env": {"browser": True, "es2021": True, "node": True}, #
-                "extends": ["eslint:recommended"], #
-                "parserOptions": {"ecmaVersion": "latest", "sourceType": "module", "ecmaFeatures": {"jsx": True}}, #
-                "rules": {"no-eval": "error", "no-implied-eval": "error", "no-alert": "warn"} #
-            }
+        if config_dict and config_dict.get("needs_temp_config"):
+            scan_dir = config_dict.get("scan_dir", ".")
+            eslint_config = self._get_default_eslint_config()
+            
             try:
-                with self._create_temp_config("eslint_config_", eslint_config, ".eslintrc.json") as temp_config_path: #
-                    complete_args = args + ["--config", str(temp_config_path), scan_dir] #
-                    issues, run_output = self._run_frontend_tool( #
-                        tool_name, complete_args[0], complete_args[1:], app_path, parser=self._parse_eslint #
+                with self._create_temp_config("eslint_config_", eslint_config, ".eslintrc.json") as temp_config_path:
+                    complete_args = args + ["--config", str(temp_config_path), scan_dir]
+                    issues, run_output = self._run_frontend_tool(
+                        tool_name, complete_args[0], complete_args[1:], app_path, parser=self._parse_eslint
                     )
-                    raw_output = run_output #
-            except Exception as exc: # Catch errors during temp config creation or tool run #
-                status[tool_name] = f"❌ Failed: {exc}" #
-                raw_output = f"{tool_name} runner failed with temp config: {exc}" #
-                logger.exception(f"Error running {tool_name} with temp config: {exc}") #
-                return issues, status, raw_output #
-        else: # Use existing project config #
-            issues, run_output = self._run_frontend_tool( #
-                tool_name, args[0], args[1:], app_path, parser=self._parse_eslint #
+                    raw_output = run_output
+            except Exception as exc:
+                status[tool_name] = f"❌ Failed: {exc}"
+                raw_output = f"{tool_name} failed with temp config: {exc}"
+                logger.exception(f"Error running {tool_name}: {exc}")
+                return issues, status, raw_output
+        else:
+            issues, run_output = self._run_frontend_tool(
+                tool_name, args[0], args[1:], app_path, parser=self._parse_eslint
             )
-            raw_output = run_output #
+            raw_output = run_output
 
-        status[tool_name] = self._determine_tool_status(tool_name, issues, raw_output) #
-        # Check for common ESLint config/plugin errors not always caught by return code
-        output_lower = raw_output.lower() #
-        if "error" in output_lower and "plugin" in output_lower and "was conflicted" not in output_lower: #
-            status[tool_name] = "❌ Plugin/Config Issue" #
+        status[tool_name] = self._determine_tool_status(tool_name, issues, raw_output)
+        
+        # Check for plugin/config errors
+        if "error" in raw_output.lower() and "plugin" in raw_output.lower():
+            status[tool_name] = "❌ Plugin/Config Issue"
 
-        return issues, status, raw_output #
+        return issues, status, raw_output
 
-
-    def _run_jshint(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]: #
-        tool_name = "jshint" #
-        status = {tool_name: ToolStatus.NOT_RUN.value} #
-        raw_output = "" #
-        issues: List[SecurityIssue] = [] #
-
-        args, config_dict, _ = self._setup_jshint(app_path) #
-        if not args: # Skipped by setup #
-            return [], config_dict.get("status", status), config_dict.get("output", raw_output) # type: ignore #
-
-        if config_dict and config_dict.get("needs_temp_config"): #
-            files_to_scan_rel = config_dict.get("files_to_scan", []) #
-            if not files_to_scan_rel: # If setup determined no files, even if args were returned #
-                 status[tool_name] = ToolStatus.NO_FILES.value #
-                 return issues, status, "No JS/JSX files to scan after setup." #
-
-            jshint_config = { # Basic JSHint config #
-                "esversion": 9, "browser": True, "node": True, #
-                "strict": "implied", "undef": True, "unused": "vars", #
-                "evil": True, "-W054": True, "-W061": True, "maxerr": 100 #
+    def _get_default_eslint_config(self) -> dict:
+        """Get default ESLint configuration."""
+        return {
+            "root": True,
+            "env": {"browser": True, "es2021": True, "node": True},
+            "extends": ["eslint:recommended"],
+            "parserOptions": {
+                "ecmaVersion": "latest",
+                "sourceType": "module",
+                "ecmaFeatures": {"jsx": True}
+            },
+            "rules": {
+                "no-eval": "error",
+                "no-implied-eval": "error",
+                "no-alert": "warn",
+                "no-script-url": "error",
+                "no-new-func": "error"
             }
+        }
+
+    def _run_jshint(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
+        """Run JSHint tool with optional temporary config."""
+        tool_name = TOOL_JSHINT
+        status = {tool_name: ToolStatus.NOT_RUN.value}
+        raw_output = ""
+        issues: List[SecurityIssue] = []
+
+        args, config_dict, _ = self._setup_jshint(app_path)
+        if not args:
+            return [], config_dict.get("status", {tool_name: status[tool_name]}), config_dict.get("output", raw_output)
+
+        if config_dict and config_dict.get("needs_temp_config"):
+            files_to_scan_rel = config_dict.get("files_to_scan", [])
+            if not files_to_scan_rel:
+                status[tool_name] = ToolStatus.NO_FILES.value
+                return issues, status, "No JS/JSX files to scan"
+
+            jshint_config = self._get_default_jshint_config()
+            
             try:
-                with self._create_temp_config("jshint_config_", jshint_config, ".jshintrc") as temp_config_path: #
-                    complete_args = args + ["--config", str(temp_config_path)] + files_to_scan_rel #
-                    issues, run_output = self._run_frontend_tool( #
-                        tool_name, complete_args[0], complete_args[1:], app_path, parser=self._parse_jshint #
+                with self._create_temp_config("jshint_config_", jshint_config, ".jshintrc") as temp_config_path:
+                    complete_args = args + ["--config", str(temp_config_path)] + files_to_scan_rel
+                    issues, run_output = self._run_frontend_tool(
+                        tool_name, complete_args[0], complete_args[1:], app_path, parser=self._parse_jshint
                     )
-                    raw_output = run_output #
-            except Exception as exc: #
-                status[tool_name] = f"❌ Failed: {exc}" #
-                raw_output = f"{tool_name} runner failed with temp config: {exc}" #
-                logger.exception(f"Error running {tool_name} with temp config: {exc}") #
-                return issues, status, raw_output #
-        else: # Use existing project config (args already includes files) #
-            issues, run_output = self._run_frontend_tool( #
-                tool_name, args[0], args[1:], app_path, parser=self._parse_jshint #
+                    raw_output = run_output
+            except Exception as exc:
+                status[tool_name] = f"❌ Failed: {exc}"
+                raw_output = f"{tool_name} failed with temp config: {exc}"
+                logger.exception(f"Error running {tool_name}: {exc}")
+                return issues, status, raw_output
+        else:
+            issues, run_output = self._run_frontend_tool(
+                tool_name, args[0], args[1:], app_path, parser=self._parse_jshint
             )
-            raw_output = run_output #
+            raw_output = run_output
 
-        status[tool_name] = self._determine_tool_status(tool_name, issues, raw_output) #
-        return issues, status, raw_output #
+        status[tool_name] = self._determine_tool_status(tool_name, issues, raw_output)
+        return issues, status, raw_output
 
-    def _run_snyk(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]: #
-        tool_name = "snyk" #
-        status = {tool_name: ToolStatus.NOT_RUN.value} #
-        raw_output = "" #
-        issues: List[SecurityIssue] = [] #
-        temp_json_file: Optional[Path] = None #
+    def _get_default_jshint_config(self) -> dict:
+        """Get default JSHint configuration."""
+        return {
+            "esversion": 9,
+            "browser": True,
+            "node": True,
+            "strict": "implied",
+            "undef": True,
+            "unused": "vars",
+            "evil": True,
+            "-W054": True,
+            "-W061": True,
+            "maxerr": 100
+        }
 
-        args, config_dict, _ = self._setup_snyk(app_path) #
-        if not args: # Skipped by setup #
-            return [], config_dict.get("status", status), config_dict.get("output", raw_output) # type: ignore #
+    def _run_snyk(self, app_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
+        """Run Snyk tool with temporary output file."""
+        tool_name = TOOL_SNYK
+        status = {tool_name: ToolStatus.NOT_RUN.value}
+        raw_output = ""
+        issues: List[SecurityIssue] = []
+
+        args, config_dict, _ = self._setup_snyk(app_path)
+        if not args:
+            return [], config_dict.get("status", {tool_name: status[tool_name]}), config_dict.get("output", raw_output)
 
         try:
-            # Snyk requires writing output to a file for JSON
-            with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix=".json", encoding='utf-8') as tmpfile: #
-                temp_json_file = Path(tmpfile.name) #
-            logger.debug(f"Snyk output will be written to temporary file: {temp_json_file}") #
+            with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix=".json", encoding='utf-8') as tmpfile:
+                temp_json_file = Path(tmpfile.name)
+            
+            logger.debug(f"Snyk output file: {temp_json_file}")
+            complete_args = args + [f"--json-file-output={temp_json_file}"]
+            timeout = self.tool_configs.get(TOOL_SNYK, {}).get("timeout", 90)
 
-            complete_args = args + [f"--json-file-output={str(temp_json_file)}"] # Ensure path is string #
-            timeout = self.tool_configs.get("snyk", {}).get("timeout", 90) #
-
-            _, run_output = self._run_frontend_tool( # Snyk writes JSON to file, not stdout for `snyk test` #
-                tool_name, complete_args[0], complete_args[1:], app_path, timeout=timeout #
+            _, run_output = self._run_frontend_tool(
+                tool_name, complete_args[0], complete_args[1:], app_path, timeout=timeout
             )
-            raw_output = run_output # Capture stdout/stderr from snyk CLI itself #
+            raw_output = run_output
 
-            # Parse from the temporary file
-            if temp_json_file.exists() and temp_json_file.stat().st_size > 0: #
-                logger.debug(f"Parsing Snyk JSON output file: {temp_json_file}") #
+            # Parse output file
+            if temp_json_file.exists() and temp_json_file.stat().st_size > 0:
                 try:
-                    with open(temp_json_file, 'r', encoding='utf-8') as f_snyk: #
-                        issues = self._parse_snyk(f_snyk.read()) #
-                except Exception as e_read: # Catch errors reading/parsing the temp file #
-                    logger.error(f"Failed to read or parse Snyk JSON output file {temp_json_file}: {e_read}") #
-                    status[tool_name] = "❌ Error Reading Output File" #
-                    return issues, status, raw_output # Return early with error #
-            else: #
-                logger.warning(f"Snyk JSON output file {temp_json_file} not found or empty.") #
+                    with open(temp_json_file, 'r', encoding='utf-8') as f:
+                        issues = self._parse_snyk(f.read())
+                except (IOError, OSError) as e:
+                    logger.error(f"Failed to read Snyk output: {e}")
+                    status[tool_name] = "❌ Error Reading Output"
+                    return issues, status, raw_output
+            else:
+                logger.warning(f"Snyk output file empty or missing")
 
+            status[tool_name] = self._determine_tool_status(tool_name, issues, raw_output)
 
-            status[tool_name] = self._determine_tool_status(tool_name, issues, raw_output) #
-
-        except Exception as exc: #
-            status[tool_name] = f"❌ Failed: {exc}" #
-            raw_output = f"{tool_name} runner failed: {exc}" #
-            logger.exception(f"Error running {tool_name}: {exc}") #
+        except Exception as exc:
+            status[tool_name] = f"❌ Failed: {exc}"
+            raw_output = f"{tool_name} failed: {exc}"
+            logger.exception(f"Error running {tool_name}: {exc}")
         finally:
-            if temp_json_file and temp_json_file.exists(): #
-                try:
-                    temp_json_file.unlink() #
-                    logger.debug(f"Removed temporary Snyk file: {temp_json_file}") #
-                except OSError as e_unlink: # Catch potential errors during unlink #
-                    logger.warning(f"Failed to remove temporary Snyk output file: {e_unlink}") #
+            # Clean up temp file
+            if 'temp_json_file' in locals() and temp_json_file.exists():
+                with suppress(OSError):
+                    temp_json_file.unlink()
 
-        return issues, status, raw_output #
+        return issues, status, raw_output
 
-    def _sort_issues(self, issues: List[SecurityIssue]) -> List[SecurityIssue]: #
+    def _sort_issues(self, issues: List[SecurityIssue]) -> List[SecurityIssue]:
         """Sort issues by severity, confidence, filename, and line number."""
-        return sorted( #
-            issues, #
-            key=lambda i: ( #
-                SEVERITY_ORDER.get(i.severity, DEFAULT_ORDER_VALUE), #
-                CONFIDENCE_ORDER.get(i.confidence, DEFAULT_ORDER_VALUE), #
-                i.filename, #
-                i.line_number #
+        return sorted(
+            issues,
+            key=lambda i: (
+                SEVERITY_ORDER.get(i.severity, DEFAULT_ORDER_VALUE),
+                CONFIDENCE_ORDER.get(i.confidence, DEFAULT_ORDER_VALUE),
+                i.filename,
+                i.line_number
             )
         )
 
-    def run_security_analysis( #
+    def run_security_analysis(
         self,
-        model: str, #
-        app_num: int, #
-        use_all_tools: bool = False, #
-        force_rerun: bool = False  # Added force_rerun #
-    ) -> Tuple[List[SecurityIssue], Dict[str, str], Dict[str, str]]: #
+        model: str,
+        app_num: int,
+        use_all_tools: bool = False,
+        force_rerun: bool = False
+    ) -> Tuple[List[SecurityIssue], Dict[str, str], Dict[str, str]]:
         """
         Run security analysis on a specific model and app number.
-        Results are cached for full scans unless force_rerun is True.
-
+        
         Args:
             model: Model name
             app_num: App number
-            use_all_tools: Whether to use all available tools (default: False)
-            force_rerun: If True, ignore cached results and rerun all tools.
-
+            use_all_tools: Whether to use all available tools
+            force_rerun: Force rerun even if cached results exist
+            
         Returns:
             Tuple of (issues, tool_status, tool_outputs)
         """
-        with self.analysis_lock: # Ensure only one analysis runs at a time #
-            target_desc = f"models/{model}/app{app_num}" #
-            logger.info(f"Running frontend security analysis for {target_desc} (full scan: {use_all_tools}, force_rerun: {force_rerun})") #
+        with self.analysis_lock:
+            target_desc = f"models/{model}/app{app_num}"
+            logger.info(f"Starting frontend security analysis for {target_desc}")
 
-            # Filename for full scans
             results_filename = ".frontend_security_results.json"
 
-            # Try to load cached results if it's a full scan and not forcing a rerun
-            if use_all_tools and not force_rerun: #
-                cached_data = self.results_manager.load_results(model, app_num, file_name=results_filename) #
-                if cached_data and isinstance(cached_data, dict): #
-                    issues_data = cached_data.get("issues", []) #
-                    tool_status = cached_data.get("tool_status", {}) #
-                    tool_outputs = cached_data.get("tool_outputs", {}) #
-                    # Reconstruct SecurityIssue objects
-                    issues = [SecurityIssue.from_dict(item) for item in issues_data] #
-                    logger.info(f"Loaded cached frontend security analysis results for {model}/app{app_num} from {results_filename}") #
-                    return issues, tool_status, tool_outputs #
+            # Check cache for full scans
+            if use_all_tools and not force_rerun:
+                cached_results = self._load_cached_results(model, app_num, results_filename)
+                if cached_results:
+                    return cached_results
 
-            app_path = self._find_application_path(model, app_num) #
-            if not app_path: #
-                msg = f"Application directory not found for {target_desc}" #
-                logger.error(msg) #
-                # Create a status dict indicating app path not found for all tools
-                error_status = {t: "❌ App path not found" for t in (self.all_tools if use_all_tools else self.default_tools)} #
-                return [], error_status, {t: msg for t in error_status} #
+            # Find and validate app path
+            app_path = self._find_application_path(model, app_num)
+            if not app_path:
+                return self._handle_missing_app_path(target_desc, use_all_tools)
 
+            # Determine which tools to run
+            tools_to_run = self._get_tools_to_run(use_all_tools)
+            if not tools_to_run:
+                return self._handle_no_runnable_tools(target_desc)
 
-            tools_to_attempt = self.all_tools if use_all_tools else self.default_tools #
-            runnable_tools = [t for t in tools_to_attempt if self.available_tools.get(t)] #
+            # Run analysis
+            all_issues, tool_status, tool_outputs = self._execute_tools(tools_to_run, app_path, target_desc)
+            
+            # Fill in status for tools not run
+            self._fill_missing_tool_status(tool_status, tool_outputs, tools_to_run)
 
-            if not runnable_tools: #
-                msg = f"No runnable tools selected or available for {target_desc}." #
-                logger.warning(msg) #
-                final_status: Dict[str, str] = {} #
-                for tool in self.all_tools: # Report status for all configured tools #
-                    if tool not in tools_to_attempt: #
-                        final_status[tool] = ToolStatus.SKIPPED.value #
-                    elif not self.available_tools.get(tool): #
-                        final_status[tool] = f"❌ {tool} Not Available" #
-                    else: # Was attemptable but not runnable (should not happen if logic is correct) #
-                        final_status[tool] = ToolStatus.UNKNOWN.value #
-                return [], final_status, {t: msg for t in self.all_tools} #
+            sorted_issues = self._sort_issues(all_issues)
 
+            # Save results for full scans
+            if use_all_tools:
+                self._save_analysis_results(model, app_num, sorted_issues, tool_status, tool_outputs, results_filename)
 
-            logger.info(f"Executing tools: {', '.join(runnable_tools)}") #
+            logger.info(f"Analysis completed for {target_desc}: {len(sorted_issues)} issues found")
+            return sorted_issues, tool_status, tool_outputs
 
-            tool_map = { #
-                "npm-audit": self._run_npm_audit, #
-                "eslint": self._run_eslint, #
-                "jshint": self._run_jshint, #
-                "snyk": self._run_snyk #
+    def _load_cached_results(self, model: str, app_num: int, filename: str) -> Optional[Tuple[List[SecurityIssue], Dict[str, str], Dict[str, str]]]:
+        """Load cached analysis results if available."""
+        cached_data = self.results_manager.load_results(model, app_num, file_name=filename)
+        if cached_data and isinstance(cached_data, dict):
+            issues_data = cached_data.get("issues", [])
+            tool_status = cached_data.get("tool_status", {})
+            tool_outputs = cached_data.get("tool_outputs", {})
+            issues = [SecurityIssue.from_dict(item) for item in issues_data]
+            logger.info(f"Using cached results for {model}/app{app_num}")
+            return issues, tool_status, tool_outputs
+        return None
+
+    def _handle_missing_app_path(self, target_desc: str, use_all_tools: bool) -> Tuple[List[SecurityIssue], Dict[str, str], Dict[str, str]]:
+        """Handle case when application path is not found."""
+        msg = f"Application directory not found for {target_desc}"
+        logger.error(msg)
+        tools = self.all_tools if use_all_tools else self.default_tools
+        error_status = {t: "❌ App path not found" for t in tools}
+        error_outputs = {t: msg for t in tools}
+        return [], error_status, error_outputs
+
+    def _get_tools_to_run(self, use_all_tools: bool) -> List[str]:
+        """Get list of tools to run based on availability and selection."""
+        tools_to_attempt = self.all_tools if use_all_tools else self.default_tools
+        return [t for t in tools_to_attempt if self.available_tools.get(t)]
+
+    def _handle_no_runnable_tools(self, target_desc: str) -> Tuple[List[SecurityIssue], Dict[str, str], Dict[str, str]]:
+        """Handle case when no runnable tools are available."""
+        msg = f"No runnable tools available for {target_desc}"
+        logger.warning(msg)
+        status = {}
+        outputs = {}
+        
+        for tool in self.all_tools:
+            if not self.available_tools.get(tool):
+                status[tool] = f"❌ {tool} Not Available"
+                outputs[tool] = f"{tool} command not found"
+            else:
+                status[tool] = ToolStatus.SKIPPED.value
+                outputs[tool] = "Tool was not selected"
+                
+        return [], status, outputs
+
+    def _execute_tools(self, tools: List[str], app_path: Path, target_desc: str) -> Tuple[List[SecurityIssue], Dict[str, str], Dict[str, str]]:
+        """Execute security tools in parallel."""
+        tool_map = {
+            TOOL_NPM_AUDIT: self._run_npm_audit,
+            TOOL_ESLINT: self._run_eslint,
+            TOOL_JSHINT: self._run_jshint,
+            TOOL_SNYK: self._run_snyk
+        }
+
+        all_issues: List[SecurityIssue] = []
+        tool_status: Dict[str, str] = {}
+        tool_outputs: Dict[str, str] = {}
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=min(len(tools), 4)) as executor:
+            future_to_tool = {
+                executor.submit(tool_map[tool], app_path): tool
+                for tool in tools if tool in tool_map
             }
 
-            all_issues: List[SecurityIssue] = [] #
-            tool_status: Dict[str, str] = {} #
-            tool_outputs: Dict[str, str] = {} #
+            for future in concurrent.futures.as_completed(future_to_tool):
+                tool_name = future_to_tool[future]
+                try:
+                    issues, status_dict, output = future.result()
+                    all_issues.extend(issues)
+                    tool_outputs[tool_name] = output
+                    tool_status.update(status_dict)
+                    logger.info(f"Tool '{tool_name}' completed for {target_desc}")
+                except Exception as exc:
+                    error_msg = f"❌ Error: {exc}"
+                    logger.exception(f"Tool {tool_name} failed: {exc}")
+                    tool_status[tool_name] = error_msg
+                    tool_outputs[tool_name] = str(exc)
 
-            with concurrent.futures.ThreadPoolExecutor(max_workers=min(len(runnable_tools), 4)) as executor: #
-                future_to_tool = { #
-                    executor.submit(tool_map[tool], app_path): tool #
-                    for tool in runnable_tools if tool in tool_map # Ensure tool exists in map #
-                }
+        return all_issues, tool_status, tool_outputs
 
-                for future in concurrent.futures.as_completed(future_to_tool): #
-                    tool_name = future_to_tool[future] #
-                    try:
-                        issues, status_dict, output = future.result() #
-                        all_issues.extend(issues) #
-                        tool_outputs[tool_name] = output #
-                        tool_status.update(status_dict) # status_dict is like {tool_name: status_value} #
-                        logger.info(f"Tool '{tool_name}' completed for {target_desc}. Status: {status_dict.get(tool_name, 'Unknown')}") #
-                    except Exception as exc: #
-                        error_msg = f"❌ Error running {tool_name}: {exc}" #
-                        logger.exception(f"Failed to get result for {tool_name}: {exc}") #
-                        tool_status[tool_name] = error_msg #
-                        tool_outputs[tool_name] = str(exc) #
+    def _fill_missing_tool_status(self, tool_status: Dict[str, str], tool_outputs: Dict[str, str], tools_run: List[str]):
+        """Fill in status for tools that weren't run."""
+        for tool in self.all_tools:
+            if tool not in tool_status:
+                if not self.available_tools.get(tool):
+                    tool_status[tool] = f"❌ {tool} Not available"
+                    tool_outputs[tool] = f"{tool} command not found"
+                elif tool not in tools_run:
+                    tool_status[tool] = ToolStatus.SKIPPED.value
+                    tool_outputs[tool] = "Tool not selected for this run"
+                else:
+                    tool_status[tool] = ToolStatus.UNKNOWN.value
+                    tool_outputs[tool] = "Tool status unknown"
 
+    def _save_analysis_results(self, model: str, app_num: int, issues: List[SecurityIssue], 
+                             tool_status: Dict[str, str], tool_outputs: Dict[str, str], filename: str):
+        """Save analysis results to file."""
+        results_to_save = {
+            "issues": [issue.to_dict() for issue in issues],
+            "tool_status": tool_status,
+            "tool_outputs": tool_outputs,
+            "analysis_timestamp": datetime.now().isoformat()
+        }
+        self.results_manager.save_results(model, app_num, results_to_save, file_name=filename)
+        logger.info(f"Saved analysis results for {model}/app{app_num}")
 
-            for tool in self.all_tools: # Fill status for tools not run #
-                if tool not in tool_status: #
-                    if not self.available_tools.get(tool): #
-                        tool_status[tool] = f"❌ {tool} Not available" #
-                        tool_outputs[tool] = f"{tool} command not found or non-functional." #
-                    elif tool not in runnable_tools: # Was available but not selected for this run type #
-                        tool_status[tool] = ToolStatus.SKIPPED.value #
-                        tool_outputs[tool] = f"{tool} was available but not selected for this run." #
-                    else: # Should not happen if logic is correct #
-                        tool_status[tool] = ToolStatus.UNKNOWN.value #
-                        tool_outputs[tool] = "Tool status was not recorded." #
-
-            sorted_issues = self._sort_issues(all_issues) #
-
-            # Save results only if it was a full scan
-            if use_all_tools:
-                results_to_save = { #
-                    "issues": [issue.to_dict() for issue in sorted_issues], #
-                    "tool_status": tool_status, #
-                    "tool_outputs": tool_outputs, # Consider truncating long outputs if needed #
-                    "analysis_timestamp": datetime.now().isoformat() #
-                }
-                self.results_manager.save_results(model, app_num, results_to_save, file_name=results_filename, maintain_legacy=False) #
-                logger.info(f"Saved frontend security analysis results for {model}/app{app_num} to {results_filename}") #
-            else:
-                logger.info(f"Results for non-full frontend scan of {model}/app{app_num} were not saved.")
-
-
-            logger.info(f"Frontend security analysis for {target_desc} completed. Total issues found: {len(sorted_issues)}") #
-            return sorted_issues, tool_status, tool_outputs #
-
-    def analyze_security(self, model: str, app_num: int, use_all_tools: bool = False): #
+    def analyze_security(self, model: str, app_num: int, use_all_tools: bool = False):
         """Alias for run_security_analysis for backward compatibility."""
-        return self.run_security_analysis(model, app_num, use_all_tools) #
+        return self.run_security_analysis(model, app_num, use_all_tools)
 
-    def get_analysis_summary(self, issues: List[SecurityIssue]) -> Dict[str, Any]: #
+    def get_analysis_summary(self, issues: List[SecurityIssue]) -> Dict[str, Any]:
         """
         Generate a summary of the security analysis results.
-
+        
         Args:
             issues: List of SecurityIssue objects
-
+            
         Returns:
             Dictionary with summary information
         """
-        summary = { #
-            "total_issues": len(issues), #
-            "severity_counts": {sev: 0 for sev in SEVERITY_ORDER}, #
-            "confidence_counts": {conf: 0 for conf in CONFIDENCE_ORDER}, #
-            "files_affected": len({issue.filename for issue in issues if issue.filename}), #
-            "issue_types": {}, #
-            "tool_counts": {}, #
-            "scan_time": datetime.now().isoformat() #
+        summary = {
+            "total_issues": len(issues),
+            "severity_counts": {sev: 0 for sev in SEVERITY_ORDER},
+            "confidence_counts": {conf: 0 for conf in CONFIDENCE_ORDER},
+            "files_affected": len({issue.filename for issue in issues if issue.filename}),
+            "issue_types": {},
+            "tool_counts": {},
+            "scan_time": datetime.now().isoformat()
         }
 
-        if not issues: #
-            return summary #
+        if not issues:
+            return summary
 
-        for issue in issues: #
-            summary["severity_counts"][issue.severity] = summary["severity_counts"].get(issue.severity, 0) + 1 #
-            summary["confidence_counts"][issue.confidence] = summary["confidence_counts"].get(issue.confidence, 0) + 1 #
-            summary["issue_types"][issue.issue_type] = summary["issue_types"].get(issue.issue_type, 0) + 1 #
-            summary["tool_counts"][issue.tool] = summary["tool_counts"].get(issue.tool, 0) + 1 #
+        for issue in issues:
+            severity = issue.severity
+            confidence = issue.confidence
+            
+            summary["severity_counts"][severity] = summary["severity_counts"].get(severity, 0) + 1
+            summary["confidence_counts"][confidence] = summary["confidence_counts"].get(confidence, 0) + 1
+            summary["issue_types"][issue.issue_type] = summary["issue_types"].get(issue.issue_type, 0) + 1
+            summary["tool_counts"][issue.tool] = summary["tool_counts"].get(issue.tool, 0) + 1
 
-        return summary #
+        return summary
 
-    def analyze_single_file(self, file_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], Dict[str, str]]: #
+    def analyze_single_file(self, file_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], Dict[str, str]]:
         """
-        Run security analysis on a single frontend file using ESLint and JSHint.
-
+        Run security analysis on a single frontend file.
+        
         Args:
-            file_path: Path to the frontend file.
-
+            file_path: Path to the frontend file
+            
         Returns:
             Tuple of (issues, tool_status, tool_outputs)
         """
-        with self.analysis_lock: #
-            logger.info(f"Starting single-file frontend security analysis for: {file_path}") #
+        with self.analysis_lock:
+            file_path = Path(file_path)
+            logger.info(f"Single-file analysis for: {file_path}")
 
-            if not file_path.exists() or not file_path.is_file(): #
-                raise ValueError(f"Invalid file provided: {file_path}") #
+            if not file_path.exists() or not file_path.is_file():
+                raise ValueError(f"Invalid file: {file_path}")
 
-            all_issues: List[SecurityIssue] = [] #
-            tool_status: Dict[str, str] = {} #
-            tool_outputs: Dict[str, str] = {} #
-            app_path = file_path.parent # Use file's directory as the app_path context #
+            # Security check
+            if not validate_path_security(self.base_path, file_path):
+                raise ValueError(f"Security violation: {file_path} is outside allowed paths")
 
-            single_file_tools = [] #
-            if file_path.suffix in ['.js', '.jsx', '.ts', '.tsx', '.vue', '.svelte']: #
-                if self.available_tools.get("eslint"): #
-                    single_file_tools.append("eslint") #
-            if file_path.suffix in ['.js', '.jsx']: # JSHint primarily for JS/JSX #
-                 if self.available_tools.get("jshint"): #
-                    single_file_tools.append("jshint") #
+            app_path = file_path.parent
+            single_file_tools = self._get_single_file_tools(file_path)
 
-            if not single_file_tools: #
-                msg = f"No applicable tools for single file analysis of {file_path.name}" #
-                logger.warning(msg) #
-                for tool in ["eslint", "jshint"]: # Default tools we might try #
-                    tool_status[tool] = ToolStatus.SKIPPED.value #
-                    tool_outputs[tool] = msg #
-                return [], tool_status, tool_outputs #
+            if not single_file_tools:
+                return self._handle_no_applicable_tools(file_path)
 
+            return self._run_single_file_analysis(single_file_tools, app_path, file_path)
 
-            tool_map = { #
-                "eslint": self._run_eslint_single_file, #
-                "jshint": self._run_jshint_single_file, #
-            }
+    def _get_single_file_tools(self, file_path: Path) -> List[str]:
+        """Determine which tools can analyze the given file type."""
+        tools = []
+        file_ext = file_path.suffix
+        
+        if file_ext in ['.js', '.jsx', '.ts', '.tsx', '.vue', '.svelte']:
+            if self.available_tools.get(TOOL_ESLINT):
+                tools.append(TOOL_ESLINT)
+        
+        if file_ext in ['.js', '.jsx']:
+            if self.available_tools.get(TOOL_JSHINT):
+                tools.append(TOOL_JSHINT)
+        
+        return tools
 
-            for tool_name in single_file_tools: #
-                if tool_name in tool_map: #
-                    try:
-                        issues, status_dict, output = tool_map[tool_name](app_path, file_path) # Pass specific file #
-                        all_issues.extend(issues) #
-                        tool_outputs[tool_name] = output #
-                        tool_status.update(status_dict) #
-                        logger.info(f"Tool '{tool_name}' completed for single file {file_path.name}. Status: {status_dict.get(tool_name, 'Unknown')}") #
-                    except Exception as exc: #
-                        error_msg = f"❌ Error running {tool_name} on {file_path.name}: {exc}" #
-                        logger.exception(f"Failed to get result for {tool_name} on {file_path.name}: {exc}") #
-                        tool_status[tool_name] = error_msg #
-                        tool_outputs[tool_name] = str(exc) #
+    def _handle_no_applicable_tools(self, file_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], Dict[str, str]]:
+        """Handle case when no tools can analyze the file type."""
+        msg = f"No applicable tools for {file_path.suffix} files"
+        logger.warning(msg)
+        
+        tool_status = {}
+        tool_outputs = {}
+        
+        for tool in [TOOL_ESLINT, TOOL_JSHINT]:
+            tool_status[tool] = ToolStatus.SKIPPED.value
+            tool_outputs[tool] = msg
+        
+        return [], tool_status, tool_outputs
 
-            # Fill in status for tools that weren't run
-            for tool in self.all_tools: #
-                if tool not in tool_status: #
-                    tool_status[tool] = ToolStatus.SKIPPED.value #
-                    tool_outputs[tool] = "Not applicable for single file analysis or this file type." #
+    def _run_single_file_analysis(self, tools: List[str], app_path: Path, file_path: Path) -> Tuple[List[SecurityIssue], Dict[str, str], Dict[str, str]]:
+        """Run analysis tools on a single file."""
+        tool_map = {
+            TOOL_ESLINT: self._run_eslint_single_file,
+            TOOL_JSHINT: self._run_jshint_single_file,
+        }
 
-            sorted_issues = self._sort_issues(all_issues) #
-            logger.info(f"Single-file frontend analysis for {file_path.name} completed. Total issues: {len(sorted_issues)}") #
-            return sorted_issues, tool_status, tool_outputs #
+        all_issues: List[SecurityIssue] = []
+        tool_status: Dict[str, str] = {}
+        tool_outputs: Dict[str, str] = {}
 
-    def _run_eslint_single_file(self, app_path: Path, file_to_scan: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]: #
-        tool_name = "eslint" #
-        status = {tool_name: ToolStatus.NOT_RUN.value} #
-        raw_output = "" #
-        issues: List[SecurityIssue] = [] #
+        for tool_name in tools:
+            if tool_name in tool_map:
+                try:
+                    issues, status_dict, output = tool_map[tool_name](app_path, file_path)
+                    all_issues.extend(issues)
+                    tool_outputs[tool_name] = output
+                    tool_status.update(status_dict)
+                    logger.info(f"Tool '{tool_name}' completed for {file_path.name}")
+                except Exception as exc:
+                    error_msg = f"❌ Error: {exc}"
+                    logger.exception(f"Tool {tool_name} failed on {file_path.name}: {exc}")
+                    tool_status[tool_name] = error_msg
+                    tool_outputs[tool_name] = str(exc)
 
-        rel_file_to_scan = os.path.relpath(file_to_scan, app_path) #
+        # Fill status for tools not run
+        for tool in self.all_tools:
+            if tool not in tool_status:
+                tool_status[tool] = ToolStatus.SKIPPED.value
+                tool_outputs[tool] = "Not applicable for single file analysis"
 
-        args = ["npx", "eslint", "--ext", Path(rel_file_to_scan).suffix, "--format", "json", "--quiet", rel_file_to_scan] #
+        sorted_issues = self._sort_issues(all_issues)
+        logger.info(f"Single-file analysis completed: {len(sorted_issues)} issues")
+        return sorted_issues, tool_status, tool_outputs
 
-        project_config_exists = any((app_path / f).exists() for f in #
-                                  [".eslintrc.js", ".eslintrc.json", ".eslintrc.yaml", ".eslintrc.yml", "eslint.config.js"]) #
+    def _run_eslint_single_file(self, app_path: Path, file_to_scan: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
+        """Run ESLint on a single file."""
+        tool_name = TOOL_ESLINT
+        status = {tool_name: ToolStatus.NOT_RUN.value}
+        raw_output = ""
+        issues: List[SecurityIssue] = []
 
-        if project_config_exists: #
-            logger.info(f"Using existing ESLint configuration from {app_path} for single file {rel_file_to_scan}") #
-            # args already include the file
-        else: #
-            logger.info(f"No project ESLint config found for single file {rel_file_to_scan}, creating temporary config.") #
-            eslint_config = { #
-                "root": True, "env": {"browser": True, "es2021": True, "node": True}, #
-                "extends": ["eslint:recommended"], #
-                "parserOptions": {"ecmaVersion": "latest", "sourceType": "module", "ecmaFeatures": {"jsx": True}}, #
-                "rules": {"no-eval": "error", "no-implied-eval": "error", "no-alert": "warn"} #
-            }
+        try:
+            rel_file = file_to_scan.relative_to(app_path)
+        except ValueError:
+            rel_file = file_to_scan
+
+        args = ["npx", "eslint", "--ext", file_to_scan.suffix, "--format", "json", "--quiet", str(rel_file)]
+
+        # Check for existing config
+        eslint_configs = [".eslintrc.js", ".eslintrc.json", ".eslintrc.yaml", ".eslintrc.yml", "eslint.config.js"]
+        project_config_exists = any((app_path / config).exists() for config in eslint_configs)
+
+        if not project_config_exists:
+            eslint_config = self._get_default_eslint_config()
             try:
-                with self._create_temp_config("eslint_single_config_", eslint_config, ".eslintrc.json") as temp_config_path: #
-                    args = ["npx", "eslint", "--config", str(temp_config_path), "--ext", Path(rel_file_to_scan).suffix, "--format", "json", "--quiet", rel_file_to_scan] #
-            except Exception as exc: #
-                status[tool_name] = f"❌ Failed creating temp config: {exc}" #
-                raw_output = f"{tool_name} runner failed creating temp config: {exc}" #
-                return issues, status, raw_output #
+                with self._create_temp_config("eslint_single_", eslint_config, ".eslintrc.json") as temp_config:
+                    args.insert(2, "--config")
+                    args.insert(3, str(temp_config))
+                    issues, raw_output = self._run_frontend_tool(
+                        tool_name, args[0], args[1:], app_path, parser=self._parse_eslint
+                    )
+            except Exception as exc:
+                status[tool_name] = f"❌ Failed: {exc}"
+                raw_output = f"Failed to create temp config: {exc}"
+                return issues, status, raw_output
+        else:
+            issues, raw_output = self._run_frontend_tool(
+                tool_name, args[0], args[1:], app_path, parser=self._parse_eslint
+            )
 
-        issues, raw_output = self._run_frontend_tool(tool_name, args[0], args[1:], app_path, parser=self._parse_eslint) #
-        status[tool_name] = self._determine_tool_status(tool_name, issues, raw_output) #
-        return issues, status, raw_output #
+        status[tool_name] = self._determine_tool_status(tool_name, issues, raw_output)
+        return issues, status, raw_output
 
-    def _run_jshint_single_file(self, app_path: Path, file_to_scan: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]: #
-        tool_name = "jshint" #
-        status = {tool_name: ToolStatus.NOT_RUN.value} #
-        raw_output = "" #
-        issues: List[SecurityIssue] = [] #
+    def _run_jshint_single_file(self, app_path: Path, file_to_scan: Path) -> Tuple[List[SecurityIssue], Dict[str, str], str]:
+        """Run JSHint on a single file."""
+        tool_name = TOOL_JSHINT
+        status = {tool_name: ToolStatus.NOT_RUN.value}
+        raw_output = ""
+        issues: List[SecurityIssue] = []
 
-        rel_file_to_scan = os.path.relpath(file_to_scan, app_path) #
-        args = ["npx", "jshint", "--reporter=checkstyle", rel_file_to_scan] #
+        try:
+            rel_file = file_to_scan.relative_to(app_path)
+        except ValueError:
+            rel_file = file_to_scan
 
-        project_jshintrc = app_path / ".jshintrc" #
-        if project_jshintrc.exists(): #
-            logger.info(f"Using existing project JSHint config from {app_path} for single file {rel_file_to_scan}") #
-            args = ["npx", "jshint", "--config", str(project_jshintrc), "--reporter=checkstyle", rel_file_to_scan] #
-        else: #
-            logger.info(f"No project JSHint config found for single file {rel_file_to_scan}, creating temporary config.") #
-            jshint_config = { #
-                "esversion": 9, "browser": True, "node": True, #
-                "strict": "implied", "undef": True, "unused": "vars", #
-                "evil": True, "-W054": True, "-W061": True, "maxerr": 100 #
-            }
+        args = ["npx", "jshint", "--reporter=checkstyle", str(rel_file)]
+
+        if not (app_path / ".jshintrc").exists():
+            jshint_config = self._get_default_jshint_config()
             try:
-                with self._create_temp_config("jshint_single_config_", jshint_config, ".jshintrc") as temp_config_path: #
-                    args = ["npx", "jshint", "--config", str(temp_config_path), "--reporter=checkstyle", rel_file_to_scan] #
-            except Exception as exc: #
-                status[tool_name] = f"❌ Failed creating temp config: {exc}" #
-                raw_output = f"{tool_name} runner failed creating temp config: {exc}" #
-                return issues, status, raw_output #
+                with self._create_temp_config("jshint_single_", jshint_config, ".jshintrc") as temp_config:
+                    args.insert(2, "--config")
+                    args.insert(3, str(temp_config))
+                    issues, raw_output = self._run_frontend_tool(
+                        tool_name, args[0], args[1:], app_path, parser=self._parse_jshint
+                    )
+            except Exception as exc:
+                status[tool_name] = f"❌ Failed: {exc}"
+                raw_output = f"Failed to create temp config: {exc}"
+                return issues, status, raw_output
+        else:
+            args.insert(2, "--config")
+            args.insert(3, ".jshintrc")
+            issues, raw_output = self._run_frontend_tool(
+                tool_name, args[0], args[1:], app_path, parser=self._parse_jshint
+            )
 
-        issues, raw_output = self._run_frontend_tool(tool_name, args[0], args[1:], app_path, parser=self._parse_jshint) #
-        status[tool_name] = self._determine_tool_status(tool_name, issues, raw_output) #
-        return issues, status, raw_output #
+        status[tool_name] = self._determine_tool_status(tool_name, issues, raw_output)
+        return issues, status, raw_output

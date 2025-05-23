@@ -1,1 +1,0 @@
-Very good, now in similar manner (generate same structure basically) split this file, they should be similar in structure but theme can vary
