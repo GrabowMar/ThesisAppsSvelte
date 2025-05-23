@@ -45,7 +45,7 @@
       </select>
       <div class="border-l border-gray-400 h-5 mx-1"></div>
 
-      Batch Analysis - FeatureManager.requirementsAnalysis
+      <!-- Batch Analysis - FeatureManager.requirementsAnalysis -->
       <a href="{{ url_for('batch_analysis.batch_dashboard') }}" class="action-btn py-1 px-2 text-xs bg-indigo-600 hover:bg-indigo-700 text-white">
         <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
@@ -211,10 +211,10 @@
           <!-- Action Buttons -->
           <div class="grid grid-cols-4 gap-1">
             <!-- Control Row - CoreController.performAppAction targets -->
-            <button class="action-btn bg-green-600 hover:bg-green-700 text-white text-2xs py-1" title="Start App" data-action="start" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">Start</button>
-            <button class="action-btn bg-red-600 hover:bg-red-700 text-white text-2xs py-1" title="Stop App" data-action="stop" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">Stop</button>
-            <button class="action-btn bg-yellow-600 hover:bg-yellow-700 text-white text-2xs py-1" title="Reload App" data-action="reload" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">Reload</button>
-            <button class="action-btn bg-gray-200 hover:bg-gray-300 text-2xs py-1" title="Check Status" data-action="status" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">Status</button>
+            <button class="app-action-btn bg-green-600 hover:bg-green-700 text-white text-2xs py-1" title="Start App" data-action="start" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">Start</button>
+            <button class="app-action-btn bg-red-600 hover:bg-red-700 text-white text-2xs py-1" title="Stop App" data-action="stop" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">Stop</button>
+            <button class="app-action-btn bg-yellow-600 hover:bg-yellow-700 text-white text-2xs py-1" title="Reload App" data-action="reload" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">Reload</button>
+            <button class="app-action-btn bg-gray-200 hover:bg-gray-300 text-2xs py-1" title="Check Status" data-action="status" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">Status</button>
 
             <!-- Feature Links - FeatureManager components -->
             <a href="{{ url_for('main.view_logs', model=app.model, app_num=app.app_num) }}" class="action-btn text-center text-2xs py-1 bg-blue-50 hover:bg-blue-100 text-blue-700">Logs</a>
@@ -224,7 +224,7 @@
             
             <!-- Advanced Tools -->
             <a href="{{ url_for('zap.zap_scan_page', model=app.model, app_num=app.app_num) }}" class="action-btn text-center text-2xs py-1 bg-amber-50 hover:bg-amber-100 text-amber-700">ZAP</a>
-            <button class="action-btn bg-purple-600 hover:bg-purple-700 text-white text-2xs py-1 col-span-2" title="Rebuild App" data-action="rebuild" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">Rebuild</button>
+            <button class="app-action-btn bg-purple-600 hover:bg-purple-700 text-white text-2xs py-1 col-span-2" title="Rebuild App" data-action="rebuild" data-model="{{ app.model }}" data-app-num="{{ app.app_num }}">Rebuild</button>
             <a href="{{ url_for('gpt4all.gpt4all_analysis', model=app.model, app_num=app.app_num) }}" class="action-btn text-center text-2xs py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700">Reqs</a>
           </div>
         </div>
@@ -245,32 +245,365 @@
   </div>
 </div>
 
+<!-- Loading overlay -->
+<div id="loadingOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white p-4 rounded-lg shadow-lg">
+    <div class="flex items-center">
+      <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span id="loadingText">Processing...</span>
+    </div>
+  </div>
+</div>
+
+<!-- Notification container -->
+<div id="notificationContainer" class="fixed top-4 right-4 z-40"></div>
+
 {% block extra_scripts %}
 <script>
-// Initialize with Dashboard.js OOP structure
+// Dashboard Application Controller
 $(document).ready(function() {
-  // Feature-specific initialization aligned with FeatureManager
-  const securityFilter = $('#securitySummaryFilter');
   
-  if (securityFilter.length) {
-    securityFilter.on('change', function() {
-      const value = $(this).val();
-      const selector = value === 'high' ? '.high-risk' : 
-                      value === 'critical' ? '.critical' : '';
+  // Utility functions
+  function showNotification(message, type = 'info', duration = 5000) {
+    const alertClass = type === 'success' ? 'alert-success bg-green-100 text-green-800 border-green-300' : 
+                      type === 'error' ? 'alert-danger bg-red-100 text-red-800 border-red-300' : 
+                      type === 'warning' ? 'alert-warning bg-yellow-100 text-yellow-800 border-yellow-300' :
+                      'alert-info bg-blue-100 text-blue-800 border-blue-300';
+    
+    const alert = $(`
+      <div class="alert ${alertClass} border px-4 py-3 rounded mb-2 shadow-lg max-w-sm">
+        <div class="flex justify-between items-start">
+          <div class="text-sm">${message}</div>
+          <button type="button" class="ml-2 text-lg leading-none hover:opacity-75">&times;</button>
+        </div>
+      </div>
+    `);
+    
+    $('#notificationContainer').append(alert);
+    
+    // Auto-remove after duration
+    setTimeout(() => alert.fadeOut(() => alert.remove()), duration);
+    
+    // Manual close
+    alert.find('button').on('click', () => alert.fadeOut(() => alert.remove()));
+  }
+
+  function showLoading(text = 'Processing...') {
+    $('#loadingText').text(text);
+    $('#loadingOverlay').removeClass('hidden');
+  }
+
+  function hideLoading() {
+    $('#loadingOverlay').addClass('hidden');
+  }
+
+  function setButtonLoading(button, loading = true) {
+    const $btn = $(button);
+    if (loading) {
+      $btn.prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
+      const originalText = $btn.text();
+      $btn.data('original-text', originalText).text('...');
+    } else {
+      $btn.prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+      const originalText = $btn.data('original-text');
+      if (originalText) {
+        $btn.text(originalText);
+      }
+    }
+  }
+
+  // Individual App Action Handler
+  $(document).on('click', '.app-action-btn', function(e) {
+    e.preventDefault();
+    
+    const $btn = $(this);
+    const action = $btn.data('action');
+    const model = $btn.data('model');
+    const appNum = $btn.data('app-num');
+    
+    if (!action || !model || !appNum) {
+      showNotification('Missing required parameters for action', 'error');
+      return;
+    }
+
+    // Special handling for status action (GET request)
+    if (action === 'status') {
+      setButtonLoading($btn);
+      $.ajax({
+        url: `/status/${model}/${appNum}`,
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        success: function(response) {
+          console.log('Status response:', response);
+          showNotification(`Status retrieved for ${model}/app${appNum}`, 'success');
+          // Optionally update the UI with the status info
+          setTimeout(() => location.reload(), 1000);
+        },
+        error: function(xhr, status, error) {
+          console.error('Status check failed:', error);
+          showNotification(`Failed to get status: ${error}`, 'error');
+        },
+        complete: function() {
+          setButtonLoading($btn, false);
+        }
+      });
+      return;
+    }
+
+    // For all other actions, use POST
+    setButtonLoading($btn);
+    
+    $.ajax({
+      url: `/${action}/${model}/${appNum}`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      data: JSON.stringify({
+        action: action
+      }),
+      success: function(response) {
+        console.log('Action response:', response);
+        
+        if (response.success) {
+          showNotification(`${action.charAt(0).toUpperCase() + action.slice(1)} successful for ${model}/app${appNum}`, 'success');
+          // Refresh the page after a short delay to show updated status
+          setTimeout(() => location.reload(), 1500);
+        } else {
+          showNotification(`${action} failed: ${response.message || response.error}`, 'error');
+        }
+      },
+      error: function(xhr, status, error) {
+        console.error('Action failed:', error);
+        let errorMessage = error;
+        
+        if (xhr.responseJSON && xhr.responseJSON.error) {
+          errorMessage = xhr.responseJSON.error;
+        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+          errorMessage = xhr.responseJSON.message;
+        }
+        
+        showNotification(`${action} failed: ${errorMessage}`, 'error');
+      },
+      complete: function() {
+        setButtonLoading($btn, false);
+      }
+    });
+  });
+
+  // Batch Action Handler
+  $(document).on('click', '.batch-action', function(e) {
+    e.preventDefault();
+    
+    const $btn = $(this);
+    const action = $btn.data('action');
+    const model = $btn.data('model');
+    
+    if (!action || !model) {
+      showNotification('Missing required parameters for batch action', 'error');
+      return;
+    }
+
+    // Hide the dropdown menu
+    $btn.closest('.batch-menu-items').addClass('hidden');
+    
+    // Show loading
+    showLoading(`Running batch ${action} for ${model}...`);
+    
+    $.ajax({
+      url: `/batch/${action}/${model}`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      data: JSON.stringify({
+        action: action
+      }),
+      success: function(response) {
+        console.log('Batch action response:', response);
+        
+        const successCount = response.success_count || 0;
+        const totalCount = response.total || 0;
+        const failureCount = response.failure_count || 0;
+        
+        if (response.status === 'success') {
+          showNotification(`Batch ${action} completed successfully for all ${totalCount} apps`, 'success');
+        } else if (response.status === 'partial') {
+          showNotification(`Batch ${action} partially completed: ${successCount}/${totalCount} apps succeeded`, 'warning');
+        } else {
+          showNotification(`Batch ${action} failed: ${failureCount}/${totalCount} apps failed`, 'error');
+        }
+        
+        // Show detailed results if available
+        if (response.results && response.results.length > 0) {
+          console.log('Detailed batch results:', response.results);
+        }
+        
+        // Refresh the page after a short delay
+        setTimeout(() => location.reload(), 2000);
+      },
+      error: function(xhr, status, error) {
+        console.error('Batch action failed:', error);
+        let errorMessage = error;
+        
+        if (xhr.responseJSON && xhr.responseJSON.error) {
+          errorMessage = xhr.responseJSON.error;
+        }
+        
+        showNotification(`Batch ${action} failed: ${errorMessage}`, 'error');
+      },
+      complete: function() {
+        hideLoading();
+      }
+    });
+  });
+
+  // Batch Menu Toggle
+  $(document).on('click', '.batch-menu-button', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const $menu = $(this).siblings('.batch-menu-items');
+    
+    // Hide all other open menus
+    $('.batch-menu-items').not($menu).addClass('hidden');
+    
+    // Toggle this menu
+    $menu.toggleClass('hidden');
+  });
+
+  // Close batch menus when clicking outside
+  $(document).on('click', function(e) {
+    if (!$(e.target).closest('.relative').length) {
+      $('.batch-menu-items').addClass('hidden');
+    }
+  });
+
+  // Refresh All Button
+  $('#refreshAll').on('click', function() {
+    location.reload();
+  });
+
+  // Auto-refresh Toggle
+  $('#toggleAutorefresh').on('click', function() {
+    const $btn = $(this);
+    const currentEnabled = $btn.data('enabled') === 'true';
+    const newEnabled = !currentEnabled;
+    
+    // Update button state
+    $btn.data('enabled', newEnabled.toString());
+    $('#autorefreshText').text(`Auto: ${newEnabled ? 'On' : 'Off'}`);
+    
+    if (newEnabled) {
+      $btn.addClass('bg-green-600 hover:bg-green-700 text-white');
+    } else {
+      $btn.removeClass('bg-green-600 hover:bg-green-700 text-white');
+    }
+    
+    // Set cookie
+    document.cookie = `autorefresh=${newEnabled}; path=/; max-age=31536000`; // 1 year
+    
+    showNotification(`Auto-refresh ${newEnabled ? 'enabled' : 'disabled'}`, 'info');
+  });
+
+  // Search and Filter functionality
+  function filterApps() {
+    const searchTerm = $('#searchApps').val().toLowerCase();
+    const modelFilter = $('#filterModel').val();
+    const statusFilter = $('#filterStatus').val();
+    const securityFilter = $('#securitySummaryFilter').val();
+    
+    let visibleCount = 0;
+    
+    $('[data-app-id]').each(function() {
+      const $app = $(this);
+      const appName = $app.data('app-name').toLowerCase();
+      const appModel = $app.data('model');
+      const appStatus = $app.data('status');
       
-      if (selector) {
-        $('[data-app-id]').hide();
-        $(`.security-indicator${selector}`).closest('[data-app-id]').show();
-      } else {
-        $('[data-app-id]').show();
+      let visible = true;
+      
+      // Search filter
+      if (searchTerm && !appName.includes(searchTerm)) {
+        visible = false;
       }
       
-      // Show/hide no results message (uses UIController method)
-      const visibleApps = $('[data-app-id]:visible').length;
-      $('#noResultsMessage').toggle(visibleApps === 0);
+      // Model filter
+      if (modelFilter && appModel !== modelFilter) {
+        visible = false;
+      }
+      
+      // Status filter
+      if (statusFilter && appStatus !== statusFilter) {
+        visible = false;
+      }
+      
+      // Security filter (placeholder - would need actual security data)
+      if (securityFilter !== 'all') {
+        // This would need to be implemented with actual security data
+        // For now, just show all apps
+      }
+      
+      if (visible) {
+        $app.show();
+        visibleCount++;
+      } else {
+        $app.hide();
+      }
+    });
+    
+    // Show/hide no results message
+    $('#noResultsMessage').toggle(visibleCount === 0);
+    
+    // Show/hide model sections based on visible apps
+    $('[data-model-section]').each(function() {
+      const $section = $(this);
+      const modelName = $section.data('model-section');
+      const hasVisibleApps = $section.find('[data-app-id]:visible').length > 0;
+      $section.toggle(hasVisibleApps);
     });
   }
+
+  // Attach filter event handlers
+  $('#searchApps').on('input', filterApps);
+  $('#filterModel').on('change', filterApps);
+  $('#filterStatus').on('change', filterApps);
+  $('#securitySummaryFilter').on('change', filterApps);
+
+  // Security filter specific functionality (from original code)
+  $('#securitySummaryFilter').on('change', function() {
+    const value = $(this).val();
+    const selector = value === 'high' ? '.high-risk' : 
+                    value === 'critical' ? '.critical' : '';
+    
+    if (selector) {
+      $('[data-app-id]').hide();
+      $(`.security-indicator${selector}`).closest('[data-app-id]').show();
+    } else {
+      // Use the general filter function instead
+      filterApps();
+      return;
+    }
+    
+    // Show/hide no results message
+    const visibleApps = $('[data-app-id]:visible').length;
+    $('#noResultsMessage').toggle(visibleApps === 0);
+  });
+
+  // Initialize tooltips if using Bootstrap or similar
+  if (typeof $().tooltip === 'function') {
+    $('[title]').tooltip();
+  }
+
+  console.log('Dashboard initialized successfully');
 });
 </script>
 {% endblock %}
-{% endblock %} 
+{% endblock %}

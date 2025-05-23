@@ -1,0 +1,20 @@
+{
+  "total_requests": 0,
+  "total_failures": 0,
+  "avg_response_time": 0.0,
+  "median_response_time": 0.0,
+  "requests_per_sec": 0.0,
+  "start_time": "2025-05-22 22:39:23",
+  "end_time": "2025-05-22 22:39:33",
+  "duration": 10,
+  "endpoints": [],
+  "errors": [],
+  "percentile_95": 0.0,
+  "percentile_99": 0.0,
+  "user_count": 10,
+  "spawn_rate": 1,
+  "test_name": "Anthropic_Claude_3.7_Sonnet_5501_20250522_223923",
+  "host": "http://localhost:5501",
+  "graph_urls": [],
+  "scan_time": "2025-05-22T22:39:33.355133"
+}

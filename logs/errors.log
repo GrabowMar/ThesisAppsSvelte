@@ -11252,3 +11252,979 @@ Traceback (most recent call last):
     raise ValueError(f"Application backend path does not exist: {app_path}") #
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ValueError: Application backend path does not exist: c:\Users\grabowmar\Desktop\ThesisAppsSvelte\models\models\Llama\app3\backend
+2025-05-22 21:00:34 [ERROR] [-] routes.routes.main.handle_route_error:150 - Unexpected error: get_all_apps() missing 1 required positional argument: 'app_config'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 230, in index
+    apps = get_all_apps()
+           ^^^^^^^^^^^^^^
+TypeError: get_all_apps() missing 1 required positional argument: 'app_config'
+2025-05-22 21:00:34 [ERROR] [-] ajax_route.ajax_route.index.log_and_handle_exception:363 - Unexpected exception in index: get_all_apps() missing 1 required positional argument: 'app_config'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 375, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 267, in index
+    return handle_route_error(e, main_route_logger)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 164, in handle_route_error
+    raise e
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 230, in index
+    apps = get_all_apps()
+           ^^^^^^^^^^^^^^
+TypeError: get_all_apps() missing 1 required positional argument: 'app_config'
+2025-05-22 21:00:34 [ERROR] [-] app.errors.handle_exception:162 - Unhandled exception (500 - Internal Server Error): / - error.html
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 375, in wrapped
+    result = f(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 267, in index
+    return handle_route_error(e, main_route_logger)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 164, in handle_route_error
+    raise e
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 230, in index
+    apps = get_all_apps()
+           ^^^^^^^^^^^^^^
+TypeError: get_all_apps() missing 1 required positional argument: 'app_config'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 379, in wrapped
+    return _handle_ajax_exception(e, is_ajax, f.__name__, function_specific_logger)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\utils.py", line 435, in _handle_ajax_exception
+    return render_template("error.html", error_title="Server Error", error_message=error_message), error_code
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\jinja2\loaders.py", line 126, in load
+    source, filename, uptodate = self.get_source(environment, name)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 65, in get_source
+    return self._get_source_fast(environment, template)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\templating.py", line 99, in _get_source_fast
+    raise TemplateNotFound(template)
+jinja2.exceptions.TemplateNotFound: error.html
+2025-05-22 21:00:34 [ERROR] [-] routes.routes.api.system_info:526 - Error calculating app stats: get_all_apps() missing 1 required positional argument: 'app_config'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 486, in system_info
+    apps = get_all_apps()
+           ^^^^^^^^^^^^^^
+TypeError: get_all_apps() missing 1 required positional argument: 'app_config'
+2025-05-22 21:01:35 [ERROR] [-] routes.routes.api.system_info:526 - Error calculating app stats: get_all_apps() missing 1 required positional argument: 'app_config'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 486, in system_info
+    apps = get_all_apps()
+           ^^^^^^^^^^^^^^
+TypeError: get_all_apps() missing 1 required positional argument: 'app_config'
+2025-05-22 21:02:35 [ERROR] [-] routes.routes.api.system_info:526 - Error calculating app stats: get_all_apps() missing 1 required positional argument: 'app_config'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 486, in system_info
+    apps = get_all_apps()
+           ^^^^^^^^^^^^^^
+TypeError: get_all_apps() missing 1 required positional argument: 'app_config'
+2025-05-22 21:03:35 [ERROR] [-] routes.routes.api.system_info:526 - Error calculating app stats: get_all_apps() missing 1 required positional argument: 'app_config'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 486, in system_info
+    apps = get_all_apps()
+           ^^^^^^^^^^^^^^
+TypeError: get_all_apps() missing 1 required positional argument: 'app_config'
+2025-05-22 21:04:35 [ERROR] [-] routes.routes.api.system_info:526 - Error calculating app stats: get_all_apps() missing 1 required positional argument: 'app_config'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 486, in system_info
+    apps = get_all_apps()
+           ^^^^^^^^^^^^^^
+TypeError: get_all_apps() missing 1 required positional argument: 'app_config'
+2025-05-22 21:05:35 [ERROR] [-] routes.routes.api.system_info:526 - Error calculating app stats: get_all_apps() missing 1 required positional argument: 'app_config'
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\routes.py", line 486, in system_info
+    apps = get_all_apps()
+           ^^^^^^^^^^^^^^
+TypeError: get_all_apps() missing 1 required positional argument: 'app_config'
+2025-05-22 22:19:15 [ERROR] [-] app.errors.handle_exception:162 - Unhandled exception (405 - Method Not Allowed): /start/Anthropic_Claude_3.7_Sonnet/1 - 405 Method Not Allowed: The method is not allowed for the requested URL.
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 624, in match
+    raise MethodNotAllowed(valid_methods=list(e.have_match_for)) from None
+werkzeug.exceptions.MethodNotAllowed: 405 Method Not Allowed: The method is not allowed for the requested URL.
+2025-05-22 22:19:16 [ERROR] [-] client_errors.client_errors.log_client_error:730 - ClientError: Action 'start' failed | URL: http://localhost:5000/ | File: N/A:N/A:N/A | UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+2025-05-22 22:19:16 [ERROR] [-] client_errors.client_errors.log_client_error:730 - ClientError: Unknown error | URL: http://localhost:5000/ | File: N/A:N/A:N/A | UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+2025-05-22 22:20:30 [ERROR] [-] app.errors.handle_exception:162 - Unhandled exception (405 - Method Not Allowed): /start/Anthropic_Claude_3.7_Sonnet/1 - 405 Method Not Allowed: The method is not allowed for the requested URL.
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 624, in match
+    raise MethodNotAllowed(valid_methods=list(e.have_match_for)) from None
+werkzeug.exceptions.MethodNotAllowed: 405 Method Not Allowed: The method is not allowed for the requested URL.
+2025-05-22 22:20:31 [ERROR] [-] client_errors.client_errors.log_client_error:730 - ClientError: Unknown error | URL: http://localhost:5000/ | File: N/A:N/A:N/A | UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+2025-05-22 22:20:31 [ERROR] [-] client_errors.client_errors.log_client_error:730 - ClientError: Action 'start' failed | URL: http://localhost:5000/ | File: N/A:N/A:N/A | UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+2025-05-22 22:20:43 [ERROR] [-] app.errors.handle_exception:162 - Unhandled exception (405 - Method Not Allowed): /start/Anthropic_Claude_3.7_Sonnet/1 - 405 Method Not Allowed: The method is not allowed for the requested URL.
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 891, in dispatch_request
+    self.raise_routing_exception(req)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\app.py", line 500, in raise_routing_exception
+    raise request.routing_exception  # type: ignore[misc]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\flask\ctx.py", line 362, in match_request
+    result = self.url_adapter.match(return_rule=True)  # type: ignore
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\werkzeug\routing\map.py", line 624, in match
+    raise MethodNotAllowed(valid_methods=list(e.have_match_for)) from None
+werkzeug.exceptions.MethodNotAllowed: 405 Method Not Allowed: The method is not allowed for the requested URL.
+2025-05-22 22:20:44 [ERROR] [-] client_errors.client_errors.log_client_error:730 - ClientError: Unknown error | URL: http://localhost:5000/ | File: N/A:N/A:N/A | UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+2025-05-22 22:20:44 [ERROR] [-] client_errors.client_errors.log_client_error:730 - ClientError: Action 'start' failed | URL: http://localhost:5000/ | File: N/A:N/A:N/A | UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+2025-05-22 22:27:47 [ERROR] [-] docker_compose.docker_compose.run_docker_compose:723 - Command failed with code 1: docker-compose -p anthropic_claude_3_7_sonnet_app1 -f c:\Users\grabowmar\Desktop\ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app1\docker-compose.yml up -d --remove-orphans
+Output: #0 building with "desktop-linux" instance using docker driver
+
+#1 [backend internal] load build definition from Dockerfile
+#1 transferring dockerfile: 489B done
+#1 DONE 0.0s
+
+#2 [backend auth] library/python:pull token for registry-1.docker.io
+#2 DONE 0.0s
+
+#3 [backend internal] load metadata for docker.io/library/python:latest
+#3 DONE 1.1s
+
+#4 [backend internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [backend 1/5] FROM docker.io/library/python:latest@sha256:3592650a0a8e6709cd4f3359dc7f1665c35bd9da6da34a9f22050aaf4878511f
+#5 DONE 0.0s
+
+#6 [backend internal] load build context
+#6 transferring context: 11.83kB done
+#6 DONE 0.0s
+
+#7 [backend 5/5] COPY . .
+#7 CACHED
+
+#8 [backend] exporting to image
+#8 exporting layers done
+#8 writing image sha256:cebe0a9c2047e320a4301e11a8c0866cbe5d9d834307f0e4224fe68673cbd969 done
+#8 naming to docker.io/library/anthropic_claude_3_7_sonnet_app1-backend done
+#8 DONE 0.0s
+
+#9 [backend] resolving provenance for metadata file
+#9 D...
+2025-05-22 22:27:47 [ERROR] [-] docker.docker.action.start.handle_docker_action:790 - Docker action 'start' failed for Anthropic_Claude_3.7_Sonnet/app1
+2025-05-22 22:27:47 [ERROR] [-] docker_compose.docker_compose.run_docker_compose:723 - Command failed with code 1: docker-compose -p anthropic_claude_3_7_sonnet_app1 -f c:\Users\grabowmar\Desktop\ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app1\docker-compose.yml up -d --remove-orphans
+Output: #0 building with "desktop-linux" instance using docker driver
+
+#1 [backend internal] load build definition from Dockerfile
+#1 transferring dockerfile: 489B done
+#1 DONE 0.0s
+
+#2 [backend internal] load metadata for docker.io/library/python:latest
+#2 DONE 0.8s
+
+#3 [backend internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [backend 1/5] FROM docker.io/library/python:latest@sha256:3592650a0a8e6709cd4f3359dc7f1665c35bd9da6da34a9f22050aaf4878511f
+#4 DONE 0.0s
+
+#5 [backend internal] load build context
+#5 transferring context: 11.83kB done
+#5 DONE 0.0s
+
+#6 [backend 2/5] WORKDIR /app
+#6 CACHED
+
+#7 [backend 4/5] RUN pip install --no-cache-dir --upgrade pip &&     pip install --no-cache-dir -r requirements.txt
+#7 CACHED
+
+#8 [backend 3/5] COPY requirements.txt requirements.txt
+#8 CACHED
+
+#9 [backend 5/5] COPY . .
+#9 CACHED
+
+#10 [backend] exporting to image
+#10 exporting layers done
+#10 writing image sha256:cebe0a9c2047e320a4301e11a8c0866cbe5d9d834307f0e4224fe68673cbd9...
+2025-05-22 22:27:47 [ERROR] [-] docker.docker.action.start.handle_docker_action:790 - Docker action 'start' failed for Anthropic_Claude_3.7_Sonnet/app1
+2025-05-22 22:30:59 [ERROR] [-] docker_compose.docker_compose.run_docker_compose:723 - 
+time="2025-05-22T22:30:59+02:00" level=warning msg="c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\models\\Anthropic_Claude_3.7_Sonnet\\app1\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Container anthropic_claude_3_7_sonnet_app1_backend_5001  Creating
+Error response from daemon: Conflict. The container name "/anthropic_claude_3_7_sonnet_app1_backend_5001" is already in use by container "c884fadc8919eff9ec3926fbd98f5f6f3f4552d276470c4277b77db0e72516ad". You have to remove (or rename) that container to be able to reuse that name.
+
+2025-05-22 22:30:59 [ERROR] [-] docker.docker.action.start.handle_docker_action:790 - Docker action 'start' failed for Anthropic_Claude_3.7_Sonnet/app1
+2025-05-22 22:30:59 [ERROR] [-] docker_compose.docker_compose.run_docker_compose:723 - 
+time="2025-05-22T22:30:59+02:00" level=warning msg="c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\models\\Anthropic_Claude_3.7_Sonnet\\app1\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Container anthropic_claude_3_7_sonnet_app1_backend_5001  Creating
+Error response from daemon: Conflict. The container name "/anthropic_claude_3_7_sonnet_app1_backend_5001" is already in use by container "c884fadc8919eff9ec3926fbd98f5f6f3f4552d276470c4277b77db0e72516ad". You have to remove (or rename) that container to be able to reuse that name.
+
+2025-05-22 22:30:59 [ERROR] [-] docker.docker.action.start.handle_docker_action:790 - Docker action 'start' failed for Anthropic_Claude_3.7_Sonnet/app1
+2025-05-22 22:31:37 [ERROR] [-] docker_compose.docker_compose.run_docker_compose:723 - 
+time="2025-05-22T22:31:37+02:00" level=warning msg="c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\models\\Anthropic_Claude_3.7_Sonnet\\app1\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Container anthropic_claude_3_7_sonnet_app1_backend_5001  Starting
+ Container anthropic_claude_3_7_sonnet_app1_backend_5001  Started
+ Container anthropic_claude_3_7_sonnet_app1_frontend_5501  Starting
+Error response from daemon: Ports are not available: exposing port TCP 0.0.0.0:5501 -> 0.0.0.0:0: listen tcp 0.0.0.0:5501: bind: Tylko jedno użycie każdego adresu gniazda (protokół/adres sieciowy/port) jest normalnie dozwolone.
+
+2025-05-22 22:31:37 [ERROR] [-] docker.docker.action.start.handle_docker_action:790 - Docker action 'start' failed for Anthropic_Claude_3.7_Sonnet/app1
+2025-05-22 22:33:47 [ERROR] [-] docker_compose.docker_compose.run_docker_compose:723 - 
+time="2025-05-22T22:33:47+02:00" level=warning msg="c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\models\\Anthropic_Claude_3.7_Sonnet\\app1\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Network anthropic_claude_3_7_sonnet_app1_default  Creating
+ Network anthropic_claude_3_7_sonnet_app1_default  Error
+ Container anthropic_claude_3_7_sonnet_app1_backend_5001  Creating
+Error response from daemon: Conflict. The container name "/anthropic_claude_3_7_sonnet_app1_backend_5001" is already in use by container "1e1f2173b2b636f2d3f56298c308aefcd5a181dd8b277633e25d6ba755cdf350". You have to remove (or rename) that container to be able to reuse that name.
+
+2025-05-22 22:33:47 [ERROR] [-] docker.docker.action.start.handle_docker_action:790 - Docker action 'start' failed for Anthropic_Claude_3.7_Sonnet/app1
+2025-05-22 22:38:58 [ERROR] [-] app.gpt4all.check_server:108 - Error checking GPT4All server: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE804200>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 586, in connect
+    self._internal_connect(address)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 630, in _internal_connect
+    raise _SocketError(err, strerror(err))
+ConnectionRefusedError: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x00000198FE804200>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE804200>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\gpt4all_analysis.py", line 87, in check_server
+    response = requests.get(f"{self.api_url}/models", timeout=5)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=4891): Max retries exceeded with url: /v1/models (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE804200>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+2025-05-22 22:38:58 [ERROR] [-] routes.routes.gpt4all.gpt4all_analysis:1954 - GPT4All server is not available or not responding. Please ensure it is running.
+2025-05-22 22:39:23 [ERROR] [-] client_errors.client_errors.log_client_error:730 - ClientError: Unknown error | URL: http://localhost:5000/performance/Anthropic_Claude_3.7_Sonnet/5501 | File: N/A:N/A:N/A | UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+2025-05-22 22:39:27 [ERROR] [-] locust.locust.user.task.run:367 - HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE78E870>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 586, in connect
+    self._internal_connect(address)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 630, in _internal_connect
+    raise _SocketError(err, strerror(err))
+ConnectionRefusedError: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x00000198FE78E870>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE78E870>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 340, in run
+    self.execute_next_task()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 373, in execute_next_task
+    self.execute_task(self._task_queue.popleft())
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 490, in execute_task
+    task(self.user)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\performance_analysis.py", line 127, in task_fn
+    elif not response.ok:
+             ^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\models.py", line 764, in ok
+    self.raise_for_status()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\clients.py", line 61, in raise_for_status
+    raise self.error
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\clients.py", line 237, in _send_request_safe_mode
+    return super().request(method, url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE78E870>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+
+2025-05-22 22:39:28 [ERROR] [-] locust.locust.user.task.run:367 - HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE78DF70>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 586, in connect
+    self._internal_connect(address)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 630, in _internal_connect
+    raise _SocketError(err, strerror(err))
+ConnectionRefusedError: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x00000198FE78DF70>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE78DF70>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 340, in run
+    self.execute_next_task()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 373, in execute_next_task
+    self.execute_task(self._task_queue.popleft())
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 490, in execute_task
+    task(self.user)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\performance_analysis.py", line 127, in task_fn
+    elif not response.ok:
+             ^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\models.py", line 764, in ok
+    self.raise_for_status()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\clients.py", line 61, in raise_for_status
+    raise self.error
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\clients.py", line 237, in _send_request_safe_mode
+    return super().request(method, url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE78DF70>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+
+2025-05-22 22:39:29 [ERROR] [-] locust.locust.user.task.run:367 - HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE663FE0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 586, in connect
+    self._internal_connect(address)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 630, in _internal_connect
+    raise _SocketError(err, strerror(err))
+ConnectionRefusedError: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x00000198FE663FE0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE663FE0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 340, in run
+    self.execute_next_task()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 373, in execute_next_task
+    self.execute_task(self._task_queue.popleft())
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 490, in execute_task
+    task(self.user)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\performance_analysis.py", line 127, in task_fn
+    elif not response.ok:
+             ^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\models.py", line 764, in ok
+    self.raise_for_status()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\clients.py", line 61, in raise_for_status
+    raise self.error
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\clients.py", line 237, in _send_request_safe_mode
+    return super().request(method, url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE663FE0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+
+2025-05-22 22:39:30 [ERROR] [-] locust.locust.user.task.run:367 - HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE747DD0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 586, in connect
+    self._internal_connect(address)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 630, in _internal_connect
+    raise _SocketError(err, strerror(err))
+ConnectionRefusedError: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x00000198FE747DD0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE747DD0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 340, in run
+    self.execute_next_task()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 373, in execute_next_task
+    self.execute_task(self._task_queue.popleft())
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 490, in execute_task
+    task(self.user)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\performance_analysis.py", line 127, in task_fn
+    elif not response.ok:
+             ^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\models.py", line 764, in ok
+    self.raise_for_status()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\clients.py", line 61, in raise_for_status
+    raise self.error
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\clients.py", line 237, in _send_request_safe_mode
+    return super().request(method, url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE747DD0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+
+2025-05-22 22:39:31 [ERROR] [-] locust.locust.user.task.run:367 - HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE8407D0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 586, in connect
+    self._internal_connect(address)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 630, in _internal_connect
+    raise _SocketError(err, strerror(err))
+ConnectionRefusedError: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x00000198FE8407D0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE8407D0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 340, in run
+    self.execute_next_task()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 373, in execute_next_task
+    self.execute_task(self._task_queue.popleft())
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 490, in execute_task
+    task(self.user)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\performance_analysis.py", line 127, in task_fn
+    elif not response.ok:
+             ^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\models.py", line 764, in ok
+    self.raise_for_status()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\clients.py", line 61, in raise_for_status
+    raise self.error
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\clients.py", line 237, in _send_request_safe_mode
+    return super().request(method, url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE8407D0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+
+2025-05-22 22:39:32 [ERROR] [-] locust.locust.user.task.run:367 - HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE8406E0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 586, in connect
+    self._internal_connect(address)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\gevent\_socketcommon.py", line 630, in _internal_connect
+    raise _SocketError(err, strerror(err))
+ConnectionRefusedError: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x00000198FE8406E0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE8406E0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 340, in run
+    self.execute_next_task()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 373, in execute_next_task
+    self.execute_task(self._task_queue.popleft())
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\user\task.py", line 490, in execute_task
+    task(self.user)
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\performance_analysis.py", line 127, in task_fn
+    elif not response.ok:
+             ^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\models.py", line 764, in ok
+    self.raise_for_status()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\clients.py", line 61, in raise_for_status
+    raise self.error
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\locust\clients.py", line 237, in _send_request_safe_mode
+    return super().request(method, url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=5501): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000198FE8406E0>: Failed to establish a new connection: [Errno 10061] [WinError 10061] Nie można nawiązać połączenia, ponieważ komputer docelowy aktywnie go odmawia.'))
+
+2025-05-22 22:41:52 [ERROR] [-] docker_compose.docker_compose.run_docker_compose:723 - 
+time="2025-05-22T22:41:52+02:00" level=warning msg="c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\models\\Anthropic_Claude_3.7_Sonnet\\app1\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Container anthropic_claude_3_7_sonnet_app1_backend_5001  Creating
+Error response from daemon: Conflict. The container name "/anthropic_claude_3_7_sonnet_app1_backend_5001" is already in use by container "8aeea7834e75523e20453ef152260f5f75f5b9dc5e67ace9df98e19e5147eef4". You have to remove (or rename) that container to be able to reuse that name.
+
+2025-05-22 22:41:52 [ERROR] [-] docker.docker.action.rebuild.handle_docker_action:790 - Docker action 'rebuild' failed for Anthropic_Claude_3.7_Sonnet/app1
+2025-05-22 22:41:52 [ERROR] [-] docker_compose.docker_compose.run_docker_compose:723 - 
+time="2025-05-22T22:41:52+02:00" level=warning msg="c:\\Users\\grabowmar\\Desktop\\ThesisAppsSvelte\\models\\Anthropic_Claude_3.7_Sonnet\\app1\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Network anthropic_claude_3_7_sonnet_app1_default  Creating
+ Network anthropic_claude_3_7_sonnet_app1_default  Created
+ Container anthropic_claude_3_7_sonnet_app1_backend_5001  Creating
+Error response from daemon: Conflict. The container name "/anthropic_claude_3_7_sonnet_app1_backend_5001" is already in use by container "8aeea7834e75523e20453ef152260f5f75f5b9dc5e67ace9df98e19e5147eef4". You have to remove (or rename) that container to be able to reuse that name.
+
+2025-05-22 22:41:52 [ERROR] [-] docker.docker.action.rebuild.handle_docker_action:790 - Docker action 'rebuild' failed for Anthropic_Claude_3.7_Sonnet/app1
+2025-05-22 22:56:53 [ERROR] [-] docker_compose.docker_compose.run_docker_compose:723 - Command failed with code 1: docker-compose -p anthropic_claude_3_7_sonnet_app1 -f c:\Users\grabowmar\Desktop\ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app1\docker-compose.yml up -d --remove-orphans
+Output: #0 building with "desktop-linux" instance using docker driver
+
+#1 [backend internal] load build definition from Dockerfile
+#1 transferring dockerfile: 489B done
+#1 DONE 0.0s
+
+#2 [backend internal] load metadata for docker.io/library/python:latest
+#2 DONE 1.0s
+
+#3 [backend internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [backend 1/5] FROM docker.io/library/python:latest@sha256:3592650a0a8e6709cd4f3359dc7f1665c35bd9da6da34a9f22050aaf4878511f
+#4 DONE 0.0s
+
+#5 [backend internal] load build context
+#5 transferring context: 93B done
+#5 DONE 0.0s
+
+#6 [backend 2/5] WORKDIR /app
+#6 CACHED
+
+#7 [backend 4/5] RUN pip install --no-cache-dir --upgrade pip &&     pip install --no-cache-dir -r requirements.txt
+#7 CACHED
+
+#8 [backend 3/5] COPY requirements.txt requirements.txt
+#8 CACHED
+
+#9 [backend 5/5] COPY . .
+#9 CACHED
+
+#10 [backend] exporting to image
+#10 exporting layers done
+#10 writing image sha256:772f6bdf8f8e4fb14652aef26ea87c000f7a5013c25a9cf7c0625d424d207d1f d...
+2025-05-22 22:56:53 [ERROR] [-] docker.docker.action.start.handle_docker_action:790 - Docker action 'start' failed for Anthropic_Claude_3.7_Sonnet/app1
+2025-05-22 22:59:53 [ERROR] [-] docker_compose.docker_compose.run_docker_compose:723 - Command failed with code 1: docker-compose -p anthropic_claude_3_7_sonnet_app1 -f c:\Users\grabowmar\Desktop\ThesisAppsSvelte\models\Anthropic_Claude_3.7_Sonnet\app1\docker-compose.yml up -d --remove-orphans
+Output: #0 building with "desktop-linux" instance using docker driver
+
+#1 [backend internal] load build definition from Dockerfile
+#1 transferring dockerfile: 489B done
+#1 DONE 0.0s
+
+#2 [backend internal] load metadata for docker.io/library/python:latest
+#2 DONE 0.8s
+
+#3 [backend internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [backend 1/5] FROM docker.io/library/python:latest@sha256:3592650a0a8e6709cd4f3359dc7f1665c35bd9da6da34a9f22050aaf4878511f
+#4 DONE 0.0s
+
+#5 [backend internal] load build context
+#5 transferring context: 11.27kB done
+#5 DONE 0.0s
+
+#6 [backend 5/5] COPY . .
+#6 CACHED
+
+#7 [backend] exporting to image
+#7 exporting layers done
+#7 writing image sha256:ca510aaf721eb3f16ac571c912edda39b1c7e7f6cd37ccf77aec70d00258b7b3 done
+#7 naming to docker.io/library/anthropic_claude_3_7_sonnet_app1-backend done
+#7 DONE 0.0s
+
+#8 [backend] resolving provenance for metadata file
+#8 DONE 0.0s
+
+#9 [frontend internal] load build definition from Dockerfile
+#9 transferr...
+2025-05-22 22:59:53 [ERROR] [-] docker.docker.action.start.handle_docker_action:790 - Docker action 'start' failed for Anthropic_Claude_3.7_Sonnet/app1
+2025-05-23 14:01:53 [ERROR] [-] docker.docker._create_docker_client:136 - Docker client creation failed: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+Traceback (most recent call last):
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 223, in _retrieve_server_version
+    return self.version(api_version=False)["ApiVersion"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\daemon.py", line 181, in version
+    return self._result(self._get(url), json=True)
+                        ^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\utils\decorators.py", line 44, in inner
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 246, in _get
+    return self.get(url, **self._set_request_timeout(kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 602, in get
+    return self.request("GET", url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "c:\Users\grabowmar\AppData\Local\Programs\Python\Python312\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipeconn.py", line 25, in connect
+    sock.connect(self.npipe_path)
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 25, in wrapped
+    return f(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 76, in connect
+    raise e
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\transport\npipesocket.py", line 54, in connect
+    handle = win32file.CreateFile(
+             ^^^^^^^^^^^^^^^^^^^^^
+pywintypes.error: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\grabowmar\Desktop\ThesisAppsSvelte\z_interface_app\services.py", line 119, in _create_docker_client
+    client = docker.DockerClient(base_url=docker_host, timeout=timeout)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\client.py", line 45, in __init__
+    self.api = APIClient(*args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 207, in __init__
+    self._version = self._retrieve_server_version()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\grabowmar\Desktop\ThesisAppsSvelte\.venv\Lib\site-packages\docker\api\client.py", line 230, in _retrieve_server_version
+    raise DockerException(
+docker.errors.DockerException: Error while fetching server API version: (2, 'CreateFile', 'Nie można odnaleźć określonego pliku.')

@@ -115,15 +115,23 @@ class APIResponse:
 
 # List of available AI models with their colors
 AI_MODELS: List[AIModel] = [
-    AIModel("Llama", "#f97316"),
-    AIModel("Mistral", "#9333ea"),
-    AIModel("DeepSeek", "#ff5555"),
-    AIModel("GPT4o", "#10a37f"),
-    AIModel("Claude", "#7b2bf9"),
-    AIModel("Gemini", "#1a73e8"),
-    AIModel("Grok", "#ff4d4f"),
-    AIModel("R1", "#fa541c"),
-    AIModel("O3", "#0ca57f")
+    AIModel("Anthropic_Claude_3.7_Sonnet", "#7b2bf9"),
+    AIModel("DeepSeek_DeepSeek-Chat-V3-0324", "#ff5555"),
+    AIModel("Google_Gemini-2.5_Flash-Preview-05-20", "#1a73e8"),
+    AIModel("Google_Gemma_3n_48", "#4285f4"),
+    AIModel("Inception_Mercury-Coder_Small-Beta", "#00bfa5"),
+    AIModel("Meta-Llama_Llama_3.3_86_Instruct", "#f97316"),
+    AIModel("Meta-Llama_Llama-4_Maverick", "#fb8c00"),
+    AIModel("Meta-Llama_Llama-4_Scout", "#ff6f00"),
+    AIModel("Microsoft_Phi-4_Reasoning_Plus", "#0078d4"),
+    AIModel("Mistral_Devstral_Small", "#9333ea"),
+    AIModel("NousResearch_DeepHermes_3_Mistral_24B_Preview", "#7c4dff"),
+    AIModel("OpenAI_Codex_Mini", "#10a37f"),
+    AIModel("OpenAI_GPT-4.1", "#0ca57f"),
+    AIModel("Qwen_Qwen3_30B_A38", "#e91e63"),
+    AIModel("Qwen_Qwen3_32B", "#ec407a"),
+    AIModel("Tencent_Jade_A228", "#00796b"),
+    AIModel("x-AI_Grok-3_Beta", "#ff4d4f")
 ]
 
 
